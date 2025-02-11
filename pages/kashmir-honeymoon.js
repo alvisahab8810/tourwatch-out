@@ -119,7 +119,7 @@ export default function KashmirHoneymoon() {
                     id="pills-basic"
                     role="tabpanel"
                     aria-labelledby="pills-basic-tab"
-                    tabindex="0"
+                    tabIndex="0"
                   >
                     <div className="basic-hotel-features">
                       <div className="feature-media">
@@ -169,7 +169,7 @@ export default function KashmirHoneymoon() {
                     id="pills-standard"
                     role="tabpanel"
                     aria-labelledby="pills-standard-tab"
-                    tabindex="0"
+                    tabIndex="0"
                   >
                     <div className="basic-hotel-features">
                       <div className="feature-media">
@@ -219,7 +219,7 @@ export default function KashmirHoneymoon() {
                     id="pills-premium"
                     role="tabpanel"
                     aria-labelledby="pills-premium-tab"
-                    tabindex="0"
+                    tabIndex="0"
                   >
                     <div className="basic-hotel-features">
                       <div className="feature-media">

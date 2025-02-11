@@ -13,11 +13,11 @@ export default function KashmirCorporate() {
 
       {/* <!-- =================== Hero area start here =============== --> */}
 
-      <section class="kashmir-corporate-hero kashmir-hero">
-        <div class="container">
-          <div class="row align-items-center pt-200">
-            <div class="col-md-12 about-contennt">
-              <h2 class="fs-64 text-white fw-bold">
+      <section className="kashmir-corporate-hero kashmir-hero">
+        <div className="container">
+          <div className="row align-items-center pt-200">
+            <div className="col-md-12 about-contennt">
+              <h2 className="fs-64 text-white fw-bold">
                 The heaven of earth, Kashmir
               </h2>
               <p>
@@ -25,7 +25,7 @@ export default function KashmirCorporate() {
                 Tourwatchout! Enjoy a hassle-free experience and create
                 unforgettable memories that last a lifetime.
               </p>
-              <button class="btn btn-primary mt-0" data-bs-toggle="modal"
+              <button className="btn btn-primary mt-0" data-bs-toggle="modal"
                     data-bs-target="#exampleModalCenter"
                     fdprocessedid="s6df8j">
                 Start Your Journey Now
@@ -38,15 +38,15 @@ export default function KashmirCorporate() {
 
       {/* =============================== Kashmir Corporate Package =========================== */}
 
-      <section class="destination-row ptb-50">
-        <div class="container">
-          <div class="parent-package w-100" id="package">
-            <div class="max-800">
-              <div class="content-section">
+      <section className="destination-row ptb-50">
+        <div className="container">
+          <div className="parent-package w-100" id="package">
+            <div className="max-800">
+              <div className="content-section">
                 <h1>Kashmir Corporate Package</h1>
-                <ul class="location-list">
-                  <li class="list-item-none">(7 Days)</li>
-                  <li class="locaton-items">
+                <ul className="location-list">
+                  <li className="list-item-none">(7 Days)</li>
+                  <li className="locaton-items">
                     <img
                       src="./assets/images/kashmir/icons/pin.png"
                       alt="Location Icon"
@@ -56,11 +56,11 @@ export default function KashmirCorporate() {
                 </ul>
               </div>
 
-              <div class="tour-package pt-80">
-                <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-                  <li class="nav-item first-item" role="presentation">
+              <div className="tour-package pt-80">
+                <ul className="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                  <li className="nav-item first-item" role="presentation">
                     <button
-                      class="nav-link active"
+                      className="nav-link active"
                       id="pills-basic-tab"
                       data-bs-toggle="pill"
                       data-bs-target="#pills-basic"
@@ -72,9 +72,9 @@ export default function KashmirCorporate() {
                       Basic
                     </button>
                   </li>
-                  <li class="nav-item" role="presentation">
+                  <li className="nav-item" role="presentation">
                     <button
-                      class="nav-link"
+                      className="nav-link"
                       id="pills-standard-tab"
                       data-bs-toggle="pill"
                       data-bs-target="#pills-standard"
@@ -86,9 +86,9 @@ export default function KashmirCorporate() {
                       Standard
                     </button>
                   </li>
-                  <li class="nav-item" role="presentation">
+                  <li className="nav-item" role="presentation">
                     <button
-                      class="nav-link"
+                      className="nav-link"
                       id="pills-premium-tab"
                       data-bs-toggle="pill"
                       data-bs-target="#pills-premium"
@@ -100,10 +100,10 @@ export default function KashmirCorporate() {
                       Premium
                     </button>
                   </li>
-                  <li class="nav-item" role="presentation">
+                  <li className="nav-item" role="presentation">
                     <Link
                       href="#traveler-reviews"
-                      class="rev-btn nav-link"
+                      className="rev-btn nav-link"
                       type="button"
                       id="review"
                     >
@@ -111,26 +111,26 @@ export default function KashmirCorporate() {
                     </Link>
                   </li>
                 </ul>
-                <div class="tab-content" id="pills-tabContent">
+                <div className="tab-content" id="pills-tabContent">
                   <div
-                    class="tab-pane fade show active"
+                    className="tab-pane fade show active"
                     id="pills-basic"
                     role="tabpanel"
                     aria-labelledby="pills-basic-tab"
-                    tabindex="0"
+                    tabIndex="0"
                   >
-                    <div class="basic-hotel-features">
-                      <div class="feature-media">
+                    <div className="basic-hotel-features">
+                      <div className="feature-media">
                         <video
                           id="videoPlayer"
                           src="./assets/images/kashmir/video.mp4"
                           muted
                           loop
-                          playsinline
+                          playsInline
                         ></video>
-                        <button id="playButton" class="play-btn"></button>
+                        <button id="playButton" className="play-btn"></button>
                       </div>
-                      <div class="feature-list">
+                      <div className="feature-list">
                         <ul>
                           <li>
                             <span>Hotel</span> : 3 Star
@@ -154,7 +154,7 @@ export default function KashmirCorporate() {
                             <span>DJ Nights </span> : Included{" "}
                           </li>
                         </ul>
-                        <button class="btn btn-primary1" data-bs-toggle="modal"
+                        <button className="btn btn-primary1" data-bs-toggle="modal"
                     data-bs-target="#exampleModalCenter"
                     fdprocessedid="s6df8j">
                           Request A Callback
@@ -163,24 +163,24 @@ export default function KashmirCorporate() {
                     </div>
                   </div>
                   <div
-                    class="tab-pane fade"
+                    className="tab-pane fade"
                     id="pills-standard"
                     role="tabpanel"
                     aria-labelledby="pills-standard-tab"
-                    tabindex="0"
+                    tabIndex="0"
                   >
-                    <div class="basic-hotel-features">
-                      <div class="feature-media">
+                    <div className="basic-hotel-features">
+                      <div className="feature-media">
                         <video
                           id="videoPlayer"
                           src="./assets/images/kashmir/video.mp4"
                           muted
                           loop
-                          playsinline
+                          playsInline
                         ></video>
-                        <button id="playButton" class="play-btn"></button>
+                        <button id="playButton" className="play-btn"></button>
                       </div>
-                      <div class="feature-list">
+                      <div className="feature-list">
                         <ul>
                           <li>
                             <span>Hotel</span> : 4 Star
@@ -204,7 +204,7 @@ export default function KashmirCorporate() {
                             <span>DJ Nights </span> : Included{" "}
                           </li>
                         </ul>
-                        <button class="btn btn-primary1"data-bs-toggle="modal"
+                        <button className="btn btn-primary1"data-bs-toggle="modal"
                     data-bs-target="#exampleModalCenter"
                     fdprocessedid="s6df8j">
                           Request A Callback
@@ -213,24 +213,24 @@ export default function KashmirCorporate() {
                     </div>
                   </div>
                   <div
-                    class="tab-pane fade"
+                    className="tab-pane fade"
                     id="pills-premium"
                     role="tabpanel"
                     aria-labelledby="pills-premium-tab"
-                    tabindex="0"
+                    tabIndex="0"
                   >
-                    <div class="basic-hotel-features">
-                      <div class="feature-media">
+                    <div className="basic-hotel-features">
+                      <div className="feature-media">
                         <video
                           id="videoPlayer"
                           src="./assets/images/kashmir/video.mp4"
                           muted
                           loop
-                          playsinline
+                          playsInline
                         ></video>
-                        <button id="playButton" class="play-btn"></button>
+                        <button id="playButton" className="play-btn"></button>
                       </div>
-                      <div class="feature-list">
+                      <div className="feature-list">
                         <ul>
                           <li>
                             <span>Hotel</span> : 5 Star
@@ -254,7 +254,7 @@ export default function KashmirCorporate() {
                             <span>DJ Nights </span> : Included{" "}
                           </li>
                         </ul>
-                        <button class="btn btn-primary1" data-bs-toggle="modal"
+                        <button className="btn btn-primary1" data-bs-toggle="modal"
                     data-bs-target="#exampleModalCenter"
                     fdprocessedid="s6df8j">
                           Request A Callback
@@ -265,13 +265,13 @@ export default function KashmirCorporate() {
                 </div>
               </div>
             </div>
-            <div class="max-400">
+            <div className="max-400">
               <h2>
                 {" "}
                 Table <br />
                 of contents
               </h2>
-              <div class="table-contents">
+              <div className="table-contents">
                 <Link href="#package">Kashmir Packages</Link>
 
                 <Link href="#headingOne">About Kashmir</Link>
@@ -292,11 +292,11 @@ export default function KashmirCorporate() {
 
       {/* ========================== Time Scheduled =========================== */}
 
-      <section class="time-schedule-section ">
-        <div class="container">
-          <div class="schedule-list">
-            <div class="schedule-items">
-              <p class="schedule-timing">
+      <section className="time-schedule-section ">
+        <div className="container">
+          <div className="schedule-list">
+            <div className="schedule-items">
+              <p className="schedule-timing">
                 <img
                   src="./assets/images/kashmir/icons/time.png"
                   alt="watch icon"
@@ -304,15 +304,15 @@ export default function KashmirCorporate() {
                 Day 1
               </p>
               <h3>Arrival and welcome dinner.</h3>
-              <p class="sche-details">
+              <p className="sche-details">
                 Arrive at your lodge and settle in before enjoying a delicious
                 welcome dinner. Savor local and international dishes while
                 meeting our fellow travelers and preparing for the adventure
                 ahead.
               </p>
             </div>
-            <div class="schedule-items">
-              <p class="schedule-timing">
+            <div className="schedule-items">
+              <p className="schedule-timing">
                 <img
                   src="./assets/images/kashmir/icons/time.png"
                   alt="watch icon"
@@ -320,7 +320,7 @@ export default function KashmirCorporate() {
                 Day 2-3
               </p>
               <h3>Game drives and wildlife exploration.</h3>
-              <p class="sche-details">
+              <p className="sche-details">
                 Embark on thrilling morning and afternoon game drives through
                 the stunning safari landscape. Spot the "Big Five" and other
                 incredible wildlife in their natural habitat, guided by
@@ -328,8 +328,8 @@ export default function KashmirCorporate() {
                 region’s flora and fauna.
               </p>
             </div>
-            <div class="schedule-items">
-              <p class="schedule-timing">
+            <div className="schedule-items">
+              <p className="schedule-timing">
                 <img
                   src="./assets/images/kashmir/icons/time.png"
                   alt="watch icon"
@@ -337,15 +337,15 @@ export default function KashmirCorporate() {
                 Day 4
               </p>
               <h3>Cultural visit to a local village.</h3>
-              <p class="sche-details">
+              <p className="sche-details">
                 Immerse yourself in the rich traditions of the region with a
                 visit to a local village. Engage with the community, learn about
                 their customs, and experience authentic cultural practices,
                 offering a unique perspective on local life.
               </p>
             </div>
-            <div class="schedule-items">
-              <p class="schedule-timing">
+            <div className="schedule-items">
+              <p className="schedule-timing">
                 <img
                   src="./assets/images/kashmir/icons/time.png"
                   alt="watch icon"
@@ -353,15 +353,15 @@ export default function KashmirCorporate() {
                 Day 5-6
               </p>
               <h3>Luxury camping under the stars.</h3>
-              <p class="sche-details">
+              <p className="sche-details">
                 Experience the ultimate in comfort with luxury camping,
                 combining the beauty of nature with premium amenities. Sleep
                 under the stars in a spacious tent, complete with plush bedding
                 and stunning views of the African night sky.
               </p>
             </div>
-            <div class="schedule-items">
-              <p class="schedule-timing">
+            <div className="schedule-items">
+              <p className="schedule-timing">
                 <img
                   src="./assets/images/kashmir/icons/time.png"
                   alt="watch icon"
@@ -369,7 +369,7 @@ export default function KashmirCorporate() {
                 Day 7
               </p>
               <h3>Departure with memories to last a lifetime.</h3>
-              <p class="sche-details">
+              <p className="sche-details">
                 As your safari adventure comes to a close, reflect on the
                 unforgettable experiences and stunning wildlife encounters.
                 Depart with cherished memories, a camera full of pictures, and a
@@ -377,9 +377,9 @@ export default function KashmirCorporate() {
               </p>
             </div>
           </div>
-          <div class="cancellation-policy-bx">
+          <div className="cancellation-policy-bx">
             <Link href="#">*Cancellation Policy</Link>
-            <button class="btn btn-primary1" data-bs-toggle="modal"
+            <button className="btn btn-primary1" data-bs-toggle="modal"
                     data-bs-target="#exampleModalCenter"
                     fdprocessedid="s6df8j">Request A Callback</button>
           </div>
@@ -390,16 +390,16 @@ export default function KashmirCorporate() {
 
       {/* ================================ Kashmir corporate =============================== */}
 
-      <section class="international-banner banner-sections  ptb-30">
-        <div class="container">
-          <div class="banner-section">
-            <div class="banner-content">
-              <p class="i-para">Strengthen collaborations with</p>
-              <h1 class="pacifico-regular">Executive Getaway</h1>
-              <p class="i-para1">And get exciting offers</p>
+      <section className="international-banner banner-sections  ptb-30">
+        <div className="container">
+          <div className="banner-section">
+            <div className="banner-content">
+              <p className="i-para">Strengthen collaborations with</p>
+              <h1 className="pacifico-regular">Executive Getaway</h1>
+              <p className="i-para1">And get exciting offers</p>
             </div>
-            <div class="con-ctabx">
-              <button class="btn btn-primary1" data-bs-toggle="modal"
+            <div className="con-ctabx">
+              <button className="btn btn-primary1" data-bs-toggle="modal"
                     data-bs-target="#exampleModalCenter"
                     fdprocessedid="s6df8j">Request A Callback</button>
             </div>
@@ -411,14 +411,14 @@ export default function KashmirCorporate() {
 
       {/* ============================== About Kashmir Start ====================== */}
 
-      <section class="about-kashmir">
-        <div class="container">
-          <div class="about-boxes pt-20">
-            <div class="accordion " id="accordionExample">
-              <div class="accordion-item">
-                <h2 class="accordion-header" id="headingOne">
+      <section className="about-kashmir">
+        <div className="container">
+          <div className="about-boxes pt-20">
+            <div className="accordion " id="accordionExample">
+              <div className="accordion-item">
+                <h2 className="accordion-header" id="headingOne">
                   <button
-                    class="accordion-button"
+                    className="accordion-button"
                     type="button"
                     data-bs-toggle="collapse"
                     data-bs-target="#collapseOne"
@@ -430,12 +430,12 @@ export default function KashmirCorporate() {
                 </h2>
                 <div
                   id="collapseOne"
-                  class="accordion-collapse collapse show"
+                  className="accordion-collapse collapse show"
                   aria-labelledby="headingOne"
                   data-bs-parent="#accordionExample"
                 >
-                  <div class="accordion-body">
-                    <div class="about-items">
+                  <div className="accordion-body">
+                    <div className="about-items">
                       <p>
                         Kashmir, often referred to as "Paradise on Earth," is a
                         breathtaking region nestled in the northern part of the
@@ -446,7 +446,7 @@ export default function KashmirCorporate() {
                         alike.
                       </p>
                     </div>
-                    <div class="about-items">
+                    <div className="about-items">
                       <h2>Natural Wonders</h2>
                       <p>
                         The landscape of Kashmir is a tapestry of vibrant colors
@@ -460,7 +460,7 @@ export default function KashmirCorporate() {
                       </p>
                     </div>
 
-                    <div class="about-items">
+                    <div className="about-items">
                       <h2>Cultural Richness</h2>
                       <p>
                         Kashmir is not just about its stunning landscapes; it is
@@ -474,7 +474,7 @@ export default function KashmirCorporate() {
                       </p>
                     </div>
 
-                    <div class="about-items">
+                    <div className="about-items">
                       <h2>Culinary Delights</h2>
                       <p>
                         Kashmiri cuisine is a feast for the senses, known for
@@ -487,7 +487,7 @@ export default function KashmirCorporate() {
                       </p>
                     </div>
 
-                    <div class="about-items">
+                    <div className="about-items">
                       <h2>Adventure and Activities</h2>
                       <p>
                         For adventure seekers, Kashmir offers a plethora of
@@ -500,7 +500,7 @@ export default function KashmirCorporate() {
                       </p>
                     </div>
 
-                    <div class="about-items">
+                    <div className="about-items">
                       <h2>Flora and Fauna</h2>
                       <p>
                         Kashmir is home to diverse flora and fauna, with several
@@ -512,7 +512,7 @@ export default function KashmirCorporate() {
                       </p>
                     </div>
 
-                    <div class="about-items">
+                    <div className="about-items">
                       <h2>A Year-Round Destination</h2>
                       <p>
                         Kashmir is a year-round destination, with each season
@@ -524,7 +524,7 @@ export default function KashmirCorporate() {
                       </p>
                     </div>
 
-                    <div class="about-items">
+                    <div className="about-items">
                       <p>
                         In summary, Kashmir is a captivating destination that
                         enchants visitors with its natural beauty, rich culture,
@@ -537,10 +537,10 @@ export default function KashmirCorporate() {
                   </div>
                 </div>
               </div>
-              <div class="accordion-item">
-                <h2 class="accordion-header" id="headingTwo">
+              <div className="accordion-item">
+                <h2 className="accordion-header" id="headingTwo">
                   <button
-                    class="accordion-button collapsed"
+                    className="accordion-button collapsed"
                     type="button"
                     data-bs-toggle="collapse"
                     data-bs-target="#collapseTwo"
@@ -552,12 +552,12 @@ export default function KashmirCorporate() {
                 </h2>
                 <div
                   id="collapseTwo"
-                  class="accordion-collapse collapse"
+                  className="accordion-collapse collapse"
                   aria-labelledby="headingTwo"
                   data-bs-parent="#accordionExample"
                 >
-                  <div class="accordion-body">
-                    <div class="about-items">
+                  <div className="accordion-body">
+                    <div className="about-items">
                       <p>
                         Kashmir, often referred to as "Paradise on Earth," is a
                         breathtaking region nestled in the northern part of the
@@ -568,7 +568,7 @@ export default function KashmirCorporate() {
                         alike.
                       </p>
                     </div>
-                    <div class="about-items">
+                    <div className="about-items">
                       <h2>Natural Wonders</h2>
                       <p>
                         The landscape of Kashmir is a tapestry of vibrant colors
@@ -582,7 +582,7 @@ export default function KashmirCorporate() {
                       </p>
                     </div>
 
-                    <div class="about-items">
+                    <div className="about-items">
                       <h2>Cultural Richness</h2>
                       <p>
                         Kashmir is not just about its stunning landscapes; it is
@@ -596,7 +596,7 @@ export default function KashmirCorporate() {
                       </p>
                     </div>
 
-                    <div class="about-items">
+                    <div className="about-items">
                       <h2>Culinary Delights</h2>
                       <p>
                         Kashmiri cuisine is a feast for the senses, known for
@@ -609,7 +609,7 @@ export default function KashmirCorporate() {
                       </p>
                     </div>
 
-                    <div class="about-items">
+                    <div className="about-items">
                       <h2>Adventure and Activities</h2>
                       <p>
                         For adventure seekers, Kashmir offers a plethora of
@@ -622,7 +622,7 @@ export default function KashmirCorporate() {
                       </p>
                     </div>
 
-                    <div class="about-items">
+                    <div className="about-items">
                       <h2>Flora and Fauna</h2>
                       <p>
                         Kashmir is home to diverse flora and fauna, with several
@@ -634,7 +634,7 @@ export default function KashmirCorporate() {
                       </p>
                     </div>
 
-                    <div class="about-items">
+                    <div className="about-items">
                       <h2>A Year-Round Destination</h2>
                       <p>
                         Kashmir is a year-round destination, with each season
@@ -646,7 +646,7 @@ export default function KashmirCorporate() {
                       </p>
                     </div>
 
-                    <div class="about-items">
+                    <div className="about-items">
                       <p>
                         In summary, Kashmir is a captivating destination that
                         enchants visitors with its natural beauty, rich culture,
@@ -659,10 +659,10 @@ export default function KashmirCorporate() {
                   </div>
                 </div>
               </div>
-              <div class="accordion-item">
-                <h2 class="accordion-header" id="headingThree">
+              <div className="accordion-item">
+                <h2 className="accordion-header" id="headingThree">
                   <button
-                    class="accordion-button collapsed"
+                    className="accordion-button collapsed"
                     type="button"
                     data-bs-toggle="collapse"
                     data-bs-target="#collapseThree"
@@ -674,12 +674,12 @@ export default function KashmirCorporate() {
                 </h2>
                 <div
                   id="collapseThree"
-                  class="accordion-collapse collapse"
+                  className="accordion-collapse collapse"
                   aria-labelledby="headingThree"
                   data-bs-parent="#accordionExample"
                 >
-                  <div class="accordion-body">
-                    <div class="about-items">
+                  <div className="accordion-body">
+                    <div className="about-items">
                       <p>
                         Kashmir, often referred to as "Paradise on Earth," is a
                         breathtaking region nestled in the northern part of the
@@ -690,7 +690,7 @@ export default function KashmirCorporate() {
                         alike.
                       </p>
                     </div>
-                    <div class="about-items">
+                    <div className="about-items">
                       <h2>Natural Wonders</h2>
                       <p>
                         The landscape of Kashmir is a tapestry of vibrant colors
@@ -704,7 +704,7 @@ export default function KashmirCorporate() {
                       </p>
                     </div>
 
-                    <div class="about-items">
+                    <div className="about-items">
                       <h2>Cultural Richness</h2>
                       <p>
                         Kashmir is not just about its stunning landscapes; it is
@@ -718,7 +718,7 @@ export default function KashmirCorporate() {
                       </p>
                     </div>
 
-                    <div class="about-items">
+                    <div className="about-items">
                       <h2>Culinary Delights</h2>
                       <p>
                         Kashmiri cuisine is a feast for the senses, known for
@@ -731,7 +731,7 @@ export default function KashmirCorporate() {
                       </p>
                     </div>
 
-                    <div class="about-items">
+                    <div className="about-items">
                       <h2>Adventure and Activities</h2>
                       <p>
                         For adventure seekers, Kashmir offers a plethora of
@@ -744,7 +744,7 @@ export default function KashmirCorporate() {
                       </p>
                     </div>
 
-                    <div class="about-items">
+                    <div className="about-items">
                       <h2>Flora and Fauna</h2>
                       <p>
                         Kashmir is home to diverse flora and fauna, with several
@@ -756,7 +756,7 @@ export default function KashmirCorporate() {
                       </p>
                     </div>
 
-                    <div class="about-items">
+                    <div className="about-items">
                       <h2>A Year-Round Destination</h2>
                       <p>
                         Kashmir is a year-round destination, with each season
@@ -768,7 +768,7 @@ export default function KashmirCorporate() {
                       </p>
                     </div>
 
-                    <div class="about-items">
+                    <div className="about-items">
                       <p>
                         In summary, Kashmir is a captivating destination that
                         enchants visitors with its natural beauty, rich culture,

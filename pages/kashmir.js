@@ -5,6 +5,7 @@ import Footer from "../components/footer/Footer";
 import TravelerReviews from "../components/kashmir/TravelerReviews";
 import Map from "../components/kashmir/Map";
 import Link from "next/link";
+import Popup from "../components/corporate/Popup";
 
 export default function kashmir() {
   return (
@@ -23,7 +24,9 @@ export default function kashmir() {
                 Tourwatchout! Enjoy a hassle-free experience and create
                 unforgettable memories that last a lifetime.
               </p>
-              <button className="btn btn-primary mt-0">
+              <button className="btn btn-primary mt-0" data-bs-toggle="modal"
+                    data-bs-target="#exampleModalCenter"
+                    fdprocessedid="s6df8j">
                 Start Your Journey Now
               </button>
             </div>
@@ -117,7 +120,7 @@ export default function kashmir() {
                     id="pills-basic"
                     role="tabpanel"
                     aria-labelledby="pills-basic-tab"
-                    tabindex="0"
+                    tabIndex="0"
                   >
                     <div className="basic-hotel-features">
                       <div className="feature-media">
@@ -126,7 +129,7 @@ export default function kashmir() {
                           src="./assets/images/kashmir/video.mp4"
                           muted
                           loop
-                          playsinline
+                          playsInline
                         ></video>
                         <button id="playButton" className="play-btn"></button>
                       </div>
@@ -154,7 +157,9 @@ export default function kashmir() {
                             <span>DJ Nights </span> : Included{" "}
                           </li>
                         </ul>
-                        <button className="btn btn-primary1">
+                        <button className="btn btn-primary1" data-bs-toggle="modal"
+                    data-bs-target="#exampleModalCenter"
+                    fdprocessedid="s6df8j">
                           Request A Callback
                         </button>
                       </div>
@@ -165,7 +170,7 @@ export default function kashmir() {
                     id="pills-standard"
                     role="tabpanel"
                     aria-labelledby="pills-standard-tab"
-                    tabindex="0"
+                    tabIndex="0"
                   >
                     <div className="basic-hotel-features">
                       <div className="feature-media">
@@ -174,7 +179,7 @@ export default function kashmir() {
                           src="./assets/images/kashmir/video.mp4"
                           muted
                           loop
-                          playsinline
+                          playsInline
                         ></video>
                         <button id="playButton" className="play-btn"></button>
                       </div>
@@ -202,7 +207,9 @@ export default function kashmir() {
                             <span>DJ Nights </span> : Included{" "}
                           </li>
                         </ul>
-                        <button className="btn btn-primary1">
+                        <button className="btn btn-primary1" data-bs-toggle="modal"
+                    data-bs-target="#exampleModalCenter"
+                    fdprocessedid="s6df8j">
                           Request A Callback
                         </button>
                       </div>
@@ -213,7 +220,7 @@ export default function kashmir() {
                     id="pills-premium"
                     role="tabpanel"
                     aria-labelledby="pills-premium-tab"
-                    tabindex="0"
+                    tabIndex="0"
                   >
                     <div className="basic-hotel-features">
                       <div className="feature-media">
@@ -222,7 +229,7 @@ export default function kashmir() {
                           src="./assets/images/kashmir/video.mp4"
                           muted
                           loop
-                          playsinline
+                          playsInline
                         ></video>
                         <button id="playButton" className="play-btn"></button>
                       </div>
@@ -250,7 +257,9 @@ export default function kashmir() {
                             <span>DJ Nights </span> : Included{" "}
                           </li>
                         </ul>
-                        <button className="btn btn-primary1">
+                        <button className="btn btn-primary1" data-bs-toggle="modal"
+                    data-bs-target="#exampleModalCenter"
+                    fdprocessedid="s6df8j">
                           Request A Callback
                         </button>
                       </div>
@@ -373,7 +382,9 @@ export default function kashmir() {
           </div>
           <div className="cancellation-policy-bx">
             <Link href="#">*Cancellation Policy</Link>
-            <button className="btn btn-primary1">Request A Callback</button>
+            <button className="btn btn-primary1" data-bs-toggle="modal"
+                    data-bs-target="#exampleModalCenter"
+                    fdprocessedid="s6df8j">Request A Callback</button>
           </div>
         </div>
       </section>
@@ -391,7 +402,9 @@ export default function kashmir() {
               <p>And get exciting offers</p>
             </div>
             <div className="con-ctabx">
-              <button className="btn btn-primary1">Start Journey Now</button>
+              <button className="btn btn-primary1" data-bs-toggle="modal"
+                    data-bs-target="#exampleModalCenter"
+                    fdprocessedid="s6df8j">Start Journey Now</button>
             </div>
           </div>
         </div>
@@ -782,6 +795,8 @@ export default function kashmir() {
       {/* ------------------------------ traveler Reviews Start------------------------------- */}
       <TravelerReviews />
       {/* ------------------------------ traveler Reviews Start------------------------------- */}
+
+      <Popup/>
 
       <Footer />
     </div>

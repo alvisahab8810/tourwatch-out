@@ -6,7 +6,7 @@ export default function Popup() {
       <div
         className="modal popup-modal fade "
         id="exampleModalCenter"
-        tabindex="-1"
+        tabIndex="-1"
         aria-labelledby="exampleModalCenterTitle"
         aria-modal="true"
         role="dialog"
@@ -31,13 +31,13 @@ export default function Popup() {
                 <p>Let us help you decide your Dream Vacation</p>
                 <form>
                   <div className="mb-3">
-                    <label for="name" className="form-label">
+                    <label htmlFor="name" className="form-label">
                       Your Name
                     </label>
                     <input type="name" className="form-control" />
                   </div>
                   <div className="mb-3">
-                    <label for="exampleInputPassword1" className="form-label">
+                    <label htmlFor="exampleInputPassword1" className="form-label">
                       Phone Number
                     </label>
                     <input type="password" className="form-control" />
