@@ -1,0 +1,383 @@
+@media(max-width:760px){
+	header{
+	  justify-content: space-between!important;
+	}
+	.desk-logo img{
+		width:150px;
+	}
+	.menus{
+		display: none;
+	}
+	.waypng img {
+
+    width: 100%;
+}
+.banner-section{
+	flex-wrap: wrap;
+}
+
+.hero-contennt h2 {
+
+    font-size: 20px;
+    line-height: 5px;
+}
+
+.fs-161 {
+    font-size: 77px;
+}
+
+.hero-contennt h1 {
+
+    font-size: 42px;
+    line-height: 55px;
+    margin-bottom: 22px;
+}
+
+.hero-contennt p {
+    font-size: 12px;
+    color: white;
+    margin-bottom: 44px;
+}
+
+.main-btn img {
+    margin-left: 3px;
+    width: 11px;
+}
+.main-btn {
+    background-color: #EE4C49 !important;
+    border-radius: 7px !important;
+    font-weight: bold;
+    color: white;
+    font-size: 12px;
+    padding: 13px 9px !important;
+}
+.form-row > div {
+    width: 100%;
+}
+.form-row {
+	flex-wrap: wrap;
+}
+
+.container-form {
+   
+    max-width: 300px;
+    padding: 20px;
+    margin: -109px auto 0 auto;
+}
+
+.form-row .form-control {
+    height: 45px;
+    border-radius: 8px !important;
+}
+.form-row > div .form-select {
+    height: 45px;
+    border-radius: 8px !important;
+}
+
+.container-form button {
+    background-color: #EE4C49;
+    color: #fff;
+    padding: 7px 32px;
+    border: none;
+    font-weight: normal;
+    font-size: 14px;
+    border-radius: 7px;
+    height: 45px;
+    width: 100%;
+    margin-bottom: 20px;
+}
+section.hero-section header {
+    padding-top: 30px !important;
+    padding-bottom: 30px !important;
+}
+.hero-section {
+ 
+    height: 86vh;
+    padding-bottom: 0px;
+}
+.how-we-work h1 {
+    font-size: 32px;
+    text-align: center;
+}
+.ptb-80 {
+    padding-top: 40px;
+    padding-bottom: 40px;
+}
+    .how-we-work .heading {
+        font-size: 12px;
+        margin: auto;
+        height: 25px;
+        margin-bottom: 20px;
+    }
+.how-we-work .para1 {
+    font-size: 14px;
+    margin-bottom: 20px;
+    margin-top: 20px;
+    color: #667085;
+    text-align: center;
+}
+    .main-btn1 {
+        margin: 20px auto auto auto;
+        line-height: 53px;
+    }
+.right-list {
+    padding-top: 20px;
+}
+.right-content-bx h2 {
+    font-size: 23px;
+}
+.right-content-bx p {
+    font-size: 12px;
+}
+.numbers > div {
+    height: 45px;
+    width: 45px;
+    font-size: 22px;
+  
+}
+.right-list:before {
+    border: 1px dashed #66708580;
+    left: 22px;
+    height: 73%;
+}
+.desktop-none{
+	display: block!important;
+}
+.mobile-none{
+	display: none;
+}
+
+.heading {
+    font-size: 32px;
+    line-height: unset;
+   
+}
+
+p.testi-para {
+    font-size: 14px;
+}
+.quote-bx {
+    right: -1px;
+    top: -10px;
+}
+
+.r-name h3 {
+    font-size: 18px;
+}
+.r-name p {
+    font-size: 14px;
+
+}
+.feature-icon img {
+    width: 45px;
+}
+
+.feature-icon {
+    margin-bottom: 10px;
+}
+.feature-text {
+    font-size: 8px;
+}
+    .rtcu-section .row > div {
+        width: calc(50% - 5px) !important;
+        padding: 5px;
+    }
+.feature-title {
+    font-size: 14px;
+  
+}
+.feature-card {
+    padding: 15px;
+}
+.feature-icon {
+	font-size: unset;
+}
+h2.subtitle {
+    font-size: 12px;
+    margin-bottom: 5px;
+}
+
+.para {
+    font-size: 18px;
+    margin-bottom: 0;
+}
+
+.about-us-section .right-bx {
+    padding: 15px;
+}
+.about-us-section .mySwiper2 {
+    padding-top: 30px !important;
+}
+.shape {
+    right: 14px;
+}
+/*
+.destination-section .swiper{
+    overflow: unset;
+}
+*/
+.banner-section {
+
+    border-radius: 32px;
+    height: 600px;
+}
+.badge {
+    font-size: 18px;
+    padding: 12px 32px;
+    font-weight: 400;
+    border-radius: 50px;
+}
+.banner-content h1 {
+   
+    line-height: 1;
+}
+.banner-section .ms-auto {
+    margin: auto;
+}
+
+.content-section h1 {
+    font-size: 27px;
+        padding-bottom: 20px;
+
+}
+
+.helping-sections {
+    padding-top: 50px !important;
+}
+
+.content-section p {
+    font-size: 14px;
+    color: #7F7F7F;
+    text-align: center;
+    margin-bottom: 20px!important;
+}
+.featur div span {
+    font-size: 28px;
+}
+    .content-section p {
+        font-size: 13px;
+        color: #7F7F7F;
+        text-align: center;
+        margin-bottom: 20px !important;
+    }
+
+    .content-section .col-6 div p{
+        font-size: 13px;
+        color:#0A1F30!important;
+        text-align: left;
+    }
+    .waypng{
+        display: none;
+    }
+    .faq-sections .pt-80 {
+    padding-top: 20px !important;
+}
+.accordion-bx .accordion-button {
+    font-size: 19px;
+}
+
+.accordion-bx .accordion-body {
+
+    font-size: 16px;
+    
+}
+.cta-section1 .badge-custom {
+    font-size: 10px;
+    margin-bottom: 0px;
+    height: 21px;
+    width: 113px;
+    line-height: 13px;
+}
+
+.cta-section1 .sub-heading {
+    font-size: 12px;
+    margin-top: 15px;
+}
+.cta-section1 .cta-bx {
+
+    padding: 30px;
+}
+.cta-section1 .btn-custom {
+    font-size: 12px;
+    height: 34px;
+    width: 144px;
+}
+
+.cta-section1 .main-heading {
+    font-size: 34px;
+
+}
+.cta-section1 .cta-bx{
+    height: auto;
+}
+.footer{
+    padding:unset;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+.footer .logo {
+    margin-bottom: 0px;
+}
+.footer .pl-100 {
+    padding-left: 15px;
+    padding-top: 15px;
+}
+
+.footer .pl-50 {
+    padding-left: 15px;
+
+}
+    .mob-canvas {
+        width: 70%;
+    }
+        .mob-canvas .offcanvas-header {
+        background-color: #ffffff;
+        border-bottom: 1px solid #ddd;
+    }
+        .mob-canvas .p-logo {
+        margin-bottom: 0 !important;
+    }
+
+    .desk-logo img {
+        width: 150px;
+        filter: brightness(0);
+    }
+        .mob-canvas .btn-close {
+        /* filter: brightness(0) invert(1); */
+        padding: 9px;
+        transform: scale(.9);
+    }
+        .mob-menus ul {
+        display: block;
+        padding: 0;
+    }
+        .mob-menus ul li a {
+        padding-left: 0;
+        color: #373737;
+        font-weight: bold;
+        font-size: 13px;
+    }
+
+        .mob-social-mediabx ul {
+        display: flex;
+        justify-content: space-evenly;
+        list-style: none;
+        padding: 0;
+        position: absolute;
+        bottom: -21px;
+        right: 0;
+        left: 0;
+        background: black;
+        height: 58px;
+        align-items: center;
+    }
+
+    .mob-social-mediabx ul li i {
+        font-size: 16px;
+        color: white;
+        border: 1px solid #ddd;
+        border-radius: 50px;
+        padding: 9px;
+        transition: .7s;
+    }
+}
