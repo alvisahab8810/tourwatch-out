@@ -1,5 +1,5 @@
 import React from "react";
-
+import Link from "next/link";
 export default function NatInt() {
   return (
     <>
@@ -47,7 +47,7 @@ export default function NatInt() {
               {/* <!-- ------- first-row --> */}
               <div className="national-list-bx">
                 <div className="national-features">
-                  <a href="#">
+                  <Link href="#">
                     <div className="desti-img">
                       {" "}
                       <img
@@ -100,10 +100,10 @@ export default function NatInt() {
                         </div>
                       </div>
                     </div>
-                  </a>
+                  </Link>
                 </div>
                 <div className="national-features">
-                  <a href="#">
+                  <Link href="#">
                     <div className="desti-img">
                       {" "}
                       <img
@@ -156,10 +156,10 @@ export default function NatInt() {
                         </div>
                       </div>
                     </div>
-                  </a>
+                 </Link>
                 </div>
                 <div className="national-features">
-                  <a href="/kashmir-corporate">
+                  <Link href="/kashmir-corporate">
                     <div className="desti-img">
                       {" "}
                       <img
@@ -212,10 +212,10 @@ export default function NatInt() {
                         </div>
                       </div>
                     </div>
-                  </a>
+                  </Link>
                 </div>
                 <div className="national-features mt-2">
-                  <a href="#">
+                  <Link href="#">
                     <div className="desti-img">
                       {" "}
                       <img
@@ -269,10 +269,10 @@ export default function NatInt() {
                         </div>
                       </div>
                     </div>
-                  </a>
+                  </Link>
                 </div>
                 <div className="national-features mt-2">
-                  <a href="#">
+                  <Link href="#">
                     <div className="desti-img">
                       {" "}
                       <img
@@ -325,10 +325,10 @@ export default function NatInt() {
                         </div>
                       </div>
                     </div>
-                  </a>
+                  </Link>
                 </div>
                 <div className="national-features mt-2">
-                  <a href="#">
+                  <Link href="#">
                     <div className="desti-img">
                       {" "}
                       <img
@@ -381,7 +381,7 @@ export default function NatInt() {
                         </div>
                       </div>
                     </div>
-                  </a>
+                  </Link>
                 </div>
               </div>
 
@@ -409,7 +409,7 @@ export default function NatInt() {
               <section className="destination-row ">
                 <div className="national-list-bx pb-80">
                   <div className="national-features">
-                    <a href="/kashmir-corporate">
+                    <Link href="/kashmir-corporate">
                       <div className="desti-img">
                         {" "}
                         <img
@@ -462,10 +462,10 @@ export default function NatInt() {
                           </div>
                         </div>
                       </div>
-                    </a>
+                    </Link>
                   </div>
                   <div className="national-features">
-                    <a href="#">
+                    <Link href="#">
                       <div className="desti-img">
                         {" "}
                         <img
@@ -519,10 +519,10 @@ export default function NatInt() {
                           </div>
                         </div>
                       </div>
-                    </a>
+                    </Link>
                   </div>
                   <div className="national-features">
-                    <a href="#">
+                    <Link href="#">
                       <div className="desti-img">
                         {" "}
                         <img
@@ -575,10 +575,10 @@ export default function NatInt() {
                           </div>
                         </div>
                       </div>
-                    </a>
+                    </Link>
                   </div>
                   <div className="national-features mt-2">
-                    <a href="#">
+                    <Link href="#">
                       <div className="desti-img">
                         {" "}
                         <img
@@ -632,10 +632,10 @@ export default function NatInt() {
                           </div>
                         </div>
                       </div>
-                    </a>
+                    </Link>
                   </div>
                   <div className="national-features mt-2">
-                    <a href="/kashmir-corporate">
+                    <Link href="/kashmir-corporate">
                       <div className="desti-img">
                         {" "}
                         <img
@@ -688,10 +688,10 @@ export default function NatInt() {
                           </div>
                         </div>
                       </div>
-                    </a>
+                    </Link>
                   </div>
                   <div className="national-features mt-2">
-                    <a href="#">
+                    <Link href="#">
                       <div className="desti-img">
                         {" "}
                         <img
@@ -745,7 +745,7 @@ export default function NatInt() {
                           </div>
                         </div>
                       </div>
-                    </a>
+                   </Link>
                   </div>
                 </div>
               </section>
@@ -760,7 +760,7 @@ export default function NatInt() {
               {/* <!-- ------- first-row --> */}
               <div className="national-list-bx">
                 <div className="national-features">
-                  <a href="#">
+                  <Link href="#">
                     <div className="desti-img">
                       {" "}
                       <img
@@ -813,10 +813,10 @@ export default function NatInt() {
                         </div>
                       </div>
                     </div>
-                  </a>
+                  </Link>
                 </div>
                 <div className="national-features">
-                  <a href="/kashmir-corporate">
+                  <Link href="/kashmir-corporate">
                     <div className="desti-img">
                       {" "}
                       <img
@@ -869,10 +869,10 @@ export default function NatInt() {
                         </div>
                       </div>
                     </div>
-                  </a>
+                 </Link>
                 </div>
                 <div className="national-features">
-                  <a href="#">
+                  <Link href="#">
                     <div className="desti-img">
                       {" "}
                       <img
@@ -926,11 +926,11 @@ export default function NatInt() {
                         </div>
                       </div>
                     </div>
-                  </a>
+                 </Link>
                 </div>
 
                 <div className="national-features mt-2">
-                  <a href="/kashmir-corporate">
+                  <Link href="/kashmir-corporate">
                     <div className="desti-img">
                       {" "}
                       <img
@@ -983,10 +983,10 @@ export default function NatInt() {
                         </div>
                       </div>
                     </div>
-                  </a>
+                 </Link>
                 </div>
                 <div className="national-features mt-2">
-                  <a href="#">
+                  <Link href="#">
                     <div className="desti-img">
                       {" "}
                       <img
@@ -1039,10 +1039,10 @@ export default function NatInt() {
                         </div>
                       </div>
                     </div>
-                  </a>
+                  </Link>
                 </div>
                 <div className="national-features mt-2">
-                  <a href="/kashmir-corporate">
+                  <Link href="/kashmir-corporate">
                     <div className="desti-img">
                       {" "}
                       <img
@@ -1095,7 +1095,7 @@ export default function NatInt() {
                         </div>
                       </div>
                     </div>
-                  </a>
+                 </Link>
                 </div>
               </div>
 
@@ -1121,7 +1121,7 @@ export default function NatInt() {
               <section className="destination-row ">
                 <div className="national-list-bx pb-80">
                   <div className="national-features">
-                    <a href="#">
+                    <Link href="#">
                       <div className="desti-img">
                         {" "}
                         <img
@@ -1175,11 +1175,11 @@ export default function NatInt() {
                           </div>
                         </div>
                       </div>
-                    </a>
+                    </Link>
                   </div>
 
                   <div className="national-features">
-                    <a href="/kashmir-corporate">
+                    <Link href="/kashmir-corporate">
                       <div className="desti-img">
                         {" "}
                         <img
@@ -1232,11 +1232,11 @@ export default function NatInt() {
                           </div>
                         </div>
                       </div>
-                    </a>
+                   </Link>
                   </div>
 
                   <div className="national-features">
-                    <a href="#">
+                    <Link href="#">
                       <div className="desti-img">
                         {" "}
                         <img
@@ -1289,11 +1289,11 @@ export default function NatInt() {
                           </div>
                         </div>
                       </div>
-                    </a>
+                   </Link>
                   </div>
 
                   <div className="national-features mt-2">
-                    <a href="/kashmir-corporate">
+                    <Link href="/kashmir-corporate">
                       <div className="desti-img">
                         {" "}
                         <img
@@ -1346,11 +1346,11 @@ export default function NatInt() {
                           </div>
                         </div>
                       </div>
-                    </a>
+                   </Link>
                   </div>
 
                   <div className="national-features mt-2">
-                    <a href="#">
+                    <Link href="#">
                       <div className="desti-img">
                         {" "}
                         <img
@@ -1404,11 +1404,11 @@ export default function NatInt() {
                           </div>
                         </div>
                       </div>
-                    </a>
+                    </Link>
                   </div>
 
                   <div className="national-features mt-2">
-                    <a href="/kashmir-corporate">
+                    <Link href="/kashmir-corporate">
                       {/*  */}
                       <div className="desti-img">
                         {" "}
@@ -1462,7 +1462,7 @@ export default function NatInt() {
                           </div>
                         </div>
                       </div>
-                    </a>
+                   </Link>
                   </div>
                 </div>
               </section>

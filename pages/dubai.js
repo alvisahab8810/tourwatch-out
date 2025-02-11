@@ -3,6 +3,7 @@ import Topbar from "../components/header/Header";
 import Footer from "../components/footer/Footer";
 import Map from "../components/kashmir/Map";
 import TravelerReviews from "../components/kashmir/TravelerReviews";
+import Link from "next/link";
 
 export default function dubai() {
   return (
@@ -97,14 +98,14 @@ export default function dubai() {
                     </button>
                   </li>
                   <li class="nav-item" role="presentation">
-                    <a
+                    <Link
                       href="#traveler-reviews"
                       class="rev-btn nav-link"
                       type="button"
                       id="review"
                     >
                       Reviews
-                    </a>
+                    </Link>
                   </li>
                 </ul>
                 <div class="tab-content" id="pills-tabContent">
@@ -262,17 +263,17 @@ export default function dubai() {
                 of contents
               </h2>
               <div class="table-contents">
-                <a href="#package">Dubai Packages</a>
+                <Link href="#package">Dubai Packages</Link>
 
-                <a href="#headingOne">About Dubai </a>
+                <Link href="#headingOne">About Dubai </Link>
 
-                <a href="#headingTwo">Dubai Bucket List</a>
+                <Link href="#headingTwo">Dubai Bucket List</Link>
 
-                <a href="#headingThree">Dubai FAQ’s </a>
+                <Link href="#headingThree">Dubai FAQ’s </Link>
 
-                <a href="#location">Dubai Location</a>
+                <Link href="#location">Dubai Location</Link>
 
-                <a href="#traveler-reviews">Trip Reviews</a>
+                <Link href="#traveler-reviews">Trip Reviews</Link>
               </div>
             </div>
           </div>
@@ -367,7 +368,7 @@ export default function dubai() {
             </div>
           </div>
           <div class="cancellation-policy-bx">
-            <a href="#">*Cancellation Policy</a>
+            <Link href="#">*Cancellation Policy</Link>
             <button class="btn btn-primary1">Request A Callback</button>
           </div>
         </div>

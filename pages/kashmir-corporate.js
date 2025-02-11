@@ -4,6 +4,7 @@ import Footer from "../components/footer/Footer";
 import Map from "../components/kashmir/Map";
 import TravelerReviews from "../components/kashmir/TravelerReviews";
 import Popup from "../components/corporate/Popup";
+import Link from "next/link";
 
 export default function KashmirCorporate() {
   return (
@@ -100,14 +101,14 @@ export default function KashmirCorporate() {
                     </button>
                   </li>
                   <li class="nav-item" role="presentation">
-                    <a
+                    <Link
                       href="#traveler-reviews"
                       class="rev-btn nav-link"
                       type="button"
                       id="review"
                     >
                       Reviews
-                    </a>
+                    </Link>
                   </li>
                 </ul>
                 <div class="tab-content" id="pills-tabContent">
@@ -271,17 +272,17 @@ export default function KashmirCorporate() {
                 of contents
               </h2>
               <div class="table-contents">
-                <a href="#package">Kashmir Packages</a>
+                <Link href="#package">Kashmir Packages</Link>
 
-                <a href="#headingOne">About Kashmir</a>
+                <Link href="#headingOne">About Kashmir</Link>
 
-                <a href="#headingTwo">Kashmir Bucket List</a>
+                <Link href="#headingTwo">Kashmir Bucket List</Link>
 
-                <a href="#headingThree">Kashmir FAQ’s </a>
+                <Link href="#headingThree">Kashmir FAQ’s </Link>
 
-                <a href="#location">Kashmir Location</a>
+                <Link href="#location">Kashmir Location</Link>
 
-                <a href="#traveler-reviews">Trip Reviews</a>
+                <Link href="#traveler-reviews">Trip Reviews</Link>
               </div>
             </div>
           </div>
@@ -377,7 +378,7 @@ export default function KashmirCorporate() {
             </div>
           </div>
           <div class="cancellation-policy-bx">
-            <a href="#">*Cancellation Policy</a>
+            <Link href="#">*Cancellation Policy</Link>
             <button class="btn btn-primary1" data-bs-toggle="modal"
                     data-bs-target="#exampleModalCenter"
                     fdprocessedid="s6df8j">Request A Callback</button>

@@ -1,5 +1,5 @@
 import React from "react";
-
+import Link from "next/link";
 export default function Reviews() {
   return (
     <>
@@ -180,64 +180,64 @@ export default function Reviews() {
             <nav aria-label="Page navigation example">
               <ul className="pagination">
                 <li className="page-item">
-                  <a aria-label="Previous" className="page-link" href="#">
+                  <Link aria-label="Previous" className="page-link" href="#">
                     <span aria-hidden="true">«</span>
-                  </a>
+                  </Link>
                 </li>
                 <li className="page-item">
-                  <a className="page-link pagi-active" href="#">
+                  <Link className="page-link pagi-active" href="#">
                     1
-                  </a>
+                  </Link>
                 </li>
                 <li className="page-item">
-                  <a className="page-link" href="#">
+                  <Link className="page-link" href="#">
                     2
-                  </a>
+                  </Link>
                 </li>
                 <li className="page-item">
-                  <a className="page-link" href="#">
+                  <Link className="page-link" href="#">
                     3
-                  </a>
+                  </Link>
                 </li>
                 <li className="page-item">
-                  <a className="page-link" href="#">
+                  <Link className="page-link" href="#">
                     4
-                  </a>
+                  </Link>
                 </li>
                 <li className="page-item">
-                  <a className="page-link" href="#">
+                  <Link className="page-link" href="#">
                     5
-                  </a>
+                  </Link>
                 </li>
                 <li className="page-item">
-                  <a className="page-link" href="#">
+                  <Link className="page-link" href="#">
                     6
-                  </a>
+                  </Link>
                 </li>
                 <li className="page-item">
-                  <a className="page-link" href="#">
+                  <Link className="page-link" href="#">
                     7
-                  </a>
+                  </Link>
                 </li>
                 <li className="page-item">
-                  <a className="page-link" href="#">
+                  <Link className="page-link" href="#">
                     8
-                  </a>
+                  </Link>
                 </li>
                 <li className="page-item">
-                  <a className="page-link" href="#">
+                  <Link className="page-link" href="#">
                     9
-                  </a>
+                  </Link>
                 </li>
                 <li className="page-item">
-                  <a className="page-link" href="#">
+                  <Link className="page-link" href="#">
                     10
-                  </a>
+                  </Link>
                 </li>
                 <li className="page-item">
-                  <a aria-label="Next" className="page-link" href="#">
+                  <Link aria-label="Next" className="page-link" href="#">
                     <span aria-hidden="true">»</span>
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </nav>

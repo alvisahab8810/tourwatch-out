@@ -1,4 +1,5 @@
 import React from 'react'
+import Link from 'next/link'
 
 export default function ContactForm() {
   return (
@@ -37,9 +38,9 @@ export default function ContactForm() {
                 <div className="social-icons">
                     <h5>Follow Us on Social Media</h5>
                     <div className="social-icons1">
-                        <a href="#"><i className="ri-facebook-fill"></i></a>
-                        <a href="#"><i className="ri-instagram-line"></i></a>
-                        <a href="#"><i className="ri-mail-line"></i></a>
+                        <Link href="#"><i className="ri-facebook-fill"></i></Link>
+                        <Link href="#"><i className="ri-instagram-line"></i></Link>
+                        <Link href="#"><i className="ri-mail-line"></i></Link>
                     </div>
                 </div>
             </div>

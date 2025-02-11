@@ -4,6 +4,7 @@ import Footer from "../components/footer/Footer";
 import Map from "../components/kashmir/Map";
 import TravelerReviews from "../components/kashmir/TravelerReviews";
 import Popup from "../components/corporate/Popup";
+import Link from "next/link";
 
 export default function KashmirHoneymoon() {
   return (
@@ -102,14 +103,14 @@ export default function KashmirHoneymoon() {
                     </button>
                   </li>
                   <li className="nav-item" role="presentation">
-                    <a
+                    <Link
                       href="#traveler-reviews"
                       className="rev-btn nav-link"
                       type="button"
                       id="review"
                     >
                       Reviews
-                    </a>
+                    </Link>
                   </li>
                 </ul>
                 <div className="tab-content" id="pills-tabContent">
@@ -273,17 +274,17 @@ export default function KashmirHoneymoon() {
                 of contents
               </h2>
               <div className="table-contents">
-                <a href="#package">Kashmir Packages</a>
+                <Link href="#package">Kashmir Packages</Link>
 
-                <a href="#headingOne">About Kashmir</a>
+                <Link href="#headingOne">About Kashmir</Link>
 
-                <a href="#headingTwo">Kashmir Bucket List</a>
+                <Link href="#headingTwo">Kashmir Bucket List</Link>
 
-                <a href="#headingThree">Kashmir FAQ’s </a>
+                <Link href="#headingThree">Kashmir FAQ’s </Link>
 
-                <a href="#location">Kashmir Location</a>
+                <Link href="#location">Kashmir Location</Link>
 
-                <a href="#traveler-reviews">Trip Reviews</a>
+                <Link href="#traveler-reviews">Trip Reviews</Link>
               </div>
             </div>
           </div>
@@ -380,7 +381,7 @@ export default function KashmirHoneymoon() {
             </div>
           </div>
           <div className="cancellation-policy-bx">
-            <a href="#">*Cancellation Policy</a>
+            <Link href="#">*Cancellation Policy</Link>
             <button className="btn btn-primary1" data-bs-toggle="modal"
                     data-bs-target="#exampleModalCenter"
                     fdprocessedid="s6df8j">Request A Callback</button>

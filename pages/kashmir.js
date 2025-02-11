@@ -4,6 +4,7 @@ import Topbar from "../components/header/Header";
 import Footer from "../components/footer/Footer";
 import TravelerReviews from "../components/kashmir/TravelerReviews";
 import Map from "../components/kashmir/Map";
+import Link from "next/link";
 
 export default function kashmir() {
   return (
@@ -100,14 +101,14 @@ export default function kashmir() {
                     </button>
                   </li>
                   <li className="nav-item" role="presentation">
-                    <a
+                    <Link
                       href="#traveler-reviews"
                       className="rev-btn nav-link"
                       type="button"
                       id="review"
                     >
                       Reviews
-                    </a>
+                    </Link>
                   </li>
                 </ul>
                 <div className="tab-content" id="pills-tabContent">
@@ -265,17 +266,17 @@ export default function kashmir() {
                 of contents
               </h2>
               <div className="table-contents">
-                <a href="#package">Kashmir Packages</a>
+                <Link href="#package">Kashmir Packages</Link>
 
-                <a href="#headingOne">About Kashmir</a>
+                <Link href="#headingOne">About Kashmir</Link>
 
-                <a href="#headingTwo">Kashmir Bucket List</a>
+                <Link href="#headingTwo">Kashmir Bucket List</Link>
 
-                <a href="#headingThree">Kashmir FAQ’s </a>
+                <Link href="#headingThree">Kashmir FAQ’s </Link>
 
-                <a href="#location">Kashmir Location</a>
+                <Link href="#location">Kashmir Location</Link>
 
-                <a href="#traveler-reviews">Trip Reviews</a>
+                <Link href="#traveler-reviews">Trip Reviews</Link>
               </div>
             </div>
           </div>
@@ -371,7 +372,7 @@ export default function kashmir() {
             </div>
           </div>
           <div className="cancellation-policy-bx">
-            <a href="#">*Cancellation Policy</a>
+            <Link href="#">*Cancellation Policy</Link>
             <button className="btn btn-primary1">Request A Callback</button>
           </div>
         </div>

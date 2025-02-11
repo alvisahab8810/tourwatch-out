@@ -1,5 +1,5 @@
 import React from "react";
-
+import Link from "next/link";
 export default function Map() {
   return (
     <>
@@ -7,9 +7,9 @@ export default function Map() {
         <div className="container">
           <h1 className="heading">Visualize Your Adventure</h1>
           <div className="map-box">
-            <a href="#">
+            <Link href="#">
               <img src="./assets/images/kashmir/map.png" alt="map image" />
-            </a>
+            </Link>
           </div>
         </div>
       </section>

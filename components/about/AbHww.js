@@ -1,4 +1,5 @@
 import React from 'react'
+import Link from 'next/link'
 
 export default function AbHww() {
   return (
@@ -10,9 +11,9 @@ export default function AbHww() {
                        <p className="heading">How we work</p>
                        <h1>Book Your trip easily with just a few steps</h1>
                        <p className="para1">The solution for those of you who don't want the hassle of ordering travel tickets, with just 3 steps you can travel anywhere you want.</p>
-                       <a href="#" className="main-btn1" data-bs-toggle="modal"
+                       <Link href="#" className="main-btn1" data-bs-toggle="modal"
                     data-bs-target="#exampleModalCenter"
-                    fdprocessedid="s6df8j">Book now</a>
+                    fdprocessedid="s6df8j">Book now</Link>
                 </div>
 
                 <div className="col-md-6">
@@ -55,9 +56,9 @@ export default function AbHww() {
                             </div>
                         </div>
 
-                        <a href="#" className="main-btn1 desktop-none" data-bs-toggle="modal"
+                        <Link href="#" className="main-btn1 desktop-none" data-bs-toggle="modal"
                     data-bs-target="#exampleModalCenter"
-                    fdprocessedid="s6df8j">Book now</a>
+                    fdprocessedid="s6df8j">Book now</Link>
 
 
                     </div>

@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 
 export default function NatInt() {
   return (
@@ -47,7 +48,7 @@ export default function NatInt() {
               {/* <!-- ------- first-row --> */}
               <div className="national-list-bx">
                 <div className="national-features p-relative">
-                  <a href="#">
+                  <Link href="#">
                     <div className="batch-info">
                       <p>Starting From*</p>
                       <h4>
@@ -106,10 +107,10 @@ export default function NatInt() {
                         </div>
                       </div>
                     </div>
-                  </a>
+                  </Link>
                 </div>
                 <div className="national-features p-relative">
-                  <a href="#">
+                  <Link href="#">
                     <div className="batch-info">
                       <p>Starting From*</p>
                       <h4>
@@ -168,10 +169,10 @@ export default function NatInt() {
                         </div>
                       </div>
                     </div>
-                  </a>
+                  </Link>
                 </div>
                 <div className="national-features p-relative">
-                  <a href="/kashmir-honeymoon">
+                  <Link href="/kashmir-honeymoon">
                     <div className="batch-info">
                       <p>Starting From*</p>
                       <h4>
@@ -230,11 +231,11 @@ export default function NatInt() {
                         </div>
                       </div>
                     </div>
-                  </a>
+                  </Link>
                 </div>
 
                 <div className="national-features p-relative mt-2">
-                  <a href="#">
+                  <Link href="#">
                     <div className="batch-info">
                       <p>Starting From*</p>
                       <h4>
@@ -293,10 +294,10 @@ export default function NatInt() {
                         </div>
                       </div>
                     </div>
-                  </a>
+                  </Link>
                 </div>
                 <div className="national-features p-relative mt-2">
-                  <a href="#">
+                  <Link href="#">
                     <div className="batch-info">
                       <p>Starting From*</p>
                       <h4>
@@ -355,10 +356,10 @@ export default function NatInt() {
                         </div>
                       </div>
                     </div>
-                  </a>
+                  </Link>
                 </div>
                 <div className="national-features p-relative mt-2">
-                  <a href="#">
+                  <Link href="#">
                     <div className="batch-info">
                       <p>Starting From*</p>
                       <h4>
@@ -417,7 +418,7 @@ export default function NatInt() {
                         </div>
                       </div>
                     </div>
-                  </a>
+                  </Link>
                 </div>
               </div>
 
@@ -444,7 +445,7 @@ export default function NatInt() {
               <section className="destination-row ">
                 <div className="national-list-bx pb-80">
                   <div className="national-features p-relative">
-                    <a href="#">
+                    <Link href="#">
                       <div className="batch-info">
                         <p>Starting From*</p>
                         <h4>
@@ -503,10 +504,10 @@ export default function NatInt() {
                           </div>
                         </div>
                       </div>
-                    </a>
+                    </Link>
                   </div>
                   <div className="national-features p-relative">
-                    <a href="#">
+                    <Link href="#">
                       <div className="batch-info">
                         <p>Starting From*</p>
                         <h4>
@@ -565,10 +566,10 @@ export default function NatInt() {
                           </div>
                         </div>
                       </div>
-                    </a>
+                    </Link>
                   </div>
                   <div className="national-features p-relative">
-                    <a href="/kashmir-honeymoon">
+                    <Link href="/kashmir-honeymoon">
                       <div className="batch-info">
                         <p>Starting From*</p>
                         <h4>
@@ -627,11 +628,11 @@ export default function NatInt() {
                           </div>
                         </div>
                       </div>
-                    </a>
+                    </Link>
                   </div>
 
                   <div className="national-features p-relative mt-2">
-                    <a href="#">
+                    <Link href="#">
                       <div className="batch-info">
                         <p>Starting From*</p>
                         <h4>
@@ -690,10 +691,10 @@ export default function NatInt() {
                           </div>
                         </div>
                       </div>
-                    </a>
+                    </Link>
                   </div>
                   <div className="national-features p-relative mt-2">
-                    <a href="#">
+                    <Link href="#">
                       <div className="batch-info">
                         <p>Starting From*</p>
                         <h4>
@@ -752,10 +753,10 @@ export default function NatInt() {
                           </div>
                         </div>
                       </div>
-                    </a>
+                    </Link>
                   </div>
                   <div className="national-features p-relative mt-2">
-                    <a href="#">
+                    <Link href="#">
                       <div className="batch-info">
                         <p>Starting From*</p>
                         <h4>
@@ -814,7 +815,7 @@ export default function NatInt() {
                           </div>
                         </div>
                       </div>
-                    </a>
+                    </Link>
                   </div>
                 </div>
               </section>
@@ -829,7 +830,7 @@ export default function NatInt() {
               {/* <!-- ------- first-row --> */}
               <div className="national-list-bx">
                 <div className="national-features">
-                  <a href="#">
+                  <Link href="#">
                     <div className="desti-img">
                       {" "}
                       <img
@@ -882,10 +883,10 @@ export default function NatInt() {
                         </div>
                       </div>
                     </div>
-                  </a>
+                  </Link>
                 </div>
                 <div className="national-features">
-                  <a href="/kashmir-honeymoon">
+                  <Link href="/kashmir-honeymoon">
                     <div className="desti-img">
                       {" "}
                       <img
@@ -938,10 +939,10 @@ export default function NatInt() {
                         </div>
                       </div>
                     </div>
-                  </a>
+                  </Link>
                 </div>
                 <div className="national-features">
-                  <a href="#">
+                  <Link href="#">
                     <div className="desti-img">
                       {" "}
                       <img
@@ -995,11 +996,11 @@ export default function NatInt() {
                         </div>
                       </div>
                     </div>
-                  </a>
+                  </Link>
                 </div>
 
                 <div className="national-features mt-2">
-                  <a href="/kashmir-honeymoon">
+                  <Link href="/kashmir-honeymoon">
                     <div className="desti-img">
                       {" "}
                       <img
@@ -1052,10 +1053,10 @@ export default function NatInt() {
                         </div>
                       </div>
                     </div>
-                  </a>
+                  </Link>
                 </div>
                 <div className="national-features mt-2">
-                  <a href="#">
+                  <Link href="#">
                     <div className="desti-img">
                       {" "}
                       <img
@@ -1108,10 +1109,10 @@ export default function NatInt() {
                         </div>
                       </div>
                     </div>
-                  </a>
+                  </Link>
                 </div>
                 <div className="national-features mt-2">
-                  <a href="/kashmir-honeymoon">
+                  <Link href="/kashmir-honeymoon">
                     <div className="desti-img">
                       {" "}
                       <img
@@ -1164,7 +1165,7 @@ export default function NatInt() {
                         </div>
                       </div>
                     </div>
-                  </a>
+                  </Link>
                 </div>
               </div>
 
@@ -1190,7 +1191,7 @@ export default function NatInt() {
               <section className="destination-row ">
                 <div className="national-list-bx pb-80">
                   <div className="national-features">
-                    <a href="#">
+                    <Link href="#">
                       <div className="desti-img">
                         {" "}
                         <img
@@ -1244,11 +1245,11 @@ export default function NatInt() {
                           </div>
                         </div>
                       </div>
-                    </a>
+                    </Link>
                   </div>
 
                   <div className="national-features">
-                    <a href="/kashmir-honeymoon">
+                    <Link href="/kashmir-honeymoon">
                       <div className="desti-img">
                         {" "}
                         <img
@@ -1301,11 +1302,11 @@ export default function NatInt() {
                           </div>
                         </div>
                       </div>
-                    </a>
+                    </Link>
                   </div>
 
                   <div className="national-features">
-                    <a href="#">
+                    <Link href="#">
                       <div className="desti-img">
                         {" "}
                         <img
@@ -1358,11 +1359,11 @@ export default function NatInt() {
                           </div>
                         </div>
                       </div>
-                    </a>
+                    </Link>
                   </div>
 
                   <div className="national-features mt-2">
-                    <a href="/kashmir-honeymoon">
+                    <Link href="/kashmir-honeymoon">
                       <div className="desti-img">
                         {" "}
                         <img
@@ -1415,11 +1416,11 @@ export default function NatInt() {
                           </div>
                         </div>
                       </div>
-                    </a>
+                    </Link>
                   </div>
 
                   <div className="national-features mt-2">
-                    <a href="#">
+                    <Link href="#">
                       <div className="desti-img">
                         {" "}
                         <img
@@ -1473,11 +1474,11 @@ export default function NatInt() {
                           </div>
                         </div>
                       </div>
-                    </a>
+                    </Link>
                   </div>
 
                   <div className="national-features mt-2">
-                    <a href="/kashmir-honeymoon">
+                    <Link href="/kashmir-honeymoon">
                       <div className="desti-img">
                         {" "}
                         <img
@@ -1530,7 +1531,7 @@ export default function NatInt() {
                           </div>
                         </div>
                       </div>
-                    </a>
+                    </Link>
                   </div>
                 </div>
               </section>

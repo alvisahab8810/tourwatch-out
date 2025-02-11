@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 
 export default function About() {
   return (
@@ -19,13 +20,13 @@ export default function About() {
                 We will show you how beautiful the world is and make you happy
                 to see it, what a heaven on earth
               </p>
-              <a href="#" className="main-btn mt-32 d-table">
+              <Link href="#" className="main-btn mt-32 d-table">
                 Explore Now{" "}
                 <img
                   src="./assets/images/icons/arrow-right.png"
                   alt="Arrow Right"
                 />
-              </a>
+              </Link>
             </div>
           </div>
 
@@ -59,7 +60,7 @@ export default function About() {
                       </div>
                       <div className="tp-service-text ">
                         <h4 className="tp-service-title">
-                          <a href="#">Web Pulau Weh, Indonesia.</a>
+                          <Link href="#">Web Pulau Weh, Indonesia.</Link>
                         </h4>
                         <p>
                           Weh Island is a small volcanic island located
@@ -95,7 +96,7 @@ export default function About() {
                       </div>
                       <div className="tp-service-text ">
                         <h4 className="tp-service-title">
-                          <a href="#">Web Pulau Weh, Indonesia.</a>
+                          <Link href="#">Web Pulau Weh, Indonesia.</Link>
                         </h4>
                         <p>
                           Weh Island is a small volcanic island located
@@ -131,7 +132,7 @@ export default function About() {
                       </div>
                       <div className="tp-service-text ">
                         <h4 className="tp-service-title">
-                          <a href="#">Web Pulau Weh, Indonesia.</a>
+                          <Link href="#">Web Pulau Weh, Indonesia.</Link>
                         </h4>
                         <p>
                           Weh Island is a small volcanic island located
@@ -167,7 +168,7 @@ export default function About() {
                       </div>
                       <div className="tp-service-text ">
                         <h4 className="tp-service-title">
-                          <a href="#">Web Pulau Weh, Indonesia.</a>
+                          <Link href="#">Web Pulau Weh, Indonesia.</Link>
                         </h4>
                         <p>
                           Weh Island is a small volcanic island located
@@ -203,7 +204,7 @@ export default function About() {
                       </div>
                       <div className="tp-service-text ">
                         <h4 className="tp-service-title">
-                          <a href="#">Web Pulau Weh, Indonesia.</a>
+                          <Link href="#">Web Pulau Weh, Indonesia.</Link>
                         </h4>
                         <p>
                           Weh Island is a small volcanic island located
@@ -239,7 +240,7 @@ export default function About() {
                       </div>
                       <div className="tp-service-text ">
                         <h4 className="tp-service-title">
-                          <a href="#">Web Pulau Weh, Indonesia.</a>
+                          <Link href="#">Web Pulau Weh, Indonesia.</Link>
                         </h4>
                         <p>
                           Weh Island is a small volcanic island located

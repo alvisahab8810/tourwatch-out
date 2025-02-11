@@ -1,5 +1,5 @@
 import React from "react";
-
+import Link from "next/link";
 export default function Destination() {
   return (
     <>
@@ -15,7 +15,7 @@ export default function Destination() {
           </div>
           <div className="national-list-bx">
             <div className="national-features">
-              <a href="#">
+              <Link href="#">
                 <div className="desti-img">
                   {" "}
                   <img
@@ -68,10 +68,10 @@ export default function Destination() {
                     </div>
                   </div>
                 </div>
-              </a>
+              </Link>
             </div>
             <div className="national-features">
-              <a href="/kashmir">
+              <Link href="/kashmir">
                 <div className="desti-img">
                   {" "}
                   <img
@@ -124,10 +124,10 @@ export default function Destination() {
                     </div>
                   </div>
                 </div>
-              </a>
+              </Link>
             </div>
             <div className="national-features">
-              <a href="#">
+              <Link href="#">
                 <div className="desti-img">
                   {" "}
                   <img
@@ -180,11 +180,11 @@ export default function Destination() {
                     </div>
                   </div>
                 </div>
-              </a>
+              </Link>
             </div>
 
             <div className="national-features mt-2">
-              <a href="/kashmir">
+              <Link href="/kashmir">
                 <div className="desti-img">
                   {" "}
                   <img
@@ -237,10 +237,10 @@ export default function Destination() {
                     </div>
                   </div>
                 </div>
-              </a>
+              </Link>
             </div>
             <div className="national-features mt-2">
-              <a href="#">
+              <Link href="#">
                 <div className="desti-img">
                   {" "}
                   <img
@@ -289,10 +289,10 @@ export default function Destination() {
                     </div>
                   </div>
                 </div>
-              </a>
+              </Link>
             </div>
             <div className="national-features mt-2">
-              <a href="/kashmir">
+              <Link href="/kashmir">
                 <div className="desti-img">
                   {" "}
                   <img
@@ -345,7 +345,7 @@ export default function Destination() {
                     </div>
                   </div>
                 </div>
-              </a>
+              </Link>
             </div>
           </div>
         </div>
@@ -372,7 +372,7 @@ export default function Destination() {
         <div className="container">
           <div className="national-list-bx pb-80">
             <div className="national-features">
-              <a href="#">
+              <Link href="#">
                 <div className="desti-img">
                   {" "}
                   <img
@@ -425,11 +425,11 @@ export default function Destination() {
                     </div>
                   </div>
                 </div>
-              </a>
+              </Link>
             </div>
 
             <div className="national-features">
-              <a href="/kashmir">
+              <Link href="/kashmir">
                 <div className="desti-img">
                   {" "}
                   <img
@@ -482,11 +482,11 @@ export default function Destination() {
                     </div>
                   </div>
                 </div>
-              </a>
+              </Link>
             </div>
 
             <div className="national-features">
-              <a href="#">
+              <Link href="#">
                 <div className="desti-img">
                   {" "}
                   <img
@@ -539,11 +539,11 @@ export default function Destination() {
                     </div>
                   </div>
                 </div>
-              </a>
+              </Link>
             </div>
 
             <div className="national-features mt-2">
-              <a href="/kashmir">
+              <Link href="/kashmir">
                 <div className="desti-img">
                   {" "}
                   <img
@@ -596,11 +596,11 @@ export default function Destination() {
                     </div>
                   </div>
                 </div>
-              </a>
+              </Link>
             </div>
 
             <div className="national-features mt-2">
-              <a href="#">
+              <Link href="#">
                 <div className="desti-img">
                   {" "}
                   <img
@@ -653,11 +653,11 @@ export default function Destination() {
                     </div>
                   </div>
                 </div>
-              </a>
+              </Link>
             </div>
 
             <div className="national-features mt-2">
-              <a href="/kashmir">
+              <Link href="/kashmir">
                 <div className="desti-img">
                   {" "}
                   <img
@@ -710,7 +710,7 @@ export default function Destination() {
                     </div>
                   </div>
                 </div>
-              </a>
+              </Link>
             </div>
           </div>
         </div>

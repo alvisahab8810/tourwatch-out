@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 
 export default function Hww() {
   return (
@@ -38,9 +39,9 @@ export default function Hww() {
                 </div>
               </div>
 
-              <a href="#" className="main-btn1 desktop-none">
+              <Link href="#" className="main-btn1 desktop-none">
                 Book now
-              </a>
+              </Link>
             </div>
           </div>
         </div>

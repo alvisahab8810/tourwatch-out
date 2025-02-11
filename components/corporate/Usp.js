@@ -1,5 +1,5 @@
 import React from "react";
-
+import Link from "next/link";
 export default function Usp() {
   return (
     <>
@@ -35,9 +35,9 @@ export default function Usp() {
                   >
                     Request a Custom Package
                   </button>
-                  <a href="#review-section" className="btn btn-custom-outline">
+                  <Link href="#review-section" className="btn btn-custom-outline">
                     Trip Reviews
-                  </a>
+                  </Link>
                 </div>
 
                 <div>
