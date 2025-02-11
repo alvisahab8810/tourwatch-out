@@ -1,5 +1,5 @@
 import React from "react";
-
+import Link from "next/link";
 export default function About() {
   return (
     <>
@@ -27,14 +27,14 @@ export default function About() {
             <div className="blog-about-con col-md-6 d-flex flex-column justify-content-center">
               <div className="content-section">
                 <div className="category">Food</div>
-                <a href="#">
+                <Link href="#">
                   <h1>
                     A Food Lover’s Guide to Dubai:
                     <br />
                     Top Restaurants and Street Food <br />
                     Spots
                   </h1>
-                </a>
+                </Link>
 
                 <p className="mt-4 mb-5">
                   Explore Dubai's culinary treasures with our guide to the
