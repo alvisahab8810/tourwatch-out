@@ -14,10 +14,10 @@ export default function Testimonials() {
               centeredSlides={true}
               loop={true}
               slidesPerView={3}
-              autoplay={{
-                delay: 2500,
-                disableOnInteraction: false,
-              }}
+              // autoplay={{
+              //   delay: 2500,
+              //   disableOnInteraction: false,
+              // }}
               pagination={{
                 clickable:true
               }}
@@ -26,6 +26,22 @@ export default function Testimonials() {
                 prevEl: ".swiper-button-prev",
                 
               }}
+
+              breakpoints={{
+                240: {
+                  slidesPerView: 1.5,
+                  spaceBetween: 10,
+                },
+                768: {
+                  slidesPerView: 2.2,
+                  spaceBetween: 20,
+                },
+                1024: {
+                  slidesPerView: 3,
+                  spaceBetween: 20,
+                },
+              }}
+
               modules={[Autoplay, Navigation]}
             
             className="swiper mySwiper pt-80">
@@ -195,8 +211,10 @@ export default function Testimonials() {
                     <div className="swiper-pagination"></div> --> */}
             </Swiper>
 
-            <div className="swiper-button-prev"></div>
-            <div className="swiper-button-next"></div>
+            <div className="mobile-none">
+             <div className="swiper-button-prev"></div>
+              <div className="swiper-button-next"></div>
+            </div>
           </div>
         </div>
       </section>

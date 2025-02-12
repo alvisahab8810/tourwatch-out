@@ -126,6 +126,30 @@ export default function Destination() {
                 </div>
               </Link>
             </div>
+
+            {/* ================== CTA ================== */}
+            <section className="banner-sections desktop-none ptb-40-30">
+              <div className="container">
+                <div className="banner-section">
+                  <div className="banner-content">
+                    <p>Visit the Paradise of earth</p>
+                    <h1 className="pacifico-regular">Kashmir</h1>
+                    <p>And get exciting offers</p>
+                    <button className="btn btn-primary1 desktop-none" data-bs-toggle="modal"
+                          data-bs-target="#exampleModalCenter"
+                          fdprocessedid="s6df8j">Start Journey Now</button>
+                  </div>
+                  <div className="con-ctabx">
+                    <button className="btn btn-primary1 mobile-none" data-bs-toggle="modal"
+                          data-bs-target="#exampleModalCenter"
+                          fdprocessedid="s6df8j">Start Journey Now</button>
+                  </div>
+                </div>
+              </div>
+            </section>
+            {/* ================== CTA ================== */}
+
+
             <div className="national-features">
               <Link href="#">
                 <div className="desti-img">
@@ -239,6 +263,30 @@ export default function Destination() {
                 </div>
               </Link>
             </div>
+
+
+             {/* ================== CTA ================== */}
+             <section className="banner-sections desktop-none ptb-40-30">
+              <div className="container">
+                <div className="banner-section">
+                  <div className="banner-content">
+                    <p>Visit the Paradise of earth</p>
+                    <h1 className="pacifico-regular">Kashmir</h1>
+                    <p>And get exciting offers</p>
+                    <button className="btn btn-primary1 desktop-none" data-bs-toggle="modal"
+                          data-bs-target="#exampleModalCenter"
+                          fdprocessedid="s6df8j">Start Journey Now</button>
+                  </div>
+                  <div className="con-ctabx">
+                    <button className="btn btn-primary1 mobile-none" data-bs-toggle="modal"
+                          data-bs-target="#exampleModalCenter"
+                          fdprocessedid="s6df8j">Start Journey Now</button>
+                  </div>
+                </div>
+              </div>
+            </section>
+            {/* ================== CTA ================== */}
+
             <div className="national-features mt-2">
               <Link href="#">
                 <div className="desti-img">
@@ -351,23 +399,27 @@ export default function Destination() {
         </div>
       </section>
 
-      <section className="banner-sections ptb-80">
-        <div className="container">
-          <div className="banner-section">
-            <div className="banner-content">
-              <p>Visit the Paradise of earth</p>
-              <h1 className="pacifico-regular">Kashmir</h1>
-              <p>And get exciting offers</p>
-            </div>
-            <div className="con-ctabx">
-              <button className="btn btn-primary1" data-bs-toggle="modal"
-                    data-bs-target="#exampleModalCenter"
-                    fdprocessedid="s6df8j">Start Journey Now</button>
-            </div>
-          </div>
-        </div>
+      {/* ================== CTA ================== */}
+      <section className="banner-sections ptb-40-30 ptb-80">
+            <div className="container">
+                <div className="banner-section">
+                  <div className="banner-content">
+                    <p>Visit the Paradise of earth</p>
+                    <h1 className="pacifico-regular">Kashmir</h1>
+                    <p>And get exciting offers</p>
+                    <button className="btn btn-primary1 desktop-none" data-bs-toggle="modal"
+                          data-bs-target="#exampleModalCenter"
+                          fdprocessedid="s6df8j">Start Journey Now</button>
+                  </div>
+                  <div className="con-ctabx">
+                    <button className="btn btn-primary1 mobile-none" data-bs-toggle="modal"
+                          data-bs-target="#exampleModalCenter"
+                          fdprocessedid="s6df8j">Start Journey Now</button>
+                  </div>
+                </div>
+              </div>
       </section>
-
+       {/* ================== CTA ================== */}
       <section className="destination-row ">
         <div className="container">
           <div className="national-list-bx pb-80">
@@ -485,6 +537,29 @@ export default function Destination() {
               </Link>
             </div>
 
+            
+             {/* ================== CTA ================== */}
+             <section className="banner-sections desktop-none ptb-40-30">
+              <div className="container">
+                <div className="banner-section">
+                  <div className="banner-content">
+                    <p>Visit the Paradise of earth</p>
+                    <h1 className="pacifico-regular">Kashmir</h1>
+                    <p>And get exciting offers</p>
+                    <button className="btn btn-primary1 desktop-none" data-bs-toggle="modal"
+                          data-bs-target="#exampleModalCenter"
+                          fdprocessedid="s6df8j">Start Journey Now</button>
+                  </div>
+                  <div className="con-ctabx">
+                    <button className="btn btn-primary1 mobile-none" data-bs-toggle="modal"
+                          data-bs-target="#exampleModalCenter"
+                          fdprocessedid="s6df8j">Start Journey Now</button>
+                  </div>
+                </div>
+              </div>
+            </section>
+            {/* ================== CTA ================== */}
+
             <div className="national-features">
               <Link href="#">
                 <div className="desti-img">
@@ -598,7 +673,30 @@ export default function Destination() {
                 </div>
               </Link>
             </div>
-
+            
+            
+             {/* ================== CTA ================== */}
+             <section className="banner-sections desktop-none ptb-40-30">
+              <div className="container">
+                <div className="banner-section">
+                  <div className="banner-content">
+                    <p>Visit the Paradise of earth</p>
+                    <h1 className="pacifico-regular">Kashmir</h1>
+                    <p>And get exciting offers</p>
+                    <button className="btn btn-primary1 desktop-none" data-bs-toggle="modal"
+                          data-bs-target="#exampleModalCenter"
+                          fdprocessedid="s6df8j">Start Journey Now</button>
+                  </div>
+                  <div className="con-ctabx">
+                    <button className="btn btn-primary1 mobile-none" data-bs-toggle="modal"
+                          data-bs-target="#exampleModalCenter"
+                          fdprocessedid="s6df8j">Start Journey Now</button>
+                  </div>
+                </div>
+              </div>
+            </section>
+            {/* ================== CTA ================== */}
+            
             <div className="national-features mt-2">
               <Link href="#">
                 <div className="desti-img">

@@ -6,7 +6,7 @@ export default function ContactForm() {
     <>
            <section className="contact-form-section">
           <div className="container">
-        <div className="row pt-100">
+        <div className="row pt-100 flex-wrap-bx">
             <div className="col-md-6 c-leftbx">
                 <h2>Get in Touch with Tourwatchout</h2>
                 <p className="contact-para">Our team is dedicated to turning your travel aspirations into reality by crafting unforgettable journeys tailored to your unique preferences and passions. Whether you dream of exploring uncharted landscapes, immersing yourself in vibrant cultures, or simply finding a serene escape, we bring expertise, creativity, and care to every step of your adventure.</p>

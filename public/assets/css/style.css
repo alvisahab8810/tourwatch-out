@@ -1255,7 +1255,7 @@ padding-left: 0;;
     color:#575757;
     font-weight: bold;
     font-family: 'Inter';
-    margin-bottom: 10px!important;
+    margin-bottom: 10px!important;;
 }
 .facility-section{
     display: flex;
@@ -2577,7 +2577,7 @@ a.read-more-btn {
 }
 
 .destination-row{
-    /* background-color: #F5F5F5; */
+/*    background-color: #F5F5F5;*/
 }
 
 .basic-hotel-features{
@@ -2644,7 +2644,7 @@ p.schedule-timing img {
     border-top: 1px solid #EBEBEB;
 }
 .time-schedule-section {
-    /* background-color: #F5F5F5; */
+/*    background-color: #F5F5F5;*/
 }       
 .cancellation-policy-bx{
     display: flex;
@@ -2667,7 +2667,7 @@ p.schedule-timing img {
 .tour-package ul li .rev-btn {
     border: 1px solid #EE4C49 !important;
     color: #EE4C49;
-    /* background: #F2F2F2 !important; */
+/*    background: #F2F2F2 !important;*/
     padding: 10px 40px;
     border-radius: 10px !important;
 }
@@ -2830,11 +2830,14 @@ p.schedule-timing img {
     z-index: 100;
 
 }
-.review-lists .swiper-button-next:after, .swiper-button-prev:after {
+.review-lists .swiper-button-next:after {
     display: none;
 
 }
+.review-lists .swiper-button-prev:after{
+    display: none;
 
+}
 .review-lists .swiper-button-prev {
     transform: translate(-50%, -50%);
     right: 0;
@@ -2942,4 +2945,8 @@ p.happy-title {
     justify-content: space-between;
     padding-top: 50px;
     /* padding-bottom: 50px; */
+}
+
+.c-parent-bx > div{
+    width:49%;
 }

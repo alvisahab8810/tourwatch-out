@@ -17,7 +17,7 @@ export default function About() {
 
         <div className="container d-flex align-items-center justify-content-center ">
           <div className="row w-100">
-            <div className="col-md-6 mobile-none">
+            <div className="col-md-6 blog-imgs">
               <img
                 src="./assets/images/blogs/about.webp"
                 className="img-fluid rounded "

@@ -10,7 +10,7 @@ import Popup from '../components/corporate/Popup'
 
 export default function nationaldestination() {
   return (
-    <div>
+    <div id='national-destination'>
       <Topbar/>
        <Hero/>
        <Destination/>

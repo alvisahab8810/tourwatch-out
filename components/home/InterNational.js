@@ -31,6 +31,21 @@
                 nextEl: ".swiper-button-next-1",
                 prevEl: ".swiper-button-prev-1",
                 }}
+
+                breakpoints={{
+                    240: {
+                      slidesPerView: 1.5,
+                      spaceBetween: 10,
+                    },
+                    768: {
+                      slidesPerView: 2.5,
+                      spaceBetween: 20,
+                    },
+                    1024: {
+                      slidesPerView: 3.9,
+                      spaceBetween: 20,
+                    },
+                  }}
                 modules={[Autoplay, Navigation]}
             
             className="swiper mySwiper4 pt-80">

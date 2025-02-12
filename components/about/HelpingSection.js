@@ -12,8 +12,8 @@ export default function HelpingSection() {
                 </div>
                 <div className="col-md-6 d-flex flex-column justify-content-center">
                     <div className="content-section">
-                        <h1>Bookings, just a few steps with us</h1>
-                        <img src="./assets/images/helping-banner.png" className="img-fluid rounded desktop-none"
+                        <h1>Helping you find your dream vacation come true</h1>
+                        <img src="./assets/images/helping-banner.png" className="img-fluid heling-heignt rounded desktop-none"
                         alt="Woman in a blue dress and straw hat looking at the ocean"/>
                         <p className="mt-4 mb-5">The solution for those of you who don't want the hassle of ordering travel tickets, with just 3 steps you can travel anywhere you want.</p>
                         <div className="row featur">
