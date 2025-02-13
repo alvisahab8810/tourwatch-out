@@ -24,7 +24,7 @@ export default function dubai() {
                 Discover Dubai's wonders with Tourwatchout – Your Gateway to
                 Unforgettable Travel!
               </p>
-              <button class="btn btn-primary mt-0">
+              <button class="btn btn-primary mt-0 mobile-none">
                 Start Your Journey Now
               </button>
             </div>
@@ -117,7 +117,7 @@ export default function dubai() {
                     tabindex="0"
                   >
                     <div class="basic-hotel-features">
-                      <div class="feature-media">
+                      <div class="feature-media mobile-none">
                         <video
                           id="videoPlayer"
                           src="./assets/images/kashmir/video.mp4"
@@ -165,7 +165,7 @@ export default function dubai() {
                     tabindex="0"
                   >
                     <div class="basic-hotel-features">
-                      <div class="feature-media">
+                      <div class="feature-media mobile-none">
                         <video
                           id="videoPlayer"
                           src="./assets/images/kashmir/video.mp4"
@@ -213,7 +213,7 @@ export default function dubai() {
                     tabindex="0"
                   >
                     <div class="basic-hotel-features">
-                      <div class="feature-media">
+                      <div class="feature-media mobile-none">
                         <video
                           id="videoPlayer"
                           src="./assets/images/kashmir/video.mp4"
@@ -256,7 +256,7 @@ export default function dubai() {
                 </div>
               </div>
             </div>
-            <div class="max-400">
+            <div class="max-400 mobile-none">
               <h2>
                 {" "}
                 Table <br />
@@ -280,6 +280,48 @@ export default function dubai() {
         </div>
       </section>
       {/* ============================== Dubai tour Package ======================== */}
+
+      
+         {/* ==================================== Moibile-things ================================= */}
+         <section className="onlyl-mobile desktop-none">
+          <div className="container">
+             <div className="table-of-row tour-package">
+                 <div className="feature-media ">
+                        <video
+                          id="videoPlayer"
+                          src="./assets/images/kashmir/video.mp4"
+                          muted
+                          loop
+                          playsInline
+                        ></video>
+                        <button id="playButton" className="play-btn"></button>
+                  </div>
+
+                  <div class="max-400">
+              <h2>
+                {" "}
+                Table <br />
+                of contents
+              </h2>
+              <div class="table-contents">
+                <Link href="#package">Dubai Packages</Link>
+
+                <Link href="#headingOne">About Dubai </Link>
+
+                <Link href="#headingTwo">Dubai Bucket List</Link>
+
+                <Link href="#headingThree">Dubai FAQ’s </Link>
+
+                <Link href="#location">Dubai Location</Link>
+
+                <Link href="#traveler-reviews">Trip Reviews</Link>
+              </div>
+            </div>
+
+             </div>
+          </div>
+           </section>
+      {/* ==================================== Moibile-things ================================= */}
 
       {/* ============================= Dubai time Schedule ======================= */}
       <section class="dubai-area time-schedule-section ">
@@ -383,9 +425,11 @@ export default function dubai() {
               <p>Where Dreams Touch the Sky</p>
               <h1 class="pacifico-regular">DUBAI</h1>
               <p>Explore get exciting offers</p>
+              <button class="btn btn-primary1 desktop-none">Request A Callback</button>
+
             </div>
             <div class="con-ctabx">
-              <button class="btn btn-primary1">Request A Callback</button>
+              <button class="btn btn-primary1 mobile-none">Request A Callback</button>
             </div>
           </div>
         </div>

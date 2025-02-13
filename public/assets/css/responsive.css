@@ -89,6 +89,62 @@
         padding-bottom: 50px;
     
 }
+
+.mob-dropdown .accordion-button{
+    padding: 10px 0;
+    font-weight: bold;
+    font-size: 13px;
+    color: #373737;
+    font-family: "Inter", sans-serif;
+}
+
+
+.mob-dropdown .accordion-button:not(.collapsed) {
+    color: unset;
+    background-color:unset;
+    box-shadow: unset;
+}
+
+.mob-dropdown .accordion-button:not(.collapsed)::after {
+    transform: rotate(-180deg);
+    filter: brightness(0);
+    width: 17px;
+}
+
+
+.mob-dropdown .accordion-button::after {
+    background-size: 17px;
+}
+
+.mob-dropdown .accordion-button:focus {
+    z-index: 3;
+    border-color: unset;
+    outline: 0;
+    box-shadow: unset;
+}
+.list-unstyled li{
+    margin:10px 0px
+}
+.mob-menus ul.nav.nav-pills > li{
+    border-bottom: 1px solid #ddd;
+}
+
+.mob-dropdown .accordion-body{
+    padding-top: 0;;
+}
+.list-unstyled a{
+    font-size: 12px!important;
+}
+.foot-img{
+    width: 100%;
+position: absolute;
+bottom: 0;
+right: 0;
+}
+
+.mob-menus .nav-link:focus, .nav-link:hover {
+    color: unset;
+}
 }
 
 
@@ -317,7 +373,7 @@ h2.subtitle {
 
 border-radius: 10px;
 
-height: 400px;
+height: 300px;
 
 width: 100%;
 
@@ -487,7 +543,8 @@ color: #667085;
         margin-bottom: 0!important;
     }
     .top-bar{
-        top:20px;
+        top: 15px;
+        padding: 10px;
     }
     .process-section .row{
         display: flex;
@@ -968,11 +1025,555 @@ color: #667085;
     height: 300px;
 
 }
+.review-section .review-count{
+    display: none;
 }
 
+.review-h h2 {
+    font-size: 30px;
+}
+
+.review-h p {
+    font-size: 14px;
+    margin-bottom: 0;
+}
+.review-h{
+    margin-bottom: 0!important;
+}
+.review-container p{
+    font-size: 14px;;
+}
+
+/* ========================= International Destination Page ================================ */
+
+
+.i-national-destination-hero {
+    background-image: url(../images/hero/international-mobile.webp);
+     width: 100%;
+    /* height: 100vh; */
+    background-size: cover;
+    padding-bottom:70px;
+    padding-top: 70px;
+}  
+  
+.about-contennt p {
+    margin-bottom: 0;;
+}
+
+.fs-64 {
+    font-size: 32px;
+}
+
+.banner-sections{
+    width:100%;
+}
+.international-main .banner-section {
+    background-image: url(../images/dubai/dubai-mobile.webp) !important;
+}
+
+.international-main .btn-primary1{
+    height: 38px;;
+}
+.mob-pad{
+    padding-bottom: 30px;
+}
+
+/* ========================================== Corporate CsS==================================== */
+
+.corporate-banner {
+    background-image: url(../images/hero/corporate-mobile.webp);
+    width: 100%;
+    background-size: cover;
+    padding-bottom: 70px;
+    padding-top: 70px;
+}
+
+.usp-list li {
+    margin: 15px 0px;
+    font-size: 14px;
+    font-weight: 500;
+}
+.usp-list li > img {
+    margin-right: 10px;
+    width: 20px;
+}
+
+span.width-fit {
+    width: 140px;
+}
+
+.question-bx img {
+    margin-left: 15px;
+    width: 20px;
+}
+.btn-custom{
+    margin-left: 0;
+    margin-top: 0;
+    margin-bottom: 0;;
+}
+
+.btn-custom-outline {
+    height: 44px;
+    line-height: 33px;
+    font-size: 14px;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+.usp-section-bx .content-section{
+    margin-top: 20px;;
+}
+.usp-section-bx .content-section p{
+    margin-bottom: 0!important;
+}
+
+.national-inter-section .tabs-list {
+    margin-bottom: 30px;
+}
+#corporate-main .national-list-bx > div {
+    margin-bottom: 20px;
+    background: white;
+        border-radius: 8px;
+}
+
+#corporate-main .national-list-bx > div .mt-2{
+    margin:0;
+}
+
+.tooltip-text{
+    width:auto;
+    font-size: 8px;
+}
+
+.national-inter-section .nav-pills .nav-link {
+    font-size: 14px;
+}
+
+.banner-section1 .btn-primary1 {
+    font-size: 12x;
+    margin-top: 15px;
+    height: 35px;
+}
+
+.international-main .banner-section {
+    background-size: cover;
+    height: auto;
+    border-radius: 10px;
+    padding: 50px 0px!important;
+
+}
+
+
+
+.national-inter-section .banner-section {
+    padding: 40px 0px;
+    border-radius: 10px;
+}
+
+/* ================================= Honeymoon Banner ========================================/ */
+
+.honeymoon-banner {
+    background-image: url(../images/hero/honeymoon-mobile.webp);
+    width: 100%;
+    background-size: cover;
+    padding-bottom: 70px;
+    padding-top: 70px;
+    background-position: right;
+}
+
+#honeymoon-main .national-list-bx > div {
+    margin-bottom: 20px;
+    background: white;
+    border-radius: 8px;
+}
+
+.batch-info {
+    /* padding: 4px 20px; */
+    /* width: fit-content; */
+    /* background-color: #EE4C49; */
+    /* position: absolute; */
+    /* top: 5%; */
+    right: 10px;
+    width: 152px;
+    /* clip-path: polygon(100% 0%, 87% 50%, 100% 100%, 0 100%, 0% 50%, 0 0); */
+    /* border-radius: 2px; */
+}
+
+/* .desti-img {
+    height: 300px;
+} */
+.honeymoon-cta .banner-content h1 {
+    font-size: 32px !important;
+    margin-bottom: 10px !important;
+    margin-top: 10px 
+}
+.banner-content p {
+    font-size: 15px;
+}
+
+.honeymoon_cta .banner-content {
+
+    padding: 20px;
+
+}
+
+.honeymoon_cta{
+
+    padding: 20px!important;
+
+}
+
+/* ================= Kashmir Package ======================== */
+
+
+.kashmir-hero {
+    background-image: url(../images/kashmir/mobile-banner.webp);
+    width: 100%;
+    background-size: cover;
+    padding-bottom: 70px;
+    padding-top: 70px;
+}
+
+.parent-package .max-800 {
+    width: 100%;
+}
+
+.feature-list {
+    padding-left: 0px;
+}
+.location-list li {
+    font-size: 12px;
+}
+
+.tour-package > ul {
+    display: flex
+;
+    flex-wrap: nowrap;
+}
+
+.tour-package ul li button {
+    padding: 5px 10px;
+    font-size: 12px;;
+    background-color: #fff!important;
+}
+
+.tour-package ul li .active {
+    padding: 5px 10px;
+}
+
+.tour-package ul li .rev-btn {
+    padding: 5px 10px;
+    font-size: 11px;
+    background: #fff;
+}
+
+.tour-package > ul li {
+    margin: 0px 4px;
+}
+
+.locaton-items img {
+    margin-right: 6px;
+    width: 10px;
+}
+.location-list .locaton-items {
+    margin-left: 10px;
+}
+
+.tour-package{
+    padding-top: 20px!important;
+}
+.basic-hotel-features {
+    padding-top: 0px;
+}
+
+.feature-list ul li {
+    margin: 0px 0px 6px 0px !important;
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.feature-list ul li span {
+    width: 223px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.feature-list ul li span {
+    width: 130px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.tour-package .btn-primary1 {
+    background-color: #ff5a5f;
+    border: none;
+    font-weight: 500;
+    color: white;
+    font-size: 15px;
+    border-radius: 8px;
+    margin-top: 20px;
+    width: fit-content;
+    height: 40px;
+}
+.ptb-50 {
+    padding-top: 30px;
+    padding-bottom: 30px;
+}
+
+.table-of-row {
+    display: flex
+;
+    justify-content: space-between;
+    padding-top: 0 !important;
+}
+
+.table-of-row > div {
+  /* width:calc(50% - 5px) */
+}
+
+.table-of-row .feature-media video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: left;
+    border-radius: 10px;
+}
+
+.max-400 h2 {
+    font-size: 18px;
+    padding-top: 15px;
+    padding-bottom: 0px;
+}
+
+.table-contents a {
+    font-size: 10px;
+    margin: 5px 0px;
+    height: 30px;
+    line-height: 3;
+    width: 110px;
+    padding: 10px 0px;
+}
+
+.max-400 {
+    background-color: #F1F1F1;
+    border-radius: 10px;
+    width:35%;
+    margin-left: 13px;
+}
+
+.feature-media {
+    width: 65%;
+}
+
+.tour-package .play-btn::before {
+    content: '';
+    width: 100px;
+    height: 100px;
+
+    z-index: -1;
+    border-radius: 15px;
+
+}
+
+.tour-package .play-btn {
+    width: 45px;
+    height: 45px;
+}
+.schedule-timing {
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.schedule-items .sche-details {
+    font-size: 12px;
+}
+
+.schedule-items h3 {
+    font-size: 16px;
+    margin-bottom: 10px !important;
+}
+
+p.schedule-timing img {
+    margin-right: 5px;
+    width: 13px;
+}
+
+.schedule-list .schedule-items {
+    padding-top: 20px;
+}
+.cancellation-policy-bx a {
+    font-size: 12px;
+}
+.btn-primary1 {
+    background-color: #ff5a5f;
+    border: none;
+    font-weight: 500;
+    color: white;
+    font-size: 12px;
+    border-radius: 8px;
+    margin-top: 40px;
+    width: 130px;
+    height: 35px;
+}
+
+.about-boxes .accordion-button {
+    font-size: 20px;
+
+}
+
+.about-boxes .about-items p {
+    font-size: 14px;
+}
+
+.about-boxes .about-items h2 {
+    font-size: 16px;
+}
+
+.map-section .heading {
+    font-size: 32px;
+}
+
+.travleler-content h2 {
+    font-size: 32px;
+}
+
+.map-box {
+    padding-top: 20px;
+}
+.travleler-content p {
+    font-size: 14px;
+}
+
+
+.travelers-testi h3 {
+    font-size: 16px;
+}
+
+.travelers-testi .testi-description {
+    font-size: 12px;
+    font-weight: 400;
+}
+
+.travelers-testi .location-para {
+    font-size: 10px;
+}
+.review-lists .swiper{
+    padding-top: 0!important;
+}
+
+.travelers-testi img {
+    margin-bottom: 10px;
+    width: 85px;
+}
+
+.btn-review {
+    font-size: 13px;
+    padding: 6px 15px;
+    border-radius: 50px;
+}
+
+
+.navpage .swiper-button-prev{
+    display: none;;
+}
+
+.navpage .swiper-button-next{
+    display: none;
+}
+
+.review-lists .swiper-slide {
+    border: 1px solid #EBEBEB;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.navpage {
+
+    padding-top: 20px;
+}
+
+.review-lists.p-relative {
+    padding-bottom: 40px;
+}
+
+.tour-package .btn-primary1 {
+    background-color: #ff5a5f;
+    border: none;
+    font-weight: 500;
+    color: white;
+    font-size: 12px;
+    border-radius: 8px;
+    margin-top: 20px;
+    width: fit-content;
+    height: 35px;
+}
+
+.honeymoon-usp .usp-list li > img {
+    width: 20px;
+}
+
+.international-banner .banner-content {
+    max-width: 100%;
+    padding-left: 12px;
+}
+.international-banner p.i-para {
+    font-size: 15px;
+    margin-bottom: 0px;
+}
+
+.international-banner p.i-para1 {
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 13px;
+}
+.international-banner .banner-section {
+    background-size: cover;
+    height: 300px;
+    width: 100%;
+}
+.international-banner .banner-content h1 {
+    font-size: 32px;
+}
+
+
+.honeymoon-cta .banner-section {
+    padding: 50px 0px;
+}
+
+/* =============================== Dubai========================= */
+
+.dubai-hero {
+    padding-bottom: 70px;
+    padding-top: 70px;
+}
+
+.dubai-banner .banner-section {
+    background-size: cover;
+    height: 300px;
+    width: 100%;
+}
+
+
+
+
+}
 @media(max-width:375px){
     .banner-section {
         height: 300px;
+    }
+    .btn-primary1 {
+        font-size: 12px;
+    }
+    .tour-package .btn-primary1 {
+        background-color: #ff5a5f;
+        border: none;
+        font-weight: 500;
+        color: white;
+        font-size: 12px;
+        border-radius: 8px;
+        margin-top: 20px;
+        width: fit-content;
+        height: 35px;
     }
 
     

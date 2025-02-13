@@ -3,7 +3,7 @@ import Link from "next/link";
 export default function Destination() {
   return (
     <div>
-      <section className="destination-row pt-80">
+      <section className="international-main destination-row pt-80 mob-pad">
         <div className="container">
           <div className="row w-100">
             <div className="content-section">
@@ -126,6 +126,29 @@ export default function Destination() {
                 </div>
               </Link>
             </div>
+
+           {/* ================== CTA ================== */}
+            <section className="banner-sections desktop-none ptb-40-30" >
+              <div className="container">
+                <div className="banner-section">
+                  <div className="banner-content">
+                    <p>Explore </p>
+                    <h1 className="pacifico-regular">Dubai</h1>
+                    <p>And get exciting offers</p>
+                    <button className="btn btn-primary1 desktop-none" data-bs-toggle="modal"
+                          data-bs-target="#exampleModalCenter"
+                          fdprocessedid="s6df8j">Start Journey Now</button>
+                  </div>
+                  <div className="con-ctabx">
+                    <button className="btn btn-primary1 mobile-none" data-bs-toggle="modal"
+                          data-bs-target="#exampleModalCenter"
+                          fdprocessedid="s6df8j">Start Journey Now</button>
+                  </div>
+                </div>
+              </div>
+            </section>
+            {/* ================== CTA ================== */}
+
             <div className="national-features">
               <Link href="#">
                 <div className="desti-img">
@@ -238,7 +261,7 @@ export default function Destination() {
                 </div>
               </Link>
             </div>
-            <div className="national-features mt-2">
+            <div className="national-features mt-2 mobile-none">
               <Link href="#">
                 <div className="desti-img">
                   {" "}
@@ -294,7 +317,7 @@ export default function Destination() {
                 </div>
               </Link>
             </div>
-            <div className="national-features mt-2">
+            <div className="national-features mt-2 mobile-none">
               <Link href="#">
                 <div className="desti-img">
                   {" "}
@@ -354,7 +377,7 @@ export default function Destination() {
         </div>
       </section>
 
-      <section className="international-banner banner-sections ptb-80">
+      <section className="international-banner banner-sections ptb-80 mobile-none">
         <div className="container">
           <div className="banner-section">
             <div className="banner-content">
@@ -371,7 +394,10 @@ export default function Destination() {
         </div>
       </section>
 
-      <section className="destination-row ">
+
+      
+
+      <section className="destination-row mobile-none">
         <div className="container">
           <div className="national-list-bx pb-80">
             <div className="national-features">

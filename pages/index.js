@@ -20,6 +20,7 @@ import Instagram from "../components/home/Instagram";
 import Kashmircta from "../components/home/Kashmircta";
 import Projects from "../components/home/Projects";
 import Popup from "../components/corporate/Popup";
+import Offcanvas from "../components/header/Offcanvas";
 
 
 export default function IndexPage({ data }) {
@@ -31,6 +32,7 @@ export default function IndexPage({ data }) {
         description="#"
       />
       <Topbar/>
+      <Offcanvas/>
       <Hero/>
       <Form/>
       {/* <Hww/> */}

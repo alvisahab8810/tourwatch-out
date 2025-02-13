@@ -9,11 +9,13 @@ import HelpingSection from '../components/about/HelpingSection'
 import AbHww from '../components/about/AbHww'
 import Instagram from '../components/home/Instagram'
 import Popup from '../components/corporate/Popup'
+import Offcanvas from '../components/header/Offcanvas'
 
 export default function about() {
   return (
     <>
         <Topbar/>
+        <Offcanvas/>
          <Hero/>
          <OurStory/>
          <Rtcu/>

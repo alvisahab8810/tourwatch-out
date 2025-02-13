@@ -5,7 +5,7 @@ export default function Usp() {
     <>
       <section className="destination-row pt-80">
         <div className="container">
-          <div className="row w-100">
+          <div className="row w-100 mobile-none">
             <div className="content-section">
               <h1>Top Travel Packages</h1>
               <p className="mt-4 mb-5">
@@ -16,7 +16,7 @@ export default function Usp() {
 
           <div className="usp-section-bx pb-80 container-fluid">
             <div className="row">
-              <div className="col-md-6 p-0">
+              <div className="col-md-6 p-0 mobile-none">
                 <img
                   alt="Person kayaking on a serene lake with mountains in the background"
                   className="img-fluid"
@@ -26,7 +26,7 @@ export default function Usp() {
                 />
               </div>
               <div className="col-md-6 ">
-                <div className=" mb-4">
+                <div className=" mb-4 d-flex">
                   <button
                     className="btn btn-custom"
                     data-bs-toggle="modal"
@@ -126,6 +126,25 @@ export default function Usp() {
                   </ul>
                 </div>
               </div>
+
+              <div className="col-md-6 p-0 desktop-none">
+                <img
+                  alt="Person kayaking on a serene lake with mountains in the background"
+                  className="img-fluid"
+                  height="400"
+                  src="./assets/images/corporate/about.webp"
+                  width="600"
+                />
+              </div>
+
+              <div className="row w-100 desktop-none">
+              <div className="content-section">
+                <h1>Top Travel Packages</h1>
+                <p className="mt-4 mb-5">
+                  Explore our most popular packages, loved by travelers worldwide.
+                </p>
+              </div>
+            </div>
             </div>
           </div>
         </div>

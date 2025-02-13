@@ -17,7 +17,9 @@ export default function TravelerReviews() {
           <div className="review-lists p-relative">
             <Swiper
               spaceBetween={20}
-              loop={true}
+              // centeredSlides={true}
+                  loop={true}
+                  grabCursor={true}
               slidesPerView={3}
               // autoplay={{
               // delay: 2500,
@@ -29,6 +31,24 @@ export default function TravelerReviews() {
               navigation={{
                 nextEl: ".swiper-button-next",
                 prevEl: ".swiper-button-prev",
+              }}
+
+              breakpoints={{
+
+               
+                240: {
+                  slidesPerView: 1.2,
+                  spaceBetween: 10,
+                 
+                },
+                768: {
+                  slidesPerView: 2.5,
+                  spaceBetween: 20,
+                },
+                1024: {
+                  slidesPerView: 3.9,
+                  spaceBetween: 20,
+                },
               }}
               modules={[Autoplay, Navigation]}
               className="swiper mySwiper5 pt-80 travelers-testi"

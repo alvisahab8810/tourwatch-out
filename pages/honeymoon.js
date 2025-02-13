@@ -7,11 +7,13 @@ import NatInt from '../components/honeymoon/NatInt'
 import Cta from '../components/honeymoon/Cta'
 import Popup from '../components/corporate/Popup'
 import Reviews from '../components/corporate/Reviews'
+import Offcanvas from '../components/header/Offcanvas'
 
 export default function honeymoon() {
   return (
-    <div className='bg-prime'>
+    <div className='bg-prime' id='honeymoon-main'>
       <Topbar/>
+       <Offcanvas/>
        <Hero/>
        <Usp/>
        <NatInt/>

@@ -7,11 +7,13 @@ import Vacation from '../components/national-destination/Vacation'
 import Help from '../components/corporate/Help'
 import Reviews from '../components/corporate/Reviews'
 import Popup from '../components/corporate/Popup'
+import Offcanvas from '../components/header/Offcanvas'
 
 export default function nationaldestination() {
   return (
     <div id='national-destination'>
       <Topbar/>
+      <Offcanvas/>
        <Hero/>
        <Destination/>
        <Vacation/>

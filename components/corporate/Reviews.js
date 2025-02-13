@@ -64,7 +64,7 @@ export default function Reviews() {
             </p>
           </div>
 
-          className<hr style={{ borderColor: "#fff" }} />
+          <hr style={{ borderColor: "#fff" }} />
           <div className="review-container">
             <div className="review-body">
               <div className="d-flex">
@@ -100,7 +100,7 @@ export default function Reviews() {
             </p>
           </div>
 
-          className<hr style={{ borderColor: "#fff" }} />
+          <hr style={{ borderColor: "#fff" }} />
           <div className="review-container">
             <div className="review-body">
               <div className="d-flex">
@@ -136,7 +136,7 @@ export default function Reviews() {
             </p>
           </div>
 
-          className<hr style={{ borderColor: "#fff" }} />
+          <hr style={{ borderColor: "#fff" }} />
           <div className="review-container">
             <div className="review-body">
               <div className="d-flex">
@@ -172,7 +172,7 @@ export default function Reviews() {
             </p>
           </div>
 
-          className<hr style={{ borderColor: "#fff" }} />
+          <hr style={{ borderColor: "#fff" }} />
           <div className="footer-pagination">
             <div className="text-center my-4">
               <button className="btn-review">Write a Review</button>

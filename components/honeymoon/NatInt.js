@@ -39,7 +39,7 @@ export default function NatInt() {
 
           <div className="tab-content" id="pills-tabContent">
             <div
-              className="tab-pane fade show active"
+              className="tab-pane international-main fade show active"
               id="pills-home"
               role="tabpanel"
               aria-labelledby="pills-home-tab"
@@ -171,6 +171,31 @@ export default function NatInt() {
                     </div>
                   </Link>
                 </div>
+
+
+                 {/* ================== CTA ================== */}
+                  <section className="banner-sections desktop-none ptb-40-30" >
+                    <div className="container">
+                      <div className="banner-section">
+                        <div className="banner-content">
+                          <p>Explore </p>
+                          <h1 className="pacifico-regular">Dubai</h1>
+                          <p>And get exciting offers</p>
+                          <button className="btn btn-primary1 desktop-none" data-bs-toggle="modal"
+                                data-bs-target="#exampleModalCenter"
+                                fdprocessedid="s6df8j">Start Journey Now</button>
+                        </div>
+                        <div className="con-ctabx">
+                          <button className="btn btn-primary1 mobile-none" data-bs-toggle="modal"
+                                data-bs-target="#exampleModalCenter"
+                                fdprocessedid="s6df8j">Start Journey Now</button>
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+                  {/* ================== CTA ================== */}
+
+
                 <div className="national-features p-relative">
                   <Link href="/kashmir-honeymoon">
                     <div className="batch-info">
@@ -296,6 +321,32 @@ export default function NatInt() {
                     </div>
                   </Link>
                 </div>
+
+
+                 {/* ================== CTA ================== */}
+                 <section className="banner-sections desktop-none ptb-40-30" >
+                    <div className="container">
+                      <div className="banner-section">
+                        <div className="banner-content">
+                          <p>Explore </p>
+                          <h1 className="pacifico-regular">Dubai</h1>
+                          <p>And get exciting offers</p>
+                          <button className="btn btn-primary1 desktop-none" data-bs-toggle="modal"
+                                data-bs-target="#exampleModalCenter"
+                                fdprocessedid="s6df8j">Start Journey Now</button>
+                        </div>
+                        <div className="con-ctabx">
+                          <button className="btn btn-primary1 mobile-none" data-bs-toggle="modal"
+                                data-bs-target="#exampleModalCenter"
+                                fdprocessedid="s6df8j">Start Journey Now</button>
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+                  {/* ================== CTA ================== */}
+
+
+
                 <div className="national-features p-relative mt-2">
                   <Link href="#">
                     <div className="batch-info">
@@ -442,7 +493,7 @@ export default function NatInt() {
 
               {/* <!-- ------- 2nd-row --> */}
 
-              <section className="destination-row ">
+              <section className="destination-row  mobile-none">
                 <div className="national-list-bx pb-80">
                   <div className="national-features p-relative">
                     <Link href="#">
@@ -820,6 +871,7 @@ export default function NatInt() {
                 </div>
               </section>
             </div>
+            
             <div
               className="tab-pane fade"
               id="pills-profile"
@@ -941,6 +993,28 @@ export default function NatInt() {
                     </div>
                   </Link>
                 </div>
+
+                 {/* ================== CTA ================== */}
+                    <section className="banner-sections desktop-none ptb-40-30">
+                      <div className="container">
+                        <div className="banner-section">
+                          <div className="banner-content">
+                            <p>Visit the Paradise of earth</p>
+                            <h1 className="pacifico-regular">Kashmir</h1>
+                            <p>And get exciting offers</p>
+                            <button className="btn btn-primary1 desktop-none" data-bs-toggle="modal"
+                                  data-bs-target="#exampleModalCenter"
+                                  fdprocessedid="s6df8j">Start Journey Now</button>
+                          </div>
+                          <div className="con-ctabx">
+                            <button className="btn btn-primary1 mobile-none" data-bs-toggle="modal"
+                                  data-bs-target="#exampleModalCenter"
+                                  fdprocessedid="s6df8j">Start Journey Now</button>
+                          </div>
+                        </div>
+                      </div>
+                    </section>
+                {/* ================== CTA ================== */}
                 <div className="national-features">
                   <Link href="#">
                     <div className="desti-img">
@@ -1055,6 +1129,28 @@ export default function NatInt() {
                     </div>
                   </Link>
                 </div>
+
+                 {/* ================== CTA ================== */}
+                 <section className="banner-sections desktop-none ptb-40-30">
+                      <div className="container">
+                        <div className="banner-section">
+                          <div className="banner-content">
+                            <p>Visit the Paradise of earth</p>
+                            <h1 className="pacifico-regular">Kashmir</h1>
+                            <p>And get exciting offers</p>
+                            <button className="btn btn-primary1 desktop-none" data-bs-toggle="modal"
+                                  data-bs-target="#exampleModalCenter"
+                                  fdprocessedid="s6df8j">Start Journey Now</button>
+                          </div>
+                          <div className="con-ctabx">
+                            <button className="btn btn-primary1 mobile-none" data-bs-toggle="modal"
+                                  data-bs-target="#exampleModalCenter"
+                                  fdprocessedid="s6df8j">Start Journey Now</button>
+                          </div>
+                        </div>
+                      </div>
+                    </section>
+                {/* ================== CTA ================== */}
                 <div className="national-features mt-2">
                   <Link href="#">
                     <div className="desti-img">
@@ -1171,7 +1267,7 @@ export default function NatInt() {
 
               {/* <!-- -------National banner- --> */}
 
-              <section className="banner-sections ptb-20">
+              <section className="banner-sections ptb-20 mobile-none">
                 <div className="banner-section">
                   <div className="banner-content">
                     <p>Visit the Paradise of earth</p>
@@ -1188,7 +1284,7 @@ export default function NatInt() {
                 </div>
               </section>
               {/* <!-- ------- 2nd-row --> */}
-              <section className="destination-row ">
+              <section className="destination-row mobile-none">
                 <div className="national-list-bx pb-80">
                   <div className="national-features">
                     <Link href="#">

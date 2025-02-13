@@ -5,11 +5,13 @@ import Map from "../components/kashmir/Map";
 import TravelerReviews from "../components/kashmir/TravelerReviews";
 import Popup from "../components/corporate/Popup";
 import Link from "next/link";
+import Offcanvas from "../components/header/Offcanvas";
 
 export default function KashmirHoneymoon() {
   return (
     <div className="bg-prime">
       <Topbar />
+      <Offcanvas/>
       {/* <!-- =================== Hero area start here =============== --> */}
 
       <section className="kashmir-honeymoon-hero kashmir-hero">
@@ -24,7 +26,7 @@ export default function KashmirHoneymoon() {
                 Tourwatchout! Enjoy a hassle-free experience and create
                 unforgettable memories that last a lifetime.
               </p>
-              <button className="btn btn-primary mt-0" data-bs-toggle="modal"
+              <button className="btn btn-primary mt-0 mobile-none" data-bs-toggle="modal"
                     data-bs-target="#exampleModalCenter"
                     fdprocessedid="s6df8j">
                 Start Your Journey Now
@@ -122,7 +124,7 @@ export default function KashmirHoneymoon() {
                     tabIndex="0"
                   >
                     <div className="basic-hotel-features">
-                      <div className="feature-media">
+                      <div className="feature-media mobile-none">
                         <video
                           id="videoPlayer"
                           src="./assets/images/kashmir/video.mp4"
@@ -172,7 +174,7 @@ export default function KashmirHoneymoon() {
                     tabIndex="0"
                   >
                     <div className="basic-hotel-features">
-                      <div className="feature-media">
+                      <div className="feature-media mobile-none">
                         <video
                           id="videoPlayer"
                           src="./assets/images/kashmir/video.mp4"
@@ -222,7 +224,7 @@ export default function KashmirHoneymoon() {
                     tabIndex="0"
                   >
                     <div className="basic-hotel-features">
-                      <div className="feature-media">
+                      <div className="feature-media mobile-none">
                         <video
                           id="videoPlayer"
                           src="./assets/images/kashmir/video.mp4"
@@ -267,7 +269,7 @@ export default function KashmirHoneymoon() {
                 </div>
               </div>
             </div>
-            <div className="max-400">
+            <div className="max-400 mobile-none">
               <h2>
                 {" "}
                 Table <br />
@@ -292,6 +294,50 @@ export default function KashmirHoneymoon() {
       </section>
 
       {/* <!-- =============== kashmir Honeymoon package end ================ --> */}
+
+
+         {/* ==================================== Moibile-things ================================= */}
+         <section className="onlyl-mobile desktop-none">
+          <div className="container">
+             <div className="table-of-row tour-package">
+                 <div className="feature-media ">
+                        <video
+                          id="videoPlayer"
+                          src="./assets/images/kashmir/video.mp4"
+                          muted
+                          loop
+                          playsInline
+                        ></video>
+                        <button id="playButton" className="play-btn"></button>
+                  </div>
+
+                <div className="max-400 ">
+              <h2>
+                {" "}
+                Table <br />
+                of contents
+              </h2>
+              <div className="table-contents">
+                <Link href="#package">Kashmir Packages</Link>
+
+                <Link href="#headingOne">About Kashmir</Link>
+
+                <Link href="#headingTwo">Kashmir Bucket List</Link>
+
+                <Link href="#headingThree">Kashmir FAQ’s </Link>
+
+                <Link href="#location">Kashmir Location</Link>
+
+                <Link href="#traveler-reviews">Trip Reviews</Link>
+              </div>
+                </div>
+
+
+             </div>
+          </div>
+           </section>
+      {/* ==================================== Moibile-things ================================= */}
+
 
       {/* <!-- =============== Time Scheduled start ================ --> */}
 

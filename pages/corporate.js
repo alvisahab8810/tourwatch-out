@@ -7,11 +7,13 @@ import NatInt from '../components/corporate/NatInt'
 import Help from '../components/corporate/Help'
 import Reviews from '../components/corporate/Reviews'
 import Popup from '../components/corporate/Popup'
+import Offcanvas from '../components/header/Offcanvas'
 
 export default function corporate() {
   return (
-    <div id='international-main'>
+    <div id='corporate-main'>
     <Topbar/>
+    <Offcanvas/>
      <Hero/>
      <Usp/>
      <NatInt/>
