@@ -17,10 +17,10 @@ export default function Instagram() {
             loop={true}
             grabCursor={true}
             slidesPerView={3.9}
-            // autoplay={{
-            //   delay: 2500,
-            //   disableOnInteraction: false,
-            // }}
+            autoplay={{
+              delay: 2500,
+              disableOnInteraction: false,
+            }}
             pagination={{
               clickable: true,
             }}

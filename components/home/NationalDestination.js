@@ -20,10 +20,10 @@ export default function NationalDestination() {
             grabCursor={true}
             loop={true}
             slidesPerView={3.9}
-            // autoplay={{
-            //   delay: 2500,
-            //   disableOnInteraction: false,
-            // }}
+            autoplay={{
+              delay: 3000,
+              disableOnInteraction: false,
+            }}
             pagination={{
               clickable: true,
             }}

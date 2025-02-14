@@ -19,6 +19,7 @@
 }
 body{
     overflow-x: hidden;
+    overflow: auto!important;
 
 }
 h1, h3, h4, h5{
@@ -2985,4 +2986,7 @@ p.happy-title {
   
   .dropdown-main:hover .dropdown-items  li{
     margin:10px 0px
+  }
+  .desk-logo{
+    padding-left: 10px;;
   }

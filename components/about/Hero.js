@@ -9,7 +9,7 @@ export default function Hero() {
                 <div className="col-md-12 about-contennt">
                     <h2 className="fs-64 text-white fw-bold">Think Travel, Think Tourwatchout</h2>
                     <p>Plan your trips, honeymoons, or family getaways with Tourwatchout! Enjoy a hassle-free experience and create unforgettable memories that last a lifetime.</p>
-                    <button className="btn btn-primary mt-0" data-bs-toggle="modal"
+                    <button className="btn btn-primary mt-0 mobile-none" data-bs-toggle="modal"
                     data-bs-target="#exampleModalCenter"
                     fdprocessedid="s6df8j">Start Your Journey Now</button>
 

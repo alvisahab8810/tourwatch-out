@@ -8,6 +8,289 @@
 }
 
 
+@media (max-width: 1024px) and (min-width: 768px) {
+    .container, .container-md, .container-sm {
+        max-width: 95%;
+    }
+
+    .national-list-bx > div {
+        width: calc(50% - 10px);
+    }
+
+    .banner-sections{
+        margin:15px  auto;
+        background-size: cover;
+    }
+    .desti-img {
+        height: 420px!important;
+    }
+
+    .banner-section {
+        background-image: url(../images/destination/mob-banner.webp) !important;
+        height: 525px;
+        background-size: cover;
+        border-radius: 10px;
+    }
+
+    .ab-page .row > div{
+        width: 100%;;
+    }
+
+    .ab-page .title {
+        font-size: 60px;
+    }
+    .ab-page .subtitle {
+
+        font-size: 60px;
+
+    }
+
+    .ab-info{
+        margin-top: 30px;;
+    }
+
+    .rtcu-section .row > div{
+        width:50%;
+        margin-bottom: 20px;
+    }
+
+    .ab-page .content {
+        font-size: 20px;
+        line-height: 1.6;
+        color: #7F7F7F;
+        text-align: justify;
+    }
+
+    .helping-sections .w-100 > div{
+        width:100%;
+    }
+    .content-section p {
+        font-size: 20px;
+    
+    }
+
+    .how-we-work h1 {
+        font-size: 40px;
+    }
+
+    .right-content-bx1 h2 {
+        font-size: 25px;
+    }
+    .ab-hww .main-btn1 {
+     line-height: 2.5;
+    }
+
+    .heling-heignt {
+        margin: 35px auto;
+        width: 100%;
+    }
+    .mob-canvas .offcanvas-header {
+        background-color: #EE4C49;
+        border-bottom: 1px solid #ddd;
+    }
+    .desk-logo img {
+        width: 170px;
+    }
+
+    .footer .pl-50 {
+        padding-left: 15px;
+    
+    }
+        .mob-canvas {
+            width: 70%;
+        }
+            .mob-canvas .offcanvas-header {
+            background-color: #EE4C49;
+            border-bottom: 1px solid #ddd;
+        }
+            .mob-canvas .p-logo {
+            margin-bottom: 0 !important;
+        }
+    
+        .desk-logo img {
+            width: 170px;
+        }
+            .mob-canvas .btn-close {
+            filter: brightness(0) invert(1);
+            padding: 9px;
+            transform: scale(.9);
+        }
+            .mob-menus ul {
+            display: block;
+            padding: 0;
+        }
+            .mob-menus ul li a {
+            padding-left: 0;
+            color: #373737;
+            font-weight: bold;
+            font-size: 13px;
+        }
+    
+            .mob-social-mediabx ul {
+            display: flex;
+            justify-content: space-evenly;
+            list-style: none;
+            padding: 0;
+            position: absolute;
+            bottom: -21px;
+            right: 0;
+            left: 0;
+            background: #232323;
+            height: 58px;
+            align-items: center;
+        }
+    
+        .mob-social-mediabx ul li i {
+            font-size: 16px;
+            color: white;
+            border: 1px solid #ddd;
+            border-radius: 50px;
+            padding: 9px;
+            transition: .7s;
+        }
+
+        .c-right-bx h2 {
+            font-size: 28px;
+        }
+
+        .c-leftbx h2 {
+            font-size: 30px;
+        }
+
+        .contact-form{
+            padding:20px!important;
+        }
+        .c-parent-bx{
+            flex-wrap: wrap;
+        }
+
+        .c-parent-bx > div {
+            width: 100%;
+        }
+
+        .national-inter-section .banner-sections.desktop-none{
+            display: none;
+        }
+
+        .banner-content {
+            max-width: 600px;
+            padding-left: 15px;
+     
+        }
+
+        .pb-80 {
+            padding-bottom: 40px;
+        }
+
+        .need-form-bx h2 {
+            font-size: 32px;
+        }
+
+        .need-help-section {
+            padding-bottom: 40px;
+            padding-top: 40px;
+        }
+
+        .blog-about-con h1 {
+            font-size: 20px;
+        }
+
+        .blogs-about .content-section p {
+            font-size: 18px;
+            color: #575757;
+        }
+
+        .blogs-info h2 {
+            font-size: 19px;
+            margin-top: 15px;
+        }
+
+        .mob-menus ul li a {
+            font-size: 20px;
+        }
+        .mob-dropdown .accordion-button {
+            font-size: 20px;
+        }
+
+        .mob-menus ul li a {
+            font-size: 20px;
+            padding: 25px 0px;
+        }
+
+        .mob-dropdown .accordion-button {
+            padding: 20px 0;
+        }
+
+
+        .mob-canvas .offcanvas-header {
+            height: 100px;
+        }
+
+        .desk-logo img {
+            width: 280px;
+        }
+        .mob-canvas .btn-close {
+            padding: 14px;
+            transform: scale(1.4);
+        }
+
+        #home .desti-img {
+            height: 340px !important;
+        }
+
+        .parent-package .content-section h1 {
+            font-size: 35px;
+        }
+
+        .parent-package .max-800 {
+            width: 100%;
+        }
+
+        .table-of-row.tour-package {
+            display: flex
+        ;
+            justify-content: space-between;
+        }
+
+        .feature-media {
+            width: 50%;
+        }
+
+        .map-section .heading {
+            font-size: 35px;
+            color: black;
+            text-align: center;
+        }
+
+    
+    .max-400 h2 {
+
+        font-size: 32px;
+
+
+    }
+
+    .table-contents a {
+        border: 1px solid #C2BEBE;
+        color: #575757;
+        font-size: 16px;
+        background-color: #F9F9F9;
+        border-radius: 10px;
+        margin: 5px 0px;
+        height: 42px;
+        display: flex
+    ;
+        justify-content: center;
+        align-items: center;
+        width: 239px;
+        padding: 19px 0px;
+    }
+        
+.max-400 {
+    width: 50%;
+    margin-left: 10px;;
+}
+}
 
 @media(max-width:980px){
     .mobile-none{
@@ -564,15 +847,15 @@ color: #667085;
     }
 
     .counter-title h3 {
-        font-size: 16px;
-        margin-left: 5px !important;
+        font-size: 14px;
+        margin-left: 3px !important;
     }
     .counter-title img {
         width: 15px;
     }
 
     p.happy-title {
-        font-size: 10px;
+        font-size: 8px;
         margin-bottom: 0;
     }
     .faci-ratings span {
@@ -587,6 +870,9 @@ color: #667085;
         width: 18px;
     }
 
+    .counter-area > div {
+        width: calc(25% - 5px);
+    }
 
     .desti-info h3 {
         font-size: 18px;
@@ -703,7 +989,7 @@ color: #667085;
 
 }
 .ab-page .content{
-    font-size: 16px;;
+    font-size: 14px;;
 }
 .rtcu-section .feature-text{
     display: none;
@@ -768,7 +1054,7 @@ color: #667085;
     background: #f5f5f5;
 }
 .ab-page .highlight {
-    font-size: 16px;
+    font-size: 14px;
 }
 
 /* ============================================== Contact Mobile Banner ======================================= */
@@ -1109,13 +1395,17 @@ span.width-fit {
 .btn-custom{
     margin-left: 0;
     margin-top: 0;
-    margin-bottom: 0;;
+    margin-bottom: 0;
+    font-size: 12px;
+    height: 40px;
+    width: fit-content;
 }
 
 .btn-custom-outline {
-    height: 44px;
-    line-height: 33px;
-    font-size: 14px;
+    height: 40px;
+    line-height: 32px;
+    font-size: 12px;
+    width: fit-content;
     margin-top: 0;
     margin-bottom: 0;
 }
@@ -1553,9 +1843,51 @@ p.schedule-timing img {
     width: 100%;
 }
 
+.instagram-section{
+    overflow: hidden;
+}
+section.national-dest {
+    overflow: hidden;
+}
 
+.footer-para {
+    font-size: 14px;
+}
+.footer ul li a {
+    font-size: 14px;
+}
+.form-pop p {
+    font-size: 12px;
+    opacity: 56%;
+    text-align: center;
+}
 
+.form-pop h2 {
+    font-size: 18px;
+}
+.form-pop input {
+    padding: 8px 10px;
+    border: 1px solid #949494;
+    border-radius: 4px;
+}
 
+.form-pop .submit-btn {
+    height: 34px;
+    width: 122px;
+    font-size: 14px;
+}
+
+.popup-modal .modal-body {
+    padding: 15px;
+}
+
+.popup-modal .btn-close {
+    height: 20px;
+    right: 13px;
+    top: 13px;
+    width: 20px;
+    font-size: 8px;
+}
 }
 @media(max-width:375px){
     .banner-section {
@@ -1575,6 +1907,10 @@ p.schedule-timing img {
         width: fit-content;
         height: 35px;
     }
+    .feature-title {
+        font-size: 10px;
+    }
 
+    
     
 } 

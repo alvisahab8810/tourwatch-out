@@ -14,10 +14,10 @@ export default function Testimonials() {
               centeredSlides={true}
               loop={true}
               slidesPerView={3}
-              // autoplay={{
-              //   delay: 2500,
-              //   disableOnInteraction: false,
-              // }}
+              autoplay={{
+                delay: 2500,
+                disableOnInteraction: false,
+              }}
               pagination={{
                 clickable:true
               }}
