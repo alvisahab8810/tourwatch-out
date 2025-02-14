@@ -1712,6 +1712,7 @@ p.schedule-timing img {
 
 .about-boxes .about-items p {
     font-size: 14px;
+    text-align: justify;
 }
 
 .about-boxes .about-items h2 {
@@ -1888,6 +1889,14 @@ section.national-dest {
     width: 20px;
     font-size: 8px;
 }
+
+.onlyl-mobile{
+    padding-bottom: 30px;
+}
+
+.location-list .locaton-items {
+    font-size: 14px;
+}
 }
 @media(max-width:375px){
     .banner-section {
@@ -1910,6 +1919,15 @@ section.national-dest {
     .feature-title {
         font-size: 10px;
     }
+
+    .feature-list ul li span {
+        width: 107px;
+        font-size: 12px;
+    }
+    .feature-list ul li {
+        font-size: 12px;
+    }
+  
 
     
     

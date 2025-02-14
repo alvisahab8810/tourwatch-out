@@ -1,3 +1,52 @@
+
+document.addEventListener("DOMContentLoaded", function() {
+    const video = document.getElementById("videoPlayer");
+    const playButton = document.getElementById("playButton");
+
+    playButton.addEventListener("click", function() {
+        if (video.paused) {
+            video.play();
+            playButton.classList.add("hidden"); // Hide button when playing
+        } else {
+            video.pause();
+            playButton.classList.remove("hidden"); // Show button when paused
+        }
+    });
+
+    video.addEventListener("play", function() {
+        playButton.classList.add("hidden");
+    });
+
+    video.addEventListener("pause", function() {
+        playButton.classList.remove("hidden");
+    });
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // // for testimonials us
 
 
@@ -163,4 +212,6 @@
 //     },
 //   },
 // });
+
+
 

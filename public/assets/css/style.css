@@ -2479,6 +2479,7 @@ a.read-more-btn {
 .parent-package .location-list{
     display: flex;
     padding-top: 10px;
+    padding-bottom: 10px;
 }
 
 .location-list{
@@ -2488,7 +2489,7 @@ a.read-more-btn {
 }
 
 .location-list li{
-    font-size: 24px;
+    font-size: 18px;
     color: #575757;
 }
 
@@ -2501,6 +2502,7 @@ a.read-more-btn {
 }
 .locaton-items img{
     margin-right: 10px;
+    width:14px;
 }
 
 .tour-package ul li .active{
@@ -2542,6 +2544,8 @@ a.read-more-btn {
 .max-400{
     background-color: #F1F1F1;
     border-radius: 19px;
+    height: fit-content;
+    padding-bottom: 15px;
 }
 
 .max-400 h2{
@@ -2594,9 +2598,11 @@ a.read-more-btn {
     font-family: 'Inter';
     color: #575757;
 }
-
+.location-list .locaton-items {
+    font-size: 18px;
+}
 .feature-list ul li {
-    margin: 0px 0px 13px 0px !important;
+    margin: 0px 0px 18px 0px !important;
     list-style: none;
     font-size: 22px;
     font-weight: 300;

@@ -15,62 +15,6 @@ export default function Destination() {
           </div>
           <div className="national-list-bx">
             <div className="national-features">
-              <Link href="#">
-                <div className="desti-img">
-                  {" "}
-                  <img
-                    src="./assets/images/n-destination/img2.webp"
-                    alt="National Destination"
-                  />{" "}
-                </div>
-                <div className="desti-main">
-                  <div className="desti-info">
-                    <h3>Goa</h3>
-                    <p>
-                      Goa is a vibrant coastal haven, known for its stunning
-                      beaches, lively nightlife, and rich cultural heritage,
-                      ideal for relaxation and exploration.
-                    </p>
-                  </div>
-                  <div className="facility-section">
-                    <div className="faci-1">
-                      <ul>
-                        <li className="ml-0">
-                          <img
-                            src="./assets/images/destination/icons/hotel.png"
-                            alt="Hotel Icon"
-                          />
-                          <p> Upto 3 Stars</p>
-                        </li>
-                        <li>
-                          <img
-                            src="./assets/images/destination/icons/meal.png"
-                            alt="Meal Icon"
-                          />
-                          <p> Meal</p>
-                        </li>
-                        <li>
-                          <img
-                            src="./assets/images/destination/icons/sight.png"
-                            alt="sight Icon"
-                          />
-                          <p> Sightseeing</p>
-                        </li>
-                      </ul>
-                    </div>
-                    <div className="faci-ratings">
-                      {" "}
-                      <img
-                        src="./assets/images/destination/icons/heart.png"
-                        alt="Heart Icon"
-                      />{" "}
-                      <span>4.8</span>{" "}
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            </div>
-            <div className="national-features">
               <Link href="/kashmir">
                 <div className="desti-img">
                   {" "}
@@ -126,6 +70,63 @@ export default function Destination() {
                 </div>
               </Link>
             </div>
+            <div className="national-features">
+              <Link href="/leh-laddakh">
+                <div className="desti-img">
+                  {" "}
+                  <img
+                    src="./assets/images/n-destination/img2.webp"
+                    alt="National Destination"
+                  />{" "}
+                </div>
+                <div className="desti-main">
+                  <div className="desti-info">
+                    <h3>Leh Ladakh</h3>
+                    <p>
+                      Leh Ladakh is a vibrant coastal haven, known for its stunning
+                      beaches, lively nightlife, and rich cultural heritage,
+                      ideal for relaxation and exploration.
+                    </p>
+                  </div>
+                  <div className="facility-section">
+                    <div className="faci-1">
+                      <ul>
+                        <li className="ml-0">
+                          <img
+                            src="./assets/images/destination/icons/hotel.png"
+                            alt="Hotel Icon"
+                          />
+                          <p> Upto 3 Stars</p>
+                        </li>
+                        <li>
+                          <img
+                            src="./assets/images/destination/icons/meal.png"
+                            alt="Meal Icon"
+                          />
+                          <p> Meal</p>
+                        </li>
+                        <li>
+                          <img
+                            src="./assets/images/destination/icons/sight.png"
+                            alt="sight Icon"
+                          />
+                          <p> Sightseeing</p>
+                        </li>
+                      </ul>
+                    </div>
+                    <div className="faci-ratings">
+                      {" "}
+                      <img
+                        src="./assets/images/destination/icons/heart.png"
+                        alt="Heart Icon"
+                      />{" "}
+                      <span>4.8</span>{" "}
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            </div>
+          
 
             {/* ================== CTA ================== */}
             <section className="banner-sections desktop-none ptb-40-30">
@@ -149,9 +150,65 @@ export default function Destination() {
             </section>
             {/* ================== CTA ================== */}
 
+            <div className="national-features mt-2">
+              <Link href="/manali">
+                <div className="desti-img">
+                  {" "}
+                  <img
+                    src="./assets/images/n-destination/img3.webp"
+                    alt="National Destination"
+                  ></img>{" "}
+                </div>
+                <div className="desti-main">
+                  <div className="desti-info">
+                    <h3>Manali</h3>
+                    <p>
+                      Manali is a breathtaking paradise, featuring majestic
+                      mountains and serene lakes, perfect for nature lovers and
+                      adventure seekers.
+                    </p>
+                  </div>
+                  <div className="facility-section">
+                    <div className="faci-1">
+                      <ul>
+                        <li className="ml-0">
+                          <img
+                            src="./assets/images/destination/icons/hotel.png"
+                            alt="Hotel Icon"
+                          ></img>
+                          <p> Upto 3 Stars</p>
+                        </li>
+                        <li>
+                          <img
+                            src="./assets/images/destination/icons/meal.png"
+                            alt="Meal Icon"
+                          ></img>
+                          <p> Meal</p>
+                        </li>
+                        <li>
+                          <img
+                            src="./assets/images/destination/icons/sight.png"
+                            alt="sight Icon"
+                          ></img>
+                          <p> Sightseeing</p>
+                        </li>
+                      </ul>
+                    </div>
+                    <div className="faci-ratings">
+                      {" "}
+                      <img
+                        src="./assets/images/destination/icons/heart.png"
+                        alt="Heart Icon"
+                      ></img>{" "}
+                      <span>4.8</span>{" "}
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            </div>
 
             <div className="national-features">
-              <Link href="#">
+              <Link href="/shimla">
                 <div className="desti-img">
                   {" "}
                   <img
@@ -161,9 +218,9 @@ export default function Destination() {
                 </div>
                 <div className="desti-main">
                   <div className="desti-info">
-                    <h3>Darjeeling</h3>
+                    <h3>Shimla</h3>
                     <p>
-                      Darjeeling, with its lush tea gardens and panoramic views
+                      Shimla, with its lush tea gardens and panoramic views
                       of the Himalayas, is a charming hill station that
                       captivates visitors seeking tranquility & natural beauty.
                     </p>
@@ -207,62 +264,7 @@ export default function Destination() {
               </Link>
             </div>
 
-            <div className="national-features mt-2">
-              <Link href="/kashmir">
-                <div className="desti-img">
-                  {" "}
-                  <img
-                    src="./assets/images/n-destination/img3.webp"
-                    alt="National Destination"
-                  ></img>{" "}
-                </div>
-                <div className="desti-main">
-                  <div className="desti-info">
-                    <h3>Kashmir</h3>
-                    <p>
-                      Kashmir is a breathtaking paradise, featuring majestic
-                      mountains and serene lakes, perfect for nature lovers and
-                      adventure seekers.
-                    </p>
-                  </div>
-                  <div className="facility-section">
-                    <div className="faci-1">
-                      <ul>
-                        <li className="ml-0">
-                          <img
-                            src="./assets/images/destination/icons/hotel.png"
-                            alt="Hotel Icon"
-                          ></img>
-                          <p> Upto 3 Stars</p>
-                        </li>
-                        <li>
-                          <img
-                            src="./assets/images/destination/icons/meal.png"
-                            alt="Meal Icon"
-                          ></img>
-                          <p> Meal</p>
-                        </li>
-                        <li>
-                          <img
-                            src="./assets/images/destination/icons/sight.png"
-                            alt="sight Icon"
-                          ></img>
-                          <p> Sightseeing</p>
-                        </li>
-                      </ul>
-                    </div>
-                    <div className="faci-ratings">
-                      {" "}
-                      <img
-                        src="./assets/images/destination/icons/heart.png"
-                        alt="Heart Icon"
-                      ></img>{" "}
-                      <span>4.8</span>{" "}
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            </div>
+         
 
 
              {/* ================== CTA ================== */}

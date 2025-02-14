@@ -6,7 +6,7 @@ export default function Offcanvas() {
     <>
       <div
         className="offcanvas mob-canvas offcanvas-start"
-        tabindex="-1"
+        tabIndex="-1"
         id="offcanvasExample"
         aria-labelledby="offcanvasExampleLabel"
       >
@@ -36,11 +36,11 @@ export default function Offcanvas() {
                 </Link>
               </li>
               <li className="nav-item mob-dropdown">
-              <div class="accordion" id="familyAccordion">
-                  <div class="accordion-item">
-                    <h2 class="accordion-header" id="headingOne">
+              <div className="accordion" id="familyAccordion">
+                  <div className="accordion-item">
+                    <h2 className="accordion-header" id="headingOne">
                       <button
-                        class="accordion-button"
+                        className="accordion-button"
                         type="button"
                         data-bs-toggle="collapse"
                         data-bs-target="#collapseOne"
@@ -52,12 +52,12 @@ export default function Offcanvas() {
                     </h2>
                     <div
                       id="collapseOne"
-                      class="accordion-collapse collapse"
+                      className="accordion-collapse collapse"
                       aria-labelledby="headingOne"
                       data-bs-parent="#familyAccordion"
                     >
-                      <div class="accordion-body">
-                        <ul class="list-unstyled">
+                      <div className="accordion-body">
+                        <ul className="list-unstyled">
                           <li><Link href="/national-destination">- National Destination</Link></li>
                           <li><Link href="/international-destination">- International Destination</Link></li>
                         </ul>

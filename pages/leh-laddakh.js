@@ -8,7 +8,7 @@ import Link from "next/link";
 import Popup from "../components/corporate/Popup";
 import Offcanvas from "../components/header/Offcanvas";
 
-export default function kashmir() {
+export default function LehLaddakh() {
 
   
   return (
@@ -21,7 +21,7 @@ export default function kashmir() {
           <div className="row align-items-center pt-200">
             <div className="col-md-12 about-contennt">
               <h2 className="fs-64 text-white fw-bold">
-                The heaven of earth, Kashmir
+                The heaven of earth, Leh
               </h2>
               <p>
                 Plan your trips, honeymoons, or family getaways with
@@ -46,7 +46,7 @@ export default function kashmir() {
           <div className="parent-package w-100" id="package">
             <div className="max-800">
               <div className="content-section">
-                <h1>Kashmir Family Tour Package</h1>
+                <h1>Leh Laddakh Family Package</h1>
                 {/* <ul className="location-list">
                   <li className="list-item-none">(7 Days)</li>
                   <li className="locaton-items">
@@ -151,7 +151,7 @@ export default function kashmir() {
                           src="./assets/images/kashmir/icons/pin.png"
                           alt="Location Icon"
                         />{" "}
-                        Srinagar • Gulmarg • Pahalgam • Sonamarg
+                          Leh • Pangong
                       </li>
                     </ul>
                         <ul>
@@ -159,7 +159,7 @@ export default function kashmir() {
                             <span>Hotel</span> : 3* Deluxe
                           </li>
                           <li>
-                            <span>Airport Transfers</span> : Included (Sedan)
+                            <span>Airport Transfers</span> : Included (Scorpio/Xylo/Innova)
                           </li>
                           <li>
                             <span>No of Pax</span> : 2 adults & 1 child (Below 5 yrs)
@@ -168,7 +168,7 @@ export default function kashmir() {
                             <span>Meals</span> : Daily Breakfast  Only
                           </li>
                           <li>
-                            <span>Duration</span> : 4N 5D
+                            <span>Duration</span> : 3N 4D
                           </li>
                           {/* <li>
                             <span>Photos & Videos</span> : Included
@@ -199,9 +199,9 @@ export default function kashmir() {
                               />{" "}
                               Day 1
                             </p>
-                            <h3>Srinagar Arrival + Srinagar Local Sightseeing</h3>
+                            <h3>Leh Airport Pickup and Acclimate</h3>
                             <p className="sche-details">
-                              Arrival at Srinagar Airport. Pickup by our tour Representative and transfer to Hotel. Rest and proceed towards Srinagar Local Sightseeing 
+                               Arrival at Leh airport and transfer to your pre-booked Hotel. Complete day rest for acclimatize
                             </p>
                           </div>
                           <div className="schedule-items">
@@ -212,9 +212,9 @@ export default function kashmir() {
                               />{" "}
                               Day 2
                             </p>
-                            <h3>Srinagar - Gulmarg - Srinagar</h3>
+                            <h3>Sham Valley Excursion Upto Sangam</h3>
                             <p className="sche-details">
-                                Breakfast and proceed towards Gulmarg to explore a ride on Gondola both Phases (Extra Cost). You may also  Cover Drung Water Fall 
+                              Breakfast and head out for Hall of Fame, Gurudwara Pather Sahib, Magnetic Hill, Sangam Point. Visit Shanti Stupa & Leh Market Place
                             </p>
                           </div>
                           <div className="schedule-items">
@@ -225,9 +225,9 @@ export default function kashmir() {
                               />{" "}
                               Day 3
                             </p>
-                            <h3>Srinagar - Pahalgam - Srinagar</h3>
+                            <h3>Leh - Pangong Excursion Lake -Leh</h3>
                             <p className="sche-details">
-                               Breakfast and drive to Pahalgam. En-route saffron feilds, Awantipura ruins drive through pine forests, Lidder streams. ABC Valley (By Direct Basis)
+                               Breakfast and leave for Pangong lake through Changla Pass. Visit throughout few small villages for sudden view of the Pangong lake. Evenin return Leh.
                             </p>
                           </div>
                           <div className="schedule-items">
@@ -238,24 +238,12 @@ export default function kashmir() {
                               />{" "}
                               Day 4
                             </p>
-                            <h3>Srinagar - Sonmarg - Srinagar (Houseboat)</h3>
+                            <h3>Leh - Airport Drop</h3>
                             <p className="sche-details">
-                               Breakfast and proceed towards sonmarg Famous for Thajiwas Glacier (By Ponies at Extra Cost)
+                              Breakfast and transferred to leh Airport. Return Home with Everlasting memories 
                             </p>
                           </div>
-                          <div className="schedule-items">
-                            <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
-                              Day 5
-                            </p>
-                            <h3>Srinagar - Airport Drop</h3>
-                            <p className="sche-details">
-                               Breakfast and transferred to Srinagar Airport. Return Home with Everlasting memories 
-                            </p>
-                          </div>
+                          
                         </div>
                         <div className="cancellation-policy-bx">
                           <Link href="#">*Cancellation Policy</Link>
@@ -300,7 +288,7 @@ export default function kashmir() {
                           src="./assets/images/kashmir/icons/pin.png"
                           alt="Location Icon"
                         />{" "}
-                        Srinagar • Gulmarg • Pahalgam • Sonamarg
+                         Leh • Nubra Valley  • Pangong  • Khardungla  • Turtuk
                       </li>
                     </ul>
                         <ul>
@@ -308,16 +296,16 @@ export default function kashmir() {
                             <span>Hotel</span> : 3* Premium
                           </li>
                           <li>
-                            <span>No of Pax</span> : 02 Adults 02 Childs
+                            <span>No of Pax</span> : 2 adults & 1 child (Below 5 yrs)
                           </li>
                           <li>
                             <span>Airport Transfers</span> : Included (Srinagar - Srinagar)
                           </li>
                           <li>
-                            <span>Meals</span> : Breakfast and Dinner 
+                            <span>Meals</span> : Daily Breakfast  Only
                           </li>
                           <li>
-                            <span>Duration</span> : 5N 6D
+                            <span>Duration</span> : 6N 7D
                           </li>
                         
                         </ul>
@@ -343,9 +331,9 @@ export default function kashmir() {
                               />{" "}
                               Day 1
                             </p>
-                            <h3>Srinagar Arrival + Srinagar Local Sightseeing</h3>
+                            <h3>Leh Airport Pickup and Acclimate</h3>
                             <p className="sche-details">
-                               Arrival at Srinagar Airport. Pickup by our tour Representative and transfer to Hotel. Rest and proceed towards Srinagar Local Sightseeing 
+                            Arrival at Leh airport and transfer to your pre-booked Hotel. Complete day rest for acclimatize
                             </p>
                           </div>
                           <div className="schedule-items">
@@ -356,9 +344,9 @@ export default function kashmir() {
                               />{" "}
                               Day 2
                             </p>
-                            <h3>Srinagar - Sonmarg - Srinagar</h3>
+                            <h3>Sham Valley Excursion Upto Sangam</h3>
                             <p className="sche-details">
-                               Breakfast and proceed towards sonmarg Famous for Thajiwas Glacier (By Ponies at Extra Cost)
+                               Breakfast and head out for Hall of Fame, Gurudwara Pather Sahib, Magnetic Hill, Sangam Point. Visit Shanti Stupa & Leh Market Place
                             </p>
                           </div>
                           <div className="schedule-items">
@@ -369,9 +357,9 @@ export default function kashmir() {
                               />{" "}
                               Day 3
                             </p>
-                            <h3>Srinagar - Gulmarg - Srinagar</h3>
+                            <h3>Leh - Nubra via Khardung la -Nubra</h3>
                             <p className="sche-details">
-                              Breakfast and proceed towards Gulmarg to explore a ride on Gondola both Phases (Extra Cost). You may also  Cover Drung Water Fall 
+                               Breakfast and drive to Nubra Valley via Khardungla Pass. On arrival do check-in in pre-booked hotel or camp. 
                             </p>
                           </div>
                           <div className="schedule-items">
@@ -382,9 +370,9 @@ export default function kashmir() {
                               />{" "}
                               Day 4
                             </p>
-                            <h3>Srinagar - Pahalgam</h3>
+                            <h3>Nubra - Turtuk -Nubra (Zero Point)</h3>
                             <p className="sche-details">
-                               Breakfast and drive to Pahalgam. En-route saffron feilds, Awantipura ruins drive through pine forests, Lidder streams. ABC Valley (By Direct Basis)
+                            Breakfast and leave for Turtuk. You will cover Seightseeing like Shyok River Valley . In the evening return back to Nubra. 
                             </p>
                           </div>
                           <div className="schedule-items">
@@ -395,9 +383,9 @@ export default function kashmir() {
                               />{" "}
                               Day 5
                             </p>
-                            <h3>Pahalgam - Srinagar (Houseboat)</h3>
+                            <h3>Nubra - Pangong</h3>
                             <p className="sche-details">
-                              Breakfast and proceed for Baisaran Valley (Mini -Switzerland) cause of its bueaty (By Direct). Pahalgam Local sightseeing. Evening Return Srinagar & Do check-in Houseboat at Dal Lake.
+                                After an early breakfast do check-out and head towards Pabgong Tso via Shyok. On arrival at Pangong, Check-in in your pre-Booked Hotel or camp.
                             </p>
                           </div>
 
@@ -409,9 +397,23 @@ export default function kashmir() {
                               />{" "}
                               Day 6
                             </p>
-                            <h3>Srinagar - Airport Drop</h3>
+                            <h3>Pangong Lake - Leh </h3>
                             <p className="sche-details">
-                            Breakfast and transferred to Srinagar Airport. Return Home with Everlasting memories 
+                               In morning indulge yourself in the walk beside the lake and you can enjoy here photography. Later depart for Leh Ladak enroute Hemis Gompa. Upon arrival do check-in formailities.
+                            </p>
+                          </div>
+
+                          <div className="schedule-items">
+                            <p className="schedule-timing">
+                              <img
+                                src="./assets/images/kashmir/icons/time.png"
+                                alt="watch icon"
+                              />{" "}
+                              Day 7
+                            </p>
+                            <h3>Leh - Airport Drop</h3>
+                            <p className="sche-details">
+                               Breakfast and transferred to leh Airport. Return Home with Everlasting memories 
                             </p>
                           </div>
                         </div>
@@ -461,7 +463,7 @@ export default function kashmir() {
                           src="./assets/images/kashmir/icons/pin.png"
                           alt="Location Icon"
                         />{" "}
-                        Srinagar • Gulmarg • Pahalgam • Sonamarg • Doodhpathri
+                        Null • Null • Null • Null • Null
                       </li>
                     </ul>
                         <ul>
@@ -469,10 +471,10 @@ export default function kashmir() {
                             <span>Hotel</span> : 4*
                           </li>
                           <li>
-                            <span>No of Pax</span> : 02 Adults 01 Child (below 6 yrs)
+                            <span>No of Pax</span> : 03 Adults 01 Child (below 6 yrs)
                           </li>
                           <li>
-                            <span>Airport Transfers</span> : 2 adults & 1child (Below 5 yrs)
+                            <span>Airport Transfers</span> : Included (Scorpio/Xylo/Innova)
                           </li>
                           <li>
                             <span>Meals</span> : Breakfast and Dinner 
@@ -503,9 +505,9 @@ export default function kashmir() {
                               />{" "}
                               Day 1
                             </p>
-                            <h3>Srinagar Arrival and Pick-up+ Srinagar Local Sightseeing</h3>
+                            <h3>Leh Airport Pickup and Acclimate</h3>
                             <p className="sche-details">
-                            Arrival at Srinagar Airport. Pickup by our tour Representative and transfer to Hotel. Rest and proceed towards Srinagar Local Sightseeing 
+                              Arrival at Leh airport and transfer to your pre-booked Hotel. Complete day rest for acclimatize
                             </p>
                           </div>
                           <div className="schedule-items">
@@ -516,9 +518,9 @@ export default function kashmir() {
                               />{" "}
                               Day 2
                             </p>
-                            <h3>Srinagar - Doodhpathri - Srinagar</h3>
+                            <h3>Sham Valley Excursion Upto Sangam</h3>
                             <p className="sche-details">
-                              Breakfast and you would be taken to Doodhpathri to witness sheep and strikingly beautiful cascading WATERFALL.
+                              Breakfast and head out for Hall of Fame, Gurudwara Pather Sahib, Magnetic Hill, Sangam Point. Visit Shanti Stupa & Leh Market Place
                             </p>
                           </div>
                           <div className="schedule-items">
@@ -529,9 +531,9 @@ export default function kashmir() {
                               />{" "}
                               Day 3
                             </p>
-                            <h3>Srinagar - Sonmarg - Srinagar</h3>
+                            <h3>Leh - Nubra via Khardung la -Nubra (18390 FT.)</h3>
                             <p className="sche-details">
-                               Breakfast and proceed towards sonmarg Famous for Thajiwas Glacier (By Ponies at Extra Cost)
+                               Breakfast and drive to Nubra Valley via Khardungla Pass. On arrival do check-in in pre-booked hotel or camp.
                             </p>
                           </div>
                           <div className="schedule-items">
@@ -542,9 +544,9 @@ export default function kashmir() {
                               />{" "}
                               Day 4
                             </p>
-                            <h3>Srinagar - Gulmarg - Srinagar</h3>
+                            <h3>Nubra - Pangong</h3>
                             <p className="sche-details">
-                            Breakfast and proceed towards Gulmarg to explore a ride on Gondola both Phases (Extra Cost). You may also  Cover Drung Water Fall 
+                               After an early breakfast do check-out and head towards Pabgong Tso via Shyok. On arrival at Pangong, Check-in in your pre-Booked Hotel or camp.
                             </p>
                           </div>
                           <div className="schedule-items">
@@ -555,9 +557,9 @@ export default function kashmir() {
                               />{" "}
                               Day 5
                             </p>
-                            <h3>Srinagar - Pahalgam</h3>
+                            <h3>Pangong lake - Tsomoriri</h3>
                             <p className="sche-details">
-                               Breakfast and drive to Pahalgam. En-route saffron feilds, Awantipura ruins drive through pine forests, Lidder streams. ABC Valley (By Direct Basis)
+                               Wake up early and indulge yourself in the walk besides the lake. Later go for Tsomiriri Lake. On arrival do check-in Formailities.Over night stay.
                             </p>
                           </div>
 
@@ -569,9 +571,9 @@ export default function kashmir() {
                               />{" "}
                               Day 6
                             </p>
-                            <h3>Pahalgam - Srinagar (Houseboat)</h3>
+                            <h3>Tsomoriri - Tsokar - Tanglangla - Leh </h3>
                             <p className="sche-details">
-                            Breakfast and proceed for Baisaran Valley (Mini -Switzerland) cause of its bueaty (By Direct). Pahalgam Local sightseeing. Evening Return Srinagar & Do check-in Houseboat at Dal Lake.
+                              After Breakfast do check-out and visit Korzok Village.  Later drive towards Tsokar and ejoy their local tribes and their way of living. Later transfer to leh for Overnight stay.
                             </p>
                           </div>
 
@@ -585,9 +587,9 @@ export default function kashmir() {
                               />{" "}
                               Day 7
                             </p>
-                            <h3>Srinagar - Airport Drop</h3>
+                            <h3>Leh - Airport Drop</h3>
                             <p className="sche-details">
-                               Breakfast and transferred to Srinagar Airport. Return Home with Everlasting memories 
+                               Breakfast and transferred to leh Airport. Return Home with Everlasting memories 
                             </p>
                           </div>
                         </div>
@@ -614,15 +616,15 @@ export default function kashmir() {
                 of contents
               </h2>
               <div className="table-contents">
-                <Link href="#package">Kashmir Packages</Link>
+                <Link href="#package">Leh Packages</Link>
 
-                <Link href="#about-us">About Kashmir</Link>
+                <Link href="#about-us">About Leh</Link>
 
-                <Link href="#headingTwo">Kashmir Bucket List</Link>
+                <Link href="#headingTwo">Leh Bucket List</Link>
 
-                <Link href="#headingThree">Kashmir FAQ’s </Link>
+                <Link href="#headingThree">Leh FAQ’s </Link>
 
-                <Link href="#location">Kashmir Location</Link>
+                <Link href="#location">Leh Location</Link>
 
                 <Link href="#traveler-reviews">Trip Reviews</Link>
               </div>
@@ -654,15 +656,15 @@ export default function kashmir() {
                 of contents
               </h2>
               <div className="table-contents">
-                <Link href="#package">Kashmir Packages</Link>
+                <Link href="#package">Leh Packages</Link>
 
-                <Link href="#about-us">About Kashmir</Link>
+                <Link href="#about-us">About Leh</Link>
 
-                <Link href="#headingTwo">Kashmir Bucket List</Link>
+                <Link href="#headingTwo">Leh Bucket List</Link>
 
-                <Link href="#headingThree">Kashmir FAQ’s </Link>
+                <Link href="#headingThree">Leh FAQ’s </Link>
 
-                <Link href="#location">Kashmir Location</Link>
+                <Link href="#location">Leh Location</Link>
 
                 <Link href="#traveler-reviews">Trip Reviews</Link>
               </div>
@@ -816,7 +818,7 @@ export default function kashmir() {
                     aria-expanded="true"
                     aria-controls="collapseOne"
                   >
-                    About Kashmir
+                    About Leh
                   </button>
                 </h2>
                 <div
@@ -938,7 +940,7 @@ export default function kashmir() {
                     aria-expanded="false"
                     aria-controls="collapseTwo"
                   >
-                    Kashmir Bucket List
+                    Leh Bucket List
                   </button>
                 </h2>
                 <div
@@ -1060,7 +1062,7 @@ export default function kashmir() {
                     aria-expanded="false"
                     aria-controls="collapseThree"
                   >
-                    Kashmir FAQ’s?
+                    Leh FAQ’s?
                   </button>
                 </h2>
                 <div
