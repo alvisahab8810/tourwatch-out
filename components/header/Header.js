@@ -16,21 +16,21 @@ export default function Topbar() {
           <ul className="menus nav nav-pills mobile-none">
             <li className="nav-item">
               <Link href="/about" className="nav-link" aria-current="page">
-                Our Story
+                Our Story 
 
                
               </Link>
             </li>
             <li className="nav-item dropdown-main">
               <Link href="#" className="nav-link">
-                Family
+                Family <img src="./assets/images/drop.png" alt="Down Arrow"></img>
 
                 
               </Link>
 
               <ul className="dropdown-items">
-                  <li> <Link href="/national-destination">- National Destination</Link> </li>
-                  <li> <Link href="/international-destination">- International Destination</Link> </li>
+                  <li> <Link href="/national-destination">National</Link> </li>
+                  <li> <Link href="/international-destination">International</Link> </li>
                 </ul>
             </li>
             <li className="nav-item">

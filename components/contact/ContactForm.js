@@ -16,14 +16,14 @@ export default function ContactForm() {
                     <i className="ri-phone-line"></i>
                     <div className="ms-3">
                         <h5>Phone</h5>
-                        <p>+1 800-123-4567</p>
+                        <p><Link href="tel:+91 8882701800">+91 8882701800</Link></p>
                     </div>
                 </div>
                 <div className="contact-info d-flex align-items-center mb-3">
                     <i className="ri-mail-line"></i>
                     <div className="ms-3">
                         <h5>Email</h5>
-                        <p>support@voyagify.com</p>
+                        <p><Link href="mailto:sales1@tourwatchout.com">sales1@tourwatchout.com</Link></p>
                     </div>
                 </div>
                 </div>
@@ -32,15 +32,15 @@ export default function ContactForm() {
                     <i className="ri-map-pin-line"></i>
                     <div className="ms-3">
                         <h5>Office Address</h5>
-                        <p>123 Travel Lane, Adventure City, USA</p>
+                        <p> DLF MyPad B-1 10th Floor Vibhuti Khand, Gomti Nagar, Lucknow, Uttar Pradesh 226010</p>
                     </div>
                 </div>
                 <div className="social-icons">
                     <h5>Follow Us on Social Media</h5>
                     <div className="social-icons1">
-                        <Link href="#"><i className="ri-facebook-fill"></i></Link>
-                        <Link href="#"><i className="ri-instagram-line"></i></Link>
-                        <Link href="#"><i className="ri-mail-line"></i></Link>
+                        <Link href="https://www.facebook.com/TourWatchout/"><i className="ri-facebook-fill"></i></Link>
+                        <Link href="https://www.instagram.com/tourwatchout/"><i className="ri-instagram-line"></i></Link>
+                        <Link href="https://x.com/tourwatchout"><i><img src='./assets/images/icons/x.png'></img></i></Link>
                     </div>
                 </div>
             </div>

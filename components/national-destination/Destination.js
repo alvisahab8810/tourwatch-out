@@ -290,7 +290,7 @@ export default function Destination() {
             {/* ================== CTA ================== */}
 
             <div className="national-features mt-2">
-              <Link href="#">
+              <Link href="shimla-manali">
                 <div className="desti-img">
                   {" "}
                   <img
@@ -300,9 +300,9 @@ export default function Destination() {
                 </div>
                 <div className="desti-main">
                   <div className="desti-info">
-                    <h3>Goa</h3>
+                    <h3>Shimla & Manali</h3>
                     <p>
-                      Goa is a vibrant coastal haven, known for its stunning
+                       Shimla & Manali is a vibrant coastal haven, known for its stunning
                       beaches, lively nightlife, and rich cultural heritage,
                       ideal for relaxation and exploration.
                     </p>
@@ -342,7 +342,7 @@ export default function Destination() {
               </Link>
             </div>
             <div className="national-features mt-2">
-              <Link href="/kashmir">
+              <Link href="/dharamshala">
                 <div className="desti-img">
                   {" "}
                   <img
@@ -352,9 +352,9 @@ export default function Destination() {
                 </div>
                 <div className="desti-main">
                   <div className="desti-info">
-                    <h3>Kashmir</h3>
+                    <h3>Dharamshala</h3>
                     <p>
-                      Kashmir is a breathtaking paradise, featuring majestic
+                      Dharamshala is a breathtaking paradise, featuring majestic
                       mountains and serene lakes, perfect for nature lovers and
                       adventure seekers.
                     </p>
@@ -426,7 +426,7 @@ export default function Destination() {
         <div className="container">
           <div className="national-list-bx pb-80">
             <div className="national-features">
-              <Link href="#">
+              <Link href="/dehradun">
                 <div className="desti-img">
                   {" "}
                   <img
@@ -436,9 +436,9 @@ export default function Destination() {
                 </div>
                 <div className="desti-main">
                   <div className="desti-info">
-                    <h3>Darjeeling</h3>
+                    <h3>Dehradun & Mussoorie</h3>
                     <p>
-                      Darjeeling, with its lush tea gardens and panoramic views
+                      Dehradun & Mussoorie, with its lush tea gardens and panoramic views
                       of the Himalayas, is a charming hill station that
                       captivates visitors seeking tranquility & natural beauty.
                     </p>
@@ -483,7 +483,7 @@ export default function Destination() {
             </div>
 
             <div className="national-features">
-              <Link href="/kashmir">
+              <Link href="/nanital">
                 <div className="desti-img">
                   {" "}
                   <img

@@ -1,3 +1,21 @@
+@media (max-width: 1440px) and (min-width: 1140px) {
+
+    .parent-package .max-400 {
+        width: 20%;
+    }
+    .location-list .locaton-items {
+        font-size: 16px;
+    }
+
+    .parent-package .max-800 {
+        width: 80%;
+    }
+
+    .feature-list ul li span {
+        width: 173px;
+
+    }
+}
 @media(max-width:1120px){
     .menus .nav-link {
         padding: 10px;
@@ -1897,10 +1915,103 @@ section.national-dest {
 .location-list .locaton-items {
     font-size: 14px;
 }
+
+.check-heading {
+    font-size: 32px;
+}
+
+.checkinbox label {
+    font-size: 16px;
+}
+
+.checkin-footer p {
+    font-size: 18px;
+}
+
+.social-list-icons li a {
+    height: 30px;
+    width: 30px;
+
+}
+
+.social-list-icons li a img {
+    width: 17px;
+}
+
+.social-list-icons li {
+    margin: 0px 7px;
+}
+.checkinbox .form-text {
+    font-size: 11px;
+}
+.checkinbox input {
+    height: 40px;
+}
+.check-para {
+    font-size: 16px;
+}
+
+.checkinbox select {
+    height: 40px;
+    font-size: 11px;
+}
+
+.checkinbox .btn-submit {
+    height: 40px;
+    font-size: 15px;
+}
+.checkinbox #uploadId {
+    line-height: 26px;
+    font-size: 11px;
+}
+.check-f-logo img {
+    width: 195px;
+}
+.check-f-logo p {
+    font-size: 12px;
+    letter-spacing: 5px;
+    margin-top: 15px;
+}
+.check-footer {
+    height: 180px;
+
+}
+
+.col-md-12.check-in img {
+    width: 200px;
+}
+.check-in-hero {
+    padding-bottom: 100px;
+    padding-top: 100px;
+}
+
+.check-heading {
+    font-size: 24px;
+}
+
+.check-para {
+    color: #575757;
+    margin-top: 15px;
+    font-size: 14px;
+    margin-bottom: 0;
+}
+
+.checkinbox label {
+    font-size: 12px;
+}
+
+.checkinbox .form-container {
+    margin: 25px auto;
+    padding: 15px;
+}
 }
 @media(max-width:375px){
     .banner-section {
         height: 300px;
+    }
+
+    .checkinbox label {
+        font-size: 12px;
     }
     .btn-primary1 {
         font-size: 12px;

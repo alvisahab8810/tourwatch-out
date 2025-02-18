@@ -50,6 +50,7 @@ export default function NationalDestination() {
             className="swiper mySwiper4 pt-80"
           >
             <SwiperSlide className="swiper-slide">
+              <Link href="/kashmir">
               <div className="batch-info">
                 <p>Starting From*</p>
                 <h4>
@@ -108,6 +109,7 @@ export default function NationalDestination() {
                   </div>
                 </div>
               </div>
+              </Link>
             </SwiperSlide>
 
             <SwiperSlide className="swiper-slide">

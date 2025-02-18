@@ -1298,6 +1298,7 @@ padding-left: 0;;
 }
 section.national-dest {
     background: #F5F5F5;
+    overflow: hidden;
 }
 
 section.national-dest .swiper-slide{
@@ -2473,7 +2474,7 @@ a.read-more-btn {
 
 
 .parent-package .content-section h1 {
-    font-size: 64px;
+    font-size: 50px;
 }
 
 .parent-package .location-list{
@@ -2550,7 +2551,7 @@ a.read-more-btn {
 
 .max-400 h2{
     color: #575757;
-    font-size: 50px;
+    font-size: 40px;
     font-weight: bold;
     line-height: 1;
     text-align: center;
@@ -2561,7 +2562,7 @@ a.read-more-btn {
 .table-contents a {
     border:1px solid #C2BEBE;
     color:#575757;
-    font-size: 22px;
+    font-size: 16px;
     background-color: #F9F9F9;
     border-radius: 10px;
     margin: 10px 0px;
@@ -2591,9 +2592,9 @@ a.read-more-btn {
 }
 
 .feature-list ul li span {
-    width: 223px;
+    width: 190px;
     display: inline-block;
-    font-size: 22px;
+    font-size: 16px;
     font-weight: 500;
     font-family: 'Inter';
     color: #575757;
@@ -2604,7 +2605,7 @@ a.read-more-btn {
 .feature-list ul li {
     margin: 0px 0px 18px 0px !important;
     list-style: none;
-    font-size: 22px;
+    font-size: 16px;
     font-weight: 300;
     font-family: 'Inter';
 }
@@ -2973,16 +2974,21 @@ p.happy-title {
     transform: translateY(-10px);
     transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
     position: absolute;
-    background: #ffffffe8;
-    padding: 10px;
+    padding:6px 16px;
     list-style: none;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    top: 70px;
-    border-radius: 10px;
-    background: #ffffffba;
+    top: 72px;
+    left:-1px;
+    background: #eeeeee14;  
     backdrop-filter: blur(5px);
     border: 1px solid #fff;
+    border-top: none;;
   }
+
+  .dropdown-items li a{
+    font-size: 12px;
+    color:white;
+  }
+  
   
   .dropdown-main:hover .dropdown-items {
     opacity: 1;
@@ -2996,3 +3002,155 @@ p.happy-title {
   .desk-logo{
     padding-left: 10px;;
   }
+
+  section.time-schedule-section {
+    padding-top: 40px;
+}
+
+/* ======================================== CheckIn Page ========================================== */
+
+
+.check-in-hero{
+    background-image: url(../images/hero/check-in-hero.webp);
+    width: 100%;
+    background-size: cover;
+    padding-bottom: 230px;
+    padding-top: 230px;
+}
+
+.check-in{
+    justify-content: center;
+    align-items: center;
+    display: flex
+;
+}
+
+.check-heading{
+    font-size: 60px;
+
+}
+
+
+.checkinbox .form-container {
+    /* max-width: 600px; */
+    margin: 50px auto;
+    padding: 20px;
+    /* background-color: #ffffff; */
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.checkinbox .form-control1 {
+    background-color: #f1f1f1;
+}
+.checkinbox .form-text {
+    font-size: 18px;
+    color: #666666;
+}
+.checkinbox .btn-submit {
+    background-color: #EE4C49;
+    color: #ffffff;
+    height: 50px;
+    font-size: 20px;
+    font-weight: 500;
+    border-radius: 8px;
+
+}
+.check-para{
+    color:#575757;
+    margin-top: 15px;
+    font-size:26px;
+}
+
+.checkinbox input{
+    height: 50px;
+    border-radius: 8px;
+}
+
+
+.checkinbox select{
+    height: 50px;
+    border-radius: 8px;
+
+}
+
+.checkinbox label{
+    font-size: 20px;
+}
+
+.checkin-footer p{
+    font-size: 24px;
+    font-weight: 500;
+}
+.social-list-icons{
+    display: flex;
+    list-style: none;
+    padding-left: 0;
+    margin:0;
+
+}
+
+.social-list-icons li{
+    margin:0px 15px;
+}
+
+.social-list-icons li a{
+    height: 40px;
+    width: 40px;
+    border-radius: 50px;
+    background-color: #EE4C49;
+    display: flex
+;
+    align-items: center;
+    justify-content: center;
+}
+
+.social-list-icons li a img {
+    width: 23px;
+    filter: brightness(0) invert(1);
+}
+
+.checkinbox #uploadId{
+    line-height: 37px;
+}
+
+
+
+.check-f-logo img{
+    width:328px;
+}
+
+
+
+.check-f-logo p {
+    font-size: 16px;
+    color: #ffff;
+    letter-spacing: 7px;
+    opacity: 60%;
+    font-weight: 400;
+    margin-top: 30px;
+    margin-bottom: 0;
+}
+
+.check-footer {
+    background-color: #0A1F30;
+    height: 234px;
+    width: 100%;
+    display: flex
+;
+    align-items: center;
+    flex-flow: column;
+    justify-content: center;
+    text-align: center;
+}
+
+li.nav-item.dropdown-main {
+    /* border: 1px solid #fff; */
+    position: relative;
+}
+
+.dropdown-main img{
+    margin-left: 5px;
+}
+.social-icons1 i img{
+    width: 19px;;
+}
