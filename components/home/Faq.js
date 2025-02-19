@@ -24,7 +24,7 @@ export default function Faq() {
                     aria-expanded="true"
                     aria-controls="collapseOne"
                   >
-                    Do you provide makeup trials before the wedding?
+                    How does TourWatchOut ensure my trip is stress-free?
                   </button>
                 </h2>
                 <div
@@ -34,10 +34,7 @@ export default function Faq() {
                   data-bs-parent="#accordionExample"
                 >
                   <div className="accordion-body">
-                    Yes, we offer makeup trials to help you visualize your look
-                    before your big day. Trials allow us to discuss your
-                    preferences, experiment with different styles, and ensure
-                    that you are completely satisfied with the final result.
+                    With 24/7 on-trip support, we ensure that you have assistance whenever needed, making your journey smooth and enjoyable.
                   </div>
                 </div>
               </div>
@@ -51,7 +48,7 @@ export default function Faq() {
                     aria-expanded="false"
                     aria-controls="collapseTwo"
                   >
-                    How do I book an appointment?
+                    What if we need help during the trip?
                   </button>
                 </h2>
                 <div
@@ -61,11 +58,7 @@ export default function Faq() {
                   data-bs-parent="#accordionExample"
                 >
                   <div className="accordion-body">
-                    Booking an appointment is easy! You can reach out to us
-                    through our website or contact us directly via phone or
-                    social media. We recommend scheduling a consultation to
-                    discuss your desired look and any specific requirements you
-                    may have.
+                    Our 24/7 support system via WhatsApp and a dedicated POC ensures that any issue is resolved quickly, wherever you are.
                   </div>
                 </div>
               </div>
@@ -79,7 +72,7 @@ export default function Faq() {
                     aria-expanded="false"
                     aria-controls="collapseThree"
                   >
-                    How long does a bridal makeup session typically take?
+                     How do you ensure the safety of my family during the trip?
                   </button>
                 </h2>
                 <div
@@ -89,11 +82,7 @@ export default function Faq() {
                   data-bs-parent="#accordionExample"
                 >
                   <div className="accordion-body">
-                    A bridal makeup session usually takes between 1.5 to 2.5
-                    hours, depending on the complexity of the desired look and
-                    any additional services like hair styling. We recommend
-                    allowing ample time to ensure a relaxed and enjoyable
-                    experience.
+                    We prioritize safety with trusted drivers, vetted accommodations, and secure activities, ensuring a worry-free and safe experience for your family.
                   </div>
                 </div>
               </div>
@@ -108,7 +97,7 @@ export default function Faq() {
                     aria-expanded="false"
                     aria-controls="collapseFour"
                   >
-                    Can I book you for destination weddings?
+                    Can TourWatchOut plan trips for corporate groups?
                   </button>
                 </h2>
                 <div
@@ -118,10 +107,7 @@ export default function Faq() {
                   data-bs-parent="#accordionExample"
                 >
                   <div className="accordion-body">
-                    Yes, we love traveling for destination weddings! Please
-                    contact us to discuss logistics, including travel fees and
-                    accommodations, so we can make arrangements to ensure you
-                    look stunning on your special day.
+                    Yes! We provide bespoke corporate travel solutions, focusing on team-building experiences and hassle-free corporate retreats
                   </div>
                 </div>
               </div>
@@ -136,7 +122,7 @@ export default function Faq() {
                     aria-expanded="false"
                     aria-controls="collapseFive"
                   >
-                    What is the best time to schedule my bridal makeup trial?
+                     Is there a limit to the number of people I can book for?
                   </button>
                 </h2>
                 <div
@@ -146,10 +132,7 @@ export default function Faq() {
                   data-bs-parent="#accordionExample"
                 >
                   <div className="accordion-body">
-                    We recommend scheduling your bridal makeup trial about 1-3
-                    months before your wedding day. This gives you enough time
-                    to discuss your look and make any adjustments if needed,
-                    ensuring you feel confident and beautiful on your big day.
+                    No! Whether you’re booking for a small family, a corporate group, or a large gathering, we can accommodate all group sizes.
                   </div>
                 </div>
               </div>

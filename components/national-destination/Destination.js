@@ -19,7 +19,7 @@ export default function Destination() {
                 <div className="desti-img">
                   {" "}
                   <img
-                    src="./assets/images/n-destination/img3.webp"
+                    src="./assets/images/n-destination/kashmir.webp"
                     alt="National Destination"
                   ></img>{" "}
                 </div>
@@ -75,7 +75,7 @@ export default function Destination() {
                 <div className="desti-img">
                   {" "}
                   <img
-                    src="./assets/images/n-destination/img2.webp"
+                    src="./assets/images/n-destination/leh.webp"
                     alt="National Destination"
                   />{" "}
                 </div>
@@ -150,12 +150,12 @@ export default function Destination() {
             </section>
             {/* ================== CTA ================== */}
 
-            <div className="national-features mt-2">
+            <div className="national-features">
               <Link href="/manali">
                 <div className="desti-img">
                   {" "}
                   <img
-                    src="./assets/images/n-destination/img3.webp"
+                    src="./assets/images/n-destination/manali.webp"
                     alt="National Destination"
                   ></img>{" "}
                 </div>
@@ -207,12 +207,12 @@ export default function Destination() {
               </Link>
             </div>
 
-            <div className="national-features">
+            <div className="national-features mt-2">
               <Link href="/shimla">
                 <div className="desti-img">
                   {" "}
                   <img
-                    src="./assets/images/n-destination/img4.webp"
+                    src="./assets/images/n-destination/shimla.webp"
                     alt="National Destination"
                   ></img>{" "}
                 </div>
@@ -294,7 +294,7 @@ export default function Destination() {
                 <div className="desti-img">
                   {" "}
                   <img
-                    src="./assets/images/n-destination/img2.webp"
+                    src="./assets/images/n-destination/shimla&manali.webp"
                     alt="National Destination"
                   />{" "}
                 </div>
@@ -346,7 +346,7 @@ export default function Destination() {
                 <div className="desti-img">
                   {" "}
                   <img
-                    src="./assets/images/n-destination/img3.webp"
+                    src="./assets/images/n-destination/dharamshala.webp"
                     alt="National Destination"
                   ></img>{" "}
                 </div>
@@ -422,7 +422,7 @@ export default function Destination() {
               </div>
       </section>
        {/* ================== CTA ================== */}
-      <section className="destination-row ">
+      <section className="destination-row d-none">
         <div className="container">
           <div className="national-list-bx pb-80">
             <div className="national-features">
@@ -430,7 +430,7 @@ export default function Destination() {
                 <div className="desti-img">
                   {" "}
                   <img
-                    src="./assets/images/n-destination/img4.webp"
+                    src="./assets/images/n-destination/dehradun.webp"
                     alt="National Destination"
                   />{" "}
                 </div>

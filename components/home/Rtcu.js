@@ -15,8 +15,7 @@ export default function Rtcu() {
                             </div>
                             <div className="feature-title">Hassle-Free <br/>Booking</div>
                             <div className="feature-text">
-                                Lorem Ipsum Is Simply Dummy Text Of The Printing And Typesetting Industry. Lorem Ipsum
-                                Has Been The Industry's Standard Dummy Text Ever Since The 1500s,
+                                Booking with Tourwatchout is effortless! Share your preferences, and we’ll handle the rest- customized itineraries. 
                             </div>
                         </div>
                     </div>
@@ -27,8 +26,7 @@ export default function Rtcu() {
                             </div>
                             <div className="feature-title">Value For <br/>Money</div>
                             <div className="feature-text">
-                                Lorem Ipsum Is Simply Dummy Text Of The Printing And Typesetting Industry. Lorem Ipsum
-                                Has Been The Industry's Standard Dummy Text Ever Since The 1500s,
+                              Tourwatchout offers unforgettable experiences at prices that make sense. Personalized trips, quality service, and memories—without the heavy price tag.
                             </div>
                         </div>
                     </div>
@@ -39,8 +37,8 @@ export default function Rtcu() {
                             </div>
                             <div className="feature-title">Personalised <br/>Packages</div>
                             <div className="feature-text">
-                                Lorem Ipsum Is Simply Dummy Text Of The Printing And Typesetting Industry. Lorem Ipsum
-                                Has Been The Industry's Standard Dummy Text Ever Since The 1500s,
+                             Tourwatchout designs trips that are as unique as you, crafting every detail to fit your style, interests, and needs.
+
                             </div>
                         </div>
                     </div>
@@ -51,8 +49,8 @@ export default function Rtcu() {
                             </div>
                             <div className="feature-title">24/7 Customer <br/>Support</div>
                             <div className="feature-text">
-                                Lorem Ipsum Is Simply Dummy Text Of The Printing And Typesetting Industry. Lorem Ipsum
-                                Has Been The Industry's Standard Dummy Text Ever Since The 1500s,
+                            With Tourwatchout, enjoy 24/7 customer support via WhatsApp, ensuring help is always just a message away, anytime, anywhere.
+
                             </div>
                         </div>
                     </div>

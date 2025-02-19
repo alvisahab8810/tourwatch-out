@@ -9,15 +9,16 @@ export default function Footer() {
                     <div className="col-md-4">
                         <div className="logo"> <Link href="index.html" className="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none"> <img src="./assets/images/logo.png" alt="Logo Image" /> </Link> </div>
                         <p className="footer-para"> We always provide the best<br/> service for our customers </p>
-                        <div className="social-icons"> <Link href="#"> <i className="ri-whatsapp-line"></i> </Link> <Link href="#"> <i className="ri-instagram-line"></i>  </Link> <Link href="#"> <i className="ri-facebook-fill"></i> </Link> </div>
+                        <div className="social-icons"> <Link href="#"> <i className="ri-whatsapp-line"></i> </Link> 
+                        <Link href="#"> <i className="ri-instagram-line"></i>  </Link> <Link href="#"> <i className="ri-facebook-fill"></i> </Link> </div>
                     </div>
                     <div className="col-md-3 pl-100">
                         <h5> Popular </h5>
                         <ul>
-                            <li> <Link href="#"> Dubai, Arab </Link> </li>
-                            <li> <Link href="#"> London, Inggris </Link> </li>
-                            <li> <Link href="#"> Cancun, Meksiko </Link> </li>
-                            <li> <Link href="#"> Bali, Indonesia </Link> </li>
+                            <li> <Link href="/kashmir"> Kashmir </Link> </li>
+                            <li> <Link href="/shimla"> Shimla & Manali </Link> </li>
+                            <li> <Link href="/dehradun"> Dehradun & Mussoorie  </Link> </li>
+                            <li> <Link href="/dharamshala"> Dharamshala </Link> </li>
                         </ul>
                     </div>
                     <div className="col-md-3 pl-50">

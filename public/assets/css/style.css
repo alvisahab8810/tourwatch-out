@@ -1607,7 +1607,7 @@ section.national-dest .swiper-slide{
     width: 100%;
 }
 
-.social-icons a i {
+/* .social-icons a i {
     color: #fff;
     font-size: 24px;
     margin-right: 10px;
@@ -1620,7 +1620,7 @@ section.national-dest .swiper-slide{
 ;
     align-items: center;
     justify-content: center;
-}
+} */
 .social-icons1{
     display: flex;
     margin-top: 20px;
@@ -3043,8 +3043,10 @@ p.happy-title {
     background-color: #f1f1f1;
 }
 .checkinbox .form-text {
-    font-size: 18px;
+    font-size: 14px;
     color: #666666;
+    margin-top: 10px;
+    font-style: italic;
 }
 .checkinbox .btn-submit {
     background-color: #EE4C49;
@@ -3153,4 +3155,33 @@ li.nav-item.dropdown-main {
 }
 .social-icons1 i img{
     width: 19px;;
+}
+
+.faci-1 ul li img{
+    width:23px;
+}
+
+.counter-title img {
+    width: 31px;
+}
+
+.person1{
+    padding: 20px;
+    background-color: white;
+}
+.person-heading{
+    font-size: 20px;
+    color: #666666;
+    font-family: 'Inter';
+    font-weight: 400;
+
+}
+
+.checkin-footer{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+#home .need-help-section {
+    padding-bottom: 0px;
 }

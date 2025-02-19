@@ -6,7 +6,7 @@ import CheckInFamily from '../components/checkin/CheckinFamily'
 
 export default function CheckinFam() {
   return (
-    <div>
+    <div className='bg-prime'>
         <Hero/>
         <CheckInFamily/>
         <Footer/>

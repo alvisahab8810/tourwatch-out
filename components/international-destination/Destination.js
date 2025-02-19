@@ -19,15 +19,15 @@ export default function Destination() {
                 <div className="desti-img">
                   {" "}
                   <img
-                    src="./assets/images/i-destination/img1.webp"
+                    src="./assets/images/i-destination/dubai.webp"
                     alt="National Destination"
                   />{" "}
                 </div>
                 <div className="desti-main">
                   <div className="desti-info">
-                    <h3>Bali</h3>
+                    <h3>Dubai - Abudhabi</h3>
                     <p>
-                      Bali is a tropical paradise, renowned for its stunning
+                       Dubai  is a tropical paradise, renowned for its stunning
                       beaches, vibrant culture, and lush landscapes, perfect for
                       relaxation and adventure.
                     </p>
@@ -75,15 +75,15 @@ export default function Destination() {
                 <div className="desti-img">
                   {" "}
                   <img
-                    src="./assets/images/i-destination/img2.webp"
+                    src="./assets/images/i-destination/bali.webp"
                     alt="National Destination"
                   ></img>{" "}
                 </div>
                 <div className="desti-main">
                   <div className="desti-info">
-                    <h3>Singapore</h3>
+                    <h3>Bali</h3>
                     <p>
-                      Singapore is a dynamic city-state, celebrated for its
+                      Bali is a dynamic city-state, celebrated for its
                       modern skyline, diverse cuisine, and lush gardens,
                       offering a unique blend of culture and innovation.
                     </p>
@@ -154,7 +154,7 @@ export default function Destination() {
                 <div className="desti-img">
                   {" "}
                   <img
-                    src="./assets/images/i-destination/img3.webp"
+                    src="./assets/images/i-destination/thailand.webp"
                     alt="National Destination"
                   ></img>{" "}
                 </div>
@@ -210,7 +210,7 @@ export default function Destination() {
                 <div className="desti-img">
                   {" "}
                   <img
-                    src="./assets/images/i-destination/img4.webp"
+                    src="./assets/images/i-destination/malaysia.webp"
                     alt="National Destination"
                   />{" "}
                 </div>
@@ -266,15 +266,15 @@ export default function Destination() {
                 <div className="desti-img">
                   {" "}
                   <img
-                    src="./assets/images/i-destination/img1.webp"
+                    src="./assets/images/i-destination/singapore.webp"
                     alt="National Destination"
                   ></img>{" "}
                 </div>
                 <div className="desti-main">
                   <div className="desti-info">
-                    <h3>Bali</h3>
+                    <h3>Singapore</h3>
                     <p>
-                      Bali is a tropical paradise, renowned for its stunning
+                      Singapore is a tropical paradise, renowned for its stunning
                       beaches, vibrant culture, and lush landscapes, perfect for
                       relaxation and adventure.
                     </p>
@@ -317,62 +317,7 @@ export default function Destination() {
                 </div>
               </Link>
             </div>
-            <div className="national-features mt-2 mobile-none">
-              <Link href="#">
-                <div className="desti-img">
-                  {" "}
-                  <img
-                    src="./assets/images/i-destination/img2.webp"
-                    alt="National Destination"
-                  ></img>{" "}
-                </div>
-                <div className="desti-main">
-                  <div className="desti-info">
-                    <h3>Singapore</h3>
-                    <p>
-                      Singapore is a dynamic city-state, celebrated for its
-                      modern skyline, diverse cuisine, and lush gardens,
-                      offering a unique blend of culture and innovation.s
-                    </p>
-                  </div>
-                  <div className="facility-section">
-                    <div className="faci-1">
-                      <ul>
-                        <li className="ml-0">
-                          <img
-                            src="./assets/images/destination/icons/hotel.png"
-                            alt="Hotel Icon"
-                          ></img>
-                          <p> Upto 3 Stars</p>
-                        </li>
-                        <li>
-                          <img
-                            src="./assets/images/destination/icons/meal.png"
-                            alt="Meal Icon"
-                          ></img>
-                          <p> Meal</p>
-                        </li>
-                        <li>
-                          <img
-                            src="./assets/images/destination/icons/sight.png"
-                            alt="sight Icon"
-                          ></img>
-                          <p> Sightseeing</p>
-                        </li>
-                      </ul>
-                    </div>
-                    <div className="faci-ratings">
-                      {" "}
-                      <img
-                        src="./assets/images/destination/icons/heart.png"
-                        alt="Heart Icon"
-                      ></img>{" "}
-                      <span>4.8</span>{" "}
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            </div>
+           
           </div>
         </div>
       </section>
@@ -397,7 +342,7 @@ export default function Destination() {
 
       
 
-      <section className="destination-row mobile-none">
+      <section className="destination-row d-none">
         <div className="container">
           <div className="national-list-bx pb-80">
             <div className="national-features">

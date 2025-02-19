@@ -21,11 +21,12 @@ import Kashmircta from "../components/home/Kashmircta";
 import Projects from "../components/home/Projects";
 import Popup from "../components/corporate/Popup";
 import Offcanvas from "../components/header/Offcanvas";
+import Help from "../components/corporate/Help";
 
 
 export default function IndexPage({ data }) {
   return (
-    <section id="home">
+    <section id="home" className="bg-prime">
       <CustomHead
         title="Tour-Watchout"
         keywords=""
@@ -41,7 +42,8 @@ export default function IndexPage({ data }) {
       <InterNational/>
       <Testimonials/>
       <Instagram/>
-      <Kashmircta/>
+      {/* <Kashmircta/> */}
+      <Help/>
       <Faq/>
       <Popup/>
      <Footer/>

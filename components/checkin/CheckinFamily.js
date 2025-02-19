@@ -5,115 +5,228 @@ export default function CheckInFamily() {
     <>
       <section className="checkin-section">
         <div className="container ptb-50">
-          <h1 className="check-heading">Seamless Check-In, Zero Delays</h1>
-          <p className="check-para"> Optimize your travel—check-in before arrival.</p>
+          <h1 className="check-heading">Skip the Wait, Check-In Now</h1>
+          <p className="check-para">
+            {" "}
+            Check-in early and enjoy your trip stress-free!
+          </p>
 
           <div className="checkinbox">
-          <div className="bg-gray-100 p-4 min-h-screen flex items-center justify-center">
-      <div className="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-md">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-          <div>
-            <label htmlFor="num-people" className="block text-gray-700">No. of people</label>
-            <select id="num-people" className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-              <option>Select Item</option>
-            </select>
-          </div>
-          <div>
-            <label htmlFor="num-kids" className="block text-gray-700">No of kids</label>
-            <select id="num-kids" className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-              <option>Select Item</option>
-            </select>
-          </div>
-        </div>
-        <div className="mb-4">
-          <label htmlFor="email" className="block text-gray-700">Email Address</label>
-          <input type="email" id="email" className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
-        </div>
-        <div className="mb-4">
-          <h2 className="text-lg font-semibold text-gray-700">Person 1</h2>
-          <div className="border border-gray-300 p-4 rounded-md">
-            <div className="mb-4">
-              <label htmlFor="person1-name" className="block text-gray-700">Full Name</label>
-              <input type="text" id="person1-name" className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
-            </div>
-            <div className="mb-4">
-              <label htmlFor="person1-contact" className="block text-gray-700">Contact</label>
-              <input type="text" id="person1-contact" className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
-            </div>
-            <div className="mb-4">
-              <p className="text-gray-600">Please upload any Government ID, size less than 100KB</p>
-              <input type="file" id="person1-id" className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100" />
-              <p className="text-xs text-gray-500 mt-1">*This Doc. will be used for check-in purpose only</p>
-            </div>
-          </div>
-        </div>
-        <div className="mb-4">
-          <h2 className="text-lg font-semibold text-gray-700">Person 2</h2>
-          <div className="border border-gray-300 p-4 rounded-md">
-            <div className="mb-4">
-              <label htmlFor="person2-name" className="block text-gray-700">Full Name</label>
-              <input type="text" id="person2-name" className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
-            </div>
-            <div className="mb-4">
-              <label htmlFor="person2-contact" className="block text-gray-700">Contact</label>
-              <input type="text" id="person2-contact" className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
-            </div>
-            <div className="mb-4">
-              <p className="text-gray-600">Please upload any Government ID, size less than 100KB</p>
-              <input type="file" id="person2-id" className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100" />
-              <p className="text-xs text-gray-500 mt-1">*This Doc. will be used for check-in purpose only</p>
-            </div>
-          </div>
-        </div>
-        <div className="mb-4">
-          <h2 className="text-lg font-semibold text-gray-700">Child 1</h2>
-          <div className="border border-gray-300 p-4 rounded-md">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label htmlFor="child1-name" className="block text-gray-700">Full Name</label>
-                <input type="text" id="child1-name" className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+            <div class="container">
+              <div className="form-container">
+                <form>
+                  <div className="row mb-3">
+                    <div className="col">
+                      <label for="people" className="form-label">
+                        No. of people
+                      </label>
+                      <select className="form-select" id="selectpeople">
+                        <option selected>Select Item</option>
+                        <option value="1">01</option>
+                        <option value="2">02</option>
+                        <option value="3">03</option>
+                        <option value="4">04</option>
+                        <option value="5">05</option>
+                      </select>
+                    </div>
+                    <div className="col">
+                      <label for="selectRoom" className="form-label">
+                        No of kids
+                      </label>
+                      <select className="form-select" id="selectkids">
+                        <option selected>Select Item</option>
+                        <option value="1">01</option>
+                        <option value="2">02</option>
+                        <option value="3">03</option>
+                        <option value="4">04</option>
+                        <option value="5">05</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div className="mb-3">
+                    <label for="emailAddress" className="form-label">
+                      Email Address
+                    </label>
+                    <input
+                      type="email"
+                      className="form-control"
+                      id="emailAddress"
+                    />
+                  </div>
+                  <h5 className="person-heading">Person 1</h5>
+
+                  <div class="mt-3  person1">
+                    <div className="mb-3">
+                      <label for="fullName" className="form-label">
+                        Full Name
+                      </label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        id="fullName"
+                      />
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="person1-contact" className="form-label">Contact</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="person1-contact"
+                      />
+                    </div>
+
+                    <div className="mb-3">
+                      <label for="uploadId" className="form-label">
+                        Please upload any Government ID, size less than 100KB
+                      </label>
+                      <input
+                        className="form-control"
+                        type="file"
+                        id="uploadId"
+                      />
+                      <div className="form-text">
+                        *This Doc. will be used for check-in purpose only
+                      </div>
+                    </div>
+                  </div>
+                  <h5 className="person-heading mt-3">Person 2</h5>
+
+                  <div class="mt-3 person1">
+                    <div class="mb-3">
+                      <label for="person2-name" className="form-label">Full Name</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="person2-name"
+                      />
+                    </div>
+                    <div class="mb-3">
+                      <label for="person2-contact" className="form-label">Contact</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="person2-contact"
+                      />
+                    </div>
+
+                    <div className="mb-3">
+                      <label for="uploadId" className="form-label">
+                        Please upload any Government ID, size less than 100KB
+                      </label>
+                      <input
+                        className="form-control"
+                        type="file"
+                        id="uploadId"
+                      />
+                      <div className="form-text">
+                        *This Doc. will be used for check-in purpose only
+                      </div>
+                    </div>
+                  </div>
+
+                  <h5 className="mt-3 person-heading">Child 1</h5>
+
+                  <div class="mt-3 person1">
+                    <div class="row">
+                      <div class=" col-md-6">
+                        <label for="child1-name" className="form-label">Full Name</label>
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="child1-name"
+                        />
+                      </div>
+                      <div className="col-md-6">
+                        <label for="selectRoom" className="form-label">
+                          Child Age
+                        </label>
+                        <select className="form-select" id="selectkids">
+                          <option selected>Select Item</option>
+                          <option value="1">01</option>
+                          <option value="2">02</option>
+                          <option value="3">03</option>
+                          <option value="4">04</option>
+                          <option value="5">05</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <h5 className="person-heading mt-3">Child 2</h5>
+                  <div class="mt-3 person1">
+                    
+                    <div class="row">
+                      <div class="col-md-6">
+                        <label for="child2-name" className="form-label">Full Name</label>
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="child2-name"
+                        />
+                      </div>
+                      <div className="col-md-6">
+                        <label for="selectRoom" className="form-label">
+                          Child Age
+                        </label>
+                        <select className="form-select" id="selectkids">
+                          <option selected>Select Item</option>
+                          <option value="1">01</option>
+                          <option value="2">02</option>
+                          <option value="3">03</option>
+                          <option value="4">04</option>
+                          <option value="5">05</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mt-4">
+                    <button type="submit" className="btn btn-submit w-100">
+                      Submit
+                    </button>
+                  </div>
+                </form>
               </div>
-              <div>
-                <label htmlFor="child1-age" className="block text-gray-700">Child Age</label>
-                <select id="child1-age" className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                  <option>Select</option>
-                </select>
-              </div>
             </div>
-          </div>
-        </div>
-        <div className="mb-4">
-          <h2 className="text-lg font-semibold text-gray-700">Child 2</h2>
-          <div className="border border-gray-300 p-4 rounded-md">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label htmlFor="child2-name" className="block text-gray-700">Full Name</label>
-                <input type="text" id="child2-name" className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
-              </div>
-              <div>
-                <label htmlFor="child2-age" className="block text-gray-700">Child Age</label>
-                <select id="child2-age" className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                  <option>Select</option>
-                </select>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="text-center">
-          <button className="bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">Submit</button>
-        </div>
-      </div>
-    </div>
           </div>
           <div className="checkin-footer">
-             <p>Let’s Stay in Touch! </p>
-             <ul className="social-list-icons">
-                <li><a href="#"><img src="./assets/images/icons/whatsapp.png" alt="Whatsapp Icon"></img></a></li>
-                <li><a href="#"><img src="./assets/images/icons/facebook.png" alt="Facebook Icon"></img></a></li>
-                <li><a href="#"><img src="./assets/images/icons/insta.png" alt="Instagram Icon"></img></a></li>
-                <li><a href="#"><img src="./assets/images/icons/web.png" alt="Web Icon"></img></a></li>
-                <li><a href="#"><img src="./assets/images/icons/x.png" alt="X Icon"></img></a></li>
-             </ul>
+            <p>Let’s Stay in Touch! </p>
+            <ul className="social-list-icons">
+              <li>
+                <a href="#">
+                  <img
+                    src="./assets/images/icons/whatsapp.png"
+                    alt="Whatsapp Icon"
+                  ></img>
+                </a>
+              </li>
+              <li>
+                <a href="#">
+                  <img
+                    src="./assets/images/icons/facebook.png"
+                    alt="Facebook Icon"
+                  ></img>
+                </a>
+              </li>
+              <li>
+                <a href="#">
+                  <img
+                    src="./assets/images/icons/insta.png"
+                    alt="Instagram Icon"
+                  ></img>
+                </a>
+              </li>
+              <li>
+                <a href="#">
+                  <img src="./assets/images/icons/web.png" alt="Web Icon"></img>
+                </a>
+              </li>
+              <li>
+                <a href="#">
+                  <img src="./assets/images/icons/x.png" alt="X Icon"></img>
+                </a>
+              </li>
+            </ul>
           </div>
         </div>
       </section>

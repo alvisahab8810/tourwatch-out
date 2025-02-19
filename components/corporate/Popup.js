@@ -27,7 +27,7 @@ export default function Popup() {
               </div>
 
               <div className="form-pop">
-                <h2>Get A Callback..............</h2>
+                <h2>Get A Callback</h2>
                 <p>Let us help you decide your Dream Vacation</p>
                 <form>
                   <div className="mb-3">
