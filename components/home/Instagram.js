@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation } from "swiper/modules";
 export default function Instagram() {
@@ -45,7 +46,10 @@ export default function Instagram() {
             modules={[Autoplay, Navigation]}
             className="swiper mySwiper4 pt-80"
           >
+
+             
             <SwiperSlide className="swiper-slide">
+              <Link href="https://www.instagram.com/tourwatchout/?hl=en "target="_blank" rel="noopener noreferrer" >
               <video
                 src="./assets/images/instagram/video1.mp4"
                 alt="National Destination"
@@ -53,10 +57,14 @@ export default function Instagram() {
                 muted
                 loop
                 playsInline
+
+                style={{ cursor: 'pointer' }} // Optional: Changes cursor to pointer on hover
               ></video>
+              </Link>
             </SwiperSlide>
 
             <SwiperSlide className="swiper-slide">
+            <Link href="https://www.instagram.com/tourwatchout/?hl=en">
               <video
                 src="./assets/images/instagram/video2.mp4"
                 alt="National Destination"
@@ -65,9 +73,12 @@ export default function Instagram() {
                 loop
                 playsInline
               ></video>
+              </Link>
             </SwiperSlide>
 
             <SwiperSlide className="swiper-slide">
+            <Link href="https://www.instagram.com/tourwatchout/?hl=en">
+
               <video
                 src="./assets/images/instagram/video3.mp4"
                 alt="National Destination"
@@ -76,9 +87,13 @@ export default function Instagram() {
                 loop
                 playsInline
               ></video>
+              </Link>
             </SwiperSlide>
 
             <SwiperSlide className="swiper-slide">
+
+            <Link href="https://www.instagram.com/tourwatchout/?hl=en">
+
               <video
                 src="./assets/images/instagram/video4.mp4"
                 alt="National Destination"
@@ -87,9 +102,12 @@ export default function Instagram() {
                 loop
                 playsInline
               ></video>
+              </Link>
             </SwiperSlide>
 
             <SwiperSlide className="swiper-slide">
+            <Link href="https://www.instagram.com/tourwatchout/?hl=en">
+
               <video
                 src="./assets/images/instagram/video5.mp4"
                 alt="National Destination"
@@ -98,9 +116,13 @@ export default function Instagram() {
                 loop
                 playsInline
               ></video>
+              </Link>
             </SwiperSlide>
 
             <SwiperSlide className="swiper-slide">
+
+            <Link href="https://www.instagram.com/tourwatchout/?hl=en">
+
               <video
                 src="./assets/images/instagram/video6.mp4"
                 alt="National Destination"
@@ -109,9 +131,12 @@ export default function Instagram() {
                 loop
                 playsInline
               ></video>
+              </Link>
             </SwiperSlide>
 
             <SwiperSlide className="swiper-slide">
+            <Link href="https://www.instagram.com/tourwatchout/?hl=en">
+
               <video
                 src="./assets/images/instagram/video4.mp4"
                 alt="National Destination"
@@ -120,9 +145,12 @@ export default function Instagram() {
                 loop
                 playsInline
               ></video>
+              </Link>
             </SwiperSlide>
 
             <SwiperSlide className="swiper-slide">
+            <Link href="https://www.instagram.com/tourwatchout/?hl=en">
+
               <video
                 src="./assets/images/instagram/video5.mp4"
                 alt="National Destination"
@@ -131,9 +159,14 @@ export default function Instagram() {
                 loop
                 playsInline
               ></video>
+
+              </Link>
             </SwiperSlide>
 
             <SwiperSlide className="swiper-slide">
+
+            <Link href="https://www.instagram.com/tourwatchout/?hl=en">
+
               <video
                 src="./assets/images/instagram/video6.mp4"
                 alt="National Destination"
@@ -142,6 +175,7 @@ export default function Instagram() {
                 loop
                 playsInline
               ></video>
+              </Link>
             </SwiperSlide>
           </Swiper>
         </div>

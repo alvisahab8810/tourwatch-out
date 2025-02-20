@@ -3185,3 +3185,18 @@ li.nav-item.dropdown-main {
 #home .need-help-section {
     padding-bottom: 0px;
 }
+
+.contact-form-section .social-icons1 a i {
+    color: #fff;
+    font-size: 24px;
+    margin-right: 10px;
+    height: 44px;
+    width: 44px;
+    border-radius: 50px;
+    background: #ee4c4e;
+    padding: 10px;
+    display: flex
+;
+    align-items: center;
+    justify-content: center;
+} 

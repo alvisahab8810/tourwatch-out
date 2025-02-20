@@ -22,13 +22,14 @@ import Projects from "../components/home/Projects";
 import Popup from "../components/corporate/Popup";
 import Offcanvas from "../components/header/Offcanvas";
 import Help from "../components/corporate/Help";
+import OnloadPopup from "../components/home/OnloadPopup";
 
 
 export default function IndexPage({ data }) {
   return (
     <section id="home" className="bg-prime">
       <CustomHead
-        title="Tour-Watchout"
+        title="TourWatchout"
         keywords=""
         description="#"
       />
@@ -46,6 +47,7 @@ export default function IndexPage({ data }) {
       <Help/>
       <Faq/>
       <Popup/>
+      <OnloadPopup/>
      <Footer/>
     </section>
   );

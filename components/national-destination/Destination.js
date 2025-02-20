@@ -27,9 +27,8 @@ export default function Destination() {
                   <div className="desti-info">
                     <h3>Kashmir</h3>
                     <p>
-                      Kashmir is a breathtaking paradise, featuring majestic
-                      mountains and serene lakes, perfect for nature lovers and
-                      adventure seekers.
+                      Kashmir, known as “Paradise on Earth,” boasts breathtaking landscapes, serene lakes, and vibrant culture, offering a truly magical experience..
+
                     </p>
                   </div>
                   <div className="facility-section">
@@ -83,9 +82,7 @@ export default function Destination() {
                   <div className="desti-info">
                     <h3>Leh Ladakh</h3>
                     <p>
-                      Leh Ladakh is a vibrant coastal haven, known for its stunning
-                      beaches, lively nightlife, and rich cultural heritage,
-                      ideal for relaxation and exploration.
+                      Leh-Ladakh, where rugged mountains meet serene monasteries, is an adventure lover’s paradise and a tranquil escape for the soul.
                     </p>
                   </div>
                   <div className="facility-section">
@@ -163,9 +160,7 @@ export default function Destination() {
                   <div className="desti-info">
                     <h3>Manali</h3>
                     <p>
-                      Manali is a breathtaking paradise, featuring majestic
-                      mountains and serene lakes, perfect for nature lovers and
-                      adventure seekers.
+                       Manali, a captivating hill station, offers snow-capped peaks, lush valleys, and thrilling adventure sports, making it the perfect blend of beauty and excitement.
                     </p>
                   </div>
                   <div className="facility-section">
@@ -220,9 +215,7 @@ export default function Destination() {
                   <div className="desti-info">
                     <h3>Shimla</h3>
                     <p>
-                      Shimla, with its lush tea gardens and panoramic views
-                      of the Himalayas, is a charming hill station that
-                      captivates visitors seeking tranquility & natural beauty.
+                      Shimla and Manali are picturesque hill stations, offering scenic landscapes, adventure activities, and a refreshing escape into the mountains. Both are perfect for nature lovers and thrill-seekers alike.
                     </p>
                   </div>
                   <div className="facility-section">
@@ -302,9 +295,7 @@ export default function Destination() {
                   <div className="desti-info">
                     <h3>Shimla & Manali</h3>
                     <p>
-                       Shimla & Manali is a vibrant coastal haven, known for its stunning
-                      beaches, lively nightlife, and rich cultural heritage,
-                      ideal for relaxation and exploration.
+                       Shimla and Manali are picturesque hill stations, offering scenic landscapes, adventure activities, and a refreshing escape into the mountains. Both are perfect for nature lovers and thrill-seekers alike.
                     </p>
                   </div>
                   <div className="facility-section">
@@ -354,9 +345,9 @@ export default function Destination() {
                   <div className="desti-info">
                     <h3>Dharamshala</h3>
                     <p>
-                      Dharamshala is a breathtaking paradise, featuring majestic
-                      mountains and serene lakes, perfect for nature lovers and
-                      adventure seekers.
+                       Dharamshala, nestled in the Himachal Pradesh hills, is known for its Tibetan culture, serene landscapes, and peaceful atmosphere, making it a perfect destination for spiritual retreats 
+                       and nature lovers.
+
                     </p>
                   </div>
                   <div className="facility-section">
@@ -438,9 +429,7 @@ export default function Destination() {
                   <div className="desti-info">
                     <h3>Dehradun & Mussoorie</h3>
                     <p>
-                      Dehradun & Mussoorie, with its lush tea gardens and panoramic views
-                      of the Himalayas, is a charming hill station that
-                      captivates visitors seeking tranquility & natural beauty.
+                      Dehradun and Mussoorie, both nestled in the foothills of the Himalayas, offer scenic beauty, cool weather, and a perfect blend of nature and adventure. Mussoorie, known as the “Queen of Hills,” is ideal for a tranquil escape, while Dehradun is great for its vibrant culture and nearby attractions.
                     </p>
                   </div>
                   <div className="facility-section">
@@ -495,9 +484,8 @@ export default function Destination() {
                   <div className="desti-info">
                     <h3>Kashmir</h3>
                     <p>
-                      Kashmir is a breathtaking paradise, featuring majestic
-                      mountains and serene lakes, perfect for nature lovers and
-                      adventure seekers.
+                     Kashmir, known as “Paradise on Earth,” boasts breathtaking landscapes, serene lakes, and vibrant culture, offering a truly magical experience..
+
                     </p>
                   </div>
                   <div className="facility-section">
