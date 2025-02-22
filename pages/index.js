@@ -47,7 +47,7 @@ export default function IndexPage({ data }) {
       <Help/>
       <Faq/>
       <Popup/>
-      <OnloadPopup/>
+      {/* <OnloadPopup/> */}
      <Footer/>
     </section>
   );

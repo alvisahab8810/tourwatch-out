@@ -3200,3 +3200,19 @@ li.nav-item.dropdown-main {
     align-items: center;
     justify-content: center;
 } 
+
+
+.checkinbox .btn-primary {
+    margin-top: 0;
+    font-size: 13px;
+    padding: 0px 20px !important;
+    height: 49px;
+    border-radius: 5px !important;
+}
+
+.response-main button.view-btn {
+    border: none;
+    padding: 4px 10px;
+    margin: auto;
+    display: block;
+}

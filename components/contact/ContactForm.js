@@ -90,8 +90,8 @@ export default function ContactForm() {
                 <div className="ms-3">
                   <h5>Office Address</h5>
                   <p>
-                    DLF MyPad B-1 10th Floor Vibhuti Khand, Gomti Nagar,
-                    Lucknow, Uttar Pradesh 226010
+                  1007, Tower B1, Floor 10th, DLF Mypad, Vibhuti Khand,<br/>
+                  Gomti Nagar Lucknow - 226010
                   </p>
                 </div>
               </div>
