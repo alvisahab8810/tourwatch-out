@@ -203,61 +203,116 @@ export default function CheckIn() {
 
 
 
-  const handleSubmitted = (e) => {
-    e.preventDefault();
+  // const handleSubmitted = (e) => {
+  //   e.preventDefault();
   
+  //   const fullName = e.target.fullName.value.trim();
+  //   const whatsappContact = e.target.whatsappContact.value.trim();
+  //   const emailAddress = e.target.emailAddress.value.trim();
+  //   const uploadedFile = e.target.uploadId.files[0]; // Get uploaded file
+  
+  //   if (!fullName || !whatsappContact || !emailAddress || !selectedOccupancy || !selectedRoom || !uploadedFile) {
+  //     alert("Please fill all required fields and upload a valid Government ID.");
+  //     return;
+  //   }
+  
+  //   // Validate file size (less than 100KB)
+  //   if (uploadedFile.size > 100 * 1024) {
+  //     alert("File size must be less than 100KB.");
+  //     return;
+  //   }
+  
+  //   const reader = new FileReader();
+  //   reader.readAsDataURL(uploadedFile);
+  //   reader.onload = () => {
+  //     const uploadedFileBase64 = reader.result; // Convert file to Base64
+  
+  //     // Retrieve existing data or initialize an empty array
+  //     const existingData = JSON.parse(localStorage.getItem("checkinData")) || [];
+  //     const updatedData = Array.isArray(existingData) ? existingData : [];
+  
+  //     // Create a new entry
+  //     const newEntry = {
+  //       companyName,
+  //       fullName,
+  //       whatsappContact,
+  //       emailAddress,
+  //       selectedOccupancy,
+  //       selectedRoom,
+  //       governmentId: uploadedFileBase64, // Store file as Base64
+  //       timestamp: new Date().toLocaleString(),
+  //     };
+  
+  //     // Append new entry to existing data
+  //     updatedData.push(newEntry);
+  
+  //     // Save back to localStorage
+  //     localStorage.setItem("checkinData", JSON.stringify(updatedData));
+
+      
+      
+
+  
+  //     // 🔹 **Force re-render by updating state**
+  //     setSubmittedData([...updatedData]);
+  
+  //     // Clear form fields
+  //     e.target.reset();
+  //     setSelectedOccupancy("");
+  //     setSelectedRoom("");
+  
+  //     alert("Check-in successful!");
+  //   };
+  // };
+  
+
+
+
+  const handleSubmitted = async (e) => {
+    e.preventDefault();
     const fullName = e.target.fullName.value.trim();
     const whatsappContact = e.target.whatsappContact.value.trim();
     const emailAddress = e.target.emailAddress.value.trim();
-    const uploadedFile = e.target.uploadId.files[0]; // Get uploaded file
+    const uploadedFile = e.target.uploadId.files[0];
   
     if (!fullName || !whatsappContact || !emailAddress || !selectedOccupancy || !selectedRoom || !uploadedFile) {
-      alert("Please fill all required fields and upload a valid Government ID.");
+      alert("Please fill all fields and upload an ID.");
       return;
     }
   
-    // Validate file size (less than 100KB)
     if (uploadedFile.size > 100 * 1024) {
-      alert("File size must be less than 100KB.");
+      alert("File must be under 100KB.");
       return;
     }
   
     const reader = new FileReader();
     reader.readAsDataURL(uploadedFile);
-    reader.onload = () => {
-      const uploadedFileBase64 = reader.result; // Convert file to Base64
+    reader.onload = async () => {
+      const governmentId = reader.result;
   
-      // Retrieve existing data or initialize an empty array
-      const existingData = JSON.parse(localStorage.getItem("checkinData")) || [];
-      const updatedData = Array.isArray(existingData) ? existingData : [];
+      const response = await fetch("/api/saveCheckin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          companyName,
+          fullName,
+          whatsappContact,
+          emailAddress,
+          selectedOccupancy,
+          selectedRoom,
+          governmentId,
+          timestamp: new Date().toLocaleString(),
+        }),
+      });
   
-      // Create a new entry
-      const newEntry = {
-        companyName,
-        fullName,
-        whatsappContact,
-        emailAddress,
-        selectedOccupancy,
-        selectedRoom,
-        governmentId: uploadedFileBase64, // Store file as Base64
-        timestamp: new Date().toLocaleString(),
-      };
-  
-      // Append new entry to existing data
-      updatedData.push(newEntry);
-  
-      // Save back to localStorage
-      localStorage.setItem("checkinData", JSON.stringify(updatedData));
-  
-      // 🔹 **Force re-render by updating state**
-      setSubmittedData([...updatedData]);
-  
-      // Clear form fields
-      e.target.reset();
-      setSelectedOccupancy("");
-      setSelectedRoom("");
-  
-      alert("Check-in successful!");
+      if (response.ok) {
+        alert("Check-in successful!");
+        e.target.reset();
+        setSelectedOccupancy("");
+        setSelectedRoom("");
+      } else {
+        alert("Error saving check-in.");
+      }
     };
   };
   
