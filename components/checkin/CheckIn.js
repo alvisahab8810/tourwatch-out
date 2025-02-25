@@ -106,182 +106,185 @@
 
 
 
-"use client";
-import { useState, useEffect } from "react";
-import { useRouter } from "next/router";
-export default function CheckIn() {
-  const router = useRouter();
-  const [companyName, setCompanyName] = useState("");
-  const [roomData, setRoomData] = useState({
-    Single: "",
-    Double: "",
-    Triple: "",
-    Fourth: "",
-  });
-  const [generatedLink, setGeneratedLink] = useState("");
-  const [duplicateRooms, setDuplicateRooms] = useState([]);
-
-  // Guest Selection  
-  const [selectedOccupancy, setSelectedOccupancy] = useState("");
-  const [selectedRoom, setSelectedRoom] = useState("");
-  const [availableOccupancies, setAvailableOccupancies] = useState([]);
-  const [availableRooms, setAvailableRooms] = useState([]);
-
-  // const isAdmin = !router.query.company; // Admin view if no company query
-
-  const [isAdmin, setIsAdmin] = useState(true);
-
-  // -------
-
-useEffect(() => {
-  if (router.isReady) {
-    const { company, ...queryRooms } = router.query;
-    if (company) {
-      setCompanyName(company);
-      setIsAdmin(false); // Show Guest Form
-    } else {
-      setIsAdmin(true); // Show Admin Form
-    }
-
-    const occupancyData = {};
-    Object.entries(queryRooms).forEach(([occupancy, rooms]) => {
-      occupancyData[occupancy] = decodeURIComponent(rooms);
+  "use client";
+  import { useState, useEffect } from "react";
+  import { useRouter } from "next/router";
+  export default function CheckIn() {
+    const router = useRouter();
+    const [companyName, setCompanyName] = useState("");
+    const [roomData, setRoomData] = useState({
+      Single: "",
+      Double: "",
+      Triple: "",
+      Fourth: "",
     });
+    const [generatedLink, setGeneratedLink] = useState("");
+    const [duplicateRooms, setDuplicateRooms] = useState([]);
 
-    setRoomData(occupancyData);
-    setAvailableOccupancies(Object.keys(occupancyData));
-  }
-}, [router.isReady, router.query]);
+    // Guest Selection  
+    const [selectedOccupancy, setSelectedOccupancy] = useState("");
+    const [selectedRoom, setSelectedRoom] = useState("");
+    const [availableOccupancies, setAvailableOccupancies] = useState([]);
+    const [availableRooms, setAvailableRooms] = useState([]);
 
+    // const isAdmin = !router.query.company; // Admin view if no company query
 
-// -----
+    const [isAdmin, setIsAdmin] = useState(true);
 
-
-
-
-  useEffect(() => {
-    if (router.isReady) {
+    useEffect(() => {
+      if (!router.isReady) return; // Ensure the router is ready
+    
+      console.log("Router Query Params:", router.query); // Debugging
+    
       const { company, ...queryRooms } = router.query;
-      if (company) setCompanyName(company);
-
+    
+      if (company) {
+        setCompanyName(company);
+        setIsAdmin(false); // Show Guest Form
+      } else {
+        setIsAdmin(true); // Show Admin Form
+      }
+    
+      // Process room data
       const occupancyData = {};
       Object.entries(queryRooms).forEach(([occupancy, rooms]) => {
-        occupancyData[occupancy] = decodeURIComponent(rooms);
+        if (typeof rooms === "string") {
+          occupancyData[occupancy] = decodeURIComponent(rooms);
+        }
       });
-
+    
       setRoomData(occupancyData);
       setAvailableOccupancies(Object.keys(occupancyData));
-    }
-  }, [router.isReady, router.query]);
+    
+    }, [router.isReady, router.query]);
+    
 
-  // Handle room input change (Admin)
-  const handleRoomInputChange = (occupancy, value) => {
-    setRoomData((prev) => ({
-      ...prev,
-      [occupancy]: value,
-    }));
-  };
 
-  // Handle form submission (Admin: Generate link)
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!companyName) return alert("Please enter a company name.");
 
-    const allEnteredRooms = new Set();
-    const duplicateRoomsFound = new Set();
 
-    const roomParams = Object.entries(roomData)
-      .filter(([_, rooms]) => rooms.trim() !== "")
-      .map(([occupancy, rooms]) => {
-        const roomArray = rooms.split(",").map((room) => room.trim());
+    useEffect(() => {
+      if (router.isReady) {
+        const { company, ...queryRooms } = router.query;
+        if (company) setCompanyName(company);
 
-        roomArray.forEach((room) => {
-          if (allEnteredRooms.has(room)) {
-            duplicateRoomsFound.add(room);
-          }
-          allEnteredRooms.add(room);
+        const occupancyData = {};
+        Object.entries(queryRooms).forEach(([occupancy, rooms]) => {
+          occupancyData[occupancy] = decodeURIComponent(rooms);
         });
 
-        return `${occupancy}=${encodeURIComponent(rooms)}`;
-      })
-      .join("&");
-
-    if (duplicateRoomsFound.size > 0) {
-      setDuplicateRooms([...duplicateRoomsFound]);
-      return alert(`Duplicate room numbers found: ${[...duplicateRoomsFound].join(", ")}`);
-    }
-
-    setDuplicateRooms([]);
-    const shareableLink = `${window.location.origin}/checkin-corporate?company=${encodeURIComponent(companyName)}&${roomParams}`;
-    setGeneratedLink(shareableLink);
-  };
-
-  // Copy link to clipboard
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(generatedLink);
-    alert("Link copied to clipboard!");
-  };
-
-  // Handle occupancy selection (Guest)
-  const handleOccupancyChange = (e) => {
-    const selected = e.target.value;
-    setSelectedOccupancy(selected);
-    setAvailableRooms(roomData[selected]?.split(",") || []);
-    setSelectedRoom(""); // Reset selected room when occupancy changes
-  };
-
-
-  const [submittedData, setSubmittedData] = useState(null);
-
-
-
-  const handleSubmitted = async (e) => {
-    e.preventDefault();
-    const fullName = e.target.fullName.value.trim();
-    const whatsappContact = e.target.whatsappContact.value.trim();
-    const emailAddress = e.target.emailAddress.value.trim();
-    const uploadedFile = e.target.uploadId.files[0];
-  
-    if (!fullName || !whatsappContact || !emailAddress || !selectedOccupancy || !selectedRoom || !uploadedFile) {
-      alert("Please fill all fields and upload an ID.");
-      return;
-    }
-  
-    if (uploadedFile.size > 100 * 1024) {
-      alert("File must be under 100KB.");
-      return;
-    }
-  
-    const reader = new FileReader();
-    reader.readAsDataURL(uploadedFile);
-    reader.onload = async () => {
-      const governmentId = reader.result;
-  
-      const response = await fetch("/api/saveCheckin", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          companyName,
-          fullName,
-          whatsappContact,
-          emailAddress,
-          selectedOccupancy,
-          selectedRoom,
-          governmentId,
-          timestamp: new Date().toLocaleString(),
-        }),
-      });
-  
-      if (response.ok) {
-        alert("Check-in successful!");
-        e.target.reset();
-        setSelectedOccupancy("");
-        setSelectedRoom("");
-      } else {
-        alert("Error saving check-in.");
+        setRoomData(occupancyData);
+        setAvailableOccupancies(Object.keys(occupancyData));
       }
+    }, [router.isReady, router.query]);
+
+    // Handle room input change (Admin)
+    const handleRoomInputChange = (occupancy, value) => {
+      setRoomData((prev) => ({
+        ...prev,
+        [occupancy]: value,
+      }));
     };
-  };
+
+    // Handle form submission (Admin: Generate link)
+    const handleSubmit = (e) => {
+      e.preventDefault();
+      if (!companyName) return alert("Please enter a company name.");
+
+      const allEnteredRooms = new Set();
+      const duplicateRoomsFound = new Set();
+
+      const roomParams = Object.entries(roomData)
+        .filter(([_, rooms]) => rooms.trim() !== "")
+        .map(([occupancy, rooms]) => {
+          const roomArray = rooms.split(",").map((room) => room.trim());
+
+          roomArray.forEach((room) => {
+            if (allEnteredRooms.has(room)) {
+              duplicateRoomsFound.add(room);
+            }
+            allEnteredRooms.add(room);
+          });
+
+          return `${occupancy}=${encodeURIComponent(rooms)}`;
+        })
+        .join("&");
+
+      if (duplicateRoomsFound.size > 0) {
+        setDuplicateRooms([...duplicateRoomsFound]);
+        return alert(`Duplicate room numbers found: ${[...duplicateRoomsFound].join(", ")}`);
+      }
+
+      setDuplicateRooms([]);
+      const shareableLink = `${window.location.origin}/checkin-corporate?company=${encodeURIComponent(companyName)}&${roomParams}`;
+      setGeneratedLink(shareableLink);
+    };
+
+    // Copy link to clipboard
+    const handleCopyLink = () => {
+      navigator.clipboard.writeText(generatedLink);
+      alert("Link copied to clipboard!");
+    };
+
+    // Handle occupancy selection (Guest)
+    const handleOccupancyChange = (e) => {
+      const selected = e.target.value;
+      setSelectedOccupancy(selected);
+      setAvailableRooms(roomData[selected]?.split(",") || []);
+      setSelectedRoom(""); // Reset selected room when occupancy changes
+    };
+
+
+    const [submittedData, setSubmittedData] = useState(null);
+
+
+
+    const handleSubmitted = async (e) => {
+      e.preventDefault();
+      const fullName = e.target.fullName.value.trim();
+      const whatsappContact = e.target.whatsappContact.value.trim();
+      const emailAddress = e.target.emailAddress.value.trim();
+      const uploadedFile = e.target.uploadId.files[0];
+    
+      if (!fullName || !whatsappContact || !emailAddress || !selectedOccupancy || !selectedRoom || !uploadedFile) {
+        alert("Please fill all fields and upload an ID.");
+        return;
+      }
+    
+      if (uploadedFile.size > 100 * 1024) {
+        alert("File must be under 100KB.");
+        return;
+      }
+    
+      const reader = new FileReader();
+      reader.readAsDataURL(uploadedFile);
+      reader.onload = async () => {
+        const governmentId = reader.result;
+    
+        const response = await fetch("/api/saveCheckin", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            companyName,
+            fullName,
+            whatsappContact,
+            emailAddress,
+            selectedOccupancy,
+            selectedRoom,
+            governmentId,
+            timestamp: new Date().toLocaleString(),
+          }),
+        });
+    
+        if (response.ok) {
+          alert("Check-in successful!");
+          e.target.reset();
+          setSelectedOccupancy("");
+          setSelectedRoom("");
+        } else {
+          alert("Error saving check-in.");
+        }
+      };
+    };
   
 
   return (
