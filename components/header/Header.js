@@ -16,7 +16,7 @@ export default function Topbar() {
           <ul className="menus nav nav-pills mobile-none">
             <li className="nav-item">
               <Link href="/about" className="nav-link" aria-current="page">
-                Our Story 
+                Our Story,, 
 
                
               </Link>
