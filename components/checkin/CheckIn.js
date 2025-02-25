@@ -104,6 +104,8 @@
 // }
 
 
+
+
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
@@ -125,7 +127,37 @@ export default function CheckIn() {
   const [availableOccupancies, setAvailableOccupancies] = useState([]);
   const [availableRooms, setAvailableRooms] = useState([]);
 
-  const isAdmin = !router.query.company; // Admin view if no company query
+  // const isAdmin = !router.query.company; // Admin view if no company query
+
+  const [isAdmin, setIsAdmin] = useState(true);
+
+  // -------
+
+useEffect(() => {
+  if (router.isReady) {
+    const { company, ...queryRooms } = router.query;
+    if (company) {
+      setCompanyName(company);
+      setIsAdmin(false); // Show Guest Form
+    } else {
+      setIsAdmin(true); // Show Admin Form
+    }
+
+    const occupancyData = {};
+    Object.entries(queryRooms).forEach(([occupancy, rooms]) => {
+      occupancyData[occupancy] = decodeURIComponent(rooms);
+    });
+
+    setRoomData(occupancyData);
+    setAvailableOccupancies(Object.keys(occupancyData));
+  }
+}, [router.isReady, router.query]);
+
+
+// -----
+
+
+
 
   useEffect(() => {
     if (router.isReady) {
@@ -200,71 +232,6 @@ export default function CheckIn() {
 
 
   const [submittedData, setSubmittedData] = useState(null);
-
-
-
-  // const handleSubmitted = (e) => {
-  //   e.preventDefault();
-  
-  //   const fullName = e.target.fullName.value.trim();
-  //   const whatsappContact = e.target.whatsappContact.value.trim();
-  //   const emailAddress = e.target.emailAddress.value.trim();
-  //   const uploadedFile = e.target.uploadId.files[0]; // Get uploaded file
-  
-  //   if (!fullName || !whatsappContact || !emailAddress || !selectedOccupancy || !selectedRoom || !uploadedFile) {
-  //     alert("Please fill all required fields and upload a valid Government ID.");
-  //     return;
-  //   }
-  
-  //   // Validate file size (less than 100KB)
-  //   if (uploadedFile.size > 100 * 1024) {
-  //     alert("File size must be less than 100KB.");
-  //     return;
-  //   }
-  
-  //   const reader = new FileReader();
-  //   reader.readAsDataURL(uploadedFile);
-  //   reader.onload = () => {
-  //     const uploadedFileBase64 = reader.result; // Convert file to Base64
-  
-  //     // Retrieve existing data or initialize an empty array
-  //     const existingData = JSON.parse(localStorage.getItem("checkinData")) || [];
-  //     const updatedData = Array.isArray(existingData) ? existingData : [];
-  
-  //     // Create a new entry
-  //     const newEntry = {
-  //       companyName,
-  //       fullName,
-  //       whatsappContact,
-  //       emailAddress,
-  //       selectedOccupancy,
-  //       selectedRoom,
-  //       governmentId: uploadedFileBase64, // Store file as Base64
-  //       timestamp: new Date().toLocaleString(),
-  //     };
-  
-  //     // Append new entry to existing data
-  //     updatedData.push(newEntry);
-  
-  //     // Save back to localStorage
-  //     localStorage.setItem("checkinData", JSON.stringify(updatedData));
-
-      
-      
-
-  
-  //     // 🔹 **Force re-render by updating state**
-  //     setSubmittedData([...updatedData]);
-  
-  //     // Clear form fields
-  //     e.target.reset();
-  //     setSelectedOccupancy("");
-  //     setSelectedRoom("");
-  
-  //     alert("Check-in successful!");
-  //   };
-  // };
-  
 
 
 
