@@ -432,3 +432,8 @@
   );
 }
 
+
+
+export async function getServerSideProps(context) {
+  return { props: {} }; // ✅ This ensures the page loads dynamically
+}
