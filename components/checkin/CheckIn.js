@@ -241,54 +241,148 @@
 
 
 
-    const handleSubmitted = async (e) => {
-      e.preventDefault();
-      const fullName = e.target.fullName.value.trim();
-      const whatsappContact = e.target.whatsappContact.value.trim();
-      const emailAddress = e.target.emailAddress.value.trim();
-      const uploadedFile = e.target.uploadId.files[0];
+    // const handleSubmitted = async (e) => {
+    //   e.preventDefault();
+    //   const fullName = e.target.fullName.value.trim();
+    //   const whatsappContact = e.target.whatsappContact.value.trim();
+    //   const emailAddress = e.target.emailAddress.value.trim();
+    //   const uploadedFile = e.target.uploadId.files[0];
     
-      if (!fullName || !whatsappContact || !emailAddress || !selectedOccupancy || !selectedRoom || !uploadedFile) {
-        alert("Please fill all fields and upload an ID.");
-        return;
-      }
+    //   if (!fullName || !whatsappContact || !emailAddress || !selectedOccupancy || !selectedRoom || !uploadedFile) {
+    //     alert("Please fill all fields and upload an ID.");
+    //     return;
+    //   }
     
-      if (uploadedFile.size > 100 * 1024) {
-        alert("File must be under 100KB.");
-        return;
-      }
+    //   if (uploadedFile.size > 100 * 1024) {
+    //     alert("File must be under 100KB.");
+    //     return;
+    //   }
     
-      const reader = new FileReader();
-      reader.readAsDataURL(uploadedFile);
-      reader.onload = async () => {
-        const governmentId = reader.result;
+    //   const reader = new FileReader();
+    //   reader.readAsDataURL(uploadedFile);
+    //   reader.onload = async () => {
+    //     const governmentId = reader.result;
     
-        const response = await fetch("/api/saveCheckin", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            companyName,
-            fullName,
-            whatsappContact,
-            emailAddress,
-            selectedOccupancy,
-            selectedRoom,
-            governmentId,
-            timestamp: new Date().toLocaleString(),
-          }),
-        });
+    //     const response = await fetch("/api/saveCheckin", {
+    //       method: "POST",
+    //       headers: { "Content-Type": "application/json" },
+    //       body: JSON.stringify({
+    //         companyName,
+    //         fullName,
+    //         whatsappContact,
+    //         emailAddress,
+    //         selectedOccupancy,
+    //         selectedRoom,
+    //         governmentId,
+    //         timestamp: new Date().toLocaleString(),
+    //       }),
+    //     });
     
-        if (response.ok) {
-          alert("Check-in successful!");
-          e.target.reset();
-          setSelectedOccupancy("");
-          setSelectedRoom("");
-        } else {
-          alert("Error saving check-in.");
-        }
-      };
-    };
+    //     if (response.ok) {
+    //       alert("Check-in successful!");
+    //       e.target.reset();
+    //       setSelectedOccupancy("");
+    //       setSelectedRoom("");
+    //     } else {
+    //       alert("Error saving check-in.");
+    //     }
+    //   };
+    // };
   
+
+
+
+    const [error, setError] = useState(""); // State to track errors
+    const [formData, setFormData] = useState({
+      fullName: "",
+      whatsappContact: "",
+      emailAddress: "",
+    });
+
+    
+    const handleChange = (e) => {
+      setFormData({
+        ...formData,
+        [e.target.name]: e.target.value,
+      });
+    };
+    
+const handleSubmitted = async (e) => {
+  e.preventDefault();
+  setError(""); // Reset error on new submission
+
+  const fullName = e.target.fullName.value.trim();
+  const whatsappContact = e.target.whatsappContact.value.trim();
+  const emailAddress = e.target.emailAddress.value.trim();
+  const uploadedFile = e.target.uploadId.files[0];
+
+  if (!fullName || !whatsappContact || !emailAddress || !selectedOccupancy || !selectedRoom || !uploadedFile) {
+    setError("Please fill all fields and upload an ID.");
+    return;
+  }
+
+  if (uploadedFile.size > 100 * 1024) {
+    setError("File must be under 100KB.");
+    return;
+  }
+
+  try {
+    // Check if the WhatsApp number already exists
+    const checkResponse = await fetch("/api/checkMobile", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ whatsappContact }),
+    });
+
+    if (!checkResponse.ok) {
+      throw new Error("Failed to verify WhatsApp number.");
+    }
+
+    const checkData = await checkResponse.json();
+
+    if (checkData.exists) {
+      setError("This WhatsApp number is already registered!");
+      return;
+    }
+
+    // Process file upload and save check-in
+    const reader = new FileReader();
+    reader.readAsDataURL(uploadedFile);
+    reader.onload = async () => {
+      const governmentId = reader.result;
+
+      const response = await fetch("/api/saveCheckin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          companyName, // Ensure companyName is available in your component
+          fullName,
+          whatsappContact,
+          emailAddress,
+          selectedOccupancy,
+          selectedRoom,
+          governmentId,
+          timestamp: new Date().toISOString(),
+
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to save check-in.");
+      }
+
+      alert("Check-in successful!");
+      e.target.reset();
+      setSelectedOccupancy("");
+      setSelectedRoom("");
+      setError(""); // Clear any previous errors
+    };
+  } catch (error) {
+    console.error("Error during check-in:", error);
+    setError(error.message || "Something went wrong. Please try again.");
+  }
+};
+
 
   return (
     <section className="checkin-section">
@@ -368,12 +462,29 @@
                 </div>
 
                 {/* WhatsApp Contact */}
-                <div className="mb-3">
+                {/* <div className="mb-3">
                   <label htmlFor="whatsappContact" className="form-label">
                     WhatsApp Contact
                   </label>
                   <input type="text" className="form-control" id="whatsappContact" />
-                </div>
+                </div> */}
+
+                  <div className="mb-3">
+                    <label htmlFor="whatsappContact" className="form-label">
+                      WhatsApp Contact
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="whatsappContact"
+                      name="whatsappContact"
+                      placeholder="Enter WhatsApp Number"
+                      value={formData.whatsappContact}
+                      onChange={handleChange}
+                      required
+                    />
+                    {error && <p style={{ color: "red", fontSize: "14px" }}>{error}</p>}
+                  </div>
 
                 {/* Email Address */}
                 <div className="mb-3">

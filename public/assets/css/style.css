@@ -3216,3 +3216,47 @@ li.nav-item.dropdown-main {
     margin: auto;
     display: block;
 }
+.down-btn{
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    align-items: center;
+    display: flex
+;
+}
+.down-btn svg{
+    margin-right: 5px;
+    font-size: 14px;;
+}
+ 
+.filter-row{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;;
+    padding:15px;
+}
+
+.filter-row > div{
+    width:calc(50% - 10px);
+}
+
+.filter-row .ml-2{
+    margin-left: 10px;;
+}
+.filt-bx > div{
+    width:calc(50% - 10px);  
+}
+
+.reset-btn{
+    padding: 10px 10px;
+    font-size: 13px;
+    height: 35px;
+    display: flex
+;
+    align-items: center;
+    margin-left: 10px;
+}
+
+.filter-row label{
+    font-weight: bold;
+}
