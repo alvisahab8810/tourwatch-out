@@ -478,7 +478,7 @@ const handleSubmitted = async (e) => {
                       className="form-control"
                       id="whatsappContact"
                       name="whatsappContact"
-                      placeholder="Enter WhatsApp Number"
+                      // placeholder="Enter WhatsApp Number"
                       value={formData.whatsappContact}
                       onChange={handleChange}
                       required

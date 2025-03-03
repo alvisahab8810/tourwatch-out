@@ -2031,7 +2031,9 @@ section.national-dest {
 .response-main{
     overflow: auto;
 }
-
+.checkinbox .p-id {
+    line-height: 27px;
+}
 }
 @media(max-width:375px){
     .banner-section {

@@ -3111,7 +3111,7 @@ p.happy-title {
     filter: brightness(0) invert(1);
 }
 
-.checkinbox #uploadId{
+.checkinbox .p-id{
     line-height: 37px;
 }
 
@@ -3259,4 +3259,18 @@ li.nav-item.dropdown-main {
 
 .filter-row label{
     font-weight: bold;
+}
+
+.tabs-btns .active{
+    background-color: #EE4C49;
+    color:white;
+}
+
+.delete-btn{
+    border:none;
+    background:none;
+}
+
+#uploadId{
+    line-height: 2.4;
 }
