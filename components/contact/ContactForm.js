@@ -90,7 +90,7 @@ export default function ContactForm() {
                 <div className="ms-3">
                   <h5>Office Address</h5>
                   <p>
-                  1007, Tower B1, Floor 10th, DLF Mypad, Vibhuti Khand,<br/>
+                  DLF Mypad, Vibhuti Khand,
                   Gomti Nagar Lucknow - 226010
                   </p>
                 </div>

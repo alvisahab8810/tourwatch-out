@@ -46,7 +46,7 @@ export default function LehLaddakh() {
           <div className="parent-package w-100" id="package">
             <div className="max-800">
               <div className="content-section">
-                <h1>Leh Laddakh Family Package</h1>
+                <h1>Leh Ladakh Family Package</h1>
                 {/* <ul className="location-list">
                   <li className="list-item-none">(7 Days)</li>
                   <li className="locaton-items">
@@ -154,20 +154,30 @@ export default function LehLaddakh() {
                           Leh • Pangong
                       </li>
                     </ul>
-                        <ul>
+                        <ul className="features-lists">
                           <li>
+                           <img src="./assets/images/icons/hotel.png" alt="Hotel Icon"/>
                             <span>Hotel</span> : 3* Deluxe
                           </li>
+
                           <li>
-                            <span>Airport Transfers</span> : Included (Scorpio/Xylo/Innova)
-                          </li>
-                          <li>
+                            <img src="./assets/images/icons/pax.png" alt="pax Icon"/>
                             <span>No of Pax</span> : 2 adults & 1 child (Below 5 yrs)
                           </li>
                           <li>
+                           <img src="./assets/images/icons/transferes.png" alt="transfer Icon"/>
+
+                            <span>Airport Transfers</span> : Included (Scorpio/Xylo/Innova)
+                          </li>
+                        
+                          <li>
+                          <img src="./assets/images/icons/meal.png" alt="meals Icon"/>
+
                             <span>Meals</span> : Daily Breakfast  Only
                           </li>
                           <li>
+                          <img src="./assets/images/icons/duration.png" alt="duration Icon"/>
+
                             <span>Duration</span> : 3N 4D
                           </li>
                           {/* <li>
@@ -193,55 +203,51 @@ export default function LehLaddakh() {
                         <div className="schedule-list">
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                             
                               Day 1
                             </p>
-                            <h3>Leh Airport Pickup and Acclimate</h3>
+                           <div>
+                           <h3>Leh Airport Pickup and Acclimate</h3>
                             <p className="sche-details">
                                Arrival at Leh airport and transfer to your pre-booked Hotel. Complete day rest for acclimatize
                             </p>
+                           </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                           
                               Day 2
                             </p>
-                            <h3>Sham Valley Excursion Upto Sangam</h3>
+                           <div>
+                           <h3>Sham Valley Excursion Upto Sangam</h3>
                             <p className="sche-details">
                               Breakfast and head out for Hall of Fame, Gurudwara Pather Sahib, Magnetic Hill, Sangam Point. Visit Shanti Stupa & Leh Market Place
                             </p>
+                           </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                             
                               Day 3
                             </p>
-                            <h3>Leh - Pangong Excursion Lake -Leh</h3>
+                           <div>
+                           <h3>Leh - Pangong Excursion Lake -Leh</h3>
                             <p className="sche-details">
                                Breakfast and leave for Pangong lake through Changla Pass. Visit throughout few small villages for sudden view of the Pangong lake. Evenin return Leh.
                             </p>
+                           </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                         
                               Day 4
                             </p>
-                            <h3>Leh - Airport Drop</h3>
+                           <div>
+                           <h3>Leh - Airport Drop</h3>
                             <p className="sche-details">
                               Breakfast and transferred to leh Airport. Return Home with Everlasting memories 
                             </p>
+                           </div>
                           </div>
                           
                         </div>
@@ -291,20 +297,25 @@ export default function LehLaddakh() {
                          Leh • Nubra Valley  • Pangong  • Khardungla  • Turtuk
                       </li>
                     </ul>
-                        <ul>
+                        <ul className="features-lists">
                           <li>
+                            <img src="./assets/images/icons/hotel.png" alt="Hotel Icon"/>
                             <span>Hotel</span> : 3* Premium
                           </li>
                           <li>
+                           <img src="./assets/images/icons/pax.png" alt="pax Icon"/>
                             <span>No of Pax</span> : 2 adults & 1 child (Below 5 yrs)
                           </li>
                           <li>
+                            <img src="./assets/images/icons/transferes.png" alt="transfer Icon"/>
                             <span>Airport Transfers</span> : Included (Srinagar - Srinagar)
                           </li>
                           <li>
+                            <img src="./assets/images/icons/meal.png" alt="meals Icon"/>
                             <span>Meals</span> : Daily Breakfast  Only
                           </li>
                           <li>
+                            <img src="./assets/images/icons/duration.png" alt="duration Icon"/>
                             <span>Duration</span> : 6N 7D
                           </li>
                         
@@ -325,96 +336,89 @@ export default function LehLaddakh() {
                         <div className="schedule-list">
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                             
                               Day 1
                             </p>
+                            <div>
                             <h3>Leh Airport Pickup and Acclimate</h3>
                             <p className="sche-details">
                             Arrival at Leh airport and transfer to your pre-booked Hotel. Complete day rest for acclimatize
                             </p>
+                            </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                            
                               Day 2
                             </p>
+                            <div>
                             <h3>Sham Valley Excursion Upto Sangam</h3>
                             <p className="sche-details">
                                Breakfast and head out for Hall of Fame, Gurudwara Pather Sahib, Magnetic Hill, Sangam Point. Visit Shanti Stupa & Leh Market Place
                             </p>
+                            </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                           
                               Day 3
                             </p>
+                            <div>
                             <h3>Leh - Nubra via Khardung la -Nubra</h3>
                             <p className="sche-details">
                                Breakfast and drive to Nubra Valley via Khardungla Pass. On arrival do check-in in pre-booked hotel or camp. 
                             </p>
+                            </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                              
                               Day 4
                             </p>
-                            <h3>Nubra - Turtuk -Nubra (Zero Point)</h3>
+                           <div>
+                           <h3>Nubra - Turtuk -Nubra (Zero Point)</h3>
                             <p className="sche-details">
                             Breakfast and leave for Turtuk. You will cover Seightseeing like Shyok River Valley . In the evening return back to Nubra. 
                             </p>
+                           </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                             
                               Day 5
                             </p>
+                            <div>
                             <h3>Nubra - Pangong</h3>
                             <p className="sche-details">
                                 After an early breakfast do check-out and head towards Pabgong Tso via Shyok. On arrival at Pangong, Check-in in your pre-Booked Hotel or camp.
                             </p>
+                            </div>
                           </div>
 
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                             
                               Day 6
                             </p>
-                            <h3>Pangong Lake - Leh </h3>
+                           <div>
+                           <h3>Pangong Lake - Leh </h3>
                             <p className="sche-details">
                                In morning indulge yourself in the walk beside the lake and you can enjoy here photography. Later depart for Leh Ladak enroute Hemis Gompa. Upon arrival do check-in formailities.
                             </p>
+                           </div>
                           </div>
 
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                              
                               Day 7
                             </p>
-                            <h3>Leh - Airport Drop</h3>
+                           <div>
+                           <h3>Leh - Airport Drop</h3>
                             <p className="sche-details">
                                Breakfast and transferred to leh Airport. Return Home with Everlasting memories 
                             </p>
+                           </div>
                           </div>
                         </div>
                         <div className="cancellation-policy-bx">
@@ -466,20 +470,30 @@ export default function LehLaddakh() {
                         Null • Null • Null • Null • Null
                       </li>
                     </ul>
-                        <ul>
+                        <ul className="features-lists">
                           <li>
+                          <img src="./assets/images/icons/hotel.png" alt="Hotel Icon"/>
+
                             <span>Hotel</span> : 4*
                           </li>
                           <li>
+                          <img src="./assets/images/icons/pax.png" alt="pax Icon"/>
+
                             <span>No of Pax</span> : 03 Adults 01 Child (below 6 yrs)
                           </li>
                           <li>
+                          <img src="./assets/images/icons/transferes.png" alt="transfer Icon"/>
+
                             <span>Airport Transfers</span> : Included (Scorpio/Xylo/Innova)
                           </li>
                           <li>
+                          <img src="./assets/images/icons/meal.png" alt="meals Icon"/>
+
                             <span>Meals</span> : Breakfast and Dinner 
                           </li>
                           <li>
+                          <img src="./assets/images/icons/duration.png" alt="duration Icon"/>
+
                             <span>Duration</span> : 6N 7D
                           </li>
                          
@@ -499,98 +513,91 @@ export default function LehLaddakh() {
                         <div className="schedule-list">
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                             
                               Day 1
                             </p>
-                            <h3>Leh Airport Pickup and Acclimate</h3>
+                           <div>
+                           <h3>Leh Airport Pickup and Acclimate</h3>
                             <p className="sche-details">
                               Arrival at Leh airport and transfer to your pre-booked Hotel. Complete day rest for acclimatize
                             </p>
+                           </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                             
                               Day 2
                             </p>
+                            <div>
                             <h3>Sham Valley Excursion Upto Sangam</h3>
                             <p className="sche-details">
                               Breakfast and head out for Hall of Fame, Gurudwara Pather Sahib, Magnetic Hill, Sangam Point. Visit Shanti Stupa & Leh Market Place
                             </p>
+                            </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                              
                               Day 3
                             </p>
-                            <h3>Leh - Nubra via Khardung la -Nubra (18390 FT.)</h3>
+                           <div>
+                           <h3>Leh - Nubra via Khardung la -Nubra (18390 FT.)</h3>
                             <p className="sche-details">
                                Breakfast and drive to Nubra Valley via Khardungla Pass. On arrival do check-in in pre-booked hotel or camp.
                             </p>
+                           </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                            
                               Day 4
                             </p>
+                            <div>
                             <h3>Nubra - Pangong</h3>
                             <p className="sche-details">
                                After an early breakfast do check-out and head towards Pabgong Tso via Shyok. On arrival at Pangong, Check-in in your pre-Booked Hotel or camp.
                             </p>
+                            </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                             
                               Day 5
                             </p>
+                            <div>
                             <h3>Pangong lake - Tsomoriri</h3>
                             <p className="sche-details">
                                Wake up early and indulge yourself in the walk besides the lake. Later go for Tsomiriri Lake. On arrival do check-in Formailities.Over night stay.
                             </p>
+                            </div>
                           </div>
 
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                            
                               Day 6
                             </p>
-                            <h3>Tsomoriri - Tsokar - Tanglangla - Leh </h3>
+                           <div>
+                           <h3>Tsomoriri - Tsokar - Tanglangla - Leh </h3>
                             <p className="sche-details">
                               After Breakfast do check-out and visit Korzok Village.  Later drive towards Tsokar and ejoy their local tribes and their way of living. Later transfer to leh for Overnight stay.
                             </p>
+                           </div>
                           </div>
 
 
                           
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                            
                               Day 7
                             </p>
+                            <div>
                             <h3>Leh - Airport Drop</h3>
                             <p className="sche-details">
                                Breakfast and transferred to leh Airport. Return Home with Everlasting memories 
                             </p>
+                            </div>
                           </div>
                         </div>
                         <div className="cancellation-policy-bx">

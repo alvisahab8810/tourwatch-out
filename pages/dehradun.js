@@ -154,28 +154,37 @@ export default function Dehradun() {
                           Dehradun & Mussoorie 
                       </li>
                     </ul>
-                        <ul>
+
+                        <ul className="features-lists">
                           <li>
+                          <img src="./assets/images/icons/hotel.png" alt="Hotel Icon"/>  
+
                             <span>Hotel</span> : 3* Deluxe
                           </li>
+
                           <li>
-                            <span>Airport Transfers</span> : Sedan 
-                          </li>
-                          <li>
+                          <img src="./assets/images/icons/pax.png" alt="pax Icon"/>
+
                             <span>No of Pax</span> : 02 Adults & 01 Child (Below 5 yrs)
                           </li>
                           <li>
+
+                          <img src="./assets/images/icons/transferes.png" alt="transfer Icon"/>
+
+                            <span>Airport Transfers</span> : Sedan 
+                          </li>
+                         
+                          <li>
+                          <img src="./assets/images/icons/meal.png" alt="meals Icon"/>
+
                             <span>Meals</span> : Breakfast  
                           </li>
                           <li>
+                          <img src="./assets/images/icons/duration.png" alt="duration Icon"/>
+
                             <span>Duration</span> : 4N 5D
                           </li>
-                          {/* <li>
-                            <span>Photos & Videos</span> : Included
-                          </li>
-                          <li>
-                            <span>DJ Nights </span> : Included{" "}
-                          </li> */}
+                         
                         </ul>
                         <button className="btn btn-primary1" data-bs-toggle="modal"
                         data-bs-target="#exampleModalCenter"
@@ -193,69 +202,64 @@ export default function Dehradun() {
                         <div className="schedule-list">
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                             
                               Day 1
                             </p>
-                            <h3>Arrival st Dehradun + Few Sightseeing</h3>
+                           <div>
+                           <h3>Arrival st Dehradun + Few Sightseeing</h3>
                             <p className="sche-details">
                                Arrival and do check-in process. Rest and cover few local sightseeing like Forest research institute and many others. Return hotel dinner and overnbight stay. 
                             </p>
+                           </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                          
                               Day 2
                             </p>
+                            <div>
                             <h3>Head for Mussoorie</h3>
                             <p className="sche-details">
                                After breakfast checkout from hotel and head toward Mussoorie. On the way cover dehradun's Robber’s cave, Tapovan, Tapkeshwar shiv temple and later head Mussoorie. Check-in and Overnight stay at Mussoorie Hotel
                             </p>
+                            </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                             
                               Day 3
                             </p>
-                            <h3>Mussoorie local tour</h3>
+                           <div>
+                           <h3>Mussoorie local tour</h3>
                             <p className="sche-details">
                               Breakfast and lets start with the local sightseeing of Mussoorie like Company Garden (amusement park with ample space and adventurous rides at own cost) Kampty fall, Gun Hill, Mall road for shopping. Return Hotel and overnight stay at hotel
                             </p>
+                           </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                             
                               Day 4
                             </p>
+                            <div>
                             <h3>Mussoorie Dhanaulti Mussoorie</h3>
                             <p className="sche-details">
                               Done your breakfast and drive twards Dhanaulti on Chamba Road. Dhanaulti is the launching point for numerous treks into the snow - capped Himalayas(Dhanaulti is situated at an altitude of 2286 mts above sea level). Return Hotel in evening. Dinner and Overnight stay at Hotel.
                             </p>
+                            </div>
                           </div>
 
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                             
                               Day 5
                             </p>
-                            <h3>Departure Dalhousie to Dharmshala towards Delhi</h3>
+                           <div>
+                           <h3>Departure Dalhousie to Dharmshala towards Delhi</h3>
                             <p className="sche-details">
                               Breakfast and do check-out. Later catch your train towards to your destination with Happy memories
                             </p>
+                           </div>
                           </div>
                           
                         </div>
@@ -304,21 +308,31 @@ export default function Dehradun() {
                         />{" "}
                          Dehradun & Mussoorie 
                       </li>
-                    </ul>
-                        <ul>
+                    </ul> 
+                        <ul className="features-lists">
                           <li>
+                          <img src="./assets/images/icons/hotel.png" alt="Hotel Icon"/>  
+
                             <span>Hotel</span> :3* Premium
                           </li>
                           <li>
+                          <img src="./assets/images/icons/pax.png" alt="pax Icon"/>
+
                             <span>No of Pax</span> : 02 adults & 01 child (Below 5 yrs)
                           </li>
                           <li>
+                          <img src="./assets/images/icons/transferes.png" alt="transfer Icon"/>
+
                             <span>Airport Transfers</span> : Included (Sedan)
                           </li>
                           <li>
+                          <img src="./assets/images/icons/meal.png" alt="meals Icon"/>
+
                             <span>Meals</span> : Breakfast and Dinner 
                           </li>
                           <li>
+                          <img src="./assets/images/icons/duration.png" alt="duration Icon"/>
+
                             <span>Duration</span> : 4N 5D
                           </li>
                         
@@ -339,69 +353,64 @@ export default function Dehradun() {
                         <div className="schedule-list">
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                           
                               Day 1
                             </p>
-                            <h3>Arrival st Dehradun + Few Sightseeing</h3>
+                          <div>
+                          <h3>Arrival st Dehradun + Few Sightseeing</h3>
                             <p className="sche-details">
                               Arrival and do check-in process. Rest and cover few local sightseeing like Forest research institute and many others. Return hotel dinner and overnbight stay.
                             </p>
                           </div>
+                          </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                              
                               Day 2
                             </p>
+                            <div>
                             <h3>Head for Mussoorie</h3>
                             <p className="sche-details">
                                After breakfast checkout from hotel and head toward Mussoorie. On the way cover dehradun's Robber’s cave, Tapovan, Tapkeshwar shiv temple and later head Mussoorie. Check-in and Overnight stay at Mussoorie Hotel
                             </p>
+                            </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                              
                               Day 3
                             </p>
-                            <h3>Mussoorie local tour</h3>
+                           <div>
+                           <h3>Mussoorie local tour</h3>
                             <p className="sche-details">
                                Breakfast and lets start with the local sightseeing of Mussoorie like Company Garden (amusement park with ample space and adventurous rides at own cost) Kampty fall, Gun Hill, Mall road for shopping. Return Hotel and overnight stay at hotel
                             </p>
+                           </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                            
                               Day 4
                             </p>
-                            <h3>Dalhousie city tour</h3>
+                          <div>
+                          <h3>Dalhousie city tour</h3>
                             <p className="sche-details">
                               Breakfast and lets start with the local sightseeing of Mussoorie like Company Garden (amusement park with ample space and adventurous rides at own cost) Kampty fall, Gun Hill, Mall road for shopping. Return Hotel and overnight stay at hotel
                             </p>
                           </div>
+                          </div>
 
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                            
                               Day 5
                             </p>
-                            <h3>Departure Dalhousie to Dharmshala towards Delhi</h3>
+                           <div>
+                           <h3>Departure Dalhousie to Dharmshala towards Delhi</h3>
                             <p className="sche-details">
                               Breakfast and do check-out. Later catch your train towards to your destination with Happy memories
                             </p>
+                           </div>
                           </div>
                         
                         </div>
@@ -455,20 +464,30 @@ export default function Dehradun() {
                         
                       </li>
                     </ul>
-                        <ul>
+                        <ul className="features-lists">
                           <li>
+                          <img src="./assets/images/icons/hotel.png" alt="Hotel Icon"/>  
+
                             <span>Hotel</span> : 4*
                           </li>
                           <li>
+                          <img src="./assets/images/icons/pax.png" alt="pax Icon"/>
+
                             <span>No of Pax</span> : 02 Adults & 01 Child (Below 5 yrs)
                           </li>
                           <li>
+                          <img src="./assets/images/icons/transferes.png" alt="transfer Icon"/>
+
                             <span>Airport Transfers</span> : Included (Sedan)
                           </li>
                           <li>
+                          <img src="./assets/images/icons/meal.png" alt="meals Icon"/>
+
                             <span>Meals</span> : Breakfast and Dinner
                           </li>
                           <li>
+                          <img src="./assets/images/icons/duration.png" alt="duration Icon"/>
+
                             <span>Duration</span> : 4N 5D
                           </li>
                          
@@ -488,70 +507,65 @@ export default function Dehradun() {
                         <div className="schedule-list">
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                         
                               Day 1
                             </p>
-                            <h3>Arrival st Dehradun + Few Sightseeing</h3>
+                           <div>
+                           <h3>Arrival st Dehradun + Few Sightseeing</h3>
                             <p className="sche-details">
                               Arrival and do check-in process. Rest and cover few local sightseeing like Forest research institute and many others. Return hotel dinner and overnbight stay.
                             </p>
+                           </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                             
                               Day 2
                             </p>
-                            <h3>Head for Mussoorie</h3>
+                           <div>
+                           <h3>Head for Mussoorie</h3>
                             <p className="sche-details">
                                After breakfast checkout from hotel and head toward Mussoorie. On the way cover dehradun's Robber’s cave, Tapovan, Tapkeshwar shiv temple and later head Mussoorie. Check-in and Overnight stay at Mussoorie Hotel
                             </p>
+                           </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                            
                               Day 3
                             </p>
+                            <div>
                             <h3>Mussoorie local tour</h3>
                             <p className="sche-details">
                               Breakfast and lets start with the local sightseeing of Mussoorie like Company Garden (amusement park with ample space and adventurous rides at own cost) Kampty fall, Gun Hill, Mall road for shopping. Return Hotel and overnight stay at hotel
                             </p>
+                            </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                             
                               Day 4
                             </p>
-                            <h3>Mussoorie Dhanaulti Mussoorie</h3>
+                             <div>
+                             <h3>Mussoorie Dhanaulti Mussoorie</h3>
                             <p className="sche-details">
                               Done your breakfast and drive twards Dhanaulti on Chamba Road. Dhanaulti is the launching point for numerous treks into the snow - capped Himalayas(Dhanaulti is situated at an altitude of 2286 mts above sea level). Return Hotel in evening. Dinner and Overnight stay at Hotel.
                             </p>
+                             </div>
                           </div>
 
 
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                             
                               Day 5
                             </p>
+                            <div>
                             <h3>Departure Dalhousie to Dharmshala towards Delhi</h3>
                             <p className="sche-details">
                               Breakfast and do check-out. Later catch your train towards to your destination with Happy memories
                             </p>
+                            </div>
                           </div>
                           
                         </div>

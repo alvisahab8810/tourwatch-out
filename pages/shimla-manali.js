@@ -154,20 +154,31 @@ export default function ShimlaManali() {
                         SHIMLA • MANALI
                       </li>
                     </ul>
-                        <ul>
+                        <ul className="features-lists">
                           <li>
+                           <img src="./assets/images/icons/hotel.png" alt="Hotel Icon"/>
                             <span>Hotel</span> : 3* Deluxe
                           </li>
+
                           <li>
-                            <span>Airport Transfers</span> : Included (Sedan)
-                          </li>
-                          <li>
+                          <img src="./assets/images/icons/pax.png" alt="pax Icon"/>
+
                             <span>No of Pax</span> : 02 Adults & 01 Child (Below 5 yrs)
                           </li>
                           <li>
+                          <img src="./assets/images/icons/transferes.png" alt="transfer Icon"/>
+
+                            <span>Airport Transfers</span> : Included (Sedan)
+                          </li>
+                         
+                          <li>
+                          <img src="./assets/images/icons/meal.png" alt="meals Icon"/>
+
                             <span>Meals</span> : Breakfast 
                           </li>
                           <li>
+                          <img src="./assets/images/icons/duration.png" alt="duration Icon"/>
+
                             <span>Duration</span> : 5N 6D
                           </li>
                           {/* <li>
@@ -193,85 +204,79 @@ export default function ShimlaManali() {
                         <div className="schedule-list">
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                            
                               Day 1
                             </p>
-                            <h3>Pickup from Delhi or Chandigarh  and Transfer to Shimla By Volvo in Night</h3>
+                           <div>
+                           <h3>Pickup from Delhi or Chandigarh  and Transfer to Shimla By Volvo in Night</h3>
                             <p className="sche-details">
                                Your journey will start from Delhi. Overnight volvo Journey towards Shimla.
                             </p>
+                           </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                             
                               Day 2
                             </p>
-                            <h3>Shimla Local Sightseeing</h3>
+                           <div>
+                           <h3>Shimla Local Sightseeing</h3>
                             <p className="sche-details">
                               Morning arrival in Shimla and today we will explore Local sightseeing like  Jakhu Temple and Shimla Ridge Church, Vice Regal Lodge, Christ Church, Gaiety Theatre and Scandal Point.  
                             </p>
+                           </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                             
                               Day 3
                             </p>
+                            <div>
                             <h3>Excursion to Kufri, Mashobra and Naldehra</h3>
                             <p className="sche-details">
                                Breakfast and Himalayan National Park, Yak Ride and one can see the endless Himalayan Panorama from Kufri.Visit Apple orchards in Mashobra and Naldehra, famous for its dense forest, and take a jungle walk.
                               </p>
+                            </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                             
                               Day 4
                             </p>
+                            <div>
                             <h3>Transfer to Manali - En Route Stop at Kullu</h3>
                             <p className="sche-details">
                              Breakfast and do check-out formalities. Visit sightseeing spots on the way like SunderNagerLake, Pandoh dam, Hanogi Mata temple, Vaishno Mata Temple. Evening Reach Manali
                             </p>
+                            </div>
                           </div>
                           
 
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                             
                               Day 5
                             </p>
+                            <div>
                             <h3>Excursion to Solang Valley</h3>
                             <p className="sche-details">
                             Breakfast and transfer to visit Solang Valley. You may witness Atal tunnel & Sissu lake Drive back to Manali in the evening. Dinner and overnight stay in Manali.
                             </p>
+                            </div>
                           </div>
 
 
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                            
                               Day 6
                             </p>
+                            <div>
                             <h3>Manali Local Sightseeing - Overnight Volvo to Delhi</h3>
                             <p className="sche-details">
                               Breakfast and do check-out. Now you will visit old Hidimba Mata temple.Visit Manu Temple, Van Vihar in Manali and Shiv Temple. In the evening, you will get dropped at Manali Volvo Bus stand where you can catch Volvo bus for Delhi.
                             </p>
+                            </div>
                             
                           </div>
                         </div>
@@ -321,20 +326,33 @@ export default function ShimlaManali() {
                          Null • Null  • Null  • Null  • Null
                       </li>
                     </ul>
-                        <ul>
-                          <li>
+                        <ul className="features-lists">
+                           <li>
+                           <img src="./assets/images/icons/hotel.png" alt="Hotel Icon"/>
+
                             <span>Hotel</span> : 3* Premium
                           </li>
                           <li>
+                          <img src="./assets/images/icons/pax.png" alt="pax Icon"/>
+
                             <span>No of Pax</span> : 02 Adults & 02 Childs (6-12yrs)
                           </li>
                           <li>
+
+                          <img src="./assets/images/icons/transferes.png" alt="transfer Icon"/>
+
                             <span>Airport Transfers</span> : Included (Sedan)
                           </li>
                           <li>
+
+                          <img src="./assets/images/icons/meal.png" alt="meals Icon"/>
+
                             <span>Meals</span> : Breakfast and Dinner 
                           </li>
                           <li>
+
+                          <img src="./assets/images/icons/duration.png" alt="duration Icon"/>
+
                             <span>Duration</span> : 5N 6D
                           </li>
                         
@@ -355,85 +373,79 @@ export default function ShimlaManali() {
                         <div className="schedule-list">
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                           
                               Day 1
                             </p>
-                            <h3>Pickup from Delhi and Transfer to Shimla By Volvo in Night</h3>
+                           <div>
+                           <h3>Pickup from Delhi and Transfer to Shimla By Volvo in Night</h3>
                             <p className="sche-details">
                               Your journey will start from Delhi. Overnight volvo Journey towards Shimla.
                             </p>
+                           </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                        
                               Day 2
                             </p>
-                            <h3>Shimla Local Sightseeing</h3>
+                           <div>
+                           <h3>Shimla Local Sightseeing</h3>
                             <p className="sche-details">
                               Morning arrival in Shimla and today we will explore Local sightseeing like  Jakhu Temple and Shimla Ridge Church, Vice Regal Lodge, Christ Church, Gaiety Theatre and Scandal Point.  
                             </p>
+                           </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                           
                               Day 3
                             </p>
+                            <div>
                             <h3>Excursion to Kufri, Mashobra and Naldehra</h3>
                             <p className="sche-details">
                               Breakfast and Himalayan National Park, Yak Ride and one can see the endless Himalayan Panorama from Kufri.Visit Apple orchards in Mashobra and Naldehra, famous for its dense forest, and take a jungle walk.
                             </p>
+                            </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                             
                               Day 4
                             </p>
-                            <h3>Transfer to Manali - En Route Stop at Kullu</h3>
+                           <div>
+                           <h3>Transfer to Manali - En Route Stop at Kullu</h3>
                             <p className="sche-details">
                               Breakfast and do check-out formalities. Visit sightseeing spots on the way like SunderNagerLake, Pandoh dam, Hanogi Mata temple, Vaishno Mata Temple. Evening Reach Manali
                             </p>
+                           </div>
                           </div>
 
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                           
                               Day 5
                             </p>
-                            <h3>Excursion to Solang Valley</h3>
+                           <div>
+                           <h3>Excursion to Solang Valley</h3>
                             <p className="sche-details">
                               Breakfast and transfer to visit Solang Valley. You may witness Atal tunnel & Sissu lake Drive back to Manali in the evening. Dinner and overnight stay in Manali.
                             </p>
+                           </div>
                           </div>
 
 
                           
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                             
                               Day 6
                             </p>
-                            <h3>Manali Local Sightseeing - Overnight Volvo to Delhi</h3>
+                           <div>
+                           <h3>Manali Local Sightseeing - Overnight Volvo to Delhi</h3>
                             <p className="sche-details">
                                Breakfast and do check-out. Now you will visit old Hidimba Mata temple.Visit Manu Temple, Van Vihar in Manali and Shiv Temple. In the evening, you will get dropped at Manali Volvo Bus stand where you can catch Volvo bus for Delhi.
                             </p>
+                           </div>
                           </div>
                         
                         </div>
@@ -486,20 +498,30 @@ export default function ShimlaManali() {
                         Null • Null • Null • Null • Null
                       </li>
                     </ul>
-                        <ul>
+                        <ul className="features-lists">
                           <li>
+                          <img src="./assets/images/icons/hotel.png" alt="Hotel Icon"/>
+
                             <span>Hotel</span> : 4*
                           </li>
                           <li>
+                          <img src="./assets/images/icons/pax.png" alt="pax Icon"/>
+
                             <span>No of Pax</span> : 02 Adults & 02 Childs (6-12yrs)
                           </li>
                           <li>
+                          <img src="./assets/images/icons/transferes.png" alt="transfer Icon"/>
+
                             <span>Airport Transfers</span> : Included (Sedan)
                           </li>
                           <li>
+                          <img src="./assets/images/icons/meal.png" alt="meals Icon"/>
+
                             <span>Meals</span> : Breakfast and Dinner 
                           </li>
                           <li>
+                          <img src="./assets/images/icons/duration.png" alt="duration Icon"/>
+
                             <span>Duration</span> : 5N 6D
                           </li>
                          
@@ -519,86 +541,80 @@ export default function ShimlaManali() {
                         <div className="schedule-list">
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                             
                               Day 1
                             </p>
+                            <div>
                             <h3>Pickup from Delhi and Transfer to Shimla By Volvo in Night</h3>
                             <p className="sche-details">
                               Your journey will start from Delhi. Overnight volvo Journey towards Shimla.
                             </p>
+                            </div>
+
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                           
                               Day 2
                             </p>
-                            <h3>Shimla Local Sightseeing</h3>
+                           <div>
+                           <h3>Shimla Local Sightseeing</h3>
                             <p className="sche-details">
                                Morning arrival in Shimla and today we will explore Local sightseeing like  Jakhu Temple and Shimla Ridge Church, Vice Regal Lodge, Christ Church, Gaiety Theatre and Scandal Point.  
                             </p>
+                           </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                             
                               Day 3
                             </p>
+                            <div>
                             <h3>Excursion to Kufri, Mashobra and Naldehra</h3>
                             <p className="sche-details">
                              Breakfast and Himalayan National Park, Yak Ride and one can see the endless Himalayan Panorama from Kufri.Visit Apple orchards in Mashobra and Naldehra, famous for its dense forest, and take a jungle walk.
                             </p>
+                            </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                             
                               Day 4
                             </p>
-                            <h3>Transfer to Manali - En Route Stop at Kullu</h3>
+                           <div>
+                           <h3>Transfer to Manali - En Route Stop at Kullu</h3>
                             <p className="sche-details">
                               Breakfast and do check-out formalities. Visit sightseeing spots on the way like SunderNagerLake, Pandoh dam, Hanogi Mata temple, Vaishno Mata Temple. Evening Reach Manali
                             </p>
+                           </div>
                           </div>
 
 
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
                               Day 5
                             </p>
-                            <h3>Excursion to Solang Valley</h3>
+                           <div>
+                           <h3>Excursion to Solang Valley</h3>
                             <p className="sche-details">
                                Breakfast and transfer to visit Solang Valley. You may witness Atal tunnel & Sissu lake Drive back to Manali in the evening. Dinner and overnight stay in Manali.
                             </p>
+                           </div>
                           </div>
 
 
 
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                            
                               Day 6
                             </p>
+                            <div>
                             <h3>Manali Local Sightseeing - Overnight Volvo to Delhi</h3>
                             <p className="sche-details">
                                Breakfast and do check-out. Now you will visit old Hidimba Mata temple.Visit Manu Temple, Van Vihar in Manali and Shiv Temple. In the evening, you will get dropped at Manali Volvo Bus stand where you can catch Volvo bus for Delhi.
                             </p>
+                            </div>
                           </div>
                           
                         </div>

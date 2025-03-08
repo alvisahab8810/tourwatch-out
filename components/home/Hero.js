@@ -7,7 +7,7 @@ export default function Hero() {
         <div className="container">
           <div className="row align-items-center pt-200">
             <div className="col-md-6 hero-contennt">
-              <h2 className="fs-40 text-white fw-bold">Get Upto...</h2>
+              <h2 className="fs-40 text-white fw-bold">Get Upto</h2>
               <h1 className="fs-88 text-white fw-bold">
                 <span className="fs-161 text-white fw-bold">30</span>% Off
                 <br />

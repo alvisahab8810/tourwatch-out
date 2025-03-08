@@ -154,20 +154,31 @@ export default function Shimla() {
                           Null • Null
                       </li>
                     </ul>
-                        <ul>
+                        <ul className="features-lists">
                           <li>
+                          <img src="./assets/images/icons/hotel.png" alt="Hotel Icon"/>
                             <span>Hotel</span> : 3* Deluxe
                           </li>
+
                           <li>
-                            <span>Airport Transfers</span> : Included (Sedan)
-                          </li>
-                          <li>
+                          <img src="./assets/images/icons/pax.png" alt="pax Icon"/>
+
                             <span>No of Pax</span> : 2 adults & 1 child (Below 5 yrs)
                           </li>
                           <li>
+                           <img src="./assets/images/icons/transferes.png" alt="transfer Icon"/>
+
+                            <span>Airport Transfers</span> : Included (Sedan)
+                          </li>
+                         
+                          <li>
+                          <img src="./assets/images/icons/meal.png" alt="meals Icon"/>
+
                             <span>Meals</span> : Daily Breakfast  Only
                           </li>
                           <li>
+                          <img src="./assets/images/icons/duration.png" alt="duration Icon"/>
+
                             <span>Duration</span> : 3N 4D
                           </li>
                           {/* <li>
@@ -193,55 +204,51 @@ export default function Shimla() {
                         <div className="schedule-list">
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                             
                               Day 1
                             </p>
-                            <h3>Pickup from Delhi or Chandigarh and Transfer to Shimla By Volvo in Night</h3>
+                           <div>
+                           <h3>Pickup from Delhi or Chandigarh and Transfer to Shimla By Volvo in Night</h3>
                             <p className="sche-details">
                               Your journey will start from Delhi. Overnight volvo Journey towards Shimla.
                             </p>
+                           </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                       
                               Day 2
                             </p>
+                            <div >
                             <h3>Shimla Local Sightseeing</h3>
                             <p className="sche-details">
                                Morning arrival in Shimla and today we will explore Local sightseeing like  Jakhu Temple and Shimla Ridge Church, Vice Regal Lodge, Christ Church, Gaiety Theatre and Scandal Point.  
                             </p>
+                            </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                           
                               Day 3
                             </p>
-                            <h3>Excursion to Kufri, Mashobra and Naldehra</h3>
+                           <div>
+                           <h3>Excursion to Kufri, Mashobra and Naldehra</h3>
                             <p className="sche-details">
                               Breakfast and Himalayan National Park, Yak Ride and one can see the endless Himalayan Panorama from Kufri.Visit Apple orchards in Mashobra and Naldehra, famous for its dense forest, and take a jungle walk.
                               </p>
+                           </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                             
                               Day 4
                             </p>
+                            <div>
                             <h3>Overnight Volvo to Delhi</h3>
                             <p className="sche-details">
                               Breakfast and you will do check-out at 12pm appx. Overnight volvo Journey towards Delhi.
                             </p>
+                            </div>
                           </div>
                           
                         </div>
@@ -291,20 +298,29 @@ export default function Shimla() {
                          Null • Null  • Null  • Null  • Null
                       </li>
                     </ul>
-                        <ul>
+                        <ul className="features-lists">
                           <li>
+                           <img src="./assets/images/icons/hotel.png" alt="Hotel Icon"/>
                             <span>Hotel</span> :3* Deluxe
                           </li>
                           <li>
+                          <img src="./assets/images/icons/pax.png" alt="pax Icon"/>
+
                             <span>No of Pax</span> : 3 adults & 2 childs (Below 5 yrs)
                           </li>
                           <li>
+                          <img src="./assets/images/icons/transferes.png" alt="transfer Icon"/>
+
                             <span>Airport Transfers</span> : Included (Sedan)
                           </li>
                           <li>
+                          <img src="./assets/images/icons/meal.png" alt="meals Icon"/>
+
                             <span>Meals</span> : Daily Breakfast  and Dinner 
                           </li>
                           <li>
+                          <img src="./assets/images/icons/duration.png" alt="duration Icon"/>
+
                             <span>Duration</span> : 3N 4D
                           </li>
                         
@@ -325,55 +341,51 @@ export default function Shimla() {
                         <div className="schedule-list">
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                      
                               Day 1
                             </p>
-                            <h3>Pickup from Delhi or Chandigarh and Transfer to Shimla By Volvo in Night</h3>
+                           <div>
+                             <h3>Pickup from Delhi or Chandigarh and Transfer to Shimla By Volvo in Night</h3>
                             <p className="sche-details">
                                Your journey will start from Delhi. Overnight volvo Journey towards Shimla.
                             </p>
+                           </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                             
                               Day 2
                             </p>
+                            <div>
                             <h3>Shimla Local Sightseeing</h3>
                             <p className="sche-details">
                                Morning arrival in Shimla and today we will explore Local sightseeing like  Jakhu Temple and Shimla Ridge Church, Vice Regal Lodge, Christ Church, Gaiety Theatre and Scandal Point.  
                             </p>
+                            </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                             
                               Day 3
                             </p>
+                            <div>
                             <h3>Excursion to Kufri, Mashobra and Naldehra</h3>
                             <p className="sche-details">
                                Breakfast and Himalayan National Park, Yak Ride and one can see the endless Himalayan Panorama from Kufri.Visit Apple orchards in Mashobra and Naldehra, famous for its dense forest, and take a jungle walk.
                             </p>
+                            </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                            
                               Day 4
                             </p>
-                            <h3>Overnight Volvo to Delhi</h3>
+                           <div>
+                           <h3>Overnight Volvo to Delhi</h3>
                             <p className="sche-details">
                               Breakfast and you will do check-out at 12pm appx. Overnight volvo Journey towards Delhi.
                             </p>
+                           </div>
                           </div>
                         
                         </div>
@@ -426,20 +438,30 @@ export default function Shimla() {
                         Null • Null • Null • Null • Null
                       </li>
                     </ul>
-                        <ul>
+                        <ul className="features-lists">
                           <li>
+                          <img src="./assets/images/icons/hotel.png" alt="Hotel Icon"/>
+
                             <span>Hotel</span> : 3* Deluxe
                           </li>
                           <li>
+                          <img src="./assets/images/icons/pax.png" alt="pax Icon"/>
+
                             <span>No of Pax</span> : 3 adults & 2 childs (Below 5 yrs)
                           </li>
                           <li>
+                          <img src="./assets/images/icons/transferes.png" alt="transfer Icon"/>
+
                             <span>Airport Transfers</span> : Included (Sedan)
                           </li>
                           <li>
+                          <img src="./assets/images/icons/meal.png" alt="meals Icon"/>
+
                             <span>Meals</span> : Daily Breakfast  and Dinner 
                           </li>
                           <li>
+                          <img src="./assets/images/icons/duration.png" alt="duration Icon"/>
+
                             <span>Duration</span> : 3N 4D
                           </li>
                          
@@ -459,55 +481,51 @@ export default function Shimla() {
                         <div className="schedule-list">
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                           
                               Day 1
                             </p>
-                            <h3>Pickup from Delhi or Chandigarh and Transfer to Shimla By Volvo in Night</h3>
+                           <div>
+                           <h3>Pickup from Delhi or Chandigarh and Transfer to Shimla By Volvo in Night</h3>
                             <p className="sche-details">
                               Your journey will start from Delhi. Overnight volvo Journey towards Shimla.
                             </p>
+                           </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                             
                               Day 2
                             </p>
+                            <div>
                             <h3>Shimla Local Sightseeing</h3>
                             <p className="sche-details">
                                Morning arrival in Shimla and today we will explore Local sightseeing like  Jakhu Temple and Shimla Ridge Church, Vice Regal Lodge, Christ Church, Gaiety Theatre and Scandal Point.  
                             </p>
+                            </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                              
                               Day 3
                             </p>
-                            <h3>Excursion to Kufri, Mashobra and Naldehra</h3>
+                           <div>
+                           <h3>Excursion to Kufri, Mashobra and Naldehra</h3>
                             <p className="sche-details">
                               Breakfast and Himalayan National Park, Yak Ride and one can see the endless Himalayan Panorama from Kufri.Visit Apple orchards in Mashobra and Naldehra, famous for its dense forest, and take a jungle walk.
                             </p>
+                           </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                             
                               Day 4
                             </p>
+                            <div>
                             <h3>Overnight Volvo to Delhi</h3>
                             <p className="sche-details">
                             Breakfast and you will do check-out at 12pm appx. Overnight volvo Journey towards Delhi.
                             </p>
+                            </div>
                           </div>
                           
                         </div>

@@ -154,20 +154,32 @@ export default function Dharamshala() {
                           Dharmshala  McLeod Ganj & Dalhousie
                       </li>
                     </ul>
-                        <ul>
+                        <ul className="features-lists">
                           <li>
+                            <img src="./assets/images/icons/hotel.png" alt="Hotel Icon"/>
                             <span>Hotel</span> : 3* Deluxe
                           </li>
+
                           <li>
-                            <span>Airport Transfers</span> : Volvo Buses and (Sedan)
-                          </li>
-                          <li>
+
+                          <img src="./assets/images/icons/pax.png" alt="pax Icon"/>
+
                             <span>No of Pax</span> : 02 Adults & 01 Child (Below 5 yrs)
                           </li>
                           <li>
+                          <img src="./assets/images/icons/transferes.png" alt="transfer Icon"/>
+
+                            <span>Airport Transfers</span> : Volvo Buses and (Sedan)
+                          </li>
+                          
+                          <li>
+                          <img src="./assets/images/icons/meal.png" alt="meals Icon"/>
+
                             <span>Meals</span> : Breakfast  
                           </li>
                           <li>
+                          <img src="./assets/images/icons/duration.png" alt="duration Icon"/>
+
                             <span>Duration</span> : 3N 4D
                           </li>
                           {/* <li>
@@ -193,71 +205,66 @@ export default function Dharamshala() {
                         <div className="schedule-list">
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                             
                               Day 1
                             </p>
-                            <h3>Delhi - Dharmshala</h3>
+                          <div>
+                          <h3>Delhi - Dharmshala</h3>
                             <p className="sche-details">
                               Your journey will start from Delhi.. Travel by overnight Volvo bus from Delhi to Dharmshala. 
                             </p>
                           </div>
+                          </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                           
                               Day 2
                             </p>
-                            <h3>Dharamshala - Local Sightseeing - Mcleodganj</h3>
+                           <div>
+                           <h3>Dharamshala - Local Sightseeing - Mcleodganj</h3>
                             <p className="sche-details">
                                Arrival Dharmshala and get transferred to hotel by our representative.  Cover sightseeing like Dalai Lama, Mcleodganj, Bhagsunag Temple, Waterfall,
                                Dharamshala international cricket stadium & local market. Dinner and overnight stay.  
                             </p>
+                           </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                            
                               Day 3
                             </p>
+                            <div>
                             <h3>Dharamshala – Dalhousie (120 kms/ 4 hrs)</h3>
                             <p className="sche-details">
                               After breakfast, depart for Dalhousie. Enroute visit Khajjiar- Mini Switzerland of India. On arrival check- in at the
                                hotel. Rest of the day for leisure and shopping. Dinner and overnight stay.
                             </p>
+                            </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                             
                               Day 4
                             </p>
-                            <h3>Dalhousie city tour</h3>
+                           <div>
+                           <h3>Dalhousie city tour</h3>
                             <p className="sche-details">
                                After breakfast, full day at leisure. Visit Sat Dhara, Panji Pulla and Shubhash Baoli. Overnight stay at Hotel
                             </p>
+                           </div>
                           </div>
 
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                              
                               Day 5
                             </p>
+                            <div>
                             <h3>Departure Dalhousie to Dharmshala towards Delhi</h3>
                             <p className="sche-details">
                               Breakfast and check-out drive towards Dharamshala. Drop Evening 4/5pm & Take Volvo Dharmshala to Delhi.
                             </p>
+                            </div>
                           </div>
                           
                         </div>
@@ -307,20 +314,30 @@ export default function Dharamshala() {
                         Dharmshala  McLeod Ganj & Dalhousie
                       </li>
                     </ul>
-                        <ul>
+                        <ul className="features-lists">
                           <li>
+                          <img src="./assets/images/icons/hotel.png" alt="Hotel Icon"/>  
+
                             <span>Hotel</span> :3* Deluxe
                           </li>
                           <li>
+                          <img src="./assets/images/icons/pax.png" alt="pax Icon"/>
+
                             <span>No of Pax</span> : 02 adults & 01 child (Below 5 yrs)
                           </li>
                           <li>
+                          <img src="./assets/images/icons/transferes.png" alt="transfer Icon"/>
+
                             <span>Airport Transfers</span> : Volvo Buses and (Sedan)
                           </li>
                           <li>
+                          <img src="./assets/images/icons/meal.png" alt="meals Icon"/>
+
                             <span>Meals</span> : Breakfast 
                           </li>
                           <li>
+                          <img src="./assets/images/icons/duration.png" alt="duration Icon"/>
+
                             <span>Duration</span> : 3N 4D
                           </li>
                         
@@ -341,71 +358,67 @@ export default function Dharamshala() {
                         <div className="schedule-list">
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                        
                               Day 1
                             </p>
+                            <div>
                             <h3>Delhi - Dharmshala</h3>
                             <p className="sche-details">
                               Your journey will start from Delhi.. Travel by overnight Volvo bus from Delhi to Dharmshala. 
                             </p>
+                            </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                              
                               Day 2
                             </p>
+                            <div>
+                              
                             <h3>Dharamshala - Local Sightseeing - Mcleodganj</h3>
                             <p className="sche-details">
                               Arrival Dharmshala and get transferred to hotel by our representative.  Cover sightseeing like Dalai Lama, Mcleodganj, Bhagsunag Temple, Waterfall,
                               Dharamshala international cricket stadium & local market. Dinner and overnight stay.
                             </p>
+                            </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                              
                               Day 3
                             </p>
-                            <h3>Dharamshala – Dalhousie (120 kms/ 4 hrs)</h3>
+                           <div>
+                           <h3>Dharamshala – Dalhousie (120 kms/ 4 hrs)</h3>
                             <p className="sche-details">
                                After breakfast, depart for Dalhousie. Enroute visit Khajjiar- Mini Switzerland of India. On arrival check- in at the
                               hotel. Rest of the day for leisure and shopping. Dinner and overnight stay.
                             </p>
+                           </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                             
                               Day 4
                             </p>
+                            <div>
                             <h3>Dalhousie city tour</h3>
                             <p className="sche-details">
                                After breakfast, full day at leisure. Visit Sat Dhara, Panji Pulla and Shubhash Baoli. Overnight stay at Hotel
                             </p>
+                            </div>
                           </div>
 
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                             
                               Day 5
                             </p>
+                            <div>
                             <h3>Departure Dalhousie to Dharmshala towards Delhi</h3>
                             <p className="sche-details">
                               Breakfast and check-out drive towards Dharamshala. Drop Evening 4/5pm & Take Volvo Dharmshala to Delhi.
                             </p>
+                            </div>
                           </div>
                         
                         </div>
@@ -458,20 +471,30 @@ export default function Dharamshala() {
                         Dharmshala  McLeod Ganj & Dalhousie
                       </li>
                     </ul>
-                        <ul>
+                        <ul className="features-lists">
                           <li>
+                          <img src="./assets/images/icons/hotel.png" alt="Hotel Icon"/>  
+
                             <span>Hotel</span> : 3* Premium
                           </li>
                           <li>
+                          <img src="./assets/images/icons/pax.png" alt="pax Icon"/>
+
                             <span>No of Pax</span> : 02 Adults & 01 Child (Below 5 yrs)
                           </li>
                           <li>
+                          <img src="./assets/images/icons/transferes.png" alt="transfer Icon"/>
+
                             <span>Airport Transfers</span> : Included (Sedan)
                           </li>
                           <li>
+                          <img src="./assets/images/icons/meal.png" alt="meals Icon"/>
+
                             <span>Meals</span> : Breakfast and Dinner
                           </li>
                           <li>
+                          <img src="./assets/images/icons/duration.png" alt="duration Icon"/>
+
                             <span>Duration</span> : 3N 4D
                           </li>
                          
@@ -491,72 +514,68 @@ export default function Dharamshala() {
                         <div className="schedule-list">
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                            
                               Day 1
                             </p>
+                            <div>
                             <h3>Delhi - Dharmshala</h3>
                             <p className="sche-details">
                               Your journey will start from Delhi.. Travel by overnight Volvo bus from Delhi to Dharmshala. 
                             </p>
+                            </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                           
                               Day 2
                             </p>
+                            <div>
                             <h3>Dharamshala - Local Sightseeing - Mcleodganj</h3>
                             <p className="sche-details">
                                Arrival Dharmshala and get transferred to hotel by our representative.  Cover sightseeing like Dalai Lama, Mcleodganj, Bhagsunag Temple, Waterfall,
                                 Dharamshala international cricket stadium & local market. Dinner and overnight stay.    
                             </p>
+                            </div>
+                           
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                           
                               Day 3
                             </p>
-                            <h3>Dharamshala – Dalhousie (120 kms/ 4 hrs)</h3>
+                           <div>
+                           <h3>Dharamshala – Dalhousie (120 kms/ 4 hrs)</h3>
                             <p className="sche-details">
                               After breakfast, depart for Dalhousie. Enroute visit Khajjiar- Mini Switzerland of India. On arrival check- in at the
                                hotel. Rest of the day for leisure and shopping. Dinner and overnight stay.
                             </p>
+                           </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                              
                               Day 4
                             </p>
-                            <h3>Dalhousie city tour</h3>
+                           <div>
+                           <h3>Dalhousie city tour</h3>
                             <p className="sche-details">
                             After breakfast, full day at leisure. Visit Sat Dhara, Panji Pulla and Shubhash Baoli. Overnight stay at Hotel
                             </p>
+                           </div>
                           </div>
 
 
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              <img
-                                src="./assets/images/kashmir/icons/time.png"
-                                alt="watch icon"
-                              />{" "}
+                           
                               Day 5
                             </p>
+                            <div>
                             <h3>Departure Dalhousie to Dharmshala towards Delhi</h3>
                             <p className="sche-details">
                               Breakfast and check-out drive towards Dharamshala. Drop Evening 4/5pm & Take Volvo Dharmshala to Delhi.
                             </p>
+                            </div>
                           </div>
                           
                         </div>

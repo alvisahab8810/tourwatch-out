@@ -646,6 +646,7 @@ p.testi-para {
 }
 .feature-card {
     padding: 15px;
+    height: auto;
 }
 .feature-icon {
 	font-size: unset;
@@ -1710,7 +1711,7 @@ p.schedule-timing img {
 }
 
 .schedule-list .schedule-items {
-    padding-top: 20px;
+    /* padding-top: 20px; */
 }
 .cancellation-policy-bx a {
     font-size: 12px;
@@ -2034,8 +2035,23 @@ section.national-dest {
 .checkinbox .p-id {
     line-height: 27px;
 }
+
+.ab-page .image-stack img {
+    height: auto;
 }
-@media(max-width:375px){
+.ab-info h2 {
+    font-size: 22px;
+}
+
+.ab-info h3 {
+    font-size: 16px;
+}
+
+.schedule-list .schedule-items {
+    padding-top: 3px;
+}
+}
+@media(max-width:380px){
     .banner-section {
         height: 300px;
     }
@@ -2069,7 +2085,14 @@ section.national-dest {
         font-size: 12px;
     }
   
-
+    .explore-more-btn {
+        font-size: 16px;
+        margin-top: 11px !important;
+    }
+    .heading {
+        font-size: 22px;
+        line-height: 1;
+    }
     
     
 } 

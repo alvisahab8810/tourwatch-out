@@ -1,17 +1,15 @@
-
-
-import Head from 'next/head';
-import Script from 'next/script';
+import Head from "next/head";
+import Script from "next/script";
 
 function MyApp({ Component, pageProps }) {
   return (
     <>
       <Head>
-        {/* <link
+        <link
           rel="icon"
           type="image/x-icon"
-          href="./images/favicon-32x32.png"
-        /> */}
+          href="./assets/images/favicon.png"
+        />
         <meta
           name="robots"
           content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
@@ -29,17 +27,14 @@ function MyApp({ Component, pageProps }) {
           href="https://cdn.jsdelivr.net/npm/remixicon@2.2.0/fonts/remixicon.css"
           rel="stylesheet"
         />
-      
+
         <link
           rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
         />
 
-        <title>TourWatchout</title>
-
+        <title>Tourwatchout</title>
       </Head>
-
-     
 
       {/* Non-Critical Scripts */}
       <Script src="/assets/js/jquery.min.js" defer />
@@ -49,8 +44,7 @@ function MyApp({ Component, pageProps }) {
         src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"
         strategy="lazyOnload"
       />
-    
-      
+
       <Component {...pageProps} />
     </>
   );

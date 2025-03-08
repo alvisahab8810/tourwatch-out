@@ -24,7 +24,7 @@ export default function Faq() {
                     aria-expanded="true"
                     aria-controls="collapseOne"
                   >
-                    How does TourWatchOut ensure my trip is stress-free?
+                    How does Tourwatchout ensure my trip is stress-free?
                   </button>
                 </h2>
                 <div
@@ -97,7 +97,7 @@ export default function Faq() {
                     aria-expanded="false"
                     aria-controls="collapseFour"
                   >
-                    Can TourWatchOut plan trips for corporate groups?
+                    Can Tourwatchout plan trips for corporate groups?
                   </button>
                 </h2>
                 <div

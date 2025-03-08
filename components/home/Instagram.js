@@ -6,12 +6,17 @@ export default function Instagram() {
   return (
     <>
       <section className="instagram-section national-dest pb-80">
-        <div className="contianer">
-          <div className="row ">
-            <div className="col-md-12">
+
+      <div className="container">
+            <div className="insta-row ">
               <h1 className="heading lh-75">Instagram videos</h1>
+              <a href="https://www.instagram.com/tourwatchout/?hl=en" className="explore-more-btn">Visit Instagram</a>
             </div>
+           
           </div>
+        <div className="contianer">
+          
+            
           <Swiper
             spaceBetween={20}
             centeredSlides={true}
