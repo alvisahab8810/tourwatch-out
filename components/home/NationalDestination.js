@@ -1,7 +1,10 @@
 import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, Navigation } from "swiper/modules";
+import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import Link from "next/link";
+
+import "swiper/css/pagination";
+
 
 export default function NationalDestination() {
   return (
@@ -26,6 +29,7 @@ export default function NationalDestination() {
             }}
             pagination={{
               clickable: true,
+              el: ".swiper-pagination", // Ensure a pagination element is available
             }}
             navigation={{
               nextEl: ".swiper-button-next-1",
@@ -48,8 +52,8 @@ export default function NationalDestination() {
                     spaceBetween: 20,
                   },
                 }}
-            modules={[Autoplay, Navigation]}
-            className="swiper mySwiper4 pt-80"
+            modules={[Autoplay, Navigation, Pagination ]}
+            className="swiper mySwiper5 pt-80"
           >
             <SwiperSlide className="swiper-slide">
               <Link href="/kashmir">
@@ -495,8 +499,10 @@ export default function NationalDestination() {
             </SwiperSlide>
 
 
+          <div className="swiper-pagination"></div>
            
           </Swiper>
+
           {/* <!-- <div className="swiper-button-prev"></div> -->
            <!-- <div className="swiper-button-next"></div> --> */}
           <div className="container">

@@ -3315,9 +3315,14 @@ li.nav-item.dropdown-main {
     width: 20px;
     margin-right: 10px;
 }
+.national-dest .swiper{
+    padding-bottom: 80px;
+}
 
 
-
+.national-dest .swiper .swiper-pagination-bullet-active {
+    background: #ee4c49!important;
+}
 
 
 
