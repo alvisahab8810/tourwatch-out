@@ -21,7 +21,7 @@ export default function Reviews() {
                 <p>(578 Reviews)</p>
                 <div className="stars">
                   <img
-                    src="./assets/images/i-destination/half-review.png"
+                    src="/assets/images/i-destination/half-review.png"
                     alt="Review Star"
                   />
                 </div>
@@ -49,7 +49,7 @@ export default function Reviews() {
               <div className="review-footer">
                 <div className="stars">
                   <img
-                    src="./assets/images/i-destination/review.png"
+                    src="/assets/images/i-destination/review.png"
                     alt="Review Star"
                   />
                 </div>
@@ -85,7 +85,7 @@ export default function Reviews() {
               <div className="review-footer">
                 <div className="stars">
                   <img
-                    src="./assets/images/i-destination/review.png"
+                    src="/assets/images/i-destination/review.png"
                     alt="Review Star"
                   />
                 </div>
@@ -121,7 +121,7 @@ export default function Reviews() {
               <div className="review-footer">
                 <div className="stars">
                   <img
-                    src="./assets/images/i-destination/review.png"
+                    src="/assets/images/i-destination/review.png"
                     alt="Review Star"
                   />
                 </div>
@@ -157,7 +157,7 @@ export default function Reviews() {
               <div className="review-footer">
                 <div className="stars">
                   <img
-                    src="./assets/images/i-destination/review.png"
+                    src="/assets/images/i-destination/review.png"
                     alt="Review Star"
                   />
                 </div>

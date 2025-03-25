@@ -1964,7 +1964,13 @@ section.national-dest {
 
 .checkinbox .btn-submit {
     height: 40px;
-    font-size: 15px;
+    font-size: 14px;
+}
+
+.guest-check::before {
+
+    width: 64px;
+
 }
 .checkinbox #uploadId {
     line-height: 26px;
@@ -2015,7 +2021,7 @@ section.national-dest {
 }
 
 .person1 {
-    padding: 10px;
+    /* padding: 10px; */
 }
 
 .desti-info p {
@@ -2049,6 +2055,38 @@ section.national-dest {
 
 .schedule-list .schedule-items {
     padding-top: 3px;
+}
+.checkinbox input {
+    font-size: 12px;
+}
+
+.country-num {
+    left: 0px;
+    font-size: 12px;
+    height: 40px;
+    width: 40px;
+}
+
+.pl-20 {
+    padding-left: 45px;
+}
+.person-field h5{
+    font-size: 15px;
+}
+.kid-field h5{
+     font-size: 15px;
+
+}
+.checkinbox .btn-outline-primary{
+    font-size: 12px;;
+}
+.checkinbox .btn-outline-secondary {
+    font-size: 12px;
+    padding: 4px;
+}
+
+.check-corporate .country-num {
+    left: 13px;
 }
 }
 @media(max-width:380px){

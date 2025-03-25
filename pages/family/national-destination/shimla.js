@@ -1,14 +1,14 @@
 import React from "react";
 
-import Topbar from "../components/header/Header";
-import Footer from "../components/footer/Footer";
-import TravelerReviews from "../components/kashmir/TravelerReviews";
-import Map from "../components/kashmir/Map";
+import Topbar from "../../../components/header/Header";
+import Footer from "../../../components/footer/Footer";
+import TravelerReviews from "../../../components/kashmir/TravelerReviews";
+import Map from "../../../components/kashmir/Map";
 import Link from "next/link";
-import Popup from "../components/corporate/Popup";
-import Offcanvas from "../components/header/Offcanvas";
+import Popup from "../../../components/corporate/Popup";
+import Offcanvas from "../../../components/header/Offcanvas";
 
-export default function kashmir() {
+export default function Shimla() {
 
   
   return (
@@ -21,7 +21,7 @@ export default function kashmir() {
           <div className="row align-items-center pt-200">
             <div className="col-md-12 about-contennt">
               <h2 className="fs-64 text-white fw-bold">
-                The heaven of earth, Kashmir
+                The heaven of earth, Shimla
               </h2>
               <p>
                 Plan your trips, honeymoons, or family getaways with
@@ -46,12 +46,12 @@ export default function kashmir() {
           <div className="parent-package w-100" id="package">
             <div className="max-800">
               <div className="content-section">
-                <h1>Kashmir Family Tour Package</h1>
+                <h1>Shimla Family Package</h1>
                 {/* <ul className="location-list">
                   <li className="list-item-none">(7 Days)</li>
                   <li className="locaton-items">
                     <img
-                      src="./assets/images/kashmir/icons/pin.png"
+                      src="/assets/images/kashmir/icons/pin.png"
                       alt="Location Icon"
                     />{" "}
                     Srinagar • Gulmarg • Pahalgam • Sonamarg
@@ -133,7 +133,7 @@ export default function kashmir() {
                       <div className="feature-media mobile-none">
                         <video
                           id="videoPlayer"
-                          src="./assets/images/kashmir/video.mp4"
+                          src="/assets/images/kashmir/video.mp4"
                           muted
                           autoPlay
                           loop
@@ -148,37 +148,38 @@ export default function kashmir() {
                       {/* <li className="list-item-none">(4 Night 5 Days )</li> */}
                       <li className="locaton-items">
                         <img
-                          src="./assets/images/kashmir/icons/pin.png"
+                          src="/assets/images/kashmir/icons/pin.png"
                           alt="Location Icon"
                         />{" "}
-                        Srinagar • Gulmarg • Pahalgam • Sonamarg
+                          Null • Null
                       </li>
                     </ul>
                         <ul className="features-lists">
                           <li>
-                            <img src="./assets/images/icons/hotel.png" alt="Hotel Icon"/>
+                          <img src="/assets/images/icons/hotel.png" alt="Hotel Icon"/>
                             <span>Hotel</span> : 3* Deluxe
                           </li>
 
                           <li>
-                           <img src="./assets/images/icons/pax.png" alt="pax Icon"/>
+                          <img src="/assets/images/icons/pax.png" alt="pax Icon"/>
+
                             <span>No of Pax</span> : 2 adults & 1 child (Below 5 yrs)
                           </li>
                           <li>
-                          <img src="./assets/images/icons/transferes.png" alt="transfer Icon"/>
+                           <img src="/assets/images/icons/transferes.png" alt="transfer Icon"/>
 
                             <span>Airport Transfers</span> : Included (Sedan)
                           </li>
                          
                           <li>
-                          <img src="./assets/images/icons/meal.png" alt="meals Icon"/>
+                          <img src="/assets/images/icons/meal.png" alt="meals Icon"/>
 
                             <span>Meals</span> : Daily Breakfast  Only
                           </li>
                           <li>
-                          <img src="./assets/images/icons/duration.png" alt="duration Icon"/>
+                          <img src="/assets/images/icons/duration.png" alt="duration Icon"/>
 
-                            <span>Duration</span> : 4N 5D
+                            <span>Duration</span> : 3N 4D
                           </li>
                           {/* <li>
                             <span>Photos & Videos</span> : Included
@@ -206,65 +207,50 @@ export default function kashmir() {
                              
                               Day 1
                             </p>
-                            <div>
-
-                            <h3>Srinagar Arrival + Srinagar Local Sightseeing</h3>
+                           <div>
+                           <h3>Pickup from Delhi or Chandigarh and Transfer to Shimla By Volvo in Night</h3>
                             <p className="sche-details">
-                              Arrival at Srinagar Airport. Pickup by our tour Representative and transfer to Hotel. Rest and proceed towards Srinagar Local Sightseeing 
+                              Your journey will start from Delhi. Overnight volvo Journey towards Shimla.
                             </p>
-
-                            </div>
-                            
+                           </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              
+                       
                               Day 2
                             </p>
-                            
-                            <div>
-                            <h3>Srinagar - Gulmarg - Srinagar</h3>
+                            <div >
+                            <h3>Shimla Local Sightseeing</h3>
                             <p className="sche-details">
-                                Breakfast and proceed towards Gulmarg to explore a ride on Gondola both Phases (Extra Cost). You may also  Cover Drung Water Fall 
+                               Morning arrival in Shimla and today we will explore Local sightseeing like  Jakhu Temple and Shimla Ridge Church, Vice Regal Lodge, Christ Church, Gaiety Theatre and Scandal Point.  
                             </p>
                             </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                             
+                           
                               Day 3
                             </p>
-                            <div>
-                            <h3>Srinagar - Pahalgam - Srinagar</h3>
+                           <div>
+                           <h3>Excursion to Kufri, Mashobra and Naldehra</h3>
                             <p className="sche-details">
-                               Breakfast and drive to Pahalgam. En-route saffron feilds, Awantipura ruins drive through pine forests, Lidder streams. ABC Valley (By Direct Basis)
-                            </p>
-                            </div>
+                              Breakfast and Himalayan National Park, Yak Ride and one can see the endless Himalayan Panorama from Kufri.Visit Apple orchards in Mashobra and Naldehra, famous for its dense forest, and take a jungle walk.
+                              </p>
+                           </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
                              
                               Day 4
                             </p>
-                           <div>
-                           <h3>Srinagar - Sonmarg - Srinagar (Houseboat)</h3>
+                            <div>
+                            <h3>Overnight Volvo to Delhi</h3>
                             <p className="sche-details">
-                               Breakfast and proceed towards sonmarg Famous for Thajiwas Glacier (By Ponies at Extra Cost)
+                              Breakfast and you will do check-out at 12pm appx. Overnight volvo Journey towards Delhi.
                             </p>
-                           </div>
+                            </div>
                           </div>
-                          <div className="schedule-items">
-                            <p className="schedule-timing">
-                             
-                              Day 5
-                            </p>
-                           <div>
-                           <h3>Srinagar - Airport Drop</h3>
-                            <p className="sche-details">
-                               Breakfast and transferred to Srinagar Airport. Return Home with Everlasting memories 
-                            </p>
-                           </div>
-                          </div>
+                          
                         </div>
                         <div className="cancellation-policy-bx">
                           <Link href="#">*Cancellation Policy</Link>
@@ -293,7 +279,7 @@ export default function kashmir() {
                       <div className="feature-media mobile-none">
                       <video
                           id="videoPlayer"
-                          src="./assets/images/kashmir/video.mp4"
+                          src="/assets/images/kashmir/video.mp4"
                           muted
                           autoPlay
                           loop
@@ -306,38 +292,36 @@ export default function kashmir() {
                       <ul className="location-list">
                       <li className="locaton-items">
                         <img
-                          src="./assets/images/kashmir/icons/pin.png"
+                          src="/assets/images/kashmir/icons/pin.png"
                           alt="Location Icon"
                         />{" "}
-                        Srinagar • Gulmarg • Pahalgam • Sonamarg
+                         Null • Null  • Null  • Null  • Null
                       </li>
                     </ul>
                         <ul className="features-lists">
                           <li>
-                            
-                          <img src="./assets/images/icons/hotel.png" alt="Hotel Icon"/>
-
-                            <span>Hotel</span> : 3* Premium
+                           <img src="/assets/images/icons/hotel.png" alt="Hotel Icon"/>
+                            <span>Hotel</span> :3* Deluxe
                           </li>
                           <li>
-                          <img src="./assets/images/icons/pax.png" alt="pax Icon"/>
+                          <img src="/assets/images/icons/pax.png" alt="pax Icon"/>
 
-                            <span>No of Pax</span> : 02 Adults 02 Childs
+                            <span>No of Pax</span> : 3 adults & 2 childs (Below 5 yrs)
                           </li>
                           <li>
-                          <img src="./assets/images/icons/transferes.png" alt="transfer Icon"/>
+                          <img src="/assets/images/icons/transferes.png" alt="transfer Icon"/>
 
-                            <span>Airport Transfers</span> : Included (Srinagar - Srinagar)
+                            <span>Airport Transfers</span> : Included (Sedan)
                           </li>
                           <li>
-                          <img src="./assets/images/icons/meal.png" alt="meals Icon"/>
+                          <img src="/assets/images/icons/meal.png" alt="meals Icon"/>
 
-                            <span>Meals</span> : Breakfast and Dinner 
+                            <span>Meals</span> : Daily Breakfast  and Dinner 
                           </li>
                           <li>
-                          <img src="./assets/images/icons/duration.png" alt="duration Icon"/>
+                          <img src="/assets/images/icons/duration.png" alt="duration Icon"/>
 
-                            <span>Duration</span> : 5N 6D
+                            <span>Duration</span> : 3N 4D
                           </li>
                         
                         </ul>
@@ -357,15 +341,15 @@ export default function kashmir() {
                         <div className="schedule-list">
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                            
+                      
                               Day 1
                             </p>
-                            <div>
-                            <h3>Srinagar Arrival + Srinagar Local Sightseeing</h3>
+                           <div>
+                             <h3>Pickup from Delhi or Chandigarh and Transfer to Shimla By Volvo in Night</h3>
                             <p className="sche-details">
-                               Arrival at Srinagar Airport. Pickup by our tour Representative and transfer to Hotel. Rest and proceed towards Srinagar Local Sightseeing 
+                               Your journey will start from Delhi. Overnight volvo Journey towards Shimla.
                             </p>
-                            </div>
+                           </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
@@ -373,61 +357,37 @@ export default function kashmir() {
                               Day 2
                             </p>
                             <div>
-                            <h3>Srinagar - Sonmarg - Srinagar</h3>
+                            <h3>Shimla Local Sightseeing</h3>
                             <p className="sche-details">
-                               Breakfast and proceed towards sonmarg Famous for Thajiwas Glacier (By Ponies at Extra Cost)
+                               Morning arrival in Shimla and today we will explore Local sightseeing like  Jakhu Temple and Shimla Ridge Church, Vice Regal Lodge, Christ Church, Gaiety Theatre and Scandal Point.  
                             </p>
                             </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                          
+                             
                               Day 3
                             </p>
-                           <div>
-                           <h3>Srinagar - Gulmarg - Srinagar</h3>
-                            <p className="sche-details">
-                              Breakfast and proceed towards Gulmarg to explore a ride on Gondola both Phases (Extra Cost). You may also  Cover Drung Water Fall 
-                            </p>
-                           </div>
-                          </div>
-                          <div className="schedule-items">
-                            <p className="schedule-timing">
-                             
-                              Day 4
-                            </p>
                             <div>
-                            <h3>Srinagar - Pahalgam</h3>
+                            <h3>Excursion to Kufri, Mashobra and Naldehra</h3>
                             <p className="sche-details">
-                               Breakfast and drive to Pahalgam. En-route saffron feilds, Awantipura ruins drive through pine forests, Lidder streams. ABC Valley (By Direct Basis)
+                               Breakfast and Himalayan National Park, Yak Ride and one can see the endless Himalayan Panorama from Kufri.Visit Apple orchards in Mashobra and Naldehra, famous for its dense forest, and take a jungle walk.
                             </p>
                             </div>
                           </div>
-                          <div className="schedule-items">
-                            <p className="schedule-timing">
-                             
-                              Day 5
-                            </p>
-                            <div>
-                            <h3>Pahalgam - Srinagar (Houseboat)</h3>
-                            <p className="sche-details">
-                              Breakfast and proceed for Baisaran Valley (Mini -Switzerland) cause of its bueaty (By Direct). Pahalgam Local sightseeing. Evening Return Srinagar & Do check-in Houseboat at Dal Lake.
-                            </p>
-                            </div>
-                          </div>
-
                           <div className="schedule-items">
                             <p className="schedule-timing">
                             
-                              Day 6
+                              Day 4
                             </p>
-                          <div>
-                          <h3>Srinagar - Airport Drop</h3>
+                           <div>
+                           <h3>Overnight Volvo to Delhi</h3>
                             <p className="sche-details">
-                            Breakfast and transferred to Srinagar Airport. Return Home with Everlasting memories 
+                              Breakfast and you will do check-out at 12pm appx. Overnight volvo Journey towards Delhi.
                             </p>
+                           </div>
                           </div>
-                          </div>
+                        
                         </div>
                         <div className="cancellation-policy-bx">
                           <Link href="#">*Cancellation Policy</Link>
@@ -459,7 +419,7 @@ export default function kashmir() {
                       <div className="feature-media mobile-none">
                         <video
                           id="videoPlayer"
-                          src="./assets/images/kashmir/video.mp4"
+                          src="/assets/images/kashmir/video.mp4"
                           muted
                           loop
                           playsInline
@@ -472,38 +432,37 @@ export default function kashmir() {
                       {/* <li className="list-item-none">(6 Night 7 Days )</li> */}
                       <li className="locaton-items">
                         <img
-                          src="./assets/images/kashmir/icons/pin.png"
+                          src="/assets/images/kashmir/icons/pin.png"
                           alt="Location Icon"
                         />{" "}
-                        Srinagar • Gulmarg • Pahalgam • Sonamarg • Doodhpathri
+                        Null • Null • Null • Null • Null
                       </li>
                     </ul>
                         <ul className="features-lists">
                           <li>
-                          <img src="./assets/images/icons/hotel.png" alt="Hotel Icon"/>
+                          <img src="/assets/images/icons/hotel.png" alt="Hotel Icon"/>
 
-                            <span>Hotel</span> : 4*
+                            <span>Hotel</span> : 3* Deluxe
                           </li>
                           <li>
-                          <img src="./assets/images/icons/pax.png" alt="pax Icon"/>
+                          <img src="/assets/images/icons/pax.png" alt="pax Icon"/>
 
-                            <span>No of Pax</span> : 02 Adults 01 Child (below 6 yrs)
+                            <span>No of Pax</span> : 3 adults & 2 childs (Below 5 yrs)
                           </li>
                           <li>
+                          <img src="/assets/images/icons/transferes.png" alt="transfer Icon"/>
 
-                          <img src="./assets/images/icons/transferes.png" alt="transfer Icon"/>
-
-                            <span>Airport Transfers</span> : 2 adults & 1child (Below 5 yrs)
+                            <span>Airport Transfers</span> : Included (Sedan)
                           </li>
                           <li>
-                          <img src="./assets/images/icons/meal.png" alt="meals Icon"/>
+                          <img src="/assets/images/icons/meal.png" alt="meals Icon"/>
 
-                            <span>Meals</span> : Breakfast and Dinner 
+                            <span>Meals</span> : Daily Breakfast  and Dinner 
                           </li>
                           <li>
-                          <img src="./assets/images/icons/duration.png" alt="duration Icon"/>
+                          <img src="/assets/images/icons/duration.png" alt="duration Icon"/>
 
-                            <span>Duration</span> : 6N 7D
+                            <span>Duration</span> : 3N 4D
                           </li>
                          
                         </ul>
@@ -525,36 +484,36 @@ export default function kashmir() {
                            
                               Day 1
                             </p>
-                            <div>
-                            <h3>Srinagar Arrival and Pick-up+ Srinagar Local Sightseeing</h3>
+                           <div>
+                           <h3>Pickup from Delhi or Chandigarh and Transfer to Shimla By Volvo in Night</h3>
                             <p className="sche-details">
-                            Arrival at Srinagar Airport. Pickup by our tour Representative and transfer to Hotel. Rest and proceed towards Srinagar Local Sightseeing 
+                              Your journey will start from Delhi. Overnight volvo Journey towards Shimla.
                             </p>
-                            </div>
+                           </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
                              
                               Day 2
                             </p>
-                           <div>
-                           <h3>Srinagar - Doodhpathri - Srinagar</h3>
+                            <div>
+                            <h3>Shimla Local Sightseeing</h3>
                             <p className="sche-details">
-                              Breakfast and you would be taken to Doodhpathri to witness sheep and strikingly beautiful cascading WATERFALL.
+                               Morning arrival in Shimla and today we will explore Local sightseeing like  Jakhu Temple and Shimla Ridge Church, Vice Regal Lodge, Christ Church, Gaiety Theatre and Scandal Point.  
                             </p>
-                           </div>
+                            </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                         
+                              
                               Day 3
                             </p>
-                            <div>
-                            <h3>Srinagar - Sonmarg - Srinagar</h3>
+                           <div>
+                           <h3>Excursion to Kufri, Mashobra and Naldehra</h3>
                             <p className="sche-details">
-                               Breakfast and proceed towards sonmarg Famous for Thajiwas Glacier (By Ponies at Extra Cost)
+                              Breakfast and Himalayan National Park, Yak Ride and one can see the endless Himalayan Panorama from Kufri.Visit Apple orchards in Mashobra and Naldehra, famous for its dense forest, and take a jungle walk.
                             </p>
-                            </div>
+                           </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
@@ -562,52 +521,13 @@ export default function kashmir() {
                               Day 4
                             </p>
                             <div>
-                            <h3>Srinagar - Gulmarg - Srinagar</h3>
+                            <h3>Overnight Volvo to Delhi</h3>
                             <p className="sche-details">
-                            Breakfast and proceed towards Gulmarg to explore a ride on Gondola both Phases (Extra Cost). You may also  Cover Drung Water Fall 
+                            Breakfast and you will do check-out at 12pm appx. Overnight volvo Journey towards Delhi.
                             </p>
                             </div>
                           </div>
-                          <div className="schedule-items">
-                            <p className="schedule-timing">
-                            
-                              Day 5
-                            </p>
-                          <div>
-                          <h3>Srinagar - Pahalgam</h3>
-                            <p className="sche-details">
-                               Breakfast and drive to Pahalgam. En-route saffron feilds, Awantipura ruins drive through pine forests, Lidder streams. ABC Valley (By Direct Basis)
-                            </p>
-                          </div>
-                          </div>
-
-                          <div className="schedule-items">
-                            <p className="schedule-timing">
-                            
-                              Day 6
-                            </p>
-                           <div>
-                           <h3>Pahalgam - Srinagar (Houseboat)</h3>
-                            <p className="sche-details">
-                            Breakfast and proceed for Baisaran Valley (Mini -Switzerland) cause of its bueaty (By Direct). Pahalgam Local sightseeing. Evening Return Srinagar & Do check-in Houseboat at Dal Lake.
-                            </p>
-                           </div>
-                          </div>
-
-
                           
-                          <div className="schedule-items">
-                            <p className="schedule-timing">
-                             
-                              Day 7
-                            </p>
-                            <div>
-                            <h3>Srinagar - Airport Drop</h3>
-                            <p className="sche-details">
-                               Breakfast and transferred to Srinagar Airport. Return Home with Everlasting memories 
-                            </p>
-                            </div>
-                          </div>
                         </div>
                         <div className="cancellation-policy-bx">
                           <Link href="#">*Cancellation Policy</Link>
@@ -632,15 +552,15 @@ export default function kashmir() {
                 of contents
               </h2>
               <div className="table-contents">
-                <Link href="#package">Kashmir Packages</Link>
+                <Link href="#package">Leh Packages</Link>
 
-                <Link href="#about-us">About Kashmir</Link>
+                <Link href="#about-us">About Leh</Link>
 
-                <Link href="#headingTwo">Kashmir Bucket List</Link>
+                <Link href="#headingTwo">Leh Bucket List</Link>
 
-                <Link href="#headingThree">Kashmir FAQ’s </Link>
+                <Link href="#headingThree">Leh FAQ’s </Link>
 
-                <Link href="#location">Kashmir Location</Link>
+                <Link href="#location">Leh Location</Link>
 
                 <Link href="#traveler-reviews">Trip Reviews</Link>
               </div>
@@ -657,7 +577,7 @@ export default function kashmir() {
                  <div className="feature-media ">
                         <video
                           id="videoPlayer"
-                          src="./assets/images/kashmir/video.mp4"
+                          src="/assets/images/kashmir/video.mp4"
                           muted
                           loop
                           playsInline
@@ -672,15 +592,15 @@ export default function kashmir() {
                 of contents
               </h2>
               <div className="table-contents">
-                <Link href="#package">Kashmir Packages</Link>
+                <Link href="#package">Leh Packages</Link>
 
-                <Link href="#about-us">About Kashmir</Link>
+                <Link href="#about-us">About Leh</Link>
 
-                <Link href="#headingTwo">Kashmir Bucket List</Link>
+                <Link href="#headingTwo">Leh Bucket List</Link>
 
-                <Link href="#headingThree">Kashmir FAQ’s </Link>
+                <Link href="#headingThree">Leh FAQ’s </Link>
 
-                <Link href="#location">Kashmir Location</Link>
+                <Link href="#location">Leh Location</Link>
 
                 <Link href="#traveler-reviews">Trip Reviews</Link>
               </div>
@@ -702,7 +622,7 @@ export default function kashmir() {
                 <div className="schedule-items">
                   <p className="schedule-timing">
                     <img
-                      src="./assets/images/kashmir/icons/time.png"
+                      src="/assets/images/kashmir/icons/time.png"
                       alt="watch icon"
                     />{" "}
                     Day 1
@@ -718,7 +638,7 @@ export default function kashmir() {
                 <div className="schedule-items">
                   <p className="schedule-timing">
                     <img
-                      src="./assets/images/kashmir/icons/time.png"
+                      src="/assets/images/kashmir/icons/time.png"
                       alt="watch icon"
                     />{" "}
                     Day 2-3
@@ -735,7 +655,7 @@ export default function kashmir() {
                 <div className="schedule-items">
                   <p className="schedule-timing">
                     <img
-                      src="./assets/images/kashmir/icons/time.png"
+                      src="/assets/images/kashmir/icons/time.png"
                       alt="watch icon"
                     />{" "}
                     Day 4
@@ -751,7 +671,7 @@ export default function kashmir() {
                 <div className="schedule-items">
                   <p className="schedule-timing">
                     <img
-                      src="./assets/images/kashmir/icons/time.png"
+                      src="/assets/images/kashmir/icons/time.png"
                       alt="watch icon"
                     />{" "}
                     Day 5-6
@@ -767,7 +687,7 @@ export default function kashmir() {
                 <div className="schedule-items">
                   <p className="schedule-timing">
                     <img
-                      src="./assets/images/kashmir/icons/time.png"
+                      src="/assets/images/kashmir/icons/time.png"
                       alt="watch icon"
                     />{" "}
                     Day 7
@@ -834,7 +754,7 @@ export default function kashmir() {
                     aria-expanded="true"
                     aria-controls="collapseOne"
                   >
-                    About Kashmir
+                    About Leh
                   </button>
                 </h2>
                 <div
@@ -956,7 +876,7 @@ export default function kashmir() {
                     aria-expanded="false"
                     aria-controls="collapseTwo"
                   >
-                    Kashmir Bucket List
+                    Leh Bucket List
                   </button>
                 </h2>
                 <div
@@ -1078,7 +998,7 @@ export default function kashmir() {
                     aria-expanded="false"
                     aria-controls="collapseThree"
                   >
-                    Kashmir FAQ’s?
+                    Leh FAQ’s?
                   </button>
                 </h2>
                 <div

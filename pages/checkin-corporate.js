@@ -5,7 +5,7 @@ import Footer from '../components/checkin/Footer'
 
 export default function checkinCorporate() {
   return (
-    <div className="bg-prime">
+    <div className="bg-prime check-corporate">
         <Hero/>
         <CheckIn/>
         <Footer/>

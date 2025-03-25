@@ -69,7 +69,7 @@ export default function Popup() {
             </div>
             <div className="modal-body">
               <div className="popup-img">
-                <img src="./assets/images/corporate/ad.png" alt="Ad Image" />
+                <img src="/assets/images/corporate/ad.png" alt="Ad Image" />
               </div>
 
               <div className="form-pop">

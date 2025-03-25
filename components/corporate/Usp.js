@@ -21,7 +21,7 @@ export default function Usp() {
                   alt="Person kayaking on a serene lake with mountains in the background"
                   className="img-fluid"
                   height="400"
-                  src="./assets/images/corporate/about.webp"
+                  src="/assets/images/corporate/about.webp"
                   width="600"
                 />
               </div>
@@ -44,13 +44,13 @@ export default function Usp() {
                   <ul className="usp-list">
                     <li>
                       <img
-                        src="./assets/images/corporate/icons/1.png"
+                        src="/assets/images/corporate/icons/1.png"
                         alt="Icons"
                       />
                       <span className="width-fit">Customised setup </span>
                       <div className="question-bx">
                         <img
-                          src="./assets/images/corporate/icons/question.png"
+                          src="/assets/images/corporate/icons/question.png"
                           alt="Question Icon"
                         />
                         <span className="tooltip-text">
@@ -60,13 +60,13 @@ export default function Usp() {
                     </li>
                     <li>
                       <img
-                        src="./assets/images/corporate/icons/2.png"
+                        src="/assets/images/corporate/icons/2.png"
                         alt="Icons"
                       />
                       <span className="width-fit"> Company Branding </span>
                       <div className="question-bx">
                         <img
-                          src="./assets/images/corporate/icons/question.png"
+                          src="/assets/images/corporate/icons/question.png"
                           alt="Question Icon"
                         />
                         <span className="tooltip-text">
@@ -76,13 +76,13 @@ export default function Usp() {
                     </li>
                     <li>
                       <img
-                        src="./assets/images/corporate/icons/3.png"
+                        src="/assets/images/corporate/icons/3.png"
                         alt="Icons"
                       />
                       <span className="width-fit">Management Service </span>
                       <div className="question-bx">
                         <img
-                          src="./assets/images/corporate/icons/question.png"
+                          src="/assets/images/corporate/icons/question.png"
                           alt="Question Icon"
                         />
                         <span className="tooltip-text">
@@ -92,13 +92,13 @@ export default function Usp() {
                     </li>
                     <li>
                       <img
-                        src="./assets/images/corporate/icons/4.png"
+                        src="/assets/images/corporate/icons/4.png"
                         alt="Icons"
                       />
                       <span className="width-fit">Team Activities </span>
                       <div className="question-bx">
                         <img
-                          src="./assets/images/corporate/icons/question.png"
+                          src="/assets/images/corporate/icons/question.png"
                           alt="Question Icon"
                         />
                         <span className="tooltip-text">
@@ -108,13 +108,13 @@ export default function Usp() {
                     </li>
                     <li>
                       <img
-                        src="./assets/images/corporate/icons/5.png"
+                        src="/assets/images/corporate/icons/5.png"
                         alt="Icons"
                       />
                       <span className="width-fit"> Photos and Videos </span>
                       <div className="question-bx">
                         <img
-                          src="./assets/images/corporate/icons/question.png"
+                          src="/assets/images/corporate/icons/question.png"
                           alt="Question Icon"
                         />
                         <span className="tooltip-text">
@@ -132,7 +132,7 @@ export default function Usp() {
                   alt="Person kayaking on a serene lake with mountains in the background"
                   className="img-fluid"
                   height="400"
-                  src="./assets/images/corporate/about.webp"
+                  src="/assets/images/corporate/about.webp"
                   width="600"
                 />
               </div>

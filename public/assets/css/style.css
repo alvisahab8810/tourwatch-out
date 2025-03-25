@@ -3476,3 +3476,12 @@ li.nav-item.dropdown-main {
 .checkinbox .btn-outline-primary:hover {
     background-color: unset;
 }
+
+
+.main-nav .navbar-header{
+    background: #ee4c49;
+}
+
+.family-checkin .pl-20 {
+    padding-left: 50px;
+}

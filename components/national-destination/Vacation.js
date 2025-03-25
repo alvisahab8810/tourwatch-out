@@ -11,7 +11,7 @@ export default function Vacation() {
                 <img
                   alt="Person kayaking on a serene lake with mountains in the background"
                   className="img-fluid"
-                  src="./assets/images/n-destination/about.webp"
+                  src="/assets/images/n-destination/about.webp"
                 />
               </div>
               <div className="content-section dream-content">
@@ -25,7 +25,7 @@ export default function Vacation() {
                 <div className="feature_bx">
                   <div className="feature">
                     <img
-                      src="./assets/images/n-destination/icons/1.png"
+                      src="/assets/images/n-destination/icons/1.png"
                       alt="private tutors"
                     />
                     <h3>Private tours</h3>
@@ -37,7 +37,7 @@ export default function Vacation() {
                   </div>
                   <div className="feature">
                     <img
-                      src="./assets/images/n-destination/icons/2.png"
+                      src="/assets/images/n-destination/icons/2.png"
                       alt="private tutors"
                     />
                     <h3>Special meal plans</h3>
@@ -50,7 +50,7 @@ export default function Vacation() {
                   </div>
                   <div className="feature">
                     <img
-                      src="./assets/images/n-destination/icons/3.png"
+                      src="/assets/images/n-destination/icons/3.png"
                       alt="private tutors"
                     />
                     <h3>Extended stays or additional destinations</h3>
@@ -63,7 +63,7 @@ export default function Vacation() {
                   </div>
                   <div className="feature">
                     <img
-                      src="./assets/images/n-destination/icons/4.png"
+                      src="/assets/images/n-destination/icons/4.png"
                       alt="private tutors"
                     />
                     <h3>Additional Destinations</h3>

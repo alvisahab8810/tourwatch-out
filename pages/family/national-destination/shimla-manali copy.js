@@ -1,14 +1,14 @@
 import React from "react";
 
-import Topbar from "../components/header/Header";
-import Footer from "../components/footer/Footer";
-import TravelerReviews from "../components/kashmir/TravelerReviews";
-import Map from "../components/kashmir/Map";
+import Topbar from "../../../components/header/Header";
+import Footer from "../../../components/footer/Footer";
+import TravelerReviews from "../../../components/kashmir/TravelerReviews";
+import Map from "../../../components/kashmir/Map";
 import Link from "next/link";
-import Popup from "../components/corporate/Popup";
-import Offcanvas from "../components/header/Offcanvas";
+import Popup from "../../../components/corporate/Popup";
+import Offcanvas from "../../../components/header/Offcanvas";
 
-export default function Shimla() {
+export default function ShimlaManali() {
 
   
   return (
@@ -21,7 +21,7 @@ export default function Shimla() {
           <div className="row align-items-center pt-200">
             <div className="col-md-12 about-contennt">
               <h2 className="fs-64 text-white fw-bold">
-                The heaven of earth, Shimla
+                The heaven of earth, Shimla & Manali
               </h2>
               <p>
                 Plan your trips, honeymoons, or family getaways with
@@ -46,12 +46,12 @@ export default function Shimla() {
           <div className="parent-package w-100" id="package">
             <div className="max-800">
               <div className="content-section">
-                <h1>Shimla Family Package</h1>
+                <h1>Shimla & Manali Family Package</h1>
                 {/* <ul className="location-list">
                   <li className="list-item-none">(7 Days)</li>
                   <li className="locaton-items">
                     <img
-                      src="./assets/images/kashmir/icons/pin.png"
+                      src="/assets/images/kashmir/icons/pin.png"
                       alt="Location Icon"
                     />{" "}
                     Srinagar • Gulmarg • Pahalgam • Sonamarg
@@ -133,7 +133,7 @@ export default function Shimla() {
                       <div className="feature-media mobile-none">
                         <video
                           id="videoPlayer"
-                          src="./assets/images/kashmir/video.mp4"
+                          src="/assets/images/kashmir/video.mp4"
                           muted
                           autoPlay
                           loop
@@ -148,38 +148,38 @@ export default function Shimla() {
                       {/* <li className="list-item-none">(4 Night 5 Days )</li> */}
                       <li className="locaton-items">
                         <img
-                          src="./assets/images/kashmir/icons/pin.png"
+                          src="/assets/images/kashmir/icons/pin.png"
                           alt="Location Icon"
                         />{" "}
-                          Null • Null
+                        SHIMLA • MANALI
                       </li>
                     </ul>
                         <ul className="features-lists">
                           <li>
-                          <img src="./assets/images/icons/hotel.png" alt="Hotel Icon"/>
+                           <img src="/assets/images/icons/hotel.png" alt="Hotel Icon"/>
                             <span>Hotel</span> : 3* Deluxe
                           </li>
 
                           <li>
-                          <img src="./assets/images/icons/pax.png" alt="pax Icon"/>
+                          <img src="/assets/images/icons/pax.png" alt="pax Icon"/>
 
-                            <span>No of Pax</span> : 2 adults & 1 child (Below 5 yrs)
+                            <span>No of Pax</span> : 02 Adults & 01 Child (Below 5 yrs)
                           </li>
                           <li>
-                           <img src="./assets/images/icons/transferes.png" alt="transfer Icon"/>
+                          <img src="/assets/images/icons/transferes.png" alt="transfer Icon"/>
 
                             <span>Airport Transfers</span> : Included (Sedan)
                           </li>
                          
                           <li>
-                          <img src="./assets/images/icons/meal.png" alt="meals Icon"/>
+                          <img src="/assets/images/icons/meal.png" alt="meals Icon"/>
 
-                            <span>Meals</span> : Daily Breakfast  Only
+                            <span>Meals</span> : Breakfast 
                           </li>
                           <li>
-                          <img src="./assets/images/icons/duration.png" alt="duration Icon"/>
+                          <img src="/assets/images/icons/duration.png" alt="duration Icon"/>
 
-                            <span>Duration</span> : 3N 4D
+                            <span>Duration</span> : 5N 6D
                           </li>
                           {/* <li>
                             <span>Photos & Videos</span> : Included
@@ -204,39 +204,39 @@ export default function Shimla() {
                         <div className="schedule-list">
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                             
+                            
                               Day 1
                             </p>
                            <div>
-                           <h3>Pickup from Delhi or Chandigarh and Transfer to Shimla By Volvo in Night</h3>
+                           <h3>Pickup from Delhi or Chandigarh  and Transfer to Shimla By Volvo in Night</h3>
                             <p className="sche-details">
-                              Your journey will start from Delhi. Overnight volvo Journey towards Shimla.
+                               Your journey will start from Delhi. Overnight volvo Journey towards Shimla.
                             </p>
                            </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                       
+                             
                               Day 2
                             </p>
-                            <div >
-                            <h3>Shimla Local Sightseeing</h3>
+                           <div>
+                           <h3>Shimla Local Sightseeing</h3>
                             <p className="sche-details">
-                               Morning arrival in Shimla and today we will explore Local sightseeing like  Jakhu Temple and Shimla Ridge Church, Vice Regal Lodge, Christ Church, Gaiety Theatre and Scandal Point.  
+                              Morning arrival in Shimla and today we will explore Local sightseeing like  Jakhu Temple and Shimla Ridge Church, Vice Regal Lodge, Christ Church, Gaiety Theatre and Scandal Point.  
                             </p>
-                            </div>
+                           </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                           
+                             
                               Day 3
                             </p>
-                           <div>
-                           <h3>Excursion to Kufri, Mashobra and Naldehra</h3>
+                            <div>
+                            <h3>Excursion to Kufri, Mashobra and Naldehra</h3>
                             <p className="sche-details">
-                              Breakfast and Himalayan National Park, Yak Ride and one can see the endless Himalayan Panorama from Kufri.Visit Apple orchards in Mashobra and Naldehra, famous for its dense forest, and take a jungle walk.
+                               Breakfast and Himalayan National Park, Yak Ride and one can see the endless Himalayan Panorama from Kufri.Visit Apple orchards in Mashobra and Naldehra, famous for its dense forest, and take a jungle walk.
                               </p>
-                           </div>
+                            </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
@@ -244,13 +244,41 @@ export default function Shimla() {
                               Day 4
                             </p>
                             <div>
-                            <h3>Overnight Volvo to Delhi</h3>
+                            <h3>Transfer to Manali - En Route Stop at Kullu</h3>
                             <p className="sche-details">
-                              Breakfast and you will do check-out at 12pm appx. Overnight volvo Journey towards Delhi.
+                             Breakfast and do check-out formalities. Visit sightseeing spots on the way like SunderNagerLake, Pandoh dam, Hanogi Mata temple, Vaishno Mata Temple. Evening Reach Manali
                             </p>
                             </div>
                           </div>
                           
+
+                          <div className="schedule-items">
+                            <p className="schedule-timing">
+                             
+                              Day 5
+                            </p>
+                            <div>
+                            <h3>Excursion to Solang Valley</h3>
+                            <p className="sche-details">
+                            Breakfast and transfer to visit Solang Valley. You may witness Atal tunnel & Sissu lake Drive back to Manali in the evening. Dinner and overnight stay in Manali.
+                            </p>
+                            </div>
+                          </div>
+
+
+                          <div className="schedule-items">
+                            <p className="schedule-timing">
+                            
+                              Day 6
+                            </p>
+                            <div>
+                            <h3>Manali Local Sightseeing - Overnight Volvo to Delhi</h3>
+                            <p className="sche-details">
+                              Breakfast and do check-out. Now you will visit old Hidimba Mata temple.Visit Manu Temple, Van Vihar in Manali and Shiv Temple. In the evening, you will get dropped at Manali Volvo Bus stand where you can catch Volvo bus for Delhi.
+                            </p>
+                            </div>
+                            
+                          </div>
                         </div>
                         <div className="cancellation-policy-bx">
                           <Link href="#">*Cancellation Policy</Link>
@@ -279,7 +307,7 @@ export default function Shimla() {
                       <div className="feature-media mobile-none">
                       <video
                           id="videoPlayer"
-                          src="./assets/images/kashmir/video.mp4"
+                          src="/assets/images/kashmir/video.mp4"
                           muted
                           autoPlay
                           loop
@@ -292,36 +320,40 @@ export default function Shimla() {
                       <ul className="location-list">
                       <li className="locaton-items">
                         <img
-                          src="./assets/images/kashmir/icons/pin.png"
+                          src="/assets/images/kashmir/icons/pin.png"
                           alt="Location Icon"
                         />{" "}
                          Null • Null  • Null  • Null  • Null
                       </li>
                     </ul>
                         <ul className="features-lists">
-                          <li>
-                           <img src="./assets/images/icons/hotel.png" alt="Hotel Icon"/>
-                            <span>Hotel</span> :3* Deluxe
-                          </li>
-                          <li>
-                          <img src="./assets/images/icons/pax.png" alt="pax Icon"/>
+                           <li>
+                           <img src="/assets/images/icons/hotel.png" alt="Hotel Icon"/>
 
-                            <span>No of Pax</span> : 3 adults & 2 childs (Below 5 yrs)
+                            <span>Hotel</span> : 3* Premium
                           </li>
                           <li>
-                          <img src="./assets/images/icons/transferes.png" alt="transfer Icon"/>
+                          <img src="/assets/images/icons/pax.png" alt="pax Icon"/>
+
+                            <span>No of Pax</span> : 02 Adults & 02 Childs (6-12yrs)
+                          </li>
+                          <li>
+
+                          <img src="/assets/images/icons/transferes.png" alt="transfer Icon"/>
 
                             <span>Airport Transfers</span> : Included (Sedan)
                           </li>
                           <li>
-                          <img src="./assets/images/icons/meal.png" alt="meals Icon"/>
 
-                            <span>Meals</span> : Daily Breakfast  and Dinner 
+                          <img src="/assets/images/icons/meal.png" alt="meals Icon"/>
+
+                            <span>Meals</span> : Breakfast and Dinner 
                           </li>
                           <li>
-                          <img src="./assets/images/icons/duration.png" alt="duration Icon"/>
 
-                            <span>Duration</span> : 3N 4D
+                          <img src="/assets/images/icons/duration.png" alt="duration Icon"/>
+
+                            <span>Duration</span> : 5N 6D
                           </li>
                         
                         </ul>
@@ -341,49 +373,77 @@ export default function Shimla() {
                         <div className="schedule-list">
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                      
+                           
                               Day 1
                             </p>
                            <div>
-                             <h3>Pickup from Delhi or Chandigarh and Transfer to Shimla By Volvo in Night</h3>
+                           <h3>Pickup from Delhi and Transfer to Shimla By Volvo in Night</h3>
                             <p className="sche-details">
-                               Your journey will start from Delhi. Overnight volvo Journey towards Shimla.
+                              Your journey will start from Delhi. Overnight volvo Journey towards Shimla.
                             </p>
                            </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                             
+                        
                               Day 2
                             </p>
-                            <div>
-                            <h3>Shimla Local Sightseeing</h3>
+                           <div>
+                           <h3>Shimla Local Sightseeing</h3>
                             <p className="sche-details">
-                               Morning arrival in Shimla and today we will explore Local sightseeing like  Jakhu Temple and Shimla Ridge Church, Vice Regal Lodge, Christ Church, Gaiety Theatre and Scandal Point.  
+                              Morning arrival in Shimla and today we will explore Local sightseeing like  Jakhu Temple and Shimla Ridge Church, Vice Regal Lodge, Christ Church, Gaiety Theatre and Scandal Point.  
                             </p>
-                            </div>
+                           </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                             
+                           
                               Day 3
                             </p>
                             <div>
                             <h3>Excursion to Kufri, Mashobra and Naldehra</h3>
                             <p className="sche-details">
-                               Breakfast and Himalayan National Park, Yak Ride and one can see the endless Himalayan Panorama from Kufri.Visit Apple orchards in Mashobra and Naldehra, famous for its dense forest, and take a jungle walk.
+                              Breakfast and Himalayan National Park, Yak Ride and one can see the endless Himalayan Panorama from Kufri.Visit Apple orchards in Mashobra and Naldehra, famous for its dense forest, and take a jungle walk.
                             </p>
                             </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                            
+                             
                               Day 4
                             </p>
                            <div>
-                           <h3>Overnight Volvo to Delhi</h3>
+                           <h3>Transfer to Manali - En Route Stop at Kullu</h3>
                             <p className="sche-details">
-                              Breakfast and you will do check-out at 12pm appx. Overnight volvo Journey towards Delhi.
+                              Breakfast and do check-out formalities. Visit sightseeing spots on the way like SunderNagerLake, Pandoh dam, Hanogi Mata temple, Vaishno Mata Temple. Evening Reach Manali
+                            </p>
+                           </div>
+                          </div>
+
+                          <div className="schedule-items">
+                            <p className="schedule-timing">
+                           
+                              Day 5
+                            </p>
+                           <div>
+                           <h3>Excursion to Solang Valley</h3>
+                            <p className="sche-details">
+                              Breakfast and transfer to visit Solang Valley. You may witness Atal tunnel & Sissu lake Drive back to Manali in the evening. Dinner and overnight stay in Manali.
+                            </p>
+                           </div>
+                          </div>
+
+
+                          
+                          <div className="schedule-items">
+                            <p className="schedule-timing">
+                             
+                              Day 6
+                            </p>
+                           <div>
+                           <h3>Manali Local Sightseeing - Overnight Volvo to Delhi</h3>
+                            <p className="sche-details">
+                               Breakfast and do check-out. Now you will visit old Hidimba Mata temple.Visit Manu Temple, Van Vihar in Manali and Shiv Temple. In the evening, you will get dropped at Manali Volvo Bus stand where you can catch Volvo bus for Delhi.
                             </p>
                            </div>
                           </div>
@@ -419,7 +479,7 @@ export default function Shimla() {
                       <div className="feature-media mobile-none">
                         <video
                           id="videoPlayer"
-                          src="./assets/images/kashmir/video.mp4"
+                          src="/assets/images/kashmir/video.mp4"
                           muted
                           loop
                           playsInline
@@ -432,7 +492,7 @@ export default function Shimla() {
                       {/* <li className="list-item-none">(6 Night 7 Days )</li> */}
                       <li className="locaton-items">
                         <img
-                          src="./assets/images/kashmir/icons/pin.png"
+                          src="/assets/images/kashmir/icons/pin.png"
                           alt="Location Icon"
                         />{" "}
                         Null • Null • Null • Null • Null
@@ -440,29 +500,29 @@ export default function Shimla() {
                     </ul>
                         <ul className="features-lists">
                           <li>
-                          <img src="./assets/images/icons/hotel.png" alt="Hotel Icon"/>
+                          <img src="/assets/images/icons/hotel.png" alt="Hotel Icon"/>
 
-                            <span>Hotel</span> : 3* Deluxe
+                            <span>Hotel</span> : 4*
                           </li>
                           <li>
-                          <img src="./assets/images/icons/pax.png" alt="pax Icon"/>
+                          <img src="/assets/images/icons/pax.png" alt="pax Icon"/>
 
-                            <span>No of Pax</span> : 3 adults & 2 childs (Below 5 yrs)
+                            <span>No of Pax</span> : 02 Adults & 02 Childs (6-12yrs)
                           </li>
                           <li>
-                          <img src="./assets/images/icons/transferes.png" alt="transfer Icon"/>
+                          <img src="/assets/images/icons/transferes.png" alt="transfer Icon"/>
 
                             <span>Airport Transfers</span> : Included (Sedan)
                           </li>
                           <li>
-                          <img src="./assets/images/icons/meal.png" alt="meals Icon"/>
+                          <img src="/assets/images/icons/meal.png" alt="meals Icon"/>
 
-                            <span>Meals</span> : Daily Breakfast  and Dinner 
+                            <span>Meals</span> : Breakfast and Dinner 
                           </li>
                           <li>
-                          <img src="./assets/images/icons/duration.png" alt="duration Icon"/>
+                          <img src="/assets/images/icons/duration.png" alt="duration Icon"/>
 
-                            <span>Duration</span> : 3N 4D
+                            <span>Duration</span> : 5N 6D
                           </li>
                          
                         </ul>
@@ -481,49 +541,78 @@ export default function Shimla() {
                         <div className="schedule-list">
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                           
+                             
                               Day 1
                             </p>
-                           <div>
-                           <h3>Pickup from Delhi or Chandigarh and Transfer to Shimla By Volvo in Night</h3>
+                            <div>
+                            <h3>Pickup from Delhi and Transfer to Shimla By Volvo in Night</h3>
                             <p className="sche-details">
                               Your journey will start from Delhi. Overnight volvo Journey towards Shimla.
+                            </p>
+                            </div>
+
+                          </div>
+                          <div className="schedule-items">
+                            <p className="schedule-timing">
+                           
+                              Day 2
+                            </p>
+                           <div>
+                           <h3>Shimla Local Sightseeing</h3>
+                            <p className="sche-details">
+                               Morning arrival in Shimla and today we will explore Local sightseeing like  Jakhu Temple and Shimla Ridge Church, Vice Regal Lodge, Christ Church, Gaiety Theatre and Scandal Point.  
                             </p>
                            </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
                              
-                              Day 2
-                            </p>
-                            <div>
-                            <h3>Shimla Local Sightseeing</h3>
-                            <p className="sche-details">
-                               Morning arrival in Shimla and today we will explore Local sightseeing like  Jakhu Temple and Shimla Ridge Church, Vice Regal Lodge, Christ Church, Gaiety Theatre and Scandal Point.  
-                            </p>
-                            </div>
-                          </div>
-                          <div className="schedule-items">
-                            <p className="schedule-timing">
-                              
                               Day 3
                             </p>
-                           <div>
-                           <h3>Excursion to Kufri, Mashobra and Naldehra</h3>
+                            <div>
+                            <h3>Excursion to Kufri, Mashobra and Naldehra</h3>
                             <p className="sche-details">
-                              Breakfast and Himalayan National Park, Yak Ride and one can see the endless Himalayan Panorama from Kufri.Visit Apple orchards in Mashobra and Naldehra, famous for its dense forest, and take a jungle walk.
+                             Breakfast and Himalayan National Park, Yak Ride and one can see the endless Himalayan Panorama from Kufri.Visit Apple orchards in Mashobra and Naldehra, famous for its dense forest, and take a jungle walk.
                             </p>
-                           </div>
+                            </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
                              
                               Day 4
                             </p>
-                            <div>
-                            <h3>Overnight Volvo to Delhi</h3>
+                           <div>
+                           <h3>Transfer to Manali - En Route Stop at Kullu</h3>
                             <p className="sche-details">
-                            Breakfast and you will do check-out at 12pm appx. Overnight volvo Journey towards Delhi.
+                              Breakfast and do check-out formalities. Visit sightseeing spots on the way like SunderNagerLake, Pandoh dam, Hanogi Mata temple, Vaishno Mata Temple. Evening Reach Manali
+                            </p>
+                           </div>
+                          </div>
+
+
+                          <div className="schedule-items">
+                            <p className="schedule-timing">
+                              Day 5
+                            </p>
+                           <div>
+                           <h3>Excursion to Solang Valley</h3>
+                            <p className="sche-details">
+                               Breakfast and transfer to visit Solang Valley. You may witness Atal tunnel & Sissu lake Drive back to Manali in the evening. Dinner and overnight stay in Manali.
+                            </p>
+                           </div>
+                          </div>
+
+
+
+                          <div className="schedule-items">
+                            <p className="schedule-timing">
+                            
+                              Day 6
+                            </p>
+                            <div>
+                            <h3>Manali Local Sightseeing - Overnight Volvo to Delhi</h3>
+                            <p className="sche-details">
+                               Breakfast and do check-out. Now you will visit old Hidimba Mata temple.Visit Manu Temple, Van Vihar in Manali and Shiv Temple. In the evening, you will get dropped at Manali Volvo Bus stand where you can catch Volvo bus for Delhi.
                             </p>
                             </div>
                           </div>
@@ -552,15 +641,15 @@ export default function Shimla() {
                 of contents
               </h2>
               <div className="table-contents">
-                <Link href="#package">Leh Packages</Link>
+                <Link href="#package"> Shimla & Manali Packages</Link>
 
-                <Link href="#about-us">About Leh</Link>
+                <Link href="#about-us">About Shimla & Manali</Link>
 
-                <Link href="#headingTwo">Leh Bucket List</Link>
+                <Link href="#headingTwo">Shimla & Manali Bucket List</Link>
 
-                <Link href="#headingThree">Leh FAQ’s </Link>
+                <Link href="#headingThree">Shimla & Manali FAQ’s </Link>
 
-                <Link href="#location">Leh Location</Link>
+                <Link href="#location">Shimla & Manali Location</Link>
 
                 <Link href="#traveler-reviews">Trip Reviews</Link>
               </div>
@@ -577,7 +666,7 @@ export default function Shimla() {
                  <div className="feature-media ">
                         <video
                           id="videoPlayer"
-                          src="./assets/images/kashmir/video.mp4"
+                          src="/assets/images/kashmir/video.mp4"
                           muted
                           loop
                           playsInline
@@ -592,15 +681,15 @@ export default function Shimla() {
                 of contents
               </h2>
               <div className="table-contents">
-                <Link href="#package">Leh Packages</Link>
+                <Link href="#package">Shimla & Manali Packages</Link>
 
-                <Link href="#about-us">About Leh</Link>
+                <Link href="#about-us">About Shimla & Manali</Link>
 
-                <Link href="#headingTwo">Leh Bucket List</Link>
+                <Link href="#headingTwo">Shimla & Manali Bucket List</Link>
 
-                <Link href="#headingThree">Leh FAQ’s </Link>
+                <Link href="#headingThree">Shimla & Manali FAQ’s </Link>
 
-                <Link href="#location">Leh Location</Link>
+                <Link href="#location">Shimla & Manali Location</Link>
 
                 <Link href="#traveler-reviews">Trip Reviews</Link>
               </div>
@@ -622,7 +711,7 @@ export default function Shimla() {
                 <div className="schedule-items">
                   <p className="schedule-timing">
                     <img
-                      src="./assets/images/kashmir/icons/time.png"
+                      src="/assets/images/kashmir/icons/time.png"
                       alt="watch icon"
                     />{" "}
                     Day 1
@@ -638,7 +727,7 @@ export default function Shimla() {
                 <div className="schedule-items">
                   <p className="schedule-timing">
                     <img
-                      src="./assets/images/kashmir/icons/time.png"
+                      src="/assets/images/kashmir/icons/time.png"
                       alt="watch icon"
                     />{" "}
                     Day 2-3
@@ -655,7 +744,7 @@ export default function Shimla() {
                 <div className="schedule-items">
                   <p className="schedule-timing">
                     <img
-                      src="./assets/images/kashmir/icons/time.png"
+                      src="/assets/images/kashmir/icons/time.png"
                       alt="watch icon"
                     />{" "}
                     Day 4
@@ -671,7 +760,7 @@ export default function Shimla() {
                 <div className="schedule-items">
                   <p className="schedule-timing">
                     <img
-                      src="./assets/images/kashmir/icons/time.png"
+                      src="/assets/images/kashmir/icons/time.png"
                       alt="watch icon"
                     />{" "}
                     Day 5-6
@@ -687,7 +776,7 @@ export default function Shimla() {
                 <div className="schedule-items">
                   <p className="schedule-timing">
                     <img
-                      src="./assets/images/kashmir/icons/time.png"
+                      src="/assets/images/kashmir/icons/time.png"
                       alt="watch icon"
                     />{" "}
                     Day 7
@@ -754,7 +843,7 @@ export default function Shimla() {
                     aria-expanded="true"
                     aria-controls="collapseOne"
                   >
-                    About Leh
+                    About Manali & Shimla
                   </button>
                 </h2>
                 <div
@@ -876,7 +965,7 @@ export default function Shimla() {
                     aria-expanded="false"
                     aria-controls="collapseTwo"
                   >
-                    Leh Bucket List
+                     Manali & Shimla Bucket List
                   </button>
                 </h2>
                 <div
@@ -998,7 +1087,7 @@ export default function Shimla() {
                     aria-expanded="false"
                     aria-controls="collapseThree"
                   >
-                    Leh FAQ’s?
+                     Manali & Shimla FAQ’s?
                   </button>
                 </h2>
                 <div

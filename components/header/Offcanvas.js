@@ -16,7 +16,7 @@ export default function Offcanvas() {
               href="index.html"
               className="d-flex align-items-center  mb-md-0 me-md-auto text-dark text-decoration-none desk-logo"
             >
-              <img src="./assets/images/logo.png" alt="Logo Image" />
+              <img src="/assets/images/logo.png" alt="Logo Image" />
             </Link>
           </h5>
           <button
@@ -58,8 +58,8 @@ export default function Offcanvas() {
                     >
                       <div className="accordion-body">
                         <ul className="list-unstyled">
-                          <li><Link href="/national-destination">- National Destination</Link></li>
-                          <li><Link href="/international-destination">- International Destination</Link></li>
+                          <li><Link href="/family/national-destination">- National Destination</Link></li>
+                          <li><Link href="/family/international-destination">- International Destination</Link></li>
                         </ul>
                       </div>
                     </div>
@@ -91,7 +91,7 @@ export default function Offcanvas() {
           </div>
 
 
-          <img src="./assets/images/footer-vacation.webp" alt="Logo Image"  className="foot-img"/>
+          <img src="/assets/images/footer-vacation.webp" alt="Logo Image"  className="foot-img"/>
           {/* 
       <div className="mob-social-mediabx">
         <ul>

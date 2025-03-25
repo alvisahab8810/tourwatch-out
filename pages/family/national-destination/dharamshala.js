@@ -1,12 +1,14 @@
-import Topbar from "../components/header/Header";
-import Footer from "../components/footer/Footer";
-import TravelerReviews from "../components/kashmir/TravelerReviews";
-import Map from "../components/kashmir/Map";
-import Link from "next/link";
-import Popup from "../components/corporate/Popup";
-import Offcanvas from "../components/header/Offcanvas";
+import React from "react";
 
-export default function Manali() {
+import Topbar from "../../../components/header/Header";
+import Footer from "../../../components/footer/Footer";
+import TravelerReviews from "../../../components/kashmir/TravelerReviews";
+import Map from "../../../components/kashmir/Map";
+import Link from "next/link";
+import Popup from "../../../components/corporate/Popup";
+import Offcanvas from "../../../components/header/Offcanvas";
+
+export default function Dharamshala() {
 
   
   return (
@@ -19,7 +21,7 @@ export default function Manali() {
           <div className="row align-items-center pt-200">
             <div className="col-md-12 about-contennt">
               <h2 className="fs-64 text-white fw-bold">
-                The heaven of earth, Manali
+                The heaven of earth, Dharamshala
               </h2>
               <p>
                 Plan your trips, honeymoons, or family getaways with
@@ -44,12 +46,12 @@ export default function Manali() {
           <div className="parent-package w-100" id="package">
             <div className="max-800">
               <div className="content-section">
-                <h1>Manali Family Package</h1>
+                <h1>Dharamshala Family Package</h1>
                 {/* <ul className="location-list">
                   <li className="list-item-none">(7 Days)</li>
                   <li className="locaton-items">
                     <img
-                      src="./assets/images/kashmir/icons/pin.png"
+                      src="/assets/images/kashmir/icons/pin.png"
                       alt="Location Icon"
                     />{" "}
                     Srinagar • Gulmarg • Pahalgam • Sonamarg
@@ -131,7 +133,7 @@ export default function Manali() {
                       <div className="feature-media mobile-none">
                         <video
                           id="videoPlayer"
-                          src="./assets/images/kashmir/video.mp4"
+                          src="/assets/images/kashmir/video.mp4"
                           muted
                           autoPlay
                           loop
@@ -146,31 +148,38 @@ export default function Manali() {
                       {/* <li className="list-item-none">(4 Night 5 Days )</li> */}
                       <li className="locaton-items">
                         <img
-                          src="./assets/images/kashmir/icons/pin.png"
+                          src="/assets/images/kashmir/icons/pin.png"
                           alt="Location Icon"
                         />{" "}
-                          Null • Null
+                          Dharmshala  McLeod Ganj & Dalhousie
                       </li>
                     </ul>
                         <ul className="features-lists">
                           <li>
-                            <img src="./assets/images/icons/hotel.png" alt="Hotel Icon"/>
+                            <img src="/assets/images/icons/hotel.png" alt="Hotel Icon"/>
                             <span>Hotel</span> : 3* Deluxe
                           </li>
+
                           <li>
-                             <img src="./assets/images/icons/transferes.png" alt="transfer Icon"/>
-                             <span>Airport Transfers</span> : Included (Sedan)
+
+                          <img src="/assets/images/icons/pax.png" alt="pax Icon"/>
+
+                            <span>No of Pax</span> : 02 Adults & 01 Child (Below 5 yrs)
                           </li>
                           <li>
-                             <img src="./assets/images/icons/pax.png" alt="pax Icon"/>
-                            <span>No of Pax</span> : 2 adults & 1 child (Below 5 yrs)
+                          <img src="/assets/images/icons/transferes.png" alt="transfer Icon"/>
+
+                            <span>Airport Transfers</span> : Volvo Buses and (Sedan)
+                          </li>
+                          
+                          <li>
+                          <img src="/assets/images/icons/meal.png" alt="meals Icon"/>
+
+                            <span>Meals</span> : Breakfast  
                           </li>
                           <li>
-                           <img src="./assets/images/icons/meal.png" alt="meals Icon"/>
-                            <span>Meals</span> : Daily Breakfast  Only
-                          </li>
-                          <li>
-                           <img src="./assets/images/icons/duration.png" alt="duration Icon"/>
+                          <img src="/assets/images/icons/duration.png" alt="duration Icon"/>
+
                             <span>Duration</span> : 3N 4D
                           </li>
                           {/* <li>
@@ -193,48 +202,72 @@ export default function Manali() {
 
                     <section className="time-schedule-section ">
                       <div className="container">
-                      <div class="schedule-list">
-                        <div class="schedule-items">
-                            <p class="schedule-timing">Day 1</p>
+                        <div className="schedule-list">
+                          <div className="schedule-items">
+                            <p className="schedule-timing">
+                             
+                              Day 1
+                            </p>
+                          <div>
+                          <h3>Delhi - Dharmshala</h3>
+                            <p className="sche-details">
+                              Your journey will start from Delhi.. Travel by overnight Volvo bus from Delhi to Dharmshala. 
+                            </p>
+                          </div>
+                          </div>
+                          <div className="schedule-items">
+                            <p className="schedule-timing">
+                           
+                              Day 2
+                            </p>
+                           <div>
+                           <h3>Dharamshala - Local Sightseeing - Mcleodganj</h3>
+                            <p className="sche-details">
+                               Arrival Dharmshala and get transferred to hotel by our representative.  Cover sightseeing like Dalai Lama, Mcleodganj, Bhagsunag Temple, Waterfall,
+                               Dharamshala international cricket stadium & local market. Dinner and overnight stay.  
+                            </p>
+                           </div>
+                          </div>
+                          <div className="schedule-items">
+                            <p className="schedule-timing">
+                            
+                              Day 3
+                            </p>
                             <div>
-                                <h3>Pickup from Delhi OR Chandigarh and Transfer to Manali By Volvo in Night</h3>
-                                <p class="sche-details">Your journey will start from Delhi. Overnight Volvo journey towards Manali.</p>
+                            <h3>Dharamshala – Dalhousie (120 kms/ 4 hrs)</h3>
+                            <p className="sche-details">
+                              After breakfast, depart for Dalhousie. Enroute visit Khajjiar- Mini Switzerland of India. On arrival check- in at the
+                               hotel. Rest of the day for leisure and shopping. Dinner and overnight stay.
+                            </p>
                             </div>
-                        </div>
+                          </div>
+                          <div className="schedule-items">
+                            <p className="schedule-timing">
+                             
+                              Day 4
+                            </p>
+                           <div>
+                           <h3>Dalhousie city tour</h3>
+                            <p className="sche-details">
+                               After breakfast, full day at leisure. Visit Sat Dhara, Panji Pulla and Shubhash Baoli. Overnight stay at Hotel
+                            </p>
+                           </div>
+                          </div>
 
-                        <div class="schedule-items">
-                            <p class="schedule-timing">Day 2</p>
+                          <div className="schedule-items">
+                            <p className="schedule-timing">
+                              
+                              Day 5
+                            </p>
                             <div>
-                                <h3>Arrival and Manali Local Sightseeing</h3>
-                                <p class="sche-details">Morning arrival in Manali, smooth check-in. Visit Hadimba Devi Temple, Manu Temple, Tibetan Monasteries, and Vashisht Village. Shopping at Mall Road. Dinner & overnight stay at the hotel.</p>
+                            <h3>Departure Dalhousie to Dharmshala towards Delhi</h3>
+                            <p className="sche-details">
+                              Breakfast and check-out drive towards Dharamshala. Drop Evening 4/5pm & Take Volvo Dharmshala to Delhi.
+                            </p>
                             </div>
+                          </div>
+                          
                         </div>
-
-                        <div class="schedule-items">
-                            <p class="schedule-timing">Day 3</p>
-                            <div>
-                                <h3>Manali-Solang Valley & Atal Tunnel</h3>
-                                <p class="sche-details">Breakfast and full-day excursion to Solang Valley, Atal Tunnel, and snow viewpoint. Return in the evening for an overnight stay.</p>
-                            </div>
-                        </div>
-
-                        <div class="schedule-items">
-                            <p class="schedule-timing">Day 4</p>
-                            <div>
-                                <h3>Manali - Manikaran via Kullu</h3>
-                                <p class="sche-details">Breakfast, then a drive to Manikaran. Half-day sightseeing tour of Kullu. Return to the hotel for dinner & overnight stay.</p>
-                            </div>
-                        </div>
-
-                        <div class="schedule-items">
-                            <p class="schedule-timing">Day 5</p>
-                            <div>
-                                <h3>Overnight Volvo to Delhi or Chandigarh</h3>
-                                <p class="sche-details">Breakfast, explore the local market, and in the evening, drop at the Volvo bus stand for Delhi.</p>
-                            </div>
-                        </div>
-                    </div>
-
                         <div className="cancellation-policy-bx">
                           <Link href="#">*Cancellation Policy</Link>
                           <button className="btn btn-primary1" data-bs-toggle="modal"
@@ -262,7 +295,7 @@ export default function Manali() {
                       <div className="feature-media mobile-none">
                       <video
                           id="videoPlayer"
-                          src="./assets/images/kashmir/video.mp4"
+                          src="/assets/images/kashmir/video.mp4"
                           muted
                           autoPlay
                           loop
@@ -275,32 +308,35 @@ export default function Manali() {
                       <ul className="location-list">
                       <li className="locaton-items">
                         <img
-                          src="./assets/images/kashmir/icons/pin.png"
+                          src="/assets/images/kashmir/icons/pin.png"
                           alt="Location Icon"
                         />{" "}
-                         Null • Null  • Null  • Null  • Null
+                        Dharmshala  McLeod Ganj & Dalhousie
                       </li>
                     </ul>
                         <ul className="features-lists">
                           <li>
-                            <img src="./assets/images/icons/hotel.png" alt="Hotel Icon"/>
-                            <span>Hotel</span> : 3* Premium
-                          </li>
-                          <li>
-                           <img src="./assets/images/icons/pax.png" alt="pax Icon"/>
-                            <span>No of Pax</span> :  3 adults & 1 childs (Below 5 yrs)
-                          </li>
-                          <li>
-                           <img src="./assets/images/icons/transferes.png" alt="transfer Icon"/>
-                            <span>Airport Transfers</span> : Included (Sedan)
-                          </li>
-                          <li>
-                          <img src="./assets/images/icons/meal.png" alt="meals Icon"/>
+                          <img src="/assets/images/icons/hotel.png" alt="Hotel Icon"/>  
 
-                            <span>Meals</span> : Daily Breakfast and Dinner
+                            <span>Hotel</span> :3* Deluxe
                           </li>
                           <li>
-                          <img src="./assets/images/icons/duration.png" alt="duration Icon"/>
+                          <img src="/assets/images/icons/pax.png" alt="pax Icon"/>
+
+                            <span>No of Pax</span> : 02 adults & 01 child (Below 5 yrs)
+                          </li>
+                          <li>
+                          <img src="/assets/images/icons/transferes.png" alt="transfer Icon"/>
+
+                            <span>Airport Transfers</span> : Volvo Buses and (Sedan)
+                          </li>
+                          <li>
+                          <img src="/assets/images/icons/meal.png" alt="meals Icon"/>
+
+                            <span>Meals</span> : Breakfast 
+                          </li>
+                          <li>
+                          <img src="/assets/images/icons/duration.png" alt="duration Icon"/>
 
                             <span>Duration</span> : 3N 4D
                           </li>
@@ -322,63 +358,66 @@ export default function Manali() {
                         <div className="schedule-list">
                           <div className="schedule-items">
                             <p className="schedule-timing">
+                        
                               Day 1
                             </p>
                             <div>
-                              <h3>Pickup from Delhi OR Chandigarh and Transfer to Manali By Volvo in Night</h3>
-                              <p className="sche-details">
-                               Your journey will start from Delhi. Overnight volvo Journey towards Manali
-                              </p>
+                            <h3>Delhi - Dharmshala</h3>
+                            <p className="sche-details">
+                              Your journey will start from Delhi.. Travel by overnight Volvo bus from Delhi to Dharmshala. 
+                            </p>
                             </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
+                              
                               Day 2
                             </p>
-
                             <div>
-                              <h3>Arrival and Manali Local Sightseeing</h3>
-                              <p className="sche-details">
-                               Morning arrival in Manali, do smooth check-in. Later start for local sighteeing Hadimba Devi Temple, Manu Temple, Tibetan Monasteries and Vashisht Village. You may enjoy shopping at Mall Road. Dinner and overnight stay at Hotel  
-                             </p>
+                              
+                            <h3>Dharamshala - Local Sightseeing - Mcleodganj</h3>
+                            <p className="sche-details">
+                              Arrival Dharmshala and get transferred to hotel by our representative.  Cover sightseeing like Dalai Lama, Mcleodganj, Bhagsunag Temple, Waterfall,
+                              Dharamshala international cricket stadium & local market. Dinner and overnight stay.
+                            </p>
                             </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
+                              
                               Day 3
                             </p>
-
-                            <div>
-                              <h3>Manali-Solang Valley & Atal Tunnel (Sissu Lake Rohtang at additional cost & depend upon the climate conditions)</h3>
-                              <p className="sche-details">
-                                Breakfast and full day excursion by visiting the several prominent places such as the  Solang Valley and Atal Tunnel and snow view point. Evening return hotel and overnight stay. 
-                              </p>          
-                            </div>
+                           <div>
+                           <h3>Dharamshala – Dalhousie (120 kms/ 4 hrs)</h3>
+                            <p className="sche-details">
+                               After breakfast, depart for Dalhousie. Enroute visit Khajjiar- Mini Switzerland of India. On arrival check- in at the
+                              hotel. Rest of the day for leisure and shopping. Dinner and overnight stay.
+                            </p>
+                           </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
+                             
                               Day 4
                             </p>
-
                             <div>
-                              <h3>Manali - Manikaran via Kullu - Manali</h3>
-                              <p className="sche-details">
-                                Breakfast and drive to Manikaran. You may also cover Kullu for a half day sightseeing tour. Evening return to Hotel. Dinner and overnight stay.
-                              </p>
+                            <h3>Dalhousie city tour</h3>
+                            <p className="sche-details">
+                               After breakfast, full day at leisure. Visit Sat Dhara, Panji Pulla and Shubhash Baoli. Overnight stay at Hotel
+                            </p>
                             </div>
                           </div>
 
-
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                               Day 5
- 
+                             
+                              Day 5
                             </p>
                             <div>
-                            <h3>Overnight Volvo to Delhi or Chandigarh</h3>
+                            <h3>Departure Dalhousie to Dharmshala towards Delhi</h3>
                             <p className="sche-details">
-                                Breakfast and you can explore the local market by yourself and in the evening drop at volvo bus stand for Delhi, your onward destination.S
-                             </p>
+                              Breakfast and check-out drive towards Dharamshala. Drop Evening 4/5pm & Take Volvo Dharmshala to Delhi.
+                            </p>
                             </div>
                           </div>
                         
@@ -413,7 +452,7 @@ export default function Manali() {
                       <div className="feature-media mobile-none">
                         <video
                           id="videoPlayer"
-                          src="./assets/images/kashmir/video.mp4"
+                          src="/assets/images/kashmir/video.mp4"
                           muted
                           loop
                           playsInline
@@ -426,33 +465,35 @@ export default function Manali() {
                       {/* <li className="list-item-none">(6 Night 7 Days )</li> */}
                       <li className="locaton-items">
                         <img
-                          src="./assets/images/kashmir/icons/pin.png"
+                          src="/assets/images/kashmir/icons/pin.png"
                           alt="Location Icon"
                         />{" "}
-                        Null • Null • Null • Null • Null
+                        Dharmshala  McLeod Ganj & Dalhousie
                       </li>
                     </ul>
                         <ul className="features-lists">
                           <li>
-                          <img src="./assets/images/icons/hotel.png" alt="Hotel Icon"/>
+                          <img src="/assets/images/icons/hotel.png" alt="Hotel Icon"/>  
 
-                            <span>Hotel</span> : 3* Deluxe
+                            <span>Hotel</span> : 3* Premium
                           </li>
                           <li>
-                          <img src="./assets/images/icons/pax.png" alt="pax Icon"/>
+                          <img src="/assets/images/icons/pax.png" alt="pax Icon"/>
 
-                            <span>No of Pax</span> : 3 adults & 2 childs (Below 5 yrs)
+                            <span>No of Pax</span> : 02 Adults & 01 Child (Below 5 yrs)
                           </li>
                           <li>
+                          <img src="/assets/images/icons/transferes.png" alt="transfer Icon"/>
+
                             <span>Airport Transfers</span> : Included (Sedan)
                           </li>
                           <li>
-                          <img src="./assets/images/icons/meal.png" alt="meals Icon"/>
+                          <img src="/assets/images/icons/meal.png" alt="meals Icon"/>
 
-                            <span>Meals</span> : Daily Breakfast  and Dinner 
+                            <span>Meals</span> : Breakfast and Dinner
                           </li>
                           <li>
-                          <img src="./assets/images/icons/duration.png" alt="duration Icon"/>
+                          <img src="/assets/images/icons/duration.png" alt="duration Icon"/>
 
                             <span>Duration</span> : 3N 4D
                           </li>
@@ -473,59 +514,70 @@ export default function Manali() {
                         <div className="schedule-list">
                           <div className="schedule-items">
                             <p className="schedule-timing">
+                            
                               Day 1
                             </p>
                             <div>
-                            <h3>Pickup from Delhi OR Chandigarh and Transfer to Manali By Volvo in Night</h3>
+                            <h3>Delhi - Dharmshala</h3>
                             <p className="sche-details">
-                               Your journey will start from Delhi. Overnight volvo Journey towards Manali
+                              Your journey will start from Delhi.. Travel by overnight Volvo bus from Delhi to Dharmshala. 
                             </p>
                             </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
+                           
                               Day 2
                             </p>
-                           <div>
-                           <h3>Arrival and Manali Local Sightseeing</h3>
+                            <div>
+                            <h3>Dharamshala - Local Sightseeing - Mcleodganj</h3>
                             <p className="sche-details">
-                               Morning arrival in Manali, do smooth check-in. Later start for local sighteeing Hadimba Devi Temple, Manu Temple, Tibetan Monasteries and Vashisht Village. You may enjoy shopping at Mall Road. Dinner and overnight stay at Hotel
+                               Arrival Dharmshala and get transferred to hotel by our representative.  Cover sightseeing like Dalai Lama, Mcleodganj, Bhagsunag Temple, Waterfall,
+                                Dharamshala international cricket stadium & local market. Dinner and overnight stay.    
                             </p>
-                           </div>
+                            </div>
+                           
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
+                           
                               Day 3
                             </p>
                            <div>
-                           <h3>Manali-Solang Valley & Atal Tunnel (Sissu Lake Rohtang at additional cost & depend upon the climate conditions)</h3>
+                           <h3>Dharamshala – Dalhousie (120 kms/ 4 hrs)</h3>
                             <p className="sche-details">
-                               Breakfast and full day excursion by visiting the several prominent places such as the  Solang Valley and Atal Tunnel and snow view point. Evening return hotel and overnight stay. 
+                              After breakfast, depart for Dalhousie. Enroute visit Khajjiar- Mini Switzerland of India. On arrival check- in at the
+                               hotel. Rest of the day for leisure and shopping. Dinner and overnight stay.
                             </p>
                            </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
+                              
                               Day 4
                             </p>
-                            <div>
-                            <h3>Manali - Manikaran via Kullu - Manali</h3>
+                           <div>
+                           <h3>Dalhousie city tour</h3>
                             <p className="sche-details">
-                              Breakfast and drive to Manikaran. You may also cover Kullu for a half day sightseeing tour. Evening return to Hotel. Dinner and overnight stay.
+                            After breakfast, full day at leisure. Visit Sat Dhara, Panji Pulla and Shubhash Baoli. Overnight stay at Hotel
                             </p>
-                            </div>
+                           </div>
                           </div>
+
+
                           <div className="schedule-items">
                             <p className="schedule-timing">
+                           
                               Day 5
                             </p>
                             <div>
-                            <h3>Overnight Volvo to Delhi or Chandigarh</h3>
+                            <h3>Departure Dalhousie to Dharmshala towards Delhi</h3>
                             <p className="sche-details">
-                               Breakfast and you can explore the local market by yourself and in the evening drop at volvo bus stand for Delhi, your onward destination.
+                              Breakfast and check-out drive towards Dharamshala. Drop Evening 4/5pm & Take Volvo Dharmshala to Delhi.
                             </p>
                             </div>
                           </div>
+                          
                         </div>
                         <div className="cancellation-policy-bx">
                           <Link href="#">*Cancellation Policy</Link>
@@ -550,15 +602,15 @@ export default function Manali() {
                 of contents
               </h2>
               <div className="table-contents">
-                <Link href="#package">Manali Packages</Link>
+                <Link href="#package">Dharamshala Packages</Link>
 
-                <Link href="#about-us">About Manali</Link>
+                <Link href="#about-us">About Dharamshala</Link>
 
-                <Link href="#headingTwo">Manali Bucket List</Link>
+                <Link href="#headingTwo">Dharamshala Bucket List</Link>
 
-                <Link href="#headingThree">Manali FAQ’s </Link>
+                <Link href="#headingThree">Dharamshala FAQ’s </Link>
 
-                <Link href="#location">Manali Location</Link>
+                <Link href="#location">Dharamshala Location</Link>
 
                 <Link href="#traveler-reviews">Trip Reviews</Link>
               </div>
@@ -575,7 +627,7 @@ export default function Manali() {
                  <div className="feature-media ">
                         <video
                           id="videoPlayer"
-                          src="./assets/images/kashmir/video.mp4"
+                          src="/assets/images/kashmir/video.mp4"
                           muted
                           loop
                           playsInline
@@ -590,15 +642,15 @@ export default function Manali() {
                 of contents
               </h2>
               <div className="table-contents">
-                <Link href="#package">Manali Packages</Link>
+                <Link href="#package">Dharamshala Packages</Link>
 
-                <Link href="#about-us">About Manali</Link>
+                <Link href="#about-us">About Dharamshala</Link>
 
-                <Link href="#headingTwo">Manali Bucket List</Link>
+                <Link href="#headingTwo">Dharamshala Bucket List</Link>
 
-                <Link href="#headingThree">Manali FAQ’s </Link>
+                <Link href="#headingThree">Dharamshala FAQ’s </Link>
 
-                <Link href="#location">Manali Location</Link>
+                <Link href="#location">Dharamshala Location</Link>
 
                 <Link href="#traveler-reviews">Trip Reviews</Link>
               </div>
@@ -620,7 +672,7 @@ export default function Manali() {
                 <div className="schedule-items">
                   <p className="schedule-timing">
                     <img
-                      src="./assets/images/kashmir/icons/time.png"
+                      src="/assets/images/kashmir/icons/time.png"
                       alt="watch icon"
                     />{" "}
                     Day 1
@@ -636,7 +688,7 @@ export default function Manali() {
                 <div className="schedule-items">
                   <p className="schedule-timing">
                     <img
-                      src="./assets/images/kashmir/icons/time.png"
+                      src="/assets/images/kashmir/icons/time.png"
                       alt="watch icon"
                     />{" "}
                     Day 2-3
@@ -653,7 +705,7 @@ export default function Manali() {
                 <div className="schedule-items">
                   <p className="schedule-timing">
                     <img
-                      src="./assets/images/kashmir/icons/time.png"
+                      src="/assets/images/kashmir/icons/time.png"
                       alt="watch icon"
                     />{" "}
                     Day 4
@@ -669,7 +721,7 @@ export default function Manali() {
                 <div className="schedule-items">
                   <p className="schedule-timing">
                     <img
-                      src="./assets/images/kashmir/icons/time.png"
+                      src="/assets/images/kashmir/icons/time.png"
                       alt="watch icon"
                     />{" "}
                     Day 5-6
@@ -685,7 +737,7 @@ export default function Manali() {
                 <div className="schedule-items">
                   <p className="schedule-timing">
                     <img
-                      src="./assets/images/kashmir/icons/time.png"
+                      src="/assets/images/kashmir/icons/time.png"
                       alt="watch icon"
                     />{" "}
                     Day 7
@@ -752,7 +804,7 @@ export default function Manali() {
                     aria-expanded="true"
                     aria-controls="collapseOne"
                   >
-                    About Manali
+                    About Leh
                   </button>
                 </h2>
                 <div
@@ -874,7 +926,7 @@ export default function Manali() {
                     aria-expanded="false"
                     aria-controls="collapseTwo"
                   >
-                    Manali Bucket List
+                    Leh Bucket List
                   </button>
                 </h2>
                 <div
@@ -996,7 +1048,7 @@ export default function Manali() {
                     aria-expanded="false"
                     aria-controls="collapseThree"
                   >
-                    Manali FAQ’s?
+                    Leh FAQ’s?
                   </button>
                 </h2>
                 <div

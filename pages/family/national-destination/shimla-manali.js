@@ -1,12 +1,12 @@
 import React from "react";
 
-import Topbar from "../components/header/Header";
-import Footer from "../components/footer/Footer";
-import TravelerReviews from "../components/kashmir/TravelerReviews";
-import Map from "../components/kashmir/Map";
+import Topbar from "../../../components/header/Header";
+import Footer from "../../../components/footer/Footer";
+import TravelerReviews from "../../../components/kashmir/TravelerReviews";
+import Map from "../../../components/kashmir/Map";
 import Link from "next/link";
-import Popup from "../components/corporate/Popup";
-import Offcanvas from "../components/header/Offcanvas";
+import Popup from "../../../components/corporate/Popup";
+import Offcanvas from "../../../components/header/Offcanvas";
 
 export default function ShimlaManali() {
 
@@ -51,7 +51,7 @@ export default function ShimlaManali() {
                   <li className="list-item-none">(7 Days)</li>
                   <li className="locaton-items">
                     <img
-                      src="./assets/images/kashmir/icons/pin.png"
+                      src="/assets/images/kashmir/icons/pin.png"
                       alt="Location Icon"
                     />{" "}
                     Srinagar • Gulmarg • Pahalgam • Sonamarg
@@ -133,7 +133,7 @@ export default function ShimlaManali() {
                       <div className="feature-media mobile-none">
                         <video
                           id="videoPlayer"
-                          src="./assets/images/kashmir/video.mp4"
+                          src="/assets/images/kashmir/video.mp4"
                           muted
                           autoPlay
                           loop
@@ -148,7 +148,7 @@ export default function ShimlaManali() {
                       {/* <li className="list-item-none">(4 Night 5 Days )</li> */}
                       <li className="locaton-items">
                         <img
-                          src="./assets/images/kashmir/icons/pin.png"
+                          src="/assets/images/kashmir/icons/pin.png"
                           alt="Location Icon"
                         />{" "}
                         SHIMLA • MANALI
@@ -156,28 +156,28 @@ export default function ShimlaManali() {
                     </ul>
                         <ul className="features-lists">
                           <li>
-                           <img src="./assets/images/icons/hotel.png" alt="Hotel Icon"/>
+                           <img src="/assets/images/icons/hotel.png" alt="Hotel Icon"/>
                             <span>Hotel</span> : 3* Deluxe
                           </li>
 
                           <li>
-                          <img src="./assets/images/icons/pax.png" alt="pax Icon"/>
+                          <img src="/assets/images/icons/pax.png" alt="pax Icon"/>
 
                             <span>No of Pax</span> : 02 Adults & 01 Child (Below 5 yrs)
                           </li>
                           <li>
-                          <img src="./assets/images/icons/transferes.png" alt="transfer Icon"/>
+                          <img src="/assets/images/icons/transferes.png" alt="transfer Icon"/>
 
                             <span>Airport Transfers</span> : Included (Sedan)
                           </li>
                          
                           <li>
-                          <img src="./assets/images/icons/meal.png" alt="meals Icon"/>
+                          <img src="/assets/images/icons/meal.png" alt="meals Icon"/>
 
                             <span>Meals</span> : Breakfast 
                           </li>
                           <li>
-                          <img src="./assets/images/icons/duration.png" alt="duration Icon"/>
+                          <img src="/assets/images/icons/duration.png" alt="duration Icon"/>
 
                             <span>Duration</span> : 5N 6D
                           </li>
@@ -307,7 +307,7 @@ export default function ShimlaManali() {
                       <div className="feature-media mobile-none">
                       <video
                           id="videoPlayer"
-                          src="./assets/images/kashmir/video.mp4"
+                          src="/assets/images/kashmir/video.mp4"
                           muted
                           autoPlay
                           loop
@@ -320,7 +320,7 @@ export default function ShimlaManali() {
                       <ul className="location-list">
                       <li className="locaton-items">
                         <img
-                          src="./assets/images/kashmir/icons/pin.png"
+                          src="/assets/images/kashmir/icons/pin.png"
                           alt="Location Icon"
                         />{" "}
                          Null • Null  • Null  • Null  • Null
@@ -328,30 +328,30 @@ export default function ShimlaManali() {
                     </ul>
                         <ul className="features-lists">
                            <li>
-                           <img src="./assets/images/icons/hotel.png" alt="Hotel Icon"/>
+                           <img src="/assets/images/icons/hotel.png" alt="Hotel Icon"/>
 
                             <span>Hotel</span> : 3* Premium
                           </li>
                           <li>
-                          <img src="./assets/images/icons/pax.png" alt="pax Icon"/>
+                          <img src="/assets/images/icons/pax.png" alt="pax Icon"/>
 
                             <span>No of Pax</span> : 02 Adults & 02 Childs (6-12yrs)
                           </li>
                           <li>
 
-                          <img src="./assets/images/icons/transferes.png" alt="transfer Icon"/>
+                          <img src="/assets/images/icons/transferes.png" alt="transfer Icon"/>
 
                             <span>Airport Transfers</span> : Included (Sedan)
                           </li>
                           <li>
 
-                          <img src="./assets/images/icons/meal.png" alt="meals Icon"/>
+                          <img src="/assets/images/icons/meal.png" alt="meals Icon"/>
 
                             <span>Meals</span> : Breakfast and Dinner 
                           </li>
                           <li>
 
-                          <img src="./assets/images/icons/duration.png" alt="duration Icon"/>
+                          <img src="/assets/images/icons/duration.png" alt="duration Icon"/>
 
                             <span>Duration</span> : 5N 6D
                           </li>
@@ -479,7 +479,7 @@ export default function ShimlaManali() {
                       <div className="feature-media mobile-none">
                         <video
                           id="videoPlayer"
-                          src="./assets/images/kashmir/video.mp4"
+                          src="/assets/images/kashmir/video.mp4"
                           muted
                           loop
                           playsInline
@@ -492,7 +492,7 @@ export default function ShimlaManali() {
                       {/* <li className="list-item-none">(6 Night 7 Days )</li> */}
                       <li className="locaton-items">
                         <img
-                          src="./assets/images/kashmir/icons/pin.png"
+                          src="/assets/images/kashmir/icons/pin.png"
                           alt="Location Icon"
                         />{" "}
                         Null • Null • Null • Null • Null
@@ -500,27 +500,27 @@ export default function ShimlaManali() {
                     </ul>
                         <ul className="features-lists">
                           <li>
-                          <img src="./assets/images/icons/hotel.png" alt="Hotel Icon"/>
+                          <img src="/assets/images/icons/hotel.png" alt="Hotel Icon"/>
 
                             <span>Hotel</span> : 4*
                           </li>
                           <li>
-                          <img src="./assets/images/icons/pax.png" alt="pax Icon"/>
+                          <img src="/assets/images/icons/pax.png" alt="pax Icon"/>
 
                             <span>No of Pax</span> : 02 Adults & 02 Childs (6-12yrs)
                           </li>
                           <li>
-                          <img src="./assets/images/icons/transferes.png" alt="transfer Icon"/>
+                          <img src="/assets/images/icons/transferes.png" alt="transfer Icon"/>
 
                             <span>Airport Transfers</span> : Included (Sedan)
                           </li>
                           <li>
-                          <img src="./assets/images/icons/meal.png" alt="meals Icon"/>
+                          <img src="/assets/images/icons/meal.png" alt="meals Icon"/>
 
                             <span>Meals</span> : Breakfast and Dinner 
                           </li>
                           <li>
-                          <img src="./assets/images/icons/duration.png" alt="duration Icon"/>
+                          <img src="/assets/images/icons/duration.png" alt="duration Icon"/>
 
                             <span>Duration</span> : 5N 6D
                           </li>
@@ -666,7 +666,7 @@ export default function ShimlaManali() {
                  <div className="feature-media ">
                         <video
                           id="videoPlayer"
-                          src="./assets/images/kashmir/video.mp4"
+                          src="/assets/images/kashmir/video.mp4"
                           muted
                           loop
                           playsInline
@@ -711,7 +711,7 @@ export default function ShimlaManali() {
                 <div className="schedule-items">
                   <p className="schedule-timing">
                     <img
-                      src="./assets/images/kashmir/icons/time.png"
+                      src="/assets/images/kashmir/icons/time.png"
                       alt="watch icon"
                     />{" "}
                     Day 1
@@ -727,7 +727,7 @@ export default function ShimlaManali() {
                 <div className="schedule-items">
                   <p className="schedule-timing">
                     <img
-                      src="./assets/images/kashmir/icons/time.png"
+                      src="/assets/images/kashmir/icons/time.png"
                       alt="watch icon"
                     />{" "}
                     Day 2-3
@@ -744,7 +744,7 @@ export default function ShimlaManali() {
                 <div className="schedule-items">
                   <p className="schedule-timing">
                     <img
-                      src="./assets/images/kashmir/icons/time.png"
+                      src="/assets/images/kashmir/icons/time.png"
                       alt="watch icon"
                     />{" "}
                     Day 4
@@ -760,7 +760,7 @@ export default function ShimlaManali() {
                 <div className="schedule-items">
                   <p className="schedule-timing">
                     <img
-                      src="./assets/images/kashmir/icons/time.png"
+                      src="/assets/images/kashmir/icons/time.png"
                       alt="watch icon"
                     />{" "}
                     Day 5-6
@@ -776,7 +776,7 @@ export default function ShimlaManali() {
                 <div className="schedule-items">
                   <p className="schedule-timing">
                     <img
-                      src="./assets/images/kashmir/icons/time.png"
+                      src="/assets/images/kashmir/icons/time.png"
                       alt="watch icon"
                     />{" "}
                     Day 7

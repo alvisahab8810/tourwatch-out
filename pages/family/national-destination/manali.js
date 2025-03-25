@@ -1,17 +1,17 @@
-import React from "react";
-
-import Footer from "../../components/footer/Footer";
-import TravelerReviews from "../../components/kashmir/TravelerReviews";
-import Map from "../../components/kashmir/Map";
+import Topbar from "../../../components/header/Header";
+import Footer from "../../../components/footer/Footer";
+import TravelerReviews from "../../../components/kashmir/TravelerReviews";
+import Map from "../../../components/kashmir/Map";
 import Link from "next/link";
-import Popup from "../../components/corporate/Popup";
-import Offcanvas from "../../components/header/Offcanvas";
-import Topbar from "../../components/header/Header";
+import Popup from "../../../components/corporate/Popup";
+import Offcanvas from "../../../components/header/Offcanvas";
 
-export default function kashmir() {
+export default function Manali() {
+
+  
   return (
     <div className="bg-prime">
-      <Topbar/>
+      <Topbar />
       <Offcanvas/>
       {/* --------------- Hero start -------------------- */}
       <section className="kashmir-hero">
@@ -19,7 +19,7 @@ export default function kashmir() {
           <div className="row align-items-center pt-200">
             <div className="col-md-12 about-contennt">
               <h2 className="fs-64 text-white fw-bold">
-                The heaven of earth, Kashmir
+                The heaven of earth, Manali
               </h2>
               <p>
                 Plan your trips, honeymoons, or family getaways with
@@ -44,17 +44,17 @@ export default function kashmir() {
           <div className="parent-package w-100" id="package">
             <div className="max-800">
               <div className="content-section">
-                <h1>Kashmir Winter Tour Packgae</h1>
-                <ul className="location-list">
+                <h1>Manali Family Package</h1>
+                {/* <ul className="location-list">
                   <li className="list-item-none">(7 Days)</li>
                   <li className="locaton-items">
                     <img
-                      src="./assets/images/kashmir/icons/pin.png"
+                      src="/assets/images/kashmir/icons/pin.png"
                       alt="Location Icon"
                     />{" "}
                     Srinagar • Gulmarg • Pahalgam • Sonamarg
                   </li>
-                </ul>
+                </ul> */}
               </div>
 
               <div className="tour-package pt-80">
@@ -117,6 +117,8 @@ export default function kashmir() {
                   </li>
                 </ul>
                 <div className="tab-content" id="pills-tabContent">
+
+                  {/* ------------------ Basic ------------------- */}
                   <div
                     className="tab-pane fade show active"
                     id="pills-basic"
@@ -124,49 +126,130 @@ export default function kashmir() {
                     aria-labelledby="pills-basic-tab"
                     tabIndex="0"
                   >
+
                     <div className="basic-hotel-features">
                       <div className="feature-media mobile-none">
                         <video
                           id="videoPlayer"
-                          src="./assets/images/kashmir/video.mp4"
+                          src="/assets/images/kashmir/video.mp4"
                           muted
+                          autoPlay
                           loop
                           playsInline
                         ></video>
                         <button id="playButton" className="play-btn"></button>
                       </div>
                       <div className="feature-list">
-                        <ul>
+
+                        
+                    <ul className="location-list">
+                      {/* <li className="list-item-none">(4 Night 5 Days )</li> */}
+                      <li className="locaton-items">
+                        <img
+                          src="/assets/images/kashmir/icons/pin.png"
+                          alt="Location Icon"
+                        />{" "}
+                          Null • Null
+                      </li>
+                    </ul>
+                        <ul className="features-lists">
                           <li>
-                            <span>Hotel</span> : 3 Star
+                            <img src="/assets/images/icons/hotel.png" alt="Hotel Icon"/>
+                            <span>Hotel</span> : 3* Deluxe
                           </li>
                           <li>
-                            <span>Activities</span> : 3 Activities
+                             <img src="/assets/images/icons/transferes.png" alt="transfer Icon"/>
+                             <span>Airport Transfers</span> : Included (Sedan)
                           </li>
                           <li>
-                            <span>Meals</span> : Breakfast, Lunch, Dinner
+                             <img src="/assets/images/icons/pax.png" alt="pax Icon"/>
+                            <span>No of Pax</span> : 2 adults & 1 child (Below 5 yrs)
                           </li>
                           <li>
-                            <span>Transfers</span> : not included
+                           <img src="/assets/images/icons/meal.png" alt="meals Icon"/>
+                            <span>Meals</span> : Daily Breakfast  Only
                           </li>
                           <li>
-                            <span>Management</span> : whole event{" "}
+                           <img src="/assets/images/icons/duration.png" alt="duration Icon"/>
+                            <span>Duration</span> : 3N 4D
                           </li>
-                          <li>
-                            <span>Photos & Videos</span> : not Included
+                          {/* <li>
+                            <span>Photos & Videos</span> : Included
                           </li>
                           <li>
                             <span>DJ Nights </span> : Included{" "}
-                          </li>
+                          </li> */}
                         </ul>
                         <button className="btn btn-primary1" data-bs-toggle="modal"
-                    data-bs-target="#exampleModalCenter"
-                    fdprocessedid="s6df8j">
+                        data-bs-target="#exampleModalCenter"
+                         fdprocessedid="s6df8j">
                           Request A Callback
                         </button>
                       </div>
                     </div>
+
+
+                    {/* ------=--------------------- time in tabs ===================== */}
+
+                    <section className="time-schedule-section ">
+                      <div className="container">
+                      <div class="schedule-list">
+                        <div class="schedule-items">
+                            <p class="schedule-timing">Day 1</p>
+                            <div>
+                                <h3>Pickup from Delhi OR Chandigarh and Transfer to Manali By Volvo in Night</h3>
+                                <p class="sche-details">Your journey will start from Delhi. Overnight Volvo journey towards Manali.</p>
+                            </div>
+                        </div>
+
+                        <div class="schedule-items">
+                            <p class="schedule-timing">Day 2</p>
+                            <div>
+                                <h3>Arrival and Manali Local Sightseeing</h3>
+                                <p class="sche-details">Morning arrival in Manali, smooth check-in. Visit Hadimba Devi Temple, Manu Temple, Tibetan Monasteries, and Vashisht Village. Shopping at Mall Road. Dinner & overnight stay at the hotel.</p>
+                            </div>
+                        </div>
+
+                        <div class="schedule-items">
+                            <p class="schedule-timing">Day 3</p>
+                            <div>
+                                <h3>Manali-Solang Valley & Atal Tunnel</h3>
+                                <p class="sche-details">Breakfast and full-day excursion to Solang Valley, Atal Tunnel, and snow viewpoint. Return in the evening for an overnight stay.</p>
+                            </div>
+                        </div>
+
+                        <div class="schedule-items">
+                            <p class="schedule-timing">Day 4</p>
+                            <div>
+                                <h3>Manali - Manikaran via Kullu</h3>
+                                <p class="sche-details">Breakfast, then a drive to Manikaran. Half-day sightseeing tour of Kullu. Return to the hotel for dinner & overnight stay.</p>
+                            </div>
+                        </div>
+
+                        <div class="schedule-items">
+                            <p class="schedule-timing">Day 5</p>
+                            <div>
+                                <h3>Overnight Volvo to Delhi or Chandigarh</h3>
+                                <p class="sche-details">Breakfast, explore the local market, and in the evening, drop at the Volvo bus stand for Delhi.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                        <div className="cancellation-policy-bx">
+                          <Link href="#">*Cancellation Policy</Link>
+                          <button className="btn btn-primary1" data-bs-toggle="modal"
+                                  data-bs-target="#exampleModalCenter"
+                                  fdprocessedid="s6df8j">Request A Callback</button>
+                        </div>
+                      </div>
+                    </section>
+
+                    {/* ------=--------------------- time in tabs ===================== */}
+
                   </div>
+                  {/* ------------------ Basic ------------------- */}
+
+                  {/* ------------------ Standard ------------------- */}
                   <div
                     className="tab-pane fade"
                     id="pills-standard"
@@ -174,40 +257,54 @@ export default function kashmir() {
                     aria-labelledby="pills-standard-tab"
                     tabIndex="0"
                   >
+
                     <div className="basic-hotel-features">
                       <div className="feature-media mobile-none">
-                        <video
+                      <video
                           id="videoPlayer"
-                          src="./assets/images/kashmir/video.mp4"
+                          src="/assets/images/kashmir/video.mp4"
                           muted
+                          autoPlay
                           loop
                           playsInline
-                        ></video>
+                        ></video> 
                         <button id="playButton" className="play-btn"></button>
                       </div>
                       <div className="feature-list">
-                        <ul>
+
+                      <ul className="location-list">
+                      <li className="locaton-items">
+                        <img
+                          src="/assets/images/kashmir/icons/pin.png"
+                          alt="Location Icon"
+                        />{" "}
+                         Null • Null  • Null  • Null  • Null
+                      </li>
+                    </ul>
+                        <ul className="features-lists">
                           <li>
-                            <span>Hotel</span> : 4 Star
+                            <img src="/assets/images/icons/hotel.png" alt="Hotel Icon"/>
+                            <span>Hotel</span> : 3* Premium
                           </li>
                           <li>
-                            <span>Activities</span> : 6 Activities
+                           <img src="/assets/images/icons/pax.png" alt="pax Icon"/>
+                            <span>No of Pax</span> :  3 adults & 1 childs (Below 5 yrs)
                           </li>
                           <li>
-                            <span>Meals</span> : Breakfast, Lunch, Dinner
+                           <img src="/assets/images/icons/transferes.png" alt="transfer Icon"/>
+                            <span>Airport Transfers</span> : Included (Sedan)
                           </li>
                           <li>
-                            <span>Transfers</span> : Included
+                          <img src="/assets/images/icons/meal.png" alt="meals Icon"/>
+
+                            <span>Meals</span> : Daily Breakfast and Dinner
                           </li>
                           <li>
-                            <span>Management</span> : not whole event{" "}
+                          <img src="/assets/images/icons/duration.png" alt="duration Icon"/>
+
+                            <span>Duration</span> : 3N 4D
                           </li>
-                          <li>
-                            <span>Photos & Videos</span> : Included
-                          </li>
-                          <li>
-                            <span>DJ Nights </span> : Included{" "}
-                          </li>
+                        
                         </ul>
                         <button className="btn btn-primary1" data-bs-toggle="modal"
                     data-bs-target="#exampleModalCenter"
@@ -216,7 +313,91 @@ export default function kashmir() {
                         </button>
                       </div>
                     </div>
+
+
+                     {/* ------=--------------------- time in tabs ===================== */}
+
+                     <section className="time-schedule-section ">
+                      <div className="container">
+                        <div className="schedule-list">
+                          <div className="schedule-items">
+                            <p className="schedule-timing">
+                              Day 1
+                            </p>
+                            <div>
+                              <h3>Pickup from Delhi OR Chandigarh and Transfer to Manali By Volvo in Night</h3>
+                              <p className="sche-details">
+                               Your journey will start from Delhi. Overnight volvo Journey towards Manali
+                              </p>
+                            </div>
+                          </div>
+                          <div className="schedule-items">
+                            <p className="schedule-timing">
+                              Day 2
+                            </p>
+
+                            <div>
+                              <h3>Arrival and Manali Local Sightseeing</h3>
+                              <p className="sche-details">
+                               Morning arrival in Manali, do smooth check-in. Later start for local sighteeing Hadimba Devi Temple, Manu Temple, Tibetan Monasteries and Vashisht Village. You may enjoy shopping at Mall Road. Dinner and overnight stay at Hotel  
+                             </p>
+                            </div>
+                          </div>
+                          <div className="schedule-items">
+                            <p className="schedule-timing">
+                              Day 3
+                            </p>
+
+                            <div>
+                              <h3>Manali-Solang Valley & Atal Tunnel (Sissu Lake Rohtang at additional cost & depend upon the climate conditions)</h3>
+                              <p className="sche-details">
+                                Breakfast and full day excursion by visiting the several prominent places such as the  Solang Valley and Atal Tunnel and snow view point. Evening return hotel and overnight stay. 
+                              </p>          
+                            </div>
+                          </div>
+                          <div className="schedule-items">
+                            <p className="schedule-timing">
+                              Day 4
+                            </p>
+
+                            <div>
+                              <h3>Manali - Manikaran via Kullu - Manali</h3>
+                              <p className="sche-details">
+                                Breakfast and drive to Manikaran. You may also cover Kullu for a half day sightseeing tour. Evening return to Hotel. Dinner and overnight stay.
+                              </p>
+                            </div>
+                          </div>
+
+
+                          <div className="schedule-items">
+                            <p className="schedule-timing">
+                               Day 5
+ 
+                            </p>
+                            <div>
+                            <h3>Overnight Volvo to Delhi or Chandigarh</h3>
+                            <p className="sche-details">
+                                Breakfast and you can explore the local market by yourself and in the evening drop at volvo bus stand for Delhi, your onward destination.S
+                             </p>
+                            </div>
+                          </div>
+                        
+                        </div>
+                        <div className="cancellation-policy-bx">
+                          <Link href="#">*Cancellation Policy</Link>
+                          <button className="btn btn-primary1" data-bs-toggle="modal"
+                                  data-bs-target="#exampleModalCenter"
+                                  fdprocessedid="s6df8j">Request A Callback</button>
+                        </div>
+                      </div>
+                    </section>
+
+                    {/* ------=--------------------- time in tabs ===================== */}
                   </div>
+                  {/* ------------------ Standard ------------------- */}
+
+                  {/* ------------------ Premium ------------------- */}
+
                   <div
                     className="tab-pane fade"
                     id="pills-premium"
@@ -224,11 +405,15 @@ export default function kashmir() {
                     aria-labelledby="pills-premium-tab"
                     tabIndex="0"
                   >
+
+
+                    
+                 
                     <div className="basic-hotel-features">
                       <div className="feature-media mobile-none">
                         <video
                           id="videoPlayer"
-                          src="./assets/images/kashmir/video.mp4"
+                          src="/assets/images/kashmir/video.mp4"
                           muted
                           loop
                           playsInline
@@ -236,37 +421,125 @@ export default function kashmir() {
                         <button id="playButton" className="play-btn"></button>
                       </div>
                       <div className="feature-list">
-                        <ul>
+
+                      <ul className="location-list">
+                      {/* <li className="list-item-none">(6 Night 7 Days )</li> */}
+                      <li className="locaton-items">
+                        <img
+                          src="/assets/images/kashmir/icons/pin.png"
+                          alt="Location Icon"
+                        />{" "}
+                        Null • Null • Null • Null • Null
+                      </li>
+                    </ul>
+                        <ul className="features-lists">
                           <li>
-                            <span>Hotel</span> : 5 Star
+                          <img src="/assets/images/icons/hotel.png" alt="Hotel Icon"/>
+
+                            <span>Hotel</span> : 3* Deluxe
                           </li>
                           <li>
-                            <span>Activities</span> : 9 Activities
+                          <img src="/assets/images/icons/pax.png" alt="pax Icon"/>
+
+                            <span>No of Pax</span> : 3 adults & 2 childs (Below 5 yrs)
                           </li>
                           <li>
-                            <span>Meals</span> : Breakfast, Lunch, Dinner
+                            <span>Airport Transfers</span> : Included (Sedan)
                           </li>
                           <li>
-                            <span>Transfers</span> : Included
+                          <img src="/assets/images/icons/meal.png" alt="meals Icon"/>
+
+                            <span>Meals</span> : Daily Breakfast  and Dinner 
                           </li>
                           <li>
-                            <span>Management</span> : Whole event{" "}
+                          <img src="/assets/images/icons/duration.png" alt="duration Icon"/>
+
+                            <span>Duration</span> : 3N 4D
                           </li>
-                          <li>
-                            <span>Photos & Videos</span> : Included
-                          </li>
-                          <li>
-                            <span>DJ Nights </span> : Included{" "}
-                          </li>
+                         
                         </ul>
                         <button className="btn btn-primary1" data-bs-toggle="modal"
-                    data-bs-target="#exampleModalCenter"
-                    fdprocessedid="s6df8j">
+                          data-bs-target="#exampleModalCenter"
+                           fdprocessedid="s6df8j">
                           Request A Callback
                         </button>
                       </div>
                     </div>
+
+                     {/* ------=--------------------- time in tabs ===================== */}
+
+                     <section className="time-schedule-section ">
+                      <div className="container">
+                        <div className="schedule-list">
+                          <div className="schedule-items">
+                            <p className="schedule-timing">
+                              Day 1
+                            </p>
+                            <div>
+                            <h3>Pickup from Delhi OR Chandigarh and Transfer to Manali By Volvo in Night</h3>
+                            <p className="sche-details">
+                               Your journey will start from Delhi. Overnight volvo Journey towards Manali
+                            </p>
+                            </div>
+                          </div>
+                          <div className="schedule-items">
+                            <p className="schedule-timing">
+                              Day 2
+                            </p>
+                           <div>
+                           <h3>Arrival and Manali Local Sightseeing</h3>
+                            <p className="sche-details">
+                               Morning arrival in Manali, do smooth check-in. Later start for local sighteeing Hadimba Devi Temple, Manu Temple, Tibetan Monasteries and Vashisht Village. You may enjoy shopping at Mall Road. Dinner and overnight stay at Hotel
+                            </p>
+                           </div>
+                          </div>
+                          <div className="schedule-items">
+                            <p className="schedule-timing">
+                              Day 3
+                            </p>
+                           <div>
+                           <h3>Manali-Solang Valley & Atal Tunnel (Sissu Lake Rohtang at additional cost & depend upon the climate conditions)</h3>
+                            <p className="sche-details">
+                               Breakfast and full day excursion by visiting the several prominent places such as the  Solang Valley and Atal Tunnel and snow view point. Evening return hotel and overnight stay. 
+                            </p>
+                           </div>
+                          </div>
+                          <div className="schedule-items">
+                            <p className="schedule-timing">
+                              Day 4
+                            </p>
+                            <div>
+                            <h3>Manali - Manikaran via Kullu - Manali</h3>
+                            <p className="sche-details">
+                              Breakfast and drive to Manikaran. You may also cover Kullu for a half day sightseeing tour. Evening return to Hotel. Dinner and overnight stay.
+                            </p>
+                            </div>
+                          </div>
+                          <div className="schedule-items">
+                            <p className="schedule-timing">
+                              Day 5
+                            </p>
+                            <div>
+                            <h3>Overnight Volvo to Delhi or Chandigarh</h3>
+                            <p className="sche-details">
+                               Breakfast and you can explore the local market by yourself and in the evening drop at volvo bus stand for Delhi, your onward destination.
+                            </p>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="cancellation-policy-bx">
+                          <Link href="#">*Cancellation Policy</Link>
+                          <button className="btn btn-primary1" data-bs-toggle="modal"
+                                  data-bs-target="#exampleModalCenter"
+                                  fdprocessedid="s6df8j">Request A Callback</button>
+                        </div>
+                      </div>
+                    </section>
+
+                    {/* ------=--------------------- time in tabs ===================== */}
                   </div>
+                  {/* ------------------ Premium ------------------- */}
+                  
                 </div>
               </div>
             </div>
@@ -277,15 +550,15 @@ export default function kashmir() {
                 of contents
               </h2>
               <div className="table-contents">
-                <Link href="#package">Kashmir Packages</Link>
+                <Link href="#package">Manali Packages</Link>
 
-                <Link href="#headingOne">About Kashmir</Link>
+                <Link href="#about-us">About Manali</Link>
 
-                <Link href="#headingTwo">Kashmir Bucket List</Link>
+                <Link href="#headingTwo">Manali Bucket List</Link>
 
-                <Link href="#headingThree">Kashmir FAQ’s </Link>
+                <Link href="#headingThree">Manali FAQ’s </Link>
 
-                <Link href="#location">Kashmir Location</Link>
+                <Link href="#location">Manali Location</Link>
 
                 <Link href="#traveler-reviews">Trip Reviews</Link>
               </div>
@@ -302,7 +575,7 @@ export default function kashmir() {
                  <div className="feature-media ">
                         <video
                           id="videoPlayer"
-                          src="./assets/images/kashmir/video.mp4"
+                          src="/assets/images/kashmir/video.mp4"
                           muted
                           loop
                           playsInline
@@ -317,15 +590,15 @@ export default function kashmir() {
                 of contents
               </h2>
               <div className="table-contents">
-                <Link href="#package">Kashmir Packages</Link>
+                <Link href="#package">Manali Packages</Link>
 
-                <Link href="#headingOne">About Kashmir</Link>
+                <Link href="#about-us">About Manali</Link>
 
-                <Link href="#headingTwo">Kashmir Bucket List</Link>
+                <Link href="#headingTwo">Manali Bucket List</Link>
 
-                <Link href="#headingThree">Kashmir FAQ’s </Link>
+                <Link href="#headingThree">Manali FAQ’s </Link>
 
-                <Link href="#location">Kashmir Location</Link>
+                <Link href="#location">Manali Location</Link>
 
                 <Link href="#traveler-reviews">Trip Reviews</Link>
               </div>
@@ -340,101 +613,105 @@ export default function kashmir() {
 
       {/* ---------------------------- Time Scheduled Start ----------------------------------- */}
 
-      <section className="time-schedule-section ">
-        <div className="container">
-          <div className="schedule-list">
-            <div className="schedule-items">
-              <p className="schedule-timing">
-                <img
-                  src="./assets/images/kashmir/icons/time.png"
-                  alt="watch icon"
-                />{" "}
-                Day 1
-              </p>
-              <h3>Arrival and welcome dinner.</h3>
-              <p className="sche-details">
-                Arrive at your lodge and settle in before enjoying a delicious
-                welcome dinner. Savor local and international dishes while
-                meeting our fellow travelers and preparing for the adventure
-                ahead.
-              </p>
-            </div>
-            <div className="schedule-items">
-              <p className="schedule-timing">
-                <img
-                  src="./assets/images/kashmir/icons/time.png"
-                  alt="watch icon"
-                />{" "}
-                Day 2-3
-              </p>
-              <h3>Game drives and wildlife exploration.</h3>
-              <p className="sche-details">
-                Embark on thrilling morning and afternoon game drives through
-                the stunning safari landscape. Spot the "Big Five" and other
-                incredible wildlife in their natural habitat, guided by
-                experienced rangers who provide fascinating insights into the
-                region’s flora and fauna.
-              </p>
-            </div>
-            <div className="schedule-items">
-              <p className="schedule-timing">
-                <img
-                  src="./assets/images/kashmir/icons/time.png"
-                  alt="watch icon"
-                />{" "}
-                Day 4
-              </p>
-              <h3>Cultural visit to a local village.</h3>
-              <p className="sche-details">
-                Immerse yourself in the rich traditions of the region with a
-                visit to a local village. Engage with the community, learn about
-                their customs, and experience authentic cultural practices,
-                offering a unique perspective on local life.
-              </p>
-            </div>
-            <div className="schedule-items">
-              <p className="schedule-timing">
-                <img
-                  src="./assets/images/kashmir/icons/time.png"
-                  alt="watch icon"
-                />{" "}
-                Day 5-6
-              </p>
-              <h3>Luxury camping under the stars.</h3>
-              <p className="sche-details">
-                Experience the ultimate in comfort with luxury camping,
-                combining the beauty of nature with premium amenities. Sleep
-                under the stars in a spacious tent, complete with plush bedding
-                and stunning views of the African night sky.
-              </p>
-            </div>
-            <div className="schedule-items">
-              <p className="schedule-timing">
-                <img
-                  src="./assets/images/kashmir/icons/time.png"
-                  alt="watch icon"
-                />{" "}
-                Day 7
-              </p>
-              <h3>Departure with memories to last a lifetime.</h3>
-              <p className="sche-details">
-                As your safari adventure comes to a close, reflect on the
-                unforgettable experiences and stunning wildlife encounters.
-                Depart with cherished memories, a camera full of pictures, and a
-                heart full of stories to share.
-              </p>
-            </div>
-          </div>
-          <div className="cancellation-policy-bx">
-            <Link href="#">*Cancellation Policy</Link>
-            <button className="btn btn-primary1" data-bs-toggle="modal"
-                    data-bs-target="#exampleModalCenter"
-                    fdprocessedid="s6df8j">Request A Callback</button>
-          </div>
-        </div>
-      </section>
 
+          {/* <section className="time-schedule-section ">
+            <div className="container">
+              <div className="schedule-list">
+                <div className="schedule-items">
+                  <p className="schedule-timing">
+                    <img
+                      src="/assets/images/kashmir/icons/time.png"
+                      alt="watch icon"
+                    />{" "}
+                    Day 1
+                  </p>
+                  <h3>Arrival and welcome dinner.</h3>
+                  <p className="sche-details">
+                    Arrive at your lodge and settle in before enjoying a delicious
+                    welcome dinner. Savor local and international dishes while
+                    meeting our fellow travelers and preparing for the adventure
+                    ahead.
+                  </p>
+                </div>
+                <div className="schedule-items">
+                  <p className="schedule-timing">
+                    <img
+                      src="/assets/images/kashmir/icons/time.png"
+                      alt="watch icon"
+                    />{" "}
+                    Day 2-3
+                  </p>
+                  <h3>Game drives and wildlife exploration.</h3>
+                  <p className="sche-details">
+                    Embark on thrilling morning and afternoon game drives through
+                    the stunning safari landscape. Spot the "Big Five" and other
+                    incredible wildlife in their natural habitat, guided by
+                    experienced rangers who provide fascinating insights into the
+                    region’s flora and fauna.
+                  </p>
+                </div>
+                <div className="schedule-items">
+                  <p className="schedule-timing">
+                    <img
+                      src="/assets/images/kashmir/icons/time.png"
+                      alt="watch icon"
+                    />{" "}
+                    Day 4
+                  </p>
+                  <h3>Cultural visit to a local village.</h3>
+                  <p className="sche-details">
+                    Immerse yourself in the rich traditions of the region with a
+                    visit to a local village. Engage with the community, learn about
+                    their customs, and experience authentic cultural practices,
+                    offering a unique perspective on local life.
+                  </p>
+                </div>
+                <div className="schedule-items">
+                  <p className="schedule-timing">
+                    <img
+                      src="/assets/images/kashmir/icons/time.png"
+                      alt="watch icon"
+                    />{" "}
+                    Day 5-6
+                  </p>
+                  <h3>Luxury camping under the stars.</h3>
+                  <p className="sche-details">
+                    Experience the ultimate in comfort with luxury camping,
+                    combining the beauty of nature with premium amenities. Sleep
+                    under the stars in a spacious tent, complete with plush bedding
+                    and stunning views of the African night sky.
+                  </p>
+                </div>
+                <div className="schedule-items">
+                  <p className="schedule-timing">
+                    <img
+                      src="/assets/images/kashmir/icons/time.png"
+                      alt="watch icon"
+                    />{" "}
+                    Day 7
+                  </p>
+                  <h3>Departure with memories to last a lifetime.</h3>
+                  <p className="sche-details">
+                    As your safari adventure comes to a close, reflect on the
+                    unforgettable experiences and stunning wildlife encounters.
+                    Depart with cherished memories, a camera full of pictures, and a
+                    heart full of stories to share.
+                  </p>
+                </div>
+              </div>
+              <div className="cancellation-policy-bx">
+                <Link href="#">*Cancellation Policy</Link>
+                <button className="btn btn-primary1" data-bs-toggle="modal"
+                        data-bs-target="#exampleModalCenter"
+                        fdprocessedid="s6df8j">Request A Callback</button>
+              </div>
+            </div>
+          </section> */}
+   
       {/* ---------------------------- Time Scheduled Start ----------------------------------- */}
+
+
+
 
       {/* ---------------------------------- CTa ----------------------- */}
 
@@ -465,7 +742,7 @@ export default function kashmir() {
         <div className="container">
           <div className="about-boxes pt-20">
             <div className="accordion " id="accordionExample">
-              <div className="accordion-item">
+              <div className="accordion-item" id="about-us">
                 <h2 className="accordion-header bg-prime" id="headingOne">
                   <button
                     className="accordion-button"
@@ -475,7 +752,7 @@ export default function kashmir() {
                     aria-expanded="true"
                     aria-controls="collapseOne"
                   >
-                    About Kashmir
+                    About Manali
                   </button>
                 </h2>
                 <div
@@ -597,7 +874,7 @@ export default function kashmir() {
                     aria-expanded="false"
                     aria-controls="collapseTwo"
                   >
-                    Kashmir Bucket List
+                    Manali Bucket List
                   </button>
                 </h2>
                 <div
@@ -719,7 +996,7 @@ export default function kashmir() {
                     aria-expanded="false"
                     aria-controls="collapseThree"
                   >
-                    Kashmir FAQ’s?
+                    Manali FAQ’s?
                   </button>
                 </h2>
                 <div

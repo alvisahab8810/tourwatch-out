@@ -8,7 +8,7 @@ export default function Footer() {
                  <div className="row">
                     <div className="col-md-4">
                         <div className="logo"> 
-                            <Link href="index.html" className="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none"> <img src="./assets/images/logo.png" alt="Logo Image" /> </Link> </div>
+                            <Link href="index.html" className="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none"> <img src="/assets/images/logo.png" alt="Logo Image" /> </Link> </div>
                         <p className="footer-para"> 
                             We always provide the best<br/> service for our customers </p>
                         <div className="social-icons">

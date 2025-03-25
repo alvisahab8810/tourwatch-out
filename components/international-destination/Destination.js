@@ -19,7 +19,7 @@ export default function Destination() {
                 <div className="desti-img">
                   {" "}
                   <img
-                    src="./assets/images/i-destination/dubai.webp"
+                    src="/assets/images/i-destination/dubai.webp"
                     alt="National Destination"
                   />{" "}
                 </div>
@@ -37,21 +37,21 @@ export default function Destination() {
                       <ul>
                         <li className="ml-0">
                           <img
-                            src="./assets/images/destination/icons/hotel.png"
+                            src="/assets/images/destination/icons/hotel.png"
                             alt="Hotel Icon"
                           />
                           <p> Upto 3 Stars</p>
                         </li>
                         <li>
                           <img
-                            src="./assets/images/destination/icons/meal.png"
+                            src="/assets/images/destination/icons/meal.png"
                             alt="Meal Icon"
                           />
                           <p> Meal</p>
                         </li>
                         <li>
                           <img
-                            src="./assets/images/destination/icons/sight.png"
+                            src="/assets/images/destination/icons/sight.png"
                             alt="sight Icon"
                           />
                           <p> Sightseeing</p>
@@ -61,7 +61,7 @@ export default function Destination() {
                     <div className="faci-ratings">
                       {" "}
                       <img
-                        src="./assets/images/destination/icons/heart.png"
+                        src="/assets/images/destination/icons/heart.png"
                         alt="Heart Icon"
                       />{" "}
                       <span>4.8</span>{" "}
@@ -75,7 +75,7 @@ export default function Destination() {
                 <div className="desti-img">
                   {" "}
                   <img
-                    src="./assets/images/i-destination/bali.webp"
+                    src="/assets/images/i-destination/bali.webp"
                     alt="National Destination"
                   ></img>{" "}
                 </div>
@@ -93,21 +93,21 @@ export default function Destination() {
                       <ul>
                         <li className="ml-0">
                           <img
-                            src="./assets/images/destination/icons/hotel.png"
+                            src="/assets/images/destination/icons/hotel.png"
                             alt="Hotel Icon"
                           ></img>
                           <p> Upto 3 Stars</p>
                         </li>
                         <li>
                           <img
-                            src="./assets/images/destination/icons/meal.png"
+                            src="/assets/images/destination/icons/meal.png"
                             alt="Meal Icon"
                           ></img>
                           <p> Meal</p>
                         </li>
                         <li>
                           <img
-                            src="./assets/images/destination/icons/sight.png"
+                            src="/assets/images/destination/icons/sight.png"
                             alt="sight Icon"
                           ></img>
                           <p> Sightseeing</p>
@@ -117,7 +117,7 @@ export default function Destination() {
                     <div className="faci-ratings">
                       {" "}
                       <img
-                        src="./assets/images/destination/icons/heart.png"
+                        src="/assets/images/destination/icons/heart.png"
                         alt="Heart Icon"
                       ></img>{" "}
                       <span>4.8</span>{" "}
@@ -154,7 +154,7 @@ export default function Destination() {
                 <div className="desti-img">
                   {" "}
                   <img
-                    src="./assets/images/i-destination/thailand.webp"
+                    src="/assets/images/i-destination/thailand.webp"
                     alt="National Destination"
                   ></img>{" "}
                 </div>
@@ -172,21 +172,21 @@ export default function Destination() {
                       <ul>
                         <li className="ml-0">
                           <img
-                            src="./assets/images/destination/icons/hotel.png"
+                            src="/assets/images/destination/icons/hotel.png"
                             alt="Hotel Icon"
                           ></img>
                           <p> Upto 3 Stars</p>
                         </li>
                         <li>
                           <img
-                            src="./assets/images/destination/icons/meal.png"
+                            src="/assets/images/destination/icons/meal.png"
                             alt="Meal Icon"
                           ></img>
                           <p> Meal</p>
                         </li>
                         <li>
                           <img
-                            src="./assets/images/destination/icons/sight.png"
+                            src="/assets/images/destination/icons/sight.png"
                             alt="sight Icon"
                           ></img>
                           <p> Sightseeing</p>
@@ -196,7 +196,7 @@ export default function Destination() {
                     <div className="faci-ratings">
                       {" "}
                       <img
-                        src="./assets/images/destination/icons/heart.png"
+                        src="/assets/images/destination/icons/heart.png"
                         alt="Heart Icon"
                       ></img>{" "}
                       <span>4.8</span>{" "}
@@ -210,7 +210,7 @@ export default function Destination() {
                 <div className="desti-img">
                   {" "}
                   <img
-                    src="./assets/images/i-destination/malaysia.webp"
+                    src="/assets/images/i-destination/malaysia.webp"
                     alt="National Destination"
                   />{" "}
                 </div>
@@ -228,21 +228,21 @@ export default function Destination() {
                       <ul>
                         <li className="ml-0">
                           <img
-                            src="./assets/images/destination/icons/hotel.png"
+                            src="/assets/images/destination/icons/hotel.png"
                             alt="Hotel Icon"
                           />
                           <p> Upto 3 Stars</p>
                         </li>
                         <li>
                           <img
-                            src="./assets/images/destination/icons/meal.png"
+                            src="/assets/images/destination/icons/meal.png"
                             alt="Meal Icon"
                           />
                           <p> Meal</p>
                         </li>
                         <li>
                           <img
-                            src="./assets/images/destination/icons/sight.png"
+                            src="/assets/images/destination/icons/sight.png"
                             alt="sight Icon"
                           />
                           <p> Sightseeing</p>
@@ -252,7 +252,7 @@ export default function Destination() {
                     <div className="faci-ratings">
                       {" "}
                       <img
-                        src="./assets/images/destination/icons/heart.png"
+                        src="/assets/images/destination/icons/heart.png"
                         alt="Heart Icon"
                       />{" "}
                       <span>4.8</span>{" "}
@@ -266,7 +266,7 @@ export default function Destination() {
                 <div className="desti-img">
                   {" "}
                   <img
-                    src="./assets/images/i-destination/singapore.webp"
+                    src="/assets/images/i-destination/singapore.webp"
                     alt="National Destination"
                   ></img>{" "}
                 </div>
@@ -284,21 +284,21 @@ export default function Destination() {
                       <ul>
                         <li className="ml-0">
                           <img
-                            src="./assets/images/destination/icons/hotel.png"
+                            src="/assets/images/destination/icons/hotel.png"
                             alt="Hotel Icon"
                           ></img>
                           <p> Upto 3 Stars</p>
                         </li>
                         <li>
                           <img
-                            src="./assets/images/destination/icons/meal.png"
+                            src="/assets/images/destination/icons/meal.png"
                             alt="Meal Icon"
                           ></img>
                           <p> Meal</p>
                         </li>
                         <li>
                           <img
-                            src="./assets/images/destination/icons/sight.png"
+                            src="/assets/images/destination/icons/sight.png"
                             alt="sight Icon"
                           ></img>
                           <p> Sightseeing</p>
@@ -308,7 +308,7 @@ export default function Destination() {
                     <div className="faci-ratings">
                       {" "}
                       <img
-                        src="./assets/images/destination/icons/heart.png"
+                        src="/assets/images/destination/icons/heart.png"
                         alt="Heart Icon"
                       ></img>{" "}
                       <span>4.8</span>{" "}
@@ -350,7 +350,7 @@ export default function Destination() {
                 <div className="desti-img">
                   {" "}
                   <img
-                    src="./assets/images/i-destination/img3.webp"
+                    src="/assets/images/i-destination/img3.webp"
                     alt="National Destination"
                   />{" "}
                 </div>
@@ -368,21 +368,21 @@ export default function Destination() {
                       <ul>
                         <li className="ml-0">
                           <img
-                            src="./assets/images/destination/icons/hotel.png"
+                            src="/assets/images/destination/icons/hotel.png"
                             alt="Hotel Icon"
                           />
                           <p> Upto 3 Stars</p>
                         </li>
                         <li>
                           <img
-                            src="./assets/images/destination/icons/meal.png"
+                            src="/assets/images/destination/icons/meal.png"
                             alt="Meal Icon"
                           />
                           <p> Meal</p>
                         </li>
                         <li>
                           <img
-                            src="./assets/images/destination/icons/sight.png"
+                            src="/assets/images/destination/icons/sight.png"
                             alt="sight Icon"
                           />
                           <p> Sightseeing</p>
@@ -392,7 +392,7 @@ export default function Destination() {
                     <div className="faci-ratings">
                       {" "}
                       <img
-                        src="./assets/images/destination/icons/heart.png"
+                        src="/assets/images/destination/icons/heart.png"
                         alt="Heart Icon"
                       />{" "}
                       <span>4.8</span>{" "}
@@ -406,7 +406,7 @@ export default function Destination() {
                 <div className="desti-img">
                   {" "}
                   <img
-                    src="./assets/images/i-destination/img4.webp"
+                    src="/assets/images/i-destination/img4.webp"
                     alt="National Destination"
                   ></img>{" "}
                 </div>
@@ -424,21 +424,21 @@ export default function Destination() {
                       <ul>
                         <li className="ml-0">
                           <img
-                            src="./assets/images/destination/icons/hotel.png"
+                            src="/assets/images/destination/icons/hotel.png"
                             alt="Hotel Icon"
                           ></img>
                           <p> Upto 3 Stars</p>
                         </li>
                         <li>
                           <img
-                            src="./assets/images/destination/icons/meal.png"
+                            src="/assets/images/destination/icons/meal.png"
                             alt="Meal Icon"
                           ></img>
                           <p> Meal</p>
                         </li>
                         <li>
                           <img
-                            src="./assets/images/destination/icons/sight.png"
+                            src="/assets/images/destination/icons/sight.png"
                             alt="sight Icon"
                           ></img>
                           <p> Sightseeing</p>
@@ -448,7 +448,7 @@ export default function Destination() {
                     <div className="faci-ratings">
                       {" "}
                       <img
-                        src="./assets/images/destination/icons/heart.png"
+                        src="/assets/images/destination/icons/heart.png"
                         alt="Heart Icon"
                       ></img>{" "}
                       <span>4.8</span>{" "}
@@ -462,7 +462,7 @@ export default function Destination() {
                 <div className="desti-img">
                   {" "}
                   <img
-                    src="./assets/images/i-destination/img1.webp"
+                    src="/assets/images/i-destination/img1.webp"
                     alt="National Destination"
                   ></img>{" "}
                 </div>
@@ -480,21 +480,21 @@ export default function Destination() {
                       <ul>
                         <li className="ml-0">
                           <img
-                            src="./assets/images/destination/icons/hotel.png"
+                            src="/assets/images/destination/icons/hotel.png"
                             alt="Hotel Icon"
                           ></img>
                           <p> Upto 3 Stars</p>
                         </li>
                         <li>
                           <img
-                            src="./assets/images/destination/icons/meal.png"
+                            src="/assets/images/destination/icons/meal.png"
                             alt="Meal Icon"
                           ></img>
                           <p> Meal</p>
                         </li>
                         <li>
                           <img
-                            src="./assets/images/destination/icons/sight.png"
+                            src="/assets/images/destination/icons/sight.png"
                             alt="sight Icon"
                           ></img>
                           <p> Sightseeing</p>
@@ -504,7 +504,7 @@ export default function Destination() {
                     <div className="faci-ratings">
                       {" "}
                       <img
-                        src="./assets/images/destination/icons/heart.png"
+                        src="/assets/images/destination/icons/heart.png"
                         alt="Heart Icon"
                       ></img>{" "}
                       <span>4.8</span>{" "}
@@ -518,7 +518,7 @@ export default function Destination() {
                 <div className="desti-img">
                   {" "}
                   <img
-                    src="./assets/images/i-destination/img2.webp"
+                    src="/assets/images/i-destination/img2.webp"
                     alt="National Destination"
                   />{" "}
                 </div>
@@ -536,21 +536,21 @@ export default function Destination() {
                       <ul>
                         <li className="ml-0">
                           <img
-                            src="./assets/images/destination/icons/hotel.png"
+                            src="/assets/images/destination/icons/hotel.png"
                             alt="Hotel Icon"
                           />
                           <p> Upto 3 Stars</p>
                         </li>
                         <li>
                           <img
-                            src="./assets/images/destination/icons/meal.png"
+                            src="/assets/images/destination/icons/meal.png"
                             alt="Meal Icon"
                           />
                           <p> Meal</p>
                         </li>
                         <li>
                           <img
-                            src="./assets/images/destination/icons/sight.png"
+                            src="/assets/images/destination/icons/sight.png"
                             alt="sight Icon"
                           />
                           <p> Sightseeing</p>
@@ -560,7 +560,7 @@ export default function Destination() {
                     <div className="faci-ratings">
                       {" "}
                       <img
-                        src="./assets/images/destination/icons/heart.png"
+                        src="/assets/images/destination/icons/heart.png"
                         alt="Heart Icon"
                       />{" "}
                       <span>4.8</span>{" "}
@@ -574,7 +574,7 @@ export default function Destination() {
                 <div className="desti-img">
                   {" "}
                   <img
-                    src="./assets/images/i-destination/img3.webp"
+                    src="/assets/images/i-destination/img3.webp"
                     alt="National Destination"
                   ></img>{" "}
                 </div>
@@ -592,21 +592,21 @@ export default function Destination() {
                       <ul>
                         <li className="ml-0">
                           <img
-                            src="./assets/images/destination/icons/hotel.png"
+                            src="/assets/images/destination/icons/hotel.png"
                             alt="Hotel Icon"
                           ></img>
                           <p> Upto 3 Stars</p>
                         </li>
                         <li>
                           <img
-                            src="./assets/images/destination/icons/meal.png"
+                            src="/assets/images/destination/icons/meal.png"
                             alt="Meal Icon"
                           ></img>
                           <p> Meal</p>
                         </li>
                         <li>
                           <img
-                            src="./assets/images/destination/icons/sight.png"
+                            src="/assets/images/destination/icons/sight.png"
                             alt="sight Icon"
                           ></img>
                           <p> Sightseeing</p>
@@ -616,7 +616,7 @@ export default function Destination() {
                     <div className="faci-ratings">
                       {" "}
                       <img
-                        src="./assets/images/destination/icons/heart.png"
+                        src="/assets/images/destination/icons/heart.png"
                         alt="Heart Icon"
                       ></img>{" "}
                       <span>4.8</span>{" "}
@@ -630,7 +630,7 @@ export default function Destination() {
                 <div className="desti-img">
                   {" "}
                   <img
-                    src="./assets/images/i-destination/img4.webp"
+                    src="/assets/images/i-destination/img4.webp"
                     alt="National Destination"
                   ></img>{" "}
                 </div>
@@ -648,21 +648,21 @@ export default function Destination() {
                       <ul>
                         <li className="ml-0">
                           <img
-                            src="./assets/images/destination/icons/hotel.png"
+                            src="/assets/images/destination/icons/hotel.png"
                             alt="Hotel Icon"
                           ></img>
                           <p> Upto 3 Stars</p>
                         </li>
                         <li>
                           <img
-                            src="./assets/images/destination/icons/meal.png"
+                            src="/assets/images/destination/icons/meal.png"
                             alt="Meal Icon"
                           ></img>
                           <p> Meal</p>
                         </li>
                         <li>
                           <img
-                            src="./assets/images/destination/icons/sight.png"
+                            src="/assets/images/destination/icons/sight.png"
                             alt="sight Icon"
                           ></img>
                           <p> Sightseeing</p>
@@ -672,7 +672,7 @@ export default function Destination() {
                     <div className="faci-ratings">
                       {" "}
                       <img
-                        src="./assets/images/destination/icons/heart.png"
+                        src="/assets/images/destination/icons/heart.png"
                         alt="Heart Icon"
                       ></img>{" "}
                       <span>4.8</span>{" "}

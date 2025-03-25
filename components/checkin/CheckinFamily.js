@@ -981,7 +981,7 @@ export default function CheckInFamily() {
                       required
                     />
                   </div>
-                  <div className="col p-relative">
+                  <div className="col p-relative pl-0">
                     <label htmlFor="person1-contact" className="form-label">
                       Contact
                     </label>

@@ -1,14 +1,14 @@
 import React from "react";
 
-import Topbar from "../components/header/Header";
-import Footer from "../components/footer/Footer";
-import TravelerReviews from "../components/kashmir/TravelerReviews";
-import Map from "../components/kashmir/Map";
+import Topbar from "../../../components/header/Header";
+import Footer from "../../../components/footer/Footer";
+import TravelerReviews from "../../../components/kashmir/TravelerReviews";
+import Map from "../../../components/kashmir/Map";
 import Link from "next/link";
-import Popup from "../components/corporate/Popup";
-import Offcanvas from "../components/header/Offcanvas";
+import Popup from "../../../components/corporate/Popup";
+import Offcanvas from "../../../components/header/Offcanvas";
 
-export default function Dehradun() {
+export default function Nanital() {
 
   
   return (
@@ -21,7 +21,7 @@ export default function Dehradun() {
           <div className="row align-items-center pt-200">
             <div className="col-md-12 about-contennt">
               <h2 className="fs-64 text-white fw-bold">
-                The heaven of earth, Dehradun & Mussoorie
+                The heaven of earth, Nanital
               </h2>
               <p>
                 Plan your trips, honeymoons, or family getaways with
@@ -46,12 +46,12 @@ export default function Dehradun() {
           <div className="parent-package w-100" id="package">
             <div className="max-800">
               <div className="content-section">
-                <h1>Dehradun & Mussoorie Family Package</h1>
+                <h1>Nanital Family Package</h1>
                 {/* <ul className="location-list">
                   <li className="list-item-none">(7 Days)</li>
                   <li className="locaton-items">
                     <img
-                      src="./assets/images/kashmir/icons/pin.png"
+                      src="/assets/images/kashmir/icons/pin.png"
                       alt="Location Icon"
                     />{" "}
                     Srinagar • Gulmarg • Pahalgam • Sonamarg
@@ -133,7 +133,7 @@ export default function Dehradun() {
                       <div className="feature-media mobile-none">
                         <video
                           id="videoPlayer"
-                          src="./assets/images/kashmir/video.mp4"
+                          src="/assets/images/kashmir/video.mp4"
                           muted
                           autoPlay
                           loop
@@ -148,43 +148,41 @@ export default function Dehradun() {
                       {/* <li className="list-item-none">(4 Night 5 Days )</li> */}
                       <li className="locaton-items">
                         <img
-                          src="./assets/images/kashmir/icons/pin.png"
+                          src="/assets/images/kashmir/icons/pin.png"
                           alt="Location Icon"
                         />{" "}
-                          Dehradun & Mussoorie 
+                          Nanital 
                       </li>
                     </ul>
-
                         <ul className="features-lists">
                           <li>
-                          <img src="./assets/images/icons/hotel.png" alt="Hotel Icon"/>  
-
+                           <img src="/assets/images/icons/hotel.png" alt="Hotel Icon"/>
                             <span>Hotel</span> : 3* Deluxe
                           </li>
-
                           <li>
-                          <img src="./assets/images/icons/pax.png" alt="pax Icon"/>
-
+                           <img src="/assets/images/icons/transferes.png" alt="transfer Icon"/>
+                            <span>Airport Transfers</span> : Sedan 
+                          </li>
+                          <li>
+                            <img src="/assets/images/icons/pax.png" alt="pax Icon"/>
                             <span>No of Pax</span> : 02 Adults & 01 Child (Below 5 yrs)
                           </li>
                           <li>
-
-                          <img src="./assets/images/icons/transferes.png" alt="transfer Icon"/>
-
-                            <span>Airport Transfers</span> : Sedan 
-                          </li>
-                         
-                          <li>
-                          <img src="./assets/images/icons/meal.png" alt="meals Icon"/>
+                          <img src="/assets/images/icons/meal.png" alt="meals Icon"/>
 
                             <span>Meals</span> : Breakfast  
                           </li>
                           <li>
-                          <img src="./assets/images/icons/duration.png" alt="duration Icon"/>
+                          <img src="/assets/images/icons/duration.png" alt="duration Icon"/>
 
-                            <span>Duration</span> : 4N 5D
+                            <span>Duration</span> : 3N 4D
                           </li>
-                         
+                          {/* <li>
+                            <span>Photos & Videos</span> : Included
+                          </li>
+                          <li>
+                            <span>DJ Nights </span> : Included{" "}
+                          </li> */}
                         </ul>
                         <button className="btn btn-primary1" data-bs-toggle="modal"
                         data-bs-target="#exampleModalCenter"
@@ -202,65 +200,52 @@ export default function Dehradun() {
                         <div className="schedule-list">
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                             
+                            
                               Day 1
                             </p>
-                           <div>
-                           <h3>Arrival st Dehradun + Few Sightseeing</h3>
-                            <p className="sche-details">
-                               Arrival and do check-in process. Rest and cover few local sightseeing like Forest research institute and many others. Return hotel dinner and overnbight stay. 
-                            </p>
-                           </div>
-                          </div>
-                          <div className="schedule-items">
-                            <p className="schedule-timing">
-                          
-                              Day 2
-                            </p>
                             <div>
-                            <h3>Head for Mussoorie</h3>
-                            <p className="sche-details">
-                               After breakfast checkout from hotel and head toward Mussoorie. On the way cover dehradun's Robber’s cave, Tapovan, Tapkeshwar shiv temple and later head Mussoorie. Check-in and Overnight stay at Mussoorie Hotel
-                            </p>
+                              <h3>Arrival Kathgodam / Pantnagar and Transfer to Pre Booked hotel in Nainital</h3>
+                              <p className="sche-details">
+                                As you arrive at Railway station our representative will picku you up and drop at prebooked hotel. Rest you may also do boating at Naini Lake (at extra Cost)
+                              </p>
                             </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
                              
+                              Day 2
+                            </p>
+                            <div>
+                            <h3>Breakfast and Neem karoli baba darshan</h3>
+                            <p className="sche-details">
+                               Breakfast and you cn spend your day at Holy place at Neemkarori baba Mandir. After that Nainital Locals like  Naina Devi Temple and Naini Lake situated nearby it.ave Garden, Himalaya Darshan, Lover’s Point and local Zoo.Return and you may do shopping at Mall road. Return Hotel, Dinner and Overnight stay.
+                            </p>
+                            </div>
+                          </div>
+                          <div className="schedule-items">
+                            <p className="schedule-timing">
+                         
                               Day 3
                             </p>
-                           <div>
-                           <h3>Mussoorie local tour</h3>
+                            <div>
+                            <h3>Breakfast and Nainital Local Sightseeing </h3>
                             <p className="sche-details">
-                              Breakfast and lets start with the local sightseeing of Mussoorie like Company Garden (amusement park with ample space and adventurous rides at own cost) Kampty fall, Gun Hill, Mall road for shopping. Return Hotel and overnight stay at hotel
+                               Begin your day with a healthy breakfast. Major lakes to cover Sattal Lake, Bhimtal Lake and Naukhichuya Lake. In the evening you will go back to the hotel. Dinner and Overnight stay at Hotel.
                             </p>
-                           </div>
+                            </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
                              
                               Day 4
                             </p>
-                            <div>
-                            <h3>Mussoorie Dhanaulti Mussoorie</h3>
-                            <p className="sche-details">
-                              Done your breakfast and drive twards Dhanaulti on Chamba Road. Dhanaulti is the launching point for numerous treks into the snow - capped Himalayas(Dhanaulti is situated at an altitude of 2286 mts above sea level). Return Hotel in evening. Dinner and Overnight stay at Hotel.
-                            </p>
-                            </div>
-                          </div>
-
-                          <div className="schedule-items">
-                            <p className="schedule-timing">
-                             
-                              Day 5
-                            </p>
-                           <div>
-                           <h3>Departure Dalhousie to Dharmshala towards Delhi</h3>
+                           <div> <h3>Check-out and drop at Kathgodam Railway station</h3>
                             <p className="sche-details">
                               Breakfast and do check-out. Later catch your train towards to your destination with Happy memories
-                            </p>
-                           </div>
+                            </p></div>
                           </div>
+
+                      
                           
                         </div>
                         <div className="cancellation-policy-bx">
@@ -290,7 +275,7 @@ export default function Dehradun() {
                       <div className="feature-media mobile-none">
                       <video
                           id="videoPlayer"
-                          src="./assets/images/kashmir/video.mp4"
+                          src="/assets/images/kashmir/video.mp4"
                           muted
                           autoPlay
                           loop
@@ -303,37 +288,37 @@ export default function Dehradun() {
                       <ul className="location-list">
                       <li className="locaton-items">
                         <img
-                          src="./assets/images/kashmir/icons/pin.png"
+                          src="/assets/images/kashmir/icons/pin.png"
                           alt="Location Icon"
                         />{" "}
-                         Dehradun & Mussoorie 
+                         Nanital 
                       </li>
-                    </ul> 
+                    </ul>
                         <ul className="features-lists">
                           <li>
-                          <img src="./assets/images/icons/hotel.png" alt="Hotel Icon"/>  
+                          <img src="/assets/images/icons/hotel.png" alt="Hotel Icon"/>
 
                             <span>Hotel</span> :3* Premium
                           </li>
                           <li>
-                          <img src="./assets/images/icons/pax.png" alt="pax Icon"/>
+                          <img src="/assets/images/icons/pax.png" alt="pax Icon"/>
 
-                            <span>No of Pax</span> : 02 adults & 01 child (Below 5 yrs)
+                            <span>No of Pax</span> : 02 Adults & 02 Childs 
                           </li>
                           <li>
-                          <img src="./assets/images/icons/transferes.png" alt="transfer Icon"/>
+                          <img src="/assets/images/icons/transferes.png" alt="transfer Icon"/>
 
                             <span>Airport Transfers</span> : Included (Sedan)
                           </li>
                           <li>
-                          <img src="./assets/images/icons/meal.png" alt="meals Icon"/>
+                          <img src="/assets/images/icons/meal.png" alt="meals Icon"/>
 
                             <span>Meals</span> : Breakfast and Dinner 
                           </li>
                           <li>
-                          <img src="./assets/images/icons/duration.png" alt="duration Icon"/>
+                          <img src="/assets/images/icons/duration.png" alt="duration Icon"/>
 
-                            <span>Duration</span> : 4N 5D
+                            <span>Duration</span> : 3N 4D
                           </li>
                         
                         </ul>
@@ -353,65 +338,54 @@ export default function Dehradun() {
                         <div className="schedule-list">
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                           
+                             
                               Day 1
                             </p>
-                          <div>
-                          <h3>Arrival st Dehradun + Few Sightseeing</h3>
-                            <p className="sche-details">
-                              Arrival and do check-in process. Rest and cover few local sightseeing like Forest research institute and many others. Return hotel dinner and overnbight stay.
-                            </p>
-                          </div>
-                          </div>
-                          <div className="schedule-items">
-                            <p className="schedule-timing">
-                              
-                              Day 2
-                            </p>
                             <div>
-                            <h3>Head for Mussoorie</h3>
+                            <h3>Arrival Kathgodam / Pantnagar and Transfer to Pre Booked hotel in Nainital</h3>
                             <p className="sche-details">
-                               After breakfast checkout from hotel and head toward Mussoorie. On the way cover dehradun's Robber’s cave, Tapovan, Tapkeshwar shiv temple and later head Mussoorie. Check-in and Overnight stay at Mussoorie Hotel
+                              As you arrive at Railway station our representative will picku you up and drop at prebooked hotel. Rest you may also do boating at Naini Lake (at extra Cost)
                             </p>
                             </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              
+                             
+                              Day 2
+                            </p>
+                           <div>
+                           <h3>Breakfast and Neem karoli baba darshan</h3>
+                            <p className="sche-details">
+                               Breakfast and you cn spend your day at Holy place at Neemkarori baba Mandir. After that Nainital Locals like  Naina Devi Temple and Naini Lake situated nearby it.ave Garden, Himalaya Darshan, Lover’s Point and local Zoo.Return and you may do shopping at Mall road. Return Hotel, Dinner and Overnight stay.
+                            </p>
+                           </div>
+                          </div>
+                          <div className="schedule-items">
+                            <p className="schedule-timing">
+                             
                               Day 3
                             </p>
-                           <div>
-                           <h3>Mussoorie local tour</h3>
+                            <div>
+                            <h3>Breakfast and Nainital Local Sightseeing </h3>
                             <p className="sche-details">
-                               Breakfast and lets start with the local sightseeing of Mussoorie like Company Garden (amusement park with ample space and adventurous rides at own cost) Kampty fall, Gun Hill, Mall road for shopping. Return Hotel and overnight stay at hotel
+                              Begin your day with a healthy breakfast. Major lakes to cover Sattal Lake, Bhimtal Lake and Naukhichuya Lake. In the evening you will go back to the hotel. Dinner and Overnight stay at Hotel.
                             </p>
-                           </div>
+                            </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                            
+                             
                               Day 4
                             </p>
-                          <div>
-                          <h3>Dalhousie city tour</h3>
-                            <p className="sche-details">
-                              Breakfast and lets start with the local sightseeing of Mussoorie like Company Garden (amusement park with ample space and adventurous rides at own cost) Kampty fall, Gun Hill, Mall road for shopping. Return Hotel and overnight stay at hotel
-                            </p>
-                          </div>
-                          </div>
-
-                          <div className="schedule-items">
-                            <p className="schedule-timing">
-                            
-                              Day 5
-                            </p>
                            <div>
-                           <h3>Departure Dalhousie to Dharmshala towards Delhi</h3>
+                           <h3>Check-out and drop at Kathgodam Railway station</h3>
                             <p className="sche-details">
-                              Breakfast and do check-out. Later catch your train towards to your destination with Happy memories
+                               Breakfast and do check-out. Later catch your train towards to your destination with Happy memories
                             </p>
                            </div>
                           </div>
+
+                      
                         
                         </div>
                         <div className="cancellation-policy-bx">
@@ -444,7 +418,7 @@ export default function Dehradun() {
                       <div className="feature-media mobile-none">
                         <video
                           id="videoPlayer"
-                          src="./assets/images/kashmir/video.mp4"
+                          src="/assets/images/kashmir/video.mp4"
                           muted
                           loop
                           playsInline
@@ -457,36 +431,34 @@ export default function Dehradun() {
                       {/* <li className="list-item-none">(6 Night 7 Days )</li> */}
                       <li className="locaton-items">
                         <img
-                          src="./assets/images/kashmir/icons/pin.png"
+                          src="/assets/images/kashmir/icons/pin.png"
                           alt="Location Icon"
                         />{" "}
-                         Dehradun & Mussoorie 
+                         Nanital 
                         
                       </li>
                     </ul>
                         <ul className="features-lists">
                           <li>
-                          <img src="./assets/images/icons/hotel.png" alt="Hotel Icon"/>  
-
+                            <img src="/assets/images/icons/hotel.png" alt="Hotel Icon"/>
                             <span>Hotel</span> : 4*
                           </li>
                           <li>
-                          <img src="./assets/images/icons/pax.png" alt="pax Icon"/>
+                          <img src="/assets/images/icons/pax.png" alt="pax Icon"/>
 
                             <span>No of Pax</span> : 02 Adults & 01 Child (Below 5 yrs)
                           </li>
                           <li>
-                          <img src="./assets/images/icons/transferes.png" alt="transfer Icon"/>
-
+                            <img src="/assets/images/icons/transferes.png" alt="transfer Icon"/>
                             <span>Airport Transfers</span> : Included (Sedan)
                           </li>
                           <li>
-                          <img src="./assets/images/icons/meal.png" alt="meals Icon"/>
+                          <img src="/assets/images/icons/meal.png" alt="meals Icon"/>
 
                             <span>Meals</span> : Breakfast and Dinner
                           </li>
                           <li>
-                          <img src="./assets/images/icons/duration.png" alt="duration Icon"/>
+                          <img src="/assets/images/icons/duration.png" alt="duration Icon"/>
 
                             <span>Duration</span> : 4N 5D
                           </li>
@@ -507,19 +479,19 @@ export default function Dehradun() {
                         <div className="schedule-list">
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                         
+                              
                               Day 1
                             </p>
-                           <div>
-                           <h3>Arrival st Dehradun + Few Sightseeing</h3>
+                            <div>
+                            <h3>Arrival st Dehradun + Few Sightseeing</h3>
                             <p className="sche-details">
                               Arrival and do check-in process. Rest and cover few local sightseeing like Forest research institute and many others. Return hotel dinner and overnbight stay.
                             </p>
-                           </div>
+                            </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                             
+                            
                               Day 2
                             </p>
                            <div>
@@ -531,33 +503,33 @@ export default function Dehradun() {
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                            
+                              
                               Day 3
                             </p>
-                            <div>
-                            <h3>Mussoorie local tour</h3>
+                           <div>
+                           <h3>Mussoorie local tour</h3>
                             <p className="sche-details">
                               Breakfast and lets start with the local sightseeing of Mussoorie like Company Garden (amusement park with ample space and adventurous rides at own cost) Kampty fall, Gun Hill, Mall road for shopping. Return Hotel and overnight stay at hotel
                             </p>
-                            </div>
+                           </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                             
+                          
                               Day 4
                             </p>
-                             <div>
-                             <h3>Mussoorie Dhanaulti Mussoorie</h3>
+                           <div>
+                           <h3>Mussoorie Dhanaulti Mussoorie</h3>
                             <p className="sche-details">
                               Done your breakfast and drive twards Dhanaulti on Chamba Road. Dhanaulti is the launching point for numerous treks into the snow - capped Himalayas(Dhanaulti is situated at an altitude of 2286 mts above sea level). Return Hotel in evening. Dinner and Overnight stay at Hotel.
                             </p>
-                             </div>
+                           </div>
                           </div>
 
 
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                             
+                           
                               Day 5
                             </p>
                             <div>
@@ -592,15 +564,15 @@ export default function Dehradun() {
                 of contents
               </h2>
               <div className="table-contents">
-                <Link href="#package">Dehradun Packages</Link>
+                <Link href="#package">Nanital Packages</Link>
 
-                <Link href="#about-us">About Dehradun</Link>
+                <Link href="#about-us">About Nanital</Link>
 
-                <Link href="#headingTwo">Dehradun Bucket List</Link>
+                <Link href="#headingTwo">Nanital Bucket List</Link>
 
-                <Link href="#headingThree">Dehradun FAQ’s </Link>
+                <Link href="#headingThree">Nanital FAQ’s </Link>
 
-                <Link href="#location">Dehradun Location</Link>
+                <Link href="#location">Nanital Location</Link>
 
                 <Link href="#traveler-reviews">Trip Reviews</Link>
               </div>
@@ -617,7 +589,7 @@ export default function Dehradun() {
                  <div className="feature-media ">
                         <video
                           id="videoPlayer"
-                          src="./assets/images/kashmir/video.mp4"
+                          src="/assets/images/kashmir/video.mp4"
                           muted
                           loop
                           playsInline
@@ -632,15 +604,15 @@ export default function Dehradun() {
                 of contents
               </h2>
               <div className="table-contents">
-                <Link href="#package">Dehradun Packages</Link>
+                <Link href="#package">Nanital Packages</Link>
 
-                <Link href="#about-us">About Dehradun</Link>
+                <Link href="#about-us">About Nanital</Link>
 
-                <Link href="#headingTwo">Dehradun Bucket List</Link>
+                <Link href="#headingTwo">Nanital Bucket List</Link>
 
-                <Link href="#headingThree">Dehradun FAQ’s </Link>
+                <Link href="#headingThree">Nanital FAQ’s </Link>
 
-                <Link href="#location">Dehradun Location</Link>
+                <Link href="#location">Nanital Location</Link>
 
                 <Link href="#traveler-reviews">Trip Reviews</Link>
               </div>
@@ -662,7 +634,7 @@ export default function Dehradun() {
                 <div className="schedule-items">
                   <p className="schedule-timing">
                     <img
-                      src="./assets/images/kashmir/icons/time.png"
+                      src="/assets/images/kashmir/icons/time.png"
                       alt="watch icon"
                     />{" "}
                     Day 1
@@ -678,7 +650,7 @@ export default function Dehradun() {
                 <div className="schedule-items">
                   <p className="schedule-timing">
                     <img
-                      src="./assets/images/kashmir/icons/time.png"
+                      src="/assets/images/kashmir/icons/time.png"
                       alt="watch icon"
                     />{" "}
                     Day 2-3
@@ -695,7 +667,7 @@ export default function Dehradun() {
                 <div className="schedule-items">
                   <p className="schedule-timing">
                     <img
-                      src="./assets/images/kashmir/icons/time.png"
+                      src="/assets/images/kashmir/icons/time.png"
                       alt="watch icon"
                     />{" "}
                     Day 4
@@ -711,7 +683,7 @@ export default function Dehradun() {
                 <div className="schedule-items">
                   <p className="schedule-timing">
                     <img
-                      src="./assets/images/kashmir/icons/time.png"
+                      src="/assets/images/kashmir/icons/time.png"
                       alt="watch icon"
                     />{" "}
                     Day 5-6
@@ -727,7 +699,7 @@ export default function Dehradun() {
                 <div className="schedule-items">
                   <p className="schedule-timing">
                     <img
-                      src="./assets/images/kashmir/icons/time.png"
+                      src="/assets/images/kashmir/icons/time.png"
                       alt="watch icon"
                     />{" "}
                     Day 7

@@ -1,14 +1,14 @@
 import React from "react";
 
-import Topbar from "../components/header/Header";
-import Footer from "../components/footer/Footer";
-import TravelerReviews from "../components/kashmir/TravelerReviews";
-import Map from "../components/kashmir/Map";
+import Topbar from "../../../components/header/Header";
+import Footer from "../../../components/footer/Footer";
+import TravelerReviews from "../../../components/kashmir/TravelerReviews";
+import Map from "../../../components/kashmir/Map";
 import Link from "next/link";
-import Popup from "../components/corporate/Popup";
-import Offcanvas from "../components/header/Offcanvas";
+import Popup from "../../../components/corporate/Popup";
+import Offcanvas from "../../../components/header/Offcanvas";
 
-export default function Nanital() {
+export default function LehLaddakh() {
 
   
   return (
@@ -21,7 +21,7 @@ export default function Nanital() {
           <div className="row align-items-center pt-200">
             <div className="col-md-12 about-contennt">
               <h2 className="fs-64 text-white fw-bold">
-                The heaven of earth, Nanital
+                The heaven of earth, Leh
               </h2>
               <p>
                 Plan your trips, honeymoons, or family getaways with
@@ -46,12 +46,12 @@ export default function Nanital() {
           <div className="parent-package w-100" id="package">
             <div className="max-800">
               <div className="content-section">
-                <h1>Nanital Family Package</h1>
+                <h1>Leh Ladakh Family Package</h1>
                 {/* <ul className="location-list">
                   <li className="list-item-none">(7 Days)</li>
                   <li className="locaton-items">
                     <img
-                      src="./assets/images/kashmir/icons/pin.png"
+                      src="/assets/images/kashmir/icons/pin.png"
                       alt="Location Icon"
                     />{" "}
                     Srinagar • Gulmarg • Pahalgam • Sonamarg
@@ -133,7 +133,7 @@ export default function Nanital() {
                       <div className="feature-media mobile-none">
                         <video
                           id="videoPlayer"
-                          src="./assets/images/kashmir/video.mp4"
+                          src="/assets/images/kashmir/video.mp4"
                           muted
                           autoPlay
                           loop
@@ -148,32 +148,35 @@ export default function Nanital() {
                       {/* <li className="list-item-none">(4 Night 5 Days )</li> */}
                       <li className="locaton-items">
                         <img
-                          src="./assets/images/kashmir/icons/pin.png"
+                          src="/assets/images/kashmir/icons/pin.png"
                           alt="Location Icon"
                         />{" "}
-                          Nanital 
+                          Leh • Pangong
                       </li>
                     </ul>
                         <ul className="features-lists">
                           <li>
-                           <img src="./assets/images/icons/hotel.png" alt="Hotel Icon"/>
+                           <img src="/assets/images/icons/hotel.png" alt="Hotel Icon"/>
                             <span>Hotel</span> : 3* Deluxe
                           </li>
-                          <li>
-                           <img src="./assets/images/icons/transferes.png" alt="transfer Icon"/>
-                            <span>Airport Transfers</span> : Sedan 
-                          </li>
-                          <li>
-                            <img src="./assets/images/icons/pax.png" alt="pax Icon"/>
-                            <span>No of Pax</span> : 02 Adults & 01 Child (Below 5 yrs)
-                          </li>
-                          <li>
-                          <img src="./assets/images/icons/meal.png" alt="meals Icon"/>
 
-                            <span>Meals</span> : Breakfast  
+                          <li>
+                            <img src="/assets/images/icons/pax.png" alt="pax Icon"/>
+                            <span>No of Pax</span> : 2 adults & 1 child (Below 5 yrs)
                           </li>
                           <li>
-                          <img src="./assets/images/icons/duration.png" alt="duration Icon"/>
+                           <img src="/assets/images/icons/transferes.png" alt="transfer Icon"/>
+
+                            <span>Airport Transfers</span> : Included (Scorpio/Xylo/Innova)
+                          </li>
+                        
+                          <li>
+                          <img src="/assets/images/icons/meal.png" alt="meals Icon"/>
+
+                            <span>Meals</span> : Daily Breakfast  Only
+                          </li>
+                          <li>
+                          <img src="/assets/images/icons/duration.png" alt="duration Icon"/>
 
                             <span>Duration</span> : 3N 4D
                           </li>
@@ -200,52 +203,52 @@ export default function Nanital() {
                         <div className="schedule-list">
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                            
+                             
                               Day 1
                             </p>
-                            <div>
-                              <h3>Arrival Kathgodam / Pantnagar and Transfer to Pre Booked hotel in Nainital</h3>
-                              <p className="sche-details">
-                                As you arrive at Railway station our representative will picku you up and drop at prebooked hotel. Rest you may also do boating at Naini Lake (at extra Cost)
-                              </p>
-                            </div>
+                           <div>
+                           <h3>Leh Airport Pickup and Acclimate</h3>
+                            <p className="sche-details">
+                               Arrival at Leh airport and transfer to your pre-booked Hotel. Complete day rest for acclimatize
+                            </p>
+                           </div>
+                          </div>
+                          <div className="schedule-items">
+                            <p className="schedule-timing">
+                           
+                              Day 2
+                            </p>
+                           <div>
+                           <h3>Sham Valley Excursion Upto Sangam</h3>
+                            <p className="sche-details">
+                              Breakfast and head out for Hall of Fame, Gurudwara Pather Sahib, Magnetic Hill, Sangam Point. Visit Shanti Stupa & Leh Market Place
+                            </p>
+                           </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
                              
-                              Day 2
+                              Day 3
                             </p>
-                            <div>
-                            <h3>Breakfast and Neem karoli baba darshan</h3>
+                           <div>
+                           <h3>Leh - Pangong Excursion Lake -Leh</h3>
                             <p className="sche-details">
-                               Breakfast and you cn spend your day at Holy place at Neemkarori baba Mandir. After that Nainital Locals like  Naina Devi Temple and Naini Lake situated nearby it.ave Garden, Himalaya Darshan, Lover’s Point and local Zoo.Return and you may do shopping at Mall road. Return Hotel, Dinner and Overnight stay.
+                               Breakfast and leave for Pangong lake through Changla Pass. Visit throughout few small villages for sudden view of the Pangong lake. Evenin return Leh.
                             </p>
-                            </div>
+                           </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
                          
-                              Day 3
-                            </p>
-                            <div>
-                            <h3>Breakfast and Nainital Local Sightseeing </h3>
-                            <p className="sche-details">
-                               Begin your day with a healthy breakfast. Major lakes to cover Sattal Lake, Bhimtal Lake and Naukhichuya Lake. In the evening you will go back to the hotel. Dinner and Overnight stay at Hotel.
-                            </p>
-                            </div>
-                          </div>
-                          <div className="schedule-items">
-                            <p className="schedule-timing">
-                             
                               Day 4
                             </p>
-                           <div> <h3>Check-out and drop at Kathgodam Railway station</h3>
+                           <div>
+                           <h3>Leh - Airport Drop</h3>
                             <p className="sche-details">
-                              Breakfast and do check-out. Later catch your train towards to your destination with Happy memories
-                            </p></div>
+                              Breakfast and transferred to leh Airport. Return Home with Everlasting memories 
+                            </p>
+                           </div>
                           </div>
-
-                      
                           
                         </div>
                         <div className="cancellation-policy-bx">
@@ -275,7 +278,7 @@ export default function Nanital() {
                       <div className="feature-media mobile-none">
                       <video
                           id="videoPlayer"
-                          src="./assets/images/kashmir/video.mp4"
+                          src="/assets/images/kashmir/video.mp4"
                           muted
                           autoPlay
                           loop
@@ -288,37 +291,32 @@ export default function Nanital() {
                       <ul className="location-list">
                       <li className="locaton-items">
                         <img
-                          src="./assets/images/kashmir/icons/pin.png"
+                          src="/assets/images/kashmir/icons/pin.png"
                           alt="Location Icon"
                         />{" "}
-                         Nanital 
+                         Leh • Nubra Valley  • Pangong  • Khardungla  • Turtuk
                       </li>
                     </ul>
                         <ul className="features-lists">
                           <li>
-                          <img src="./assets/images/icons/hotel.png" alt="Hotel Icon"/>
-
-                            <span>Hotel</span> :3* Premium
+                            <img src="/assets/images/icons/hotel.png" alt="Hotel Icon"/>
+                            <span>Hotel</span> : 3* Premium
                           </li>
                           <li>
-                          <img src="./assets/images/icons/pax.png" alt="pax Icon"/>
-
-                            <span>No of Pax</span> : 02 Adults & 02 Childs 
+                           <img src="/assets/images/icons/pax.png" alt="pax Icon"/>
+                            <span>No of Pax</span> : 2 adults & 1 child (Below 5 yrs)
                           </li>
                           <li>
-                          <img src="./assets/images/icons/transferes.png" alt="transfer Icon"/>
-
-                            <span>Airport Transfers</span> : Included (Sedan)
+                            <img src="/assets/images/icons/transferes.png" alt="transfer Icon"/>
+                            <span>Airport Transfers</span> : Included (Srinagar - Srinagar)
                           </li>
                           <li>
-                          <img src="./assets/images/icons/meal.png" alt="meals Icon"/>
-
-                            <span>Meals</span> : Breakfast and Dinner 
+                            <img src="/assets/images/icons/meal.png" alt="meals Icon"/>
+                            <span>Meals</span> : Daily Breakfast  Only
                           </li>
                           <li>
-                          <img src="./assets/images/icons/duration.png" alt="duration Icon"/>
-
-                            <span>Duration</span> : 3N 4D
+                            <img src="/assets/images/icons/duration.png" alt="duration Icon"/>
+                            <span>Duration</span> : 6N 7D
                           </li>
                         
                         </ul>
@@ -342,51 +340,86 @@ export default function Nanital() {
                               Day 1
                             </p>
                             <div>
-                            <h3>Arrival Kathgodam / Pantnagar and Transfer to Pre Booked hotel in Nainital</h3>
+                            <h3>Leh Airport Pickup and Acclimate</h3>
                             <p className="sche-details">
-                              As you arrive at Railway station our representative will picku you up and drop at prebooked hotel. Rest you may also do boating at Naini Lake (at extra Cost)
+                            Arrival at Leh airport and transfer to your pre-booked Hotel. Complete day rest for acclimatize
                             </p>
                             </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                             
+                            
                               Day 2
                             </p>
-                           <div>
-                           <h3>Breakfast and Neem karoli baba darshan</h3>
+                            <div>
+                            <h3>Sham Valley Excursion Upto Sangam</h3>
                             <p className="sche-details">
-                               Breakfast and you cn spend your day at Holy place at Neemkarori baba Mandir. After that Nainital Locals like  Naina Devi Temple and Naini Lake situated nearby it.ave Garden, Himalaya Darshan, Lover’s Point and local Zoo.Return and you may do shopping at Mall road. Return Hotel, Dinner and Overnight stay.
+                               Breakfast and head out for Hall of Fame, Gurudwara Pather Sahib, Magnetic Hill, Sangam Point. Visit Shanti Stupa & Leh Market Place
+                            </p>
+                            </div>
+                          </div>
+                          <div className="schedule-items">
+                            <p className="schedule-timing">
+                           
+                              Day 3
+                            </p>
+                            <div>
+                            <h3>Leh - Nubra via Khardung la -Nubra</h3>
+                            <p className="sche-details">
+                               Breakfast and drive to Nubra Valley via Khardungla Pass. On arrival do check-in in pre-booked hotel or camp. 
+                            </p>
+                            </div>
+                          </div>
+                          <div className="schedule-items">
+                            <p className="schedule-timing">
+                              
+                              Day 4
+                            </p>
+                           <div>
+                           <h3>Nubra - Turtuk -Nubra (Zero Point)</h3>
+                            <p className="sche-details">
+                            Breakfast and leave for Turtuk. You will cover Seightseeing like Shyok River Valley . In the evening return back to Nubra. 
                             </p>
                            </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
                              
-                              Day 3
+                              Day 5
                             </p>
                             <div>
-                            <h3>Breakfast and Nainital Local Sightseeing </h3>
+                            <h3>Nubra - Pangong</h3>
                             <p className="sche-details">
-                              Begin your day with a healthy breakfast. Major lakes to cover Sattal Lake, Bhimtal Lake and Naukhichuya Lake. In the evening you will go back to the hotel. Dinner and Overnight stay at Hotel.
+                                After an early breakfast do check-out and head towards Pabgong Tso via Shyok. On arrival at Pangong, Check-in in your pre-Booked Hotel or camp.
                             </p>
                             </div>
                           </div>
+
                           <div className="schedule-items">
                             <p className="schedule-timing">
                              
-                              Day 4
+                              Day 6
                             </p>
                            <div>
-                           <h3>Check-out and drop at Kathgodam Railway station</h3>
+                           <h3>Pangong Lake - Leh </h3>
                             <p className="sche-details">
-                               Breakfast and do check-out. Later catch your train towards to your destination with Happy memories
+                               In morning indulge yourself in the walk beside the lake and you can enjoy here photography. Later depart for Leh Ladak enroute Hemis Gompa. Upon arrival do check-in formailities.
                             </p>
                            </div>
                           </div>
 
-                      
-                        
+                          <div className="schedule-items">
+                            <p className="schedule-timing">
+                              
+                              Day 7
+                            </p>
+                           <div>
+                           <h3>Leh - Airport Drop</h3>
+                            <p className="sche-details">
+                               Breakfast and transferred to leh Airport. Return Home with Everlasting memories 
+                            </p>
+                           </div>
+                          </div>
                         </div>
                         <div className="cancellation-policy-bx">
                           <Link href="#">*Cancellation Policy</Link>
@@ -418,7 +451,7 @@ export default function Nanital() {
                       <div className="feature-media mobile-none">
                         <video
                           id="videoPlayer"
-                          src="./assets/images/kashmir/video.mp4"
+                          src="/assets/images/kashmir/video.mp4"
                           muted
                           loop
                           playsInline
@@ -431,36 +464,37 @@ export default function Nanital() {
                       {/* <li className="list-item-none">(6 Night 7 Days )</li> */}
                       <li className="locaton-items">
                         <img
-                          src="./assets/images/kashmir/icons/pin.png"
+                          src="/assets/images/kashmir/icons/pin.png"
                           alt="Location Icon"
                         />{" "}
-                         Nanital 
-                        
+                        Null • Null • Null • Null • Null
                       </li>
                     </ul>
                         <ul className="features-lists">
                           <li>
-                            <img src="./assets/images/icons/hotel.png" alt="Hotel Icon"/>
+                          <img src="/assets/images/icons/hotel.png" alt="Hotel Icon"/>
+
                             <span>Hotel</span> : 4*
                           </li>
                           <li>
-                          <img src="./assets/images/icons/pax.png" alt="pax Icon"/>
+                          <img src="/assets/images/icons/pax.png" alt="pax Icon"/>
 
-                            <span>No of Pax</span> : 02 Adults & 01 Child (Below 5 yrs)
+                            <span>No of Pax</span> : 03 Adults 01 Child (below 6 yrs)
                           </li>
                           <li>
-                            <img src="./assets/images/icons/transferes.png" alt="transfer Icon"/>
-                            <span>Airport Transfers</span> : Included (Sedan)
+                          <img src="/assets/images/icons/transferes.png" alt="transfer Icon"/>
+
+                            <span>Airport Transfers</span> : Included (Scorpio/Xylo/Innova)
                           </li>
                           <li>
-                          <img src="./assets/images/icons/meal.png" alt="meals Icon"/>
+                          <img src="/assets/images/icons/meal.png" alt="meals Icon"/>
 
-                            <span>Meals</span> : Breakfast and Dinner
+                            <span>Meals</span> : Breakfast and Dinner 
                           </li>
                           <li>
-                          <img src="./assets/images/icons/duration.png" alt="duration Icon"/>
+                          <img src="/assets/images/icons/duration.png" alt="duration Icon"/>
 
-                            <span>Duration</span> : 4N 5D
+                            <span>Duration</span> : 6N 7D
                           </li>
                          
                         </ul>
@@ -479,27 +513,27 @@ export default function Nanital() {
                         <div className="schedule-list">
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              
+                             
                               Day 1
                             </p>
-                            <div>
-                            <h3>Arrival st Dehradun + Few Sightseeing</h3>
+                           <div>
+                           <h3>Leh Airport Pickup and Acclimate</h3>
                             <p className="sche-details">
-                              Arrival and do check-in process. Rest and cover few local sightseeing like Forest research institute and many others. Return hotel dinner and overnbight stay.
+                              Arrival at Leh airport and transfer to your pre-booked Hotel. Complete day rest for acclimatize
                             </p>
-                            </div>
+                           </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                            
+                             
                               Day 2
                             </p>
-                           <div>
-                           <h3>Head for Mussoorie</h3>
+                            <div>
+                            <h3>Sham Valley Excursion Upto Sangam</h3>
                             <p className="sche-details">
-                               After breakfast checkout from hotel and head toward Mussoorie. On the way cover dehradun's Robber’s cave, Tapovan, Tapkeshwar shiv temple and later head Mussoorie. Check-in and Overnight stay at Mussoorie Hotel
+                              Breakfast and head out for Hall of Fame, Gurudwara Pather Sahib, Magnetic Hill, Sangam Point. Visit Shanti Stupa & Leh Market Place
                             </p>
-                           </div>
+                            </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
@@ -507,39 +541,64 @@ export default function Nanital() {
                               Day 3
                             </p>
                            <div>
-                           <h3>Mussoorie local tour</h3>
+                           <h3>Leh - Nubra via Khardung la -Nubra (18390 FT.)</h3>
                             <p className="sche-details">
-                              Breakfast and lets start with the local sightseeing of Mussoorie like Company Garden (amusement park with ample space and adventurous rides at own cost) Kampty fall, Gun Hill, Mall road for shopping. Return Hotel and overnight stay at hotel
+                               Breakfast and drive to Nubra Valley via Khardungla Pass. On arrival do check-in in pre-booked hotel or camp.
                             </p>
                            </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                          
+                            
                               Day 4
                             </p>
-                           <div>
-                           <h3>Mussoorie Dhanaulti Mussoorie</h3>
-                            <p className="sche-details">
-                              Done your breakfast and drive twards Dhanaulti on Chamba Road. Dhanaulti is the launching point for numerous treks into the snow - capped Himalayas(Dhanaulti is situated at an altitude of 2286 mts above sea level). Return Hotel in evening. Dinner and Overnight stay at Hotel.
-                            </p>
-                           </div>
-                          </div>
-
-
-                          <div className="schedule-items">
-                            <p className="schedule-timing">
-                           
-                              Day 5
-                            </p>
                             <div>
-                            <h3>Departure Dalhousie to Dharmshala towards Delhi</h3>
+                            <h3>Nubra - Pangong</h3>
                             <p className="sche-details">
-                              Breakfast and do check-out. Later catch your train towards to your destination with Happy memories
+                               After an early breakfast do check-out and head towards Pabgong Tso via Shyok. On arrival at Pangong, Check-in in your pre-Booked Hotel or camp.
                             </p>
                             </div>
                           </div>
+                          <div className="schedule-items">
+                            <p className="schedule-timing">
+                             
+                              Day 5
+                            </p>
+                            <div>
+                            <h3>Pangong lake - Tsomoriri</h3>
+                            <p className="sche-details">
+                               Wake up early and indulge yourself in the walk besides the lake. Later go for Tsomiriri Lake. On arrival do check-in Formailities.Over night stay.
+                            </p>
+                            </div>
+                          </div>
+
+                          <div className="schedule-items">
+                            <p className="schedule-timing">
+                            
+                              Day 6
+                            </p>
+                           <div>
+                           <h3>Tsomoriri - Tsokar - Tanglangla - Leh </h3>
+                            <p className="sche-details">
+                              After Breakfast do check-out and visit Korzok Village.  Later drive towards Tsokar and ejoy their local tribes and their way of living. Later transfer to leh for Overnight stay.
+                            </p>
+                           </div>
+                          </div>
+
+
                           
+                          <div className="schedule-items">
+                            <p className="schedule-timing">
+                            
+                              Day 7
+                            </p>
+                            <div>
+                            <h3>Leh - Airport Drop</h3>
+                            <p className="sche-details">
+                               Breakfast and transferred to leh Airport. Return Home with Everlasting memories 
+                            </p>
+                            </div>
+                          </div>
                         </div>
                         <div className="cancellation-policy-bx">
                           <Link href="#">*Cancellation Policy</Link>
@@ -564,15 +623,15 @@ export default function Nanital() {
                 of contents
               </h2>
               <div className="table-contents">
-                <Link href="#package">Nanital Packages</Link>
+                <Link href="#package">Leh Packages</Link>
 
-                <Link href="#about-us">About Nanital</Link>
+                <Link href="#about-us">About Leh</Link>
 
-                <Link href="#headingTwo">Nanital Bucket List</Link>
+                <Link href="#headingTwo">Leh Bucket List</Link>
 
-                <Link href="#headingThree">Nanital FAQ’s </Link>
+                <Link href="#headingThree">Leh FAQ’s </Link>
 
-                <Link href="#location">Nanital Location</Link>
+                <Link href="#location">Leh Location</Link>
 
                 <Link href="#traveler-reviews">Trip Reviews</Link>
               </div>
@@ -589,7 +648,7 @@ export default function Nanital() {
                  <div className="feature-media ">
                         <video
                           id="videoPlayer"
-                          src="./assets/images/kashmir/video.mp4"
+                          src="/assets/images/kashmir/video.mp4"
                           muted
                           loop
                           playsInline
@@ -604,15 +663,15 @@ export default function Nanital() {
                 of contents
               </h2>
               <div className="table-contents">
-                <Link href="#package">Nanital Packages</Link>
+                <Link href="#package">Leh Packages</Link>
 
-                <Link href="#about-us">About Nanital</Link>
+                <Link href="#about-us">About Leh</Link>
 
-                <Link href="#headingTwo">Nanital Bucket List</Link>
+                <Link href="#headingTwo">Leh Bucket List</Link>
 
-                <Link href="#headingThree">Nanital FAQ’s </Link>
+                <Link href="#headingThree">Leh FAQ’s </Link>
 
-                <Link href="#location">Nanital Location</Link>
+                <Link href="#location">Leh Location</Link>
 
                 <Link href="#traveler-reviews">Trip Reviews</Link>
               </div>
@@ -634,7 +693,7 @@ export default function Nanital() {
                 <div className="schedule-items">
                   <p className="schedule-timing">
                     <img
-                      src="./assets/images/kashmir/icons/time.png"
+                      src="/assets/images/kashmir/icons/time.png"
                       alt="watch icon"
                     />{" "}
                     Day 1
@@ -650,7 +709,7 @@ export default function Nanital() {
                 <div className="schedule-items">
                   <p className="schedule-timing">
                     <img
-                      src="./assets/images/kashmir/icons/time.png"
+                      src="/assets/images/kashmir/icons/time.png"
                       alt="watch icon"
                     />{" "}
                     Day 2-3
@@ -667,7 +726,7 @@ export default function Nanital() {
                 <div className="schedule-items">
                   <p className="schedule-timing">
                     <img
-                      src="./assets/images/kashmir/icons/time.png"
+                      src="/assets/images/kashmir/icons/time.png"
                       alt="watch icon"
                     />{" "}
                     Day 4
@@ -683,7 +742,7 @@ export default function Nanital() {
                 <div className="schedule-items">
                   <p className="schedule-timing">
                     <img
-                      src="./assets/images/kashmir/icons/time.png"
+                      src="/assets/images/kashmir/icons/time.png"
                       alt="watch icon"
                     />{" "}
                     Day 5-6
@@ -699,7 +758,7 @@ export default function Nanital() {
                 <div className="schedule-items">
                   <p className="schedule-timing">
                     <img
-                      src="./assets/images/kashmir/icons/time.png"
+                      src="/assets/images/kashmir/icons/time.png"
                       alt="watch icon"
                     />{" "}
                     Day 7

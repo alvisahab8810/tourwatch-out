@@ -56,7 +56,7 @@ export default function NationalDestination() {
             className="swiper mySwiper5 pt-80"
           >
             <SwiperSlide className="swiper-slide">
-              <Link href="/kashmir">
+              <Link href="/family/national-destination/kashmir">
               <div className="batch-info">
                 <p>Starting From*</p>
                 <h4>
@@ -66,7 +66,7 @@ export default function NationalDestination() {
               <div className="desti-img">
                 {" "}
                 <img
-                  src="./assets/images/n-destination/kashmir.webp"
+                  src="/assets/images/n-destination/kashmir.webp"
                   alt="National Destination"
                 ></img>{" "}
               </div>
@@ -84,21 +84,21 @@ export default function NationalDestination() {
                     <ul>
                       <li className="ml-0">
                         <img
-                          src="./assets/images/destination/icons/hotel.png"
+                          src="/assets/images/destination/icons/hotel.png"
                           alt="Hotel Icon"
                         ></img>
                         <p> Upto 3 Stars</p>
                       </li>
                       <li>
                         <img
-                          src="./assets/images/destination/icons/meal.png"
+                          src="/assets/images/destination/icons/meal.png"
                           alt="Meal Icon"
                         ></img>
                         <p> Meal</p>
                       </li>
                       <li>
                         <img
-                          src="./assets/images/destination/icons/sight.png"
+                          src="/assets/images/destination/icons/sight.png"
                           alt="sight Icon"
                         ></img>
                         <p> Sightseeing</p>
@@ -108,7 +108,7 @@ export default function NationalDestination() {
                   <div className="faci-ratings">
                     {" "}
                     <img
-                      src="./assets/images/destination/icons/heart.png"
+                      src="/assets/images/destination/icons/heart.png"
                       alt="Heart Icon"
                     ></img>{" "}
                     <span>4.8</span>{" "}
@@ -119,7 +119,7 @@ export default function NationalDestination() {
             </SwiperSlide>
 
             <SwiperSlide className="swiper-slide">
-               <Link href="/leh-laddakh">
+               <Link href="/family/national-destination/leh-laddakh">
                <div className="batch-info">
                 <p>Starting From*</p>
                 <h4>
@@ -129,7 +129,7 @@ export default function NationalDestination() {
               <div className="desti-img">
                 {" "}
                 <img
-                  src="./assets/images/n-destination/leh.webp"
+                  src="/assets/images/n-destination/leh.webp"
                   alt="National Destination"
                 ></img>{" "}
               </div>
@@ -147,21 +147,21 @@ export default function NationalDestination() {
                     <ul>
                       <li className="ml-0">
                         <img
-                          src="./assets/images/destination/icons/hotel.png"
+                          src="/assets/images/destination/icons/hotel.png"
                           alt="Hotel Icon"
                         ></img>
                         <p> Upto 3 Stars</p>
                       </li>
                       <li>
                         <img
-                          src="./assets/images/destination/icons/meal.png"
+                          src="/assets/images/destination/icons/meal.png"
                           alt="Meal Icon"
                         ></img>
                         <p> Meal</p>
                       </li>
                       <li>
                         <img
-                          src="./assets/images/destination/icons/sight.png"
+                          src="/assets/images/destination/icons/sight.png"
                           alt="sight Icon"
                         ></img>
                         <p> Sightseeing</p>
@@ -171,7 +171,7 @@ export default function NationalDestination() {
                   <div className="faci-ratings">
                     {" "}
                     <img
-                      src="./assets/images/destination/icons/heart.png"
+                      src="/assets/images/destination/icons/heart.png"
                       alt="Heart Icon"
                     ></img>{" "}
                     <span>4.8</span>{" "}
@@ -182,7 +182,7 @@ export default function NationalDestination() {
             </SwiperSlide>
 
             <SwiperSlide className="swiper-slide">
-              <Link href="/manali">
+              <Link href="/family/national-destination/manali">
                 <div className="batch-info">
                   <p>Starting From*</p>
                   <h4>
@@ -192,7 +192,7 @@ export default function NationalDestination() {
                 <div className="desti-img">
                   {" "}
                   <img
-                    src="./assets/images/n-destination/manali.webp"
+                    src="/assets/images/n-destination/manali.webp"
                     alt="National Destination"
                   ></img>{" "}
                 </div>
@@ -210,21 +210,21 @@ export default function NationalDestination() {
                       <ul>
                         <li className="ml-0">
                           <img
-                            src="./assets/images/destination/icons/hotel.png"
+                            src="/assets/images/destination/icons/hotel.png"
                             alt="Hotel Icon"
                           ></img>
                           <p> Upto 3 Stars</p>
                         </li>
                         <li>
                           <img
-                            src="./assets/images/destination/icons/meal.png"
+                            src="/assets/images/destination/icons/meal.png"
                             alt="Meal Icon"
                           ></img>
                           <p> Meal</p>
                         </li>
                         <li>
                           <img
-                            src="./assets/images/destination/icons/sight.png"
+                            src="/assets/images/destination/icons/sight.png"
                             alt="sight Icon"
                           ></img>
                           <p> Sightseeing</p>
@@ -234,7 +234,7 @@ export default function NationalDestination() {
                     <div className="faci-ratings">
                       {" "}
                       <img
-                        src="./assets/images/destination/icons/heart.png"
+                        src="/assets/images/destination/icons/heart.png"
                         alt="Heart Icon"
                       ></img>{" "}
                       <span>4.8</span>{" "}
@@ -246,7 +246,7 @@ export default function NationalDestination() {
 
 
             <SwiperSlide className="swiper-slide">
-              <Link href="/shimla">
+              <Link href="/family/national-destination/shimla">
                 <div className="batch-info">
                   <p>Starting From*</p>
                   <h4>
@@ -256,7 +256,7 @@ export default function NationalDestination() {
                 <div className="desti-img">
                   {" "}
                   <img
-                    src="./assets/images/n-destination/shimla.webp"
+                    src="/assets/images/n-destination/shimla.webp"
                     alt="National Destination"
                   ></img>{" "}
                 </div>
@@ -274,21 +274,21 @@ export default function NationalDestination() {
                       <ul>
                         <li className="ml-0">
                           <img
-                            src="./assets/images/destination/icons/hotel.png"
+                            src="/assets/images/destination/icons/hotel.png"
                             alt="Hotel Icon"
                           ></img>
                           <p> Upto 3 Stars</p>
                         </li>
                         <li>
                           <img
-                            src="./assets/images/destination/icons/meal.png"
+                            src="/assets/images/destination/icons/meal.png"
                             alt="Meal Icon"
                           ></img>
                           <p> Meal</p>
                         </li>
                         <li>
                           <img
-                            src="./assets/images/destination/icons/sight.png"
+                            src="/assets/images/destination/icons/sight.png"
                             alt="sight Icon"
                           ></img>
                           <p> Sightseeing</p>
@@ -298,7 +298,7 @@ export default function NationalDestination() {
                     <div className="faci-ratings">
                       {" "}
                       <img
-                        src="./assets/images/destination/icons/heart.png"
+                        src="/assets/images/destination/icons/heart.png"
                         alt="Heart Icon"
                       ></img>{" "}
                       <span>4.8</span>{" "}
@@ -309,7 +309,7 @@ export default function NationalDestination() {
             </SwiperSlide>
 
             <SwiperSlide className="swiper-slide">
-              <Link href="/shimla">
+              <Link href="/family/national-destination/shimla-manali">
                 <div className="batch-info">
                   <p>Starting From*</p>
                   <h4>
@@ -319,7 +319,7 @@ export default function NationalDestination() {
                 <div className="desti-img">
                   {" "}
                   <img
-                    src="./assets/images/n-destination/shimla&manali.webp"
+                    src="/assets/images/n-destination/shimla&manali.webp"
                     alt="National Destination"
                   ></img>{" "}
                 </div>
@@ -337,21 +337,21 @@ export default function NationalDestination() {
                       <ul>
                         <li className="ml-0">
                           <img
-                            src="./assets/images/destination/icons/hotel.png"
+                            src="/assets/images/destination/icons/hotel.png"
                             alt="Hotel Icon"
                           ></img>
                           <p> Upto 3 Stars</p>
                         </li>
                         <li>
                           <img
-                            src="./assets/images/destination/icons/meal.png"
+                            src="/assets/images/destination/icons/meal.png"
                             alt="Meal Icon"
                           ></img>
                           <p> Meal</p>
                         </li>
                         <li>
                           <img
-                            src="./assets/images/destination/icons/sight.png"
+                            src="/assets/images/destination/icons/sight.png"
                             alt="sight Icon"
                           ></img>
                           <p> Sightseeing</p>
@@ -361,7 +361,7 @@ export default function NationalDestination() {
                     <div className="faci-ratings">
                       {" "}
                       <img
-                        src="./assets/images/destination/icons/heart.png"
+                        src="/assets/images/destination/icons/heart.png"
                         alt="Heart Icon"
                       ></img>{" "}
                       <span>4.8</span>{" "}
@@ -373,7 +373,7 @@ export default function NationalDestination() {
 
 
             <SwiperSlide className="swiper-slide">
-              <Link href="/dharamshala">
+              <Link href="/family/national-destination/dharamshala">
                 <div className="batch-info">
                   <p>Starting From*</p>
                   <h4>
@@ -383,7 +383,7 @@ export default function NationalDestination() {
                 <div className="desti-img">
                   {" "}
                   <img
-                    src="./assets/images/n-destination/dharamshala.webp"
+                    src="/assets/images/n-destination/dharamshala.webp"
                     alt="National Destination"
                   ></img>{" "}
                 </div>
@@ -401,21 +401,21 @@ export default function NationalDestination() {
                       <ul>
                         <li className="ml-0">
                           <img
-                            src="./assets/images/destination/icons/hotel.png"
+                            src="/assets/images/destination/icons/hotel.png"
                             alt="Hotel Icon"
                           ></img>
                           <p> Upto 3 Stars</p>
                         </li>
                         <li>
                           <img
-                            src="./assets/images/destination/icons/meal.png"
+                            src="/assets/images/destination/icons/meal.png"
                             alt="Meal Icon"
                           ></img>
                           <p> Meal</p>
                         </li>
                         <li>
                           <img
-                            src="./assets/images/destination/icons/sight.png"
+                            src="/assets/images/destination/icons/sight.png"
                             alt="sight Icon"
                           ></img>
                           <p> Sightseeing</p>
@@ -425,7 +425,7 @@ export default function NationalDestination() {
                     <div className="faci-ratings">
                       {" "}
                       <img
-                        src="./assets/images/destination/icons/heart.png"
+                        src="/assets/images/destination/icons/heart.png"
                         alt="Heart Icon"
                       ></img>{" "}
                       <span>4.8</span>{" "}
@@ -436,7 +436,7 @@ export default function NationalDestination() {
             </SwiperSlide>
 
             <SwiperSlide className="swiper-slide">
-              <Link href="/dehradun">
+              <Link href="/family/national-destination/dehradun">
                 <div className="batch-info">
                   <p>Starting From*</p>
                   <h4>
@@ -446,7 +446,7 @@ export default function NationalDestination() {
                 <div className="desti-img">
                   {" "}
                   <img
-                    src="./assets/images/n-destination/dehradun.webp"
+                    src="/assets/images/n-destination/dehradun.webp"
                     alt="National Destination"
                   ></img>{" "}
                 </div>
@@ -464,21 +464,21 @@ export default function NationalDestination() {
                       <ul>
                         <li className="ml-0">
                           <img
-                            src="./assets/images/destination/icons/hotel.png"
+                            src="/assets/images/destination/icons/hotel.png"
                             alt="Hotel Icon"
                           ></img>
                           <p> Upto 3 Stars</p>
                         </li>
                         <li>
                           <img
-                            src="./assets/images/destination/icons/meal.png"
+                            src="/assets/images/destination/icons/meal.png"
                             alt="Meal Icon"
                           ></img>
                           <p> Meal</p>
                         </li>
                         <li>
                           <img
-                            src="./assets/images/destination/icons/sight.png"
+                            src="/assets/images/destination/icons/sight.png"
                             alt="sight Icon"
                           ></img>
                           <p> Sightseeing</p>
@@ -488,7 +488,7 @@ export default function NationalDestination() {
                     <div className="faci-ratings">
                       {" "}
                       <img
-                        src="./assets/images/destination/icons/heart.png"
+                        src="/assets/images/destination/icons/heart.png"
                         alt="Heart Icon"
                       ></img>{" "}
                       <span>4.8</span>{" "}
@@ -498,6 +498,8 @@ export default function NationalDestination() {
               </Link>
             </SwiperSlide>
 
+            
+
 
           <div className="swiper-pagination"></div>
            
@@ -506,7 +508,7 @@ export default function NationalDestination() {
           {/* <!-- <div className="swiper-button-prev"></div> -->
            <!-- <div className="swiper-button-next"></div> --> */}
           <div className="container">
-            <Link href="/national-destination" className="explore-more-btn">
+            <Link href="/family/national-destination" className="explore-more-btn">
               Explore More
             </Link>
           </div>

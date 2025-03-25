@@ -1127,7 +1127,7 @@ export default function CheckIn() {
                 )}
               </div>
 
-              <div className="col-md-6 form_imgs">
+              <div className="col-md-6 form_imgs mobile-none">
                 <div className="img__bx">
                   <img src="/assets/images/check.webp" alt="img"></img>
                 </div>

@@ -1,14 +1,14 @@
 import React from "react";
 
-import Topbar from "../components/header/Header";
-import Footer from "../components/footer/Footer";
-import TravelerReviews from "../components/kashmir/TravelerReviews";
-import Map from "../components/kashmir/Map";
+import Topbar from "../../../components/header/Header";
+import Footer from "../../../components/footer/Footer";
+import TravelerReviews from "../../../components/kashmir/TravelerReviews";
+import Map from "../../../components/kashmir/Map";
 import Link from "next/link";
-import Popup from "../components/corporate/Popup";
-import Offcanvas from "../components/header/Offcanvas";
+import Popup from "../../../components/corporate/Popup";
+import Offcanvas from "../../../components/header/Offcanvas";
 
-export default function Dharamshala() {
+export default function kashmir() {
 
   
   return (
@@ -21,7 +21,7 @@ export default function Dharamshala() {
           <div className="row align-items-center pt-200">
             <div className="col-md-12 about-contennt">
               <h2 className="fs-64 text-white fw-bold">
-                The heaven of earth, Dharamshala
+                The heaven of earth, Kashmir
               </h2>
               <p>
                 Plan your trips, honeymoons, or family getaways with
@@ -46,12 +46,12 @@ export default function Dharamshala() {
           <div className="parent-package w-100" id="package">
             <div className="max-800">
               <div className="content-section">
-                <h1>Dharamshala Family Package</h1>
+                <h1>Kashmir Family Tour Package</h1>
                 {/* <ul className="location-list">
                   <li className="list-item-none">(7 Days)</li>
                   <li className="locaton-items">
                     <img
-                      src="./assets/images/kashmir/icons/pin.png"
+                      src="/assets/images/kashmir/icons/pin.png"
                       alt="Location Icon"
                     />{" "}
                     Srinagar • Gulmarg • Pahalgam • Sonamarg
@@ -133,7 +133,7 @@ export default function Dharamshala() {
                       <div className="feature-media mobile-none">
                         <video
                           id="videoPlayer"
-                          src="./assets/images/kashmir/video.mp4"
+                          src="/assets/images/kashmir/video.mp4"
                           muted
                           autoPlay
                           loop
@@ -148,39 +148,37 @@ export default function Dharamshala() {
                       {/* <li className="list-item-none">(4 Night 5 Days )</li> */}
                       <li className="locaton-items">
                         <img
-                          src="./assets/images/kashmir/icons/pin.png"
+                          src="/assets/images/kashmir/icons/pin.png"
                           alt="Location Icon"
                         />{" "}
-                          Dharmshala  McLeod Ganj & Dalhousie
+                        Srinagar • Gulmarg • Pahalgam • Sonamarg
                       </li>
                     </ul>
                         <ul className="features-lists">
                           <li>
-                            <img src="./assets/images/icons/hotel.png" alt="Hotel Icon"/>
+                            <img src="/assets/images/icons/hotel.png" alt="Hotel Icon"/>
                             <span>Hotel</span> : 3* Deluxe
                           </li>
 
                           <li>
-
-                          <img src="./assets/images/icons/pax.png" alt="pax Icon"/>
-
-                            <span>No of Pax</span> : 02 Adults & 01 Child (Below 5 yrs)
+                           <img src="/assets/images/icons/pax.png" alt="pax Icon"/>
+                            <span>No of Pax</span> : 2 adults & 1 child (Below 5 yrs)
                           </li>
                           <li>
-                          <img src="./assets/images/icons/transferes.png" alt="transfer Icon"/>
+                          <img src="/assets/images/icons/transferes.png" alt="transfer Icon"/>
 
-                            <span>Airport Transfers</span> : Volvo Buses and (Sedan)
+                            <span>Airport Transfers</span> : Included (Sedan)
                           </li>
-                          
+                         
                           <li>
-                          <img src="./assets/images/icons/meal.png" alt="meals Icon"/>
+                          <img src="/assets/images/icons/meal.png" alt="meals Icon"/>
 
-                            <span>Meals</span> : Breakfast  
+                            <span>Meals</span> : Daily Breakfast  Only
                           </li>
                           <li>
-                          <img src="./assets/images/icons/duration.png" alt="duration Icon"/>
+                          <img src="/assets/images/icons/duration.png" alt="duration Icon"/>
 
-                            <span>Duration</span> : 3N 4D
+                            <span>Duration</span> : 4N 5D
                           </li>
                           {/* <li>
                             <span>Photos & Videos</span> : Included
@@ -208,36 +206,38 @@ export default function Dharamshala() {
                              
                               Day 1
                             </p>
-                          <div>
-                          <h3>Delhi - Dharmshala</h3>
+                            <div>
+
+                            <h3>Srinagar Arrival + Srinagar Local Sightseeing</h3>
                             <p className="sche-details">
-                              Your journey will start from Delhi.. Travel by overnight Volvo bus from Delhi to Dharmshala. 
+                              Arrival at Srinagar Airport. Pickup by our tour Representative and transfer to Hotel. Rest and proceed towards Srinagar Local Sightseeing 
                             </p>
-                          </div>
+
+                            </div>
+                            
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                           
+                              
                               Day 2
                             </p>
-                           <div>
-                           <h3>Dharamshala - Local Sightseeing - Mcleodganj</h3>
+                            
+                            <div>
+                            <h3>Srinagar - Gulmarg - Srinagar</h3>
                             <p className="sche-details">
-                               Arrival Dharmshala and get transferred to hotel by our representative.  Cover sightseeing like Dalai Lama, Mcleodganj, Bhagsunag Temple, Waterfall,
-                               Dharamshala international cricket stadium & local market. Dinner and overnight stay.  
+                                Breakfast and proceed towards Gulmarg to explore a ride on Gondola both Phases (Extra Cost). You may also  Cover Drung Water Fall 
                             </p>
-                           </div>
+                            </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                            
+                             
                               Day 3
                             </p>
                             <div>
-                            <h3>Dharamshala – Dalhousie (120 kms/ 4 hrs)</h3>
+                            <h3>Srinagar - Pahalgam - Srinagar</h3>
                             <p className="sche-details">
-                              After breakfast, depart for Dalhousie. Enroute visit Khajjiar- Mini Switzerland of India. On arrival check- in at the
-                               hotel. Rest of the day for leisure and shopping. Dinner and overnight stay.
+                               Breakfast and drive to Pahalgam. En-route saffron feilds, Awantipura ruins drive through pine forests, Lidder streams. ABC Valley (By Direct Basis)
                             </p>
                             </div>
                           </div>
@@ -247,26 +247,24 @@ export default function Dharamshala() {
                               Day 4
                             </p>
                            <div>
-                           <h3>Dalhousie city tour</h3>
+                           <h3>Srinagar - Sonmarg - Srinagar (Houseboat)</h3>
                             <p className="sche-details">
-                               After breakfast, full day at leisure. Visit Sat Dhara, Panji Pulla and Shubhash Baoli. Overnight stay at Hotel
+                               Breakfast and proceed towards sonmarg Famous for Thajiwas Glacier (By Ponies at Extra Cost)
                             </p>
                            </div>
                           </div>
-
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              
+                             
                               Day 5
                             </p>
-                            <div>
-                            <h3>Departure Dalhousie to Dharmshala towards Delhi</h3>
+                           <div>
+                           <h3>Srinagar - Airport Drop</h3>
                             <p className="sche-details">
-                              Breakfast and check-out drive towards Dharamshala. Drop Evening 4/5pm & Take Volvo Dharmshala to Delhi.
+                               Breakfast and transferred to Srinagar Airport. Return Home with Everlasting memories 
                             </p>
-                            </div>
+                           </div>
                           </div>
-                          
                         </div>
                         <div className="cancellation-policy-bx">
                           <Link href="#">*Cancellation Policy</Link>
@@ -295,7 +293,7 @@ export default function Dharamshala() {
                       <div className="feature-media mobile-none">
                       <video
                           id="videoPlayer"
-                          src="./assets/images/kashmir/video.mp4"
+                          src="/assets/images/kashmir/video.mp4"
                           muted
                           autoPlay
                           loop
@@ -308,37 +306,38 @@ export default function Dharamshala() {
                       <ul className="location-list">
                       <li className="locaton-items">
                         <img
-                          src="./assets/images/kashmir/icons/pin.png"
+                          src="/assets/images/kashmir/icons/pin.png"
                           alt="Location Icon"
                         />{" "}
-                        Dharmshala  McLeod Ganj & Dalhousie
+                        Srinagar • Gulmarg • Pahalgam • Sonamarg
                       </li>
                     </ul>
                         <ul className="features-lists">
                           <li>
-                          <img src="./assets/images/icons/hotel.png" alt="Hotel Icon"/>  
+                            
+                          <img src="/assets/images/icons/hotel.png" alt="Hotel Icon"/>
 
-                            <span>Hotel</span> :3* Deluxe
+                            <span>Hotel</span> : 3* Premium
                           </li>
                           <li>
-                          <img src="./assets/images/icons/pax.png" alt="pax Icon"/>
+                          <img src="/assets/images/icons/pax.png" alt="pax Icon"/>
 
-                            <span>No of Pax</span> : 02 adults & 01 child (Below 5 yrs)
+                            <span>No of Pax</span> : 02 Adults 02 Childs
                           </li>
                           <li>
-                          <img src="./assets/images/icons/transferes.png" alt="transfer Icon"/>
+                          <img src="/assets/images/icons/transferes.png" alt="transfer Icon"/>
 
-                            <span>Airport Transfers</span> : Volvo Buses and (Sedan)
+                            <span>Airport Transfers</span> : Included (Srinagar - Srinagar)
                           </li>
                           <li>
-                          <img src="./assets/images/icons/meal.png" alt="meals Icon"/>
+                          <img src="/assets/images/icons/meal.png" alt="meals Icon"/>
 
-                            <span>Meals</span> : Breakfast 
+                            <span>Meals</span> : Breakfast and Dinner 
                           </li>
                           <li>
-                          <img src="./assets/images/icons/duration.png" alt="duration Icon"/>
+                          <img src="/assets/images/icons/duration.png" alt="duration Icon"/>
 
-                            <span>Duration</span> : 3N 4D
+                            <span>Duration</span> : 5N 6D
                           </li>
                         
                         </ul>
@@ -358,40 +357,37 @@ export default function Dharamshala() {
                         <div className="schedule-list">
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                        
+                            
                               Day 1
                             </p>
                             <div>
-                            <h3>Delhi - Dharmshala</h3>
+                            <h3>Srinagar Arrival + Srinagar Local Sightseeing</h3>
                             <p className="sche-details">
-                              Your journey will start from Delhi.. Travel by overnight Volvo bus from Delhi to Dharmshala. 
+                               Arrival at Srinagar Airport. Pickup by our tour Representative and transfer to Hotel. Rest and proceed towards Srinagar Local Sightseeing 
                             </p>
                             </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              
+                             
                               Day 2
                             </p>
                             <div>
-                              
-                            <h3>Dharamshala - Local Sightseeing - Mcleodganj</h3>
+                            <h3>Srinagar - Sonmarg - Srinagar</h3>
                             <p className="sche-details">
-                              Arrival Dharmshala and get transferred to hotel by our representative.  Cover sightseeing like Dalai Lama, Mcleodganj, Bhagsunag Temple, Waterfall,
-                              Dharamshala international cricket stadium & local market. Dinner and overnight stay.
+                               Breakfast and proceed towards sonmarg Famous for Thajiwas Glacier (By Ponies at Extra Cost)
                             </p>
                             </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                              
+                          
                               Day 3
                             </p>
                            <div>
-                           <h3>Dharamshala – Dalhousie (120 kms/ 4 hrs)</h3>
+                           <h3>Srinagar - Gulmarg - Srinagar</h3>
                             <p className="sche-details">
-                               After breakfast, depart for Dalhousie. Enroute visit Khajjiar- Mini Switzerland of India. On arrival check- in at the
-                              hotel. Rest of the day for leisure and shopping. Dinner and overnight stay.
+                              Breakfast and proceed towards Gulmarg to explore a ride on Gondola both Phases (Extra Cost). You may also  Cover Drung Water Fall 
                             </p>
                            </div>
                           </div>
@@ -401,26 +397,37 @@ export default function Dharamshala() {
                               Day 4
                             </p>
                             <div>
-                            <h3>Dalhousie city tour</h3>
+                            <h3>Srinagar - Pahalgam</h3>
                             <p className="sche-details">
-                               After breakfast, full day at leisure. Visit Sat Dhara, Panji Pulla and Shubhash Baoli. Overnight stay at Hotel
+                               Breakfast and drive to Pahalgam. En-route saffron feilds, Awantipura ruins drive through pine forests, Lidder streams. ABC Valley (By Direct Basis)
                             </p>
                             </div>
                           </div>
-
                           <div className="schedule-items">
                             <p className="schedule-timing">
                              
                               Day 5
                             </p>
                             <div>
-                            <h3>Departure Dalhousie to Dharmshala towards Delhi</h3>
+                            <h3>Pahalgam - Srinagar (Houseboat)</h3>
                             <p className="sche-details">
-                              Breakfast and check-out drive towards Dharamshala. Drop Evening 4/5pm & Take Volvo Dharmshala to Delhi.
+                              Breakfast and proceed for Baisaran Valley (Mini -Switzerland) cause of its bueaty (By Direct). Pahalgam Local sightseeing. Evening Return Srinagar & Do check-in Houseboat at Dal Lake.
                             </p>
                             </div>
                           </div>
-                        
+
+                          <div className="schedule-items">
+                            <p className="schedule-timing">
+                            
+                              Day 6
+                            </p>
+                          <div>
+                          <h3>Srinagar - Airport Drop</h3>
+                            <p className="sche-details">
+                            Breakfast and transferred to Srinagar Airport. Return Home with Everlasting memories 
+                            </p>
+                          </div>
+                          </div>
                         </div>
                         <div className="cancellation-policy-bx">
                           <Link href="#">*Cancellation Policy</Link>
@@ -452,7 +459,7 @@ export default function Dharamshala() {
                       <div className="feature-media mobile-none">
                         <video
                           id="videoPlayer"
-                          src="./assets/images/kashmir/video.mp4"
+                          src="/assets/images/kashmir/video.mp4"
                           muted
                           loop
                           playsInline
@@ -465,37 +472,38 @@ export default function Dharamshala() {
                       {/* <li className="list-item-none">(6 Night 7 Days )</li> */}
                       <li className="locaton-items">
                         <img
-                          src="./assets/images/kashmir/icons/pin.png"
+                          src="/assets/images/kashmir/icons/pin.png"
                           alt="Location Icon"
                         />{" "}
-                        Dharmshala  McLeod Ganj & Dalhousie
+                        Srinagar • Gulmarg • Pahalgam • Sonamarg • Doodhpathri
                       </li>
                     </ul>
                         <ul className="features-lists">
                           <li>
-                          <img src="./assets/images/icons/hotel.png" alt="Hotel Icon"/>  
+                          <img src="/assets/images/icons/hotel.png" alt="Hotel Icon"/>
 
-                            <span>Hotel</span> : 3* Premium
+                            <span>Hotel</span> : 4*
                           </li>
                           <li>
-                          <img src="./assets/images/icons/pax.png" alt="pax Icon"/>
+                          <img src="/assets/images/icons/pax.png" alt="pax Icon"/>
 
-                            <span>No of Pax</span> : 02 Adults & 01 Child (Below 5 yrs)
+                            <span>No of Pax</span> : 02 Adults 01 Child (below 6 yrs)
                           </li>
                           <li>
-                          <img src="./assets/images/icons/transferes.png" alt="transfer Icon"/>
 
-                            <span>Airport Transfers</span> : Included (Sedan)
+                          <img src="/assets/images/icons/transferes.png" alt="transfer Icon"/>
+
+                            <span>Airport Transfers</span> : 2 adults & 1child (Below 5 yrs)
                           </li>
                           <li>
-                          <img src="./assets/images/icons/meal.png" alt="meals Icon"/>
+                          <img src="/assets/images/icons/meal.png" alt="meals Icon"/>
 
-                            <span>Meals</span> : Breakfast and Dinner
+                            <span>Meals</span> : Breakfast and Dinner 
                           </li>
                           <li>
-                          <img src="./assets/images/icons/duration.png" alt="duration Icon"/>
+                          <img src="/assets/images/icons/duration.png" alt="duration Icon"/>
 
-                            <span>Duration</span> : 3N 4D
+                            <span>Duration</span> : 6N 7D
                           </li>
                          
                         </ul>
@@ -514,70 +522,92 @@ export default function Dharamshala() {
                         <div className="schedule-list">
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                            
+                           
                               Day 1
                             </p>
                             <div>
-                            <h3>Delhi - Dharmshala</h3>
+                            <h3>Srinagar Arrival and Pick-up+ Srinagar Local Sightseeing</h3>
                             <p className="sche-details">
-                              Your journey will start from Delhi.. Travel by overnight Volvo bus from Delhi to Dharmshala. 
+                            Arrival at Srinagar Airport. Pickup by our tour Representative and transfer to Hotel. Rest and proceed towards Srinagar Local Sightseeing 
                             </p>
                             </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                           
+                             
                               Day 2
                             </p>
-                            <div>
-                            <h3>Dharamshala - Local Sightseeing - Mcleodganj</h3>
+                           <div>
+                           <h3>Srinagar - Doodhpathri - Srinagar</h3>
                             <p className="sche-details">
-                               Arrival Dharmshala and get transferred to hotel by our representative.  Cover sightseeing like Dalai Lama, Mcleodganj, Bhagsunag Temple, Waterfall,
-                                Dharamshala international cricket stadium & local market. Dinner and overnight stay.    
+                              Breakfast and you would be taken to Doodhpathri to witness sheep and strikingly beautiful cascading WATERFALL.
                             </p>
-                            </div>
-                           
+                           </div>
                           </div>
                           <div className="schedule-items">
                             <p className="schedule-timing">
-                           
+                         
                               Day 3
                             </p>
-                           <div>
-                           <h3>Dharamshala – Dalhousie (120 kms/ 4 hrs)</h3>
-                            <p className="sche-details">
-                              After breakfast, depart for Dalhousie. Enroute visit Khajjiar- Mini Switzerland of India. On arrival check- in at the
-                               hotel. Rest of the day for leisure and shopping. Dinner and overnight stay.
-                            </p>
-                           </div>
-                          </div>
-                          <div className="schedule-items">
-                            <p className="schedule-timing">
-                              
-                              Day 4
-                            </p>
-                           <div>
-                           <h3>Dalhousie city tour</h3>
-                            <p className="sche-details">
-                            After breakfast, full day at leisure. Visit Sat Dhara, Panji Pulla and Shubhash Baoli. Overnight stay at Hotel
-                            </p>
-                           </div>
-                          </div>
-
-
-                          <div className="schedule-items">
-                            <p className="schedule-timing">
-                           
-                              Day 5
-                            </p>
                             <div>
-                            <h3>Departure Dalhousie to Dharmshala towards Delhi</h3>
+                            <h3>Srinagar - Sonmarg - Srinagar</h3>
                             <p className="sche-details">
-                              Breakfast and check-out drive towards Dharamshala. Drop Evening 4/5pm & Take Volvo Dharmshala to Delhi.
+                               Breakfast and proceed towards sonmarg Famous for Thajiwas Glacier (By Ponies at Extra Cost)
                             </p>
                             </div>
                           </div>
+                          <div className="schedule-items">
+                            <p className="schedule-timing">
+                             
+                              Day 4
+                            </p>
+                            <div>
+                            <h3>Srinagar - Gulmarg - Srinagar</h3>
+                            <p className="sche-details">
+                            Breakfast and proceed towards Gulmarg to explore a ride on Gondola both Phases (Extra Cost). You may also  Cover Drung Water Fall 
+                            </p>
+                            </div>
+                          </div>
+                          <div className="schedule-items">
+                            <p className="schedule-timing">
+                            
+                              Day 5
+                            </p>
+                          <div>
+                          <h3>Srinagar - Pahalgam</h3>
+                            <p className="sche-details">
+                               Breakfast and drive to Pahalgam. En-route saffron feilds, Awantipura ruins drive through pine forests, Lidder streams. ABC Valley (By Direct Basis)
+                            </p>
+                          </div>
+                          </div>
+
+                          <div className="schedule-items">
+                            <p className="schedule-timing">
+                            
+                              Day 6
+                            </p>
+                           <div>
+                           <h3>Pahalgam - Srinagar (Houseboat)</h3>
+                            <p className="sche-details">
+                            Breakfast and proceed for Baisaran Valley (Mini -Switzerland) cause of its bueaty (By Direct). Pahalgam Local sightseeing. Evening Return Srinagar & Do check-in Houseboat at Dal Lake.
+                            </p>
+                           </div>
+                          </div>
+
+
                           
+                          <div className="schedule-items">
+                            <p className="schedule-timing">
+                             
+                              Day 7
+                            </p>
+                            <div>
+                            <h3>Srinagar - Airport Drop</h3>
+                            <p className="sche-details">
+                               Breakfast and transferred to Srinagar Airport. Return Home with Everlasting memories 
+                            </p>
+                            </div>
+                          </div>
                         </div>
                         <div className="cancellation-policy-bx">
                           <Link href="#">*Cancellation Policy</Link>
@@ -602,15 +632,15 @@ export default function Dharamshala() {
                 of contents
               </h2>
               <div className="table-contents">
-                <Link href="#package">Dharamshala Packages</Link>
+                <Link href="#package">Kashmir Packages</Link>
 
-                <Link href="#about-us">About Dharamshala</Link>
+                <Link href="#about-us">About Kashmir</Link>
 
-                <Link href="#headingTwo">Dharamshala Bucket List</Link>
+                <Link href="#headingTwo">Kashmir Bucket List</Link>
 
-                <Link href="#headingThree">Dharamshala FAQ’s </Link>
+                <Link href="#headingThree">Kashmir FAQ’s </Link>
 
-                <Link href="#location">Dharamshala Location</Link>
+                <Link href="#location">Kashmir Location</Link>
 
                 <Link href="#traveler-reviews">Trip Reviews</Link>
               </div>
@@ -627,7 +657,7 @@ export default function Dharamshala() {
                  <div className="feature-media ">
                         <video
                           id="videoPlayer"
-                          src="./assets/images/kashmir/video.mp4"
+                          src="/assets/images/kashmir/video.mp4"
                           muted
                           loop
                           playsInline
@@ -642,15 +672,15 @@ export default function Dharamshala() {
                 of contents
               </h2>
               <div className="table-contents">
-                <Link href="#package">Dharamshala Packages</Link>
+                <Link href="#package">Kashmir Packages</Link>
 
-                <Link href="#about-us">About Dharamshala</Link>
+                <Link href="#about-us">About Kashmir</Link>
 
-                <Link href="#headingTwo">Dharamshala Bucket List</Link>
+                <Link href="#headingTwo">Kashmir Bucket List</Link>
 
-                <Link href="#headingThree">Dharamshala FAQ’s </Link>
+                <Link href="#headingThree">Kashmir FAQ’s </Link>
 
-                <Link href="#location">Dharamshala Location</Link>
+                <Link href="#location">Kashmir Location</Link>
 
                 <Link href="#traveler-reviews">Trip Reviews</Link>
               </div>
@@ -672,7 +702,7 @@ export default function Dharamshala() {
                 <div className="schedule-items">
                   <p className="schedule-timing">
                     <img
-                      src="./assets/images/kashmir/icons/time.png"
+                      src="/assets/images/kashmir/icons/time.png"
                       alt="watch icon"
                     />{" "}
                     Day 1
@@ -688,7 +718,7 @@ export default function Dharamshala() {
                 <div className="schedule-items">
                   <p className="schedule-timing">
                     <img
-                      src="./assets/images/kashmir/icons/time.png"
+                      src="/assets/images/kashmir/icons/time.png"
                       alt="watch icon"
                     />{" "}
                     Day 2-3
@@ -705,7 +735,7 @@ export default function Dharamshala() {
                 <div className="schedule-items">
                   <p className="schedule-timing">
                     <img
-                      src="./assets/images/kashmir/icons/time.png"
+                      src="/assets/images/kashmir/icons/time.png"
                       alt="watch icon"
                     />{" "}
                     Day 4
@@ -721,7 +751,7 @@ export default function Dharamshala() {
                 <div className="schedule-items">
                   <p className="schedule-timing">
                     <img
-                      src="./assets/images/kashmir/icons/time.png"
+                      src="/assets/images/kashmir/icons/time.png"
                       alt="watch icon"
                     />{" "}
                     Day 5-6
@@ -737,7 +767,7 @@ export default function Dharamshala() {
                 <div className="schedule-items">
                   <p className="schedule-timing">
                     <img
-                      src="./assets/images/kashmir/icons/time.png"
+                      src="/assets/images/kashmir/icons/time.png"
                       alt="watch icon"
                     />{" "}
                     Day 7
@@ -804,7 +834,7 @@ export default function Dharamshala() {
                     aria-expanded="true"
                     aria-controls="collapseOne"
                   >
-                    About Leh
+                    About Kashmir
                   </button>
                 </h2>
                 <div
@@ -926,7 +956,7 @@ export default function Dharamshala() {
                     aria-expanded="false"
                     aria-controls="collapseTwo"
                   >
-                    Leh Bucket List
+                    Kashmir Bucket List
                   </button>
                 </h2>
                 <div
@@ -1048,7 +1078,7 @@ export default function Dharamshala() {
                     aria-expanded="false"
                     aria-controls="collapseThree"
                   >
-                    Leh FAQ’s?
+                    Kashmir FAQ’s?
                   </button>
                 </h2>
                 <div

@@ -58,9 +58,9 @@ export default function TravelerReviews() {
                 <p className="location-para">
                   Taveler Jim Corbett National Park{" "}
                 </p>
-                {/* <!-- <img src="./assets/images/icons/review.png" alt="Review Icon"> -->/ */}
+                {/* <!-- <img src="/assets/images/icons/review.png" alt="Review Icon"> -->/ */}
                 <img
-                  src="./assets/images/kashmir/icons/stars.png"
+                  src="/assets/images/kashmir/icons/stars.png"
                   alt="Review Star"
                 />
                 <p className="testi-description">
@@ -77,9 +77,9 @@ export default function TravelerReviews() {
                 <p className="location-para">
                   Taveler Jim Corbett National Park{" "}
                 </p>
-                {/* <!-- <img src="./assets/images/icons/review.png" alt="Review Icon"> --> */}
+                {/* <!-- <img src="/assets/images/icons/review.png" alt="Review Icon"> --> */}
                 <img
-                  src="./assets/images/kashmir/icons/stars.png"
+                  src="/assets/images/kashmir/icons/stars.png"
                   alt="Review Star"
                 />
                 <p className="testi-description">
@@ -96,9 +96,9 @@ export default function TravelerReviews() {
                 <p className="location-para">
                   Taveler Jim Corbett National Park{" "}
                 </p>
-                {/* <!-- <img src="./assets/images/icons/review.png" alt="Review Icon"> --> */}
+                {/* <!-- <img src="/assets/images/icons/review.png" alt="Review Icon"> --> */}
                 <img
-                  src="./assets/images/kashmir/icons/stars.png"
+                  src="/assets/images/kashmir/icons/stars.png"
                   alt="Review Star"
                 />
                 <p className="testi-description">
@@ -115,9 +115,9 @@ export default function TravelerReviews() {
                 <p className="location-para">
                   Taveler Jim Corbett National Park{" "}
                 </p>
-                {/* <!-- <img src="./assets/images/icons/review.png" alt="Review Icon"> --> */}
+                {/* <!-- <img src="/assets/images/icons/review.png" alt="Review Icon"> --> */}
                 <img
-                  src="./assets/images/kashmir/icons/stars.png"
+                  src="/assets/images/kashmir/icons/stars.png"
                   alt="Review Star"
                 />
                 <p className="testi-description">
@@ -134,9 +134,9 @@ export default function TravelerReviews() {
                 <p className="location-para">
                   Taveler Jim Corbett National Park{" "}
                 </p>
-                {/* <!-- <img src="./assets/images/icons/review.png" alt="Review Icon"> --> */}
+                {/* <!-- <img src="/assets/images/icons/review.png" alt="Review Icon"> --> */}
                 <img
-                  src="./assets/images/kashmir/icons/stars.png"
+                  src="/assets/images/kashmir/icons/stars.png"
                   alt="Review Star"
                 />
                 <p className="testi-description">
@@ -153,9 +153,9 @@ export default function TravelerReviews() {
                 <p className="location-para">
                   Taveler Jim Corbett National Park{" "}
                 </p>
-                {/* <!-- <img src="./assets/images/icons/review.png" alt="Review Icon"> --> */}
+                {/* <!-- <img src="/assets/images/icons/review.png" alt="Review Icon"> --> */}
                 <img
-                  src="./assets/images/kashmir/icons/stars.png"
+                  src="/assets/images/kashmir/icons/stars.png"
                   alt="Review Star"
                 />
                 <p className="testi-description">
@@ -171,13 +171,13 @@ export default function TravelerReviews() {
               <button className="btn-review">Write a Review</button>
               <div className="swiper-button-prev">
                 <img
-                  src="./assets/images/kashmir/icons/left.png"
+                  src="/assets/images/kashmir/icons/left.png"
                   alt="Right Arrow"
                 />
               </div>
               <div className="swiper-button-next">
                 <img
-                  src="./assets/images/kashmir/icons/right.png"
+                  src="/assets/images/kashmir/icons/right.png"
                   alt="Right Arrow"
                 />
               </div>

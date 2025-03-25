@@ -10,7 +10,7 @@ export default function Topbar() {
             href="/"
             className="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none desk-logo"
           >
-            <img src="./assets/images/logo.png" alt="Logo Image" />
+            <img src="/assets/images/logo.png" alt="Logo Image" />
           </Link>
 
           <ul className="menus nav nav-pills mobile-none">
@@ -21,12 +21,12 @@ export default function Topbar() {
             </li>
             <li className="nav-item dropdown-main">
               <Link href="#" className="nav-link">
-                Family <img src="./assets/images/drop.png" alt="Down Arrow"></img>
+                Family <img src="/assets/images/drop.png" alt="Down Arrow"></img>
               </Link>
 
               <ul className="dropdown-items">
-                  <li> <Link href="/national-destination">National</Link> </li>
-                  <li> <Link href="/international-destination">International</Link> </li>
+                  <li> <Link href="/family/national-destination">National</Link> </li>
+                  <li> <Link href="/family/international-destination">International</Link> </li>
                 </ul>
             </li>
             <li className="nav-item">
@@ -64,7 +64,7 @@ export default function Topbar() {
             role="button"
             aria-controls=" offcanvasExample"
           >
-            <img src="./assets/images/icons/menu.png" alt="Menu Png" />
+            <img src="/assets/images/icons/menu.png" alt="Menu Png" />
           </Link>
         </header>
 
