@@ -415,18 +415,29 @@ const Response = () => {
     setCurrentPage(selected);
   };
 
-  // Delete and Undo handlers using the row's _id field
-  const handleDelete = (id) => {
-    setDeletedRows((prev) => [...prev, id]);
-  };
 
+  const handleDelete = async (id) => {
+    try {
+      const response = await axios.delete(`/api/deleteCheckin?id=${id}`); // <-- FIXED URL FORMAT
+  
+      // If the request is successful, remove the item from the state
+      setFilteredData((prevData) => prevData.filter((entry) => entry._id !== id));
+  
+    } catch (error) {
+      console.error("Error deleting check-in:", error);
+      alert("Failed to delete check-in. Please try again.");
+    }
+  };
+  
+
+  
   const handleUndo = (id) => {
     setDeletedRows((prev) => prev.filter((rowId) => rowId !== id));
   };
 
   return (
     <>
-      <div className="container response-main ptb-80">
+      <div className="container-fluid response-main ptb-80">
         <h2 className="text-center mb-4">Corporate Check-In</h2>
 
         {/* Export & Download Buttons */}
@@ -501,7 +512,7 @@ const Response = () => {
                 <th>Occupancy</th>
                 <th>Room</th>
                 <th>Government ID</th>
-                <th>Timestamp</th>
+                <th>Entry Date</th>
                 <th>Actions</th>
               </tr>
             </thead>

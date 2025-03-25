@@ -3038,14 +3038,26 @@ p.happy-title {
 }
 
 
-.checkinbox .form-container {
-    /* max-width: 600px; */
+/* .checkinbox .form-container {
+
     margin: 50px auto;
     padding: 20px;
-    /* background-color: #ffffff; */
+
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+} */
+
+
+.checkinbox .form-container{
+
+    width: 100%;
+    padding:35px;
+    margin: 50px auto;
+    background: #ffffff;
+    border-radius: 0.5rem;
+    box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.1), 0px 5px 12px -2px rgba(0, 0, 0, 0.1), 0px 18px 36px -6px rgba(0, 0, 0, 0.1);
 }
+
 .checkinbox .form-control1 {
     background-color: #f1f1f1;
 }
@@ -3070,20 +3082,32 @@ p.happy-title {
     font-size:26px;
 }
 
-.checkinbox input{
+/* .checkinbox input{
     height: 50px;
     border-radius: 8px;
+} */
+
+.checkinbox input {
+    height: 45px;
+    border-radius: 8px;
+    /* box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.1); */
+    background-color: #f6f8fa;
 }
 
-
+.checkinbox select {
+    /* box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.1); */
+    background-color: #f6f8fa;
+}
 .checkinbox select{
-    height: 50px;
+    height: 45px;
     border-radius: 8px;
 
 }
 
 .checkinbox label{
-    font-size: 20px;
+    font-size: 16px;
+    font-weight: 500;
+
 }
 
 .checkin-footer p{
@@ -3173,7 +3197,7 @@ li.nav-item.dropdown-main {
 }
 
 .person1{
-    padding: 20px;
+    /* padding: 20px; */
     background-color: white;
 }
 .person-heading{
@@ -3279,7 +3303,7 @@ li.nav-item.dropdown-main {
 }
 
 #uploadId{
-    line-height: 2.4;
+    line-height: 2.1;
 }
 
 .feature-card {
@@ -3375,4 +3399,80 @@ li.nav-item.dropdown-main {
     color: #555;
     font-size: 14px;
     margin: 0;
+}
+
+.form_imgs img{
+    width: 100%;
+    object-fit: cover;
+    height: 100%;
+    border-radius: 10px;
+}
+.form_imgs {
+    position: relative;
+}
+.overlay-logo-bx{
+    position: absolute;
+    top:50%;
+    left:50%;
+    transform: translate(-50% , -50%)
+    ;
+}
+.img__bx {
+    position: relative;
+    height: 100%;
+    border-radius: 10px;
+    overflow: hidden;
+}
+.img__bx:before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: #00000082;
+}
+
+
+.guest-check{
+    position: relative;
+}
+.guest-check::before {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 80px;
+    height: 3px;
+    background: linear-gradient(to right, #F37A65, #D64141);
+    border-radius: 50px;
+}
+
+.country-num{
+    position: absolute;
+    left: 0;
+    top: 42%;
+    background: #ee4c49;
+    display: flex
+;
+    justify-content: center;
+    font-size: 16px;
+    align-items: center;
+    color: white;
+    height: 45px;
+    width: 47px;
+    border-radius: 8px 0px 0px 8px;
+}
+
+.pl-20{
+    padding-left: 40px;
+}
+
+.checkinbox .btn-outline-primary {
+    color: #000000 !important;
+    border-color: #0d6efd;
+    border: none;
+    box-shadow: unset !important;
+}
+
+.checkinbox .btn-outline-primary:hover {
+    background-color: unset;
 }
