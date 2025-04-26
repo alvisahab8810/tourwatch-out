@@ -1,58 +1,37 @@
+
+
 // "use client";
 // import { useState, useEffect } from "react";
 // import { useRouter } from "next/router";
+// import Link from "next/link";
 // export default function CheckIn() {
+//   // Declare states first
+//   const router = useRouter();
 
+//   // State declarations
+//   const [companyName, setCompanyName] = useState("");
+
+//   const [formData, setFormData] = useState({
+//     fullName: "",
+//     whatsappContact: "",
+//     emailAddress: "",
+//   });
+//   const [error, setError] = useState("");
 //   const [occupancy, setOccupancy] = useState("");
 //   const [rooms, setRooms] = useState([]);
-
-//   // const [occupancyCount, setOccupancyCount] = useState({});
-
 //   const occupancyLimits = {
 //     Single: 1,
 //     Double: 2,
 //     Triple: 3,
 //     Fourth: 4,
 //   };
-
 //   const [occupancyData, setOccupancyData] = useState({});
-
-//   useEffect(() => {
-//     // Fetch occupancy data from MongoDB on page load
-//     fetch("/api/occupancy")
-//       .then((res) => res.json())
-//       .then((data) => {
-//         const occupancyData = data.reduce((acc, item) => {
-//           acc[item.type] = item.count;
-//           return acc;
-//         }, { Single: 0, Double: 0, Triple: 0, Fourth: 0 });
-
-//         setOccupancyCount(occupancyData);
-//       })
-//       .catch(() => alert("Error fetching occupancy data"));
-//   }, []);
-
-//   // useEffect(() => {
-//   //   fetch("/api/occupancy")
-//   //     .then((res) => res.json())
-//   //     .then((data) => {
-//   //       const occupancyCounts = data.reduce((acc, item) => {
-//   //         acc[item.type] = item.count;
-//   //         return acc;
-//   //       }, {});
-//   //       setOccupancyData(occupancyCounts);
-//   //     });
-//   // }, []);
-//   // const [selectedOccupancy, setSelectedOccupancy] = useState("");
 //   const [occupancyCount, setOccupancyCount] = useState({
 //     Single: 0,
 //     Double: 0,
 //     Triple: 0,
 //     Fourth: 0,
 //   });
-
-//   const router = useRouter();
-//   const [companyName, setCompanyName] = useState("");
 //   const [roomData, setRoomData] = useState({
 //     Single: "",
 //     Double: "",
@@ -68,15 +47,35 @@
 //   const [availableOccupancies, setAvailableOccupancies] = useState([]);
 //   const [availableRooms, setAvailableRooms] = useState([]);
 
-//   // const isAdmin = !router.query.company; // Admin view if no company query
-
+//   // Admin vs Guest view flag
 //   const [isAdmin, setIsAdmin] = useState(true);
 
+//   const handleChange = (e) => {
+//     setFormData({
+//       ...formData,
+//       [e.target.name]: e.target.value,
+//     });
+//   };
+  
+
+//   // ----------------------------
+//   // useEffect to fetch live occupancy counts using companyName
+//   useEffect(() => {
+//     if (companyName) {
+//       fetch(`/api/occupancyCounts?company=${encodeURIComponent(companyName)}`)
+//         .then((res) => res.json())
+//         .then((data) => {
+//           setOccupancyCount(data);
+//         })
+//         .catch(() => alert("Error fetching occupancy counts"));
+//     }
+//   }, [companyName]);
+
+//   // useEffect to process router query parameters
 //   useEffect(() => {
 //     if (!router.isReady) return;
 
 //     console.log("Router Query Params (Live):", router.query);
-
 //     const { company, ...queryRooms } = router.query;
 
 //     if (company) {
@@ -87,16 +86,16 @@
 //     }
 
 //     const occupancyData = {};
-//     Object.entries(queryRooms).forEach(([occupancy, rooms]) => {
+//     Object.entries(queryRooms).forEach(([occ, rooms]) => {
 //       if (typeof rooms === "string") {
-//         occupancyData[occupancy] = decodeURIComponent(rooms);
+//         occupancyData[occ] = decodeURIComponent(rooms);
 //       }
 //     });
-
 //     setRoomData(occupancyData);
 //     setAvailableOccupancies(Object.keys(occupancyData));
 //   }, [router.isReady, router.query]);
 
+//   // Duplicate useEffect (if needed, or you can combine with the above)
 //   useEffect(() => {
 //     if (router.isReady) {
 //       const { company, ...queryRooms } = router.query;
@@ -109,8 +108,8 @@
 //       );
 
 //       const occupancyData = {};
-//       Object.entries(queryRooms).forEach(([occupancy, rooms]) => {
-//         occupancyData[occupancy] = decodeURIComponent(rooms);
+//       Object.entries(queryRooms).forEach(([occ, rooms]) => {
+//         occupancyData[occ] = decodeURIComponent(rooms);
 //       });
 
 //       setRoomData(occupancyData);
@@ -118,38 +117,34 @@
 //     }
 //   }, [router.isReady, router.query]);
 
-//   const handleRoomInputChange = (occupancy, value) => {
-//     // Split the input by commas to handle multiple entries
+//   // ----------------------------
+//   // Handler for admin to input room numbers
+//   const handleRoomInputChange = (occ, value) => {
+//     // Split input by commas and handle ranges
 //     const entries = value.split(",").map((entry) => entry.trim());
 //     const expandedRooms = [];
-
 //     entries.forEach((entry) => {
 //       if (entry.includes("-")) {
-//         // If the entry contains a '-', it's a range
 //         const [start, end] = entry.split("-").map((num) => parseInt(num, 10));
 //         if (!isNaN(start) && !isNaN(end) && start <= end) {
-//           // Generate numbers from start to end
 //           for (let i = start; i <= end; i++) {
 //             expandedRooms.push(i.toString());
 //           }
 //         } else {
-//           // If the range is invalid, keep the original entry
 //           expandedRooms.push(entry);
 //         }
 //       } else {
-//         // Otherwise, it's a single room number
 //         expandedRooms.push(entry);
 //       }
 //     });
 
-//     // Update the roomData state with the expanded room numbers
 //     setRoomData((prev) => ({
 //       ...prev,
-//       [occupancy]: expandedRooms.join(", "),
+//       [occ]: expandedRooms.join(", "),
 //     }));
 //   };
 
-//   // Handle form submission (Admin: Generate link)
+//   // Handler for generating the link (Admin Form)
 //   const handleSubmit = (e) => {
 //     e.preventDefault();
 //     if (!companyName) return alert("Please enter a company name.");
@@ -159,17 +154,15 @@
 
 //     const roomParams = Object.entries(roomData)
 //       .filter(([_, rooms]) => rooms.trim() !== "")
-//       .map(([occupancy, rooms]) => {
+//       .map(([occ, rooms]) => {
 //         const roomArray = rooms.split(",").map((room) => room.trim());
-
 //         roomArray.forEach((room) => {
 //           if (allEnteredRooms.has(room)) {
 //             duplicateRoomsFound.add(room);
 //           }
 //           allEnteredRooms.add(room);
 //         });
-
-//         return `${occupancy}=${encodeURIComponent(rooms)}`;
+//         return `${occ}=${encodeURIComponent(rooms)}`;
 //       })
 //       .join("&");
 
@@ -188,102 +181,51 @@
 //     setGeneratedLink(shareableLink);
 //   };
 
-//   // Copy link to clipboard
+//   // Copy link handler
 //   const handleCopyLink = () => {
 //     navigator.clipboard.writeText(generatedLink);
 //     alert("Link copied to clipboard!");
 //   };
 
-//   // const handleOccupancyChange = async (e) => {
-//   //   const selected = e.target.value;
-
-//   //   // Fetch latest occupancy count from MongoDB
-//   //   try {
-//   //     const response = await fetch(`/api/occupancy?occupancyType=${selected}`);
-//   //     const data = await response.json();
-
-//   //     const currentCount = data.count || 0;
-
-//   //     // If occupancy is fully booked, prevent selection
-//   //     if (currentCount >= occupancyLimits[selected]) {
-//   //       alert(`${selected} occupancy is fully booked.`);
-//   //       return;
-//   //     }
-
-//   //     // Update MongoDB count
-//   //     await fetch("/api/occupancy", {
-//   //       method: "POST",
-//   //       headers: { "Content-Type": "application/json" },
-//   //       body: JSON.stringify({ occupancyType: selected }),
-//   //     });
-
-//   //     // Keep your original logic
-//   //     if (occupancyCount[selected] >= occupancyLimits[selected]) {
-//   //       alert(`${selected} occupancy is fully booked.`);
-//   //       return;
-//   //     }
-
-//   //     setOccupancyCount((prevCounts) => ({
-//   //       ...prevCounts,
-//   //       [selected]: prevCounts[selected] + 1,
-//   //     }));
-
-//   //     setSelectedOccupancy(selected);
-//   //     setAvailableRooms(roomData[selected]?.split(",") || []);
-//   //     setSelectedRoom(""); // Reset selected room when occupancy changes
-
-//   //   } catch (error) {
-//   //     console.error("Error fetching/updating occupancy data:", error);
-//   //     alert("Error processing occupancy selection.");
-//   //   }
-//   // };
-
+//   // ----------------------------
+//   // Handler for occupancy change (User Form)
 //   const handleOccupancyChange = async (e) => {
 //     const selected = e.target.value;
 
-//     // Prevent selection if occupancy is fully booked
 //     if (occupancyCount[selected] >= occupancyLimits[selected]) {
 //       alert(`${selected} occupancy is fully booked.`);
 //       return;
 //     }
 
-//     // Update MongoDB count
+//     // Update the occupancy count in the DB
 //     const response = await fetch("/api/occupancy", {
 //       method: "POST",
 //       headers: { "Content-Type": "application/json" },
-//       body: JSON.stringify({ occupancyType: selected })
+//       body: JSON.stringify({ occupancyType: selected }),
 //     });
 
 //     if (response.ok) {
-//       setOccupancy((prevCounts) => ({
-//         ...prevCounts,
-//         [selected]: (prevCounts[selected] || 0) + 1,
-//       }));
+//       // Re-fetch live counts after update
+//       const res = await fetch(
+//         `/api/occupancyCounts?company=${encodeURIComponent(companyName)}`
+//       );
+//       const data = await res.json();
+//       setOccupancyCount(data);
+//     } else {
+//       alert("Error updating occupancy data.");
+//       return;
 //     }
 
 //     setSelectedOccupancy(selected);
 //     setAvailableRooms(roomData[selected]?.split(",") || []);
 //     setSelectedRoom("");
 //   };
-//   const [submittedData, setSubmittedData] = useState(null);
 
-//   const [error, setError] = useState(""); // State to track errors
-//   const [formData, setFormData] = useState({
-//     fullName: "",
-//     whatsappContact: "",
-//     emailAddress: "",
-//   });
-
-//   const handleChange = (e) => {
-//     setFormData({
-//       ...formData,
-//       [e.target.name]: e.target.value,
-//     });
-//   };
-
+//   // ----------------------------
+//   // Handler for check-in submission (User Form)
 //   const handleSubmitted = async (e) => {
 //     e.preventDefault();
-//     setError(""); // Reset error on new submission
+//     setError("");
 
 //     const fullName = e.target.fullName.value.trim();
 //     const whatsappContact = e.target.whatsappContact.value.trim();
@@ -308,7 +250,6 @@
 //     }
 
 //     try {
-//       // Check if the WhatsApp number already exists
 //       const checkResponse = await fetch("/api/checkMobile", {
 //         method: "POST",
 //         headers: { "Content-Type": "application/json" },
@@ -326,7 +267,6 @@
 //         return;
 //       }
 
-//       // Process file upload and save check-in
 //       const reader = new FileReader();
 //       reader.readAsDataURL(uploadedFile);
 //       reader.onload = async () => {
@@ -336,7 +276,7 @@
 //           method: "POST",
 //           headers: { "Content-Type": "application/json" },
 //           body: JSON.stringify({
-//             companyName, // Ensure companyName is available in your component
+//             companyName,
 //             fullName,
 //             whatsappContact,
 //             emailAddress,
@@ -352,11 +292,11 @@
 //         }
 
 //         alert("Check-in successful!");
-//         router.reload(); // Refresh the page using Next.js router
+//         router.reload();
 //         e.target.reset();
 //         setSelectedOccupancy("");
 //         setSelectedRoom("");
-//         setError(""); // Clear any previous errors
+//         setError("");
 //       };
 //     } catch (error) {
 //       console.error("Error during check-in:", error);
@@ -364,6 +304,7 @@
 //     }
 //   };
 
+//   // ----------------------------
 //   return (
 //     <section className="checkin-section">
 //       <div className="container ptb-50">
@@ -374,194 +315,256 @@
 
 //         <div className="checkinbox">
 //           <div className="form-container">
-//             {/* Admin Form */}
-//             {isAdmin ? (
-//               <form onSubmit={handleSubmit}>
-//                 {/* Company Name */}
-//                 <div className="mb-3">
-//                   <label className="form-label">Company Name</label>
-//                   <input
-//                     type="text"
-//                     className="form-control form-control1"
-//                     value={companyName}
-//                     onChange={(e) => setCompanyName(e.target.value)}
-//                   />
-//                 </div>
+//             <div className="row">
+              
+//               <div className="col-md-6">
+//                 {/* Admin Form */}
+//                 {isAdmin ? (
+//                   <form onSubmit={handleSubmit}>
+//                     {/* Company Name */}
+//                     <div className="mb-3">
+//                       <label className="form-label">Company Name</label>
+//                       <input
+//                         type="text"
+//                         className="form-control form-control1"
+//                         value={companyName}
+//                         onChange={(e) => setCompanyName(e.target.value)}
+//                       />
+//                     </div>
 
-//                 {/* Room Entry for Each Occupancy Type */}
-//                 {["Single", "Double", "Triple", "Fourth"].map((occupancy) => (
-//                   <div key={occupancy} className="mb-3">
-//                     <label className="form-label">
-//                       {occupancy} Occupancy Room Numbers
-//                     </label>
-//                     <input
-//                       type="text"
-//                       className="form-control"
-//                       value={roomData[occupancy] || ""}
-//                       onChange={(e) =>
-//                         handleRoomInputChange(occupancy, e.target.value)
-//                       }
-//                       placeholder="Enter room numbers (comma-separated)"
-//                     />
-//                   </div>
-//                 ))}
-
-//                 {/* Submit Button */}
-//                 <button type="submit" className="btn btn-submit w-100">
-//                   Generate Link
-//                 </button>
-
-//                 {/* Display Generated Link */}
-//                 {generatedLink && (
-//                   <div className="mt-3 d-flex">
-//                     <input
-//                       type="text"
-//                       className="form-control"
-//                       value={generatedLink}
-//                       readOnly
-//                     />
-//                     <button
-//                       type="button"
-//                       className="btn btn-secondary ms-2"
-//                       onClick={handleCopyLink}
-//                     >
-//                       Copy
-//                     </button>
-//                   </div>
-//                 )}
-
-//                 {/* Show duplicate room numbers */}
-//                 {duplicateRooms.length > 0 && (
-//                   <div className="alert alert-danger mt-2">
-//                     Duplicate rooms found: {duplicateRooms.join(", ")}
-//                   </div>
-//                 )}
-//               </form>
-//             ) : (
-//               /* User Check-In Form */
-//               <form onSubmit={handleSubmitted}>
-//                 <h2 className="text-center mb-4">Guest Check-In</h2>
-
-//                 {/* Company Name (Read-Only) */}
-//                 <div className="mb-3">
-//                   <label className="form-label">Company Name</label>
-//                   <input
-//                     type="text"
-//                     className="form-control"
-//                     value={companyName}
-//                     readOnly
-//                   />
-//                 </div>
-
-//                 {/* Full Name */}
-//                 <div className="mb-3">
-//                   <label htmlFor="fullName" className="form-label">
-//                     Full Name
-//                   </label>
-//                   <input type="text" className="form-control" id="fullName" required/>
-//                 </div>
-
-//                 <div className="mb-3">
-//                   <label htmlFor="whatsappContact" className="form-label">
-//                     WhatsApp Contact
-//                   </label>
-//                   <input
-//                     type="text"
-//                     className="form-control"
-//                     id="whatsappContact"
-//                     name="whatsappContact"
-//                     // placeholder="Enter WhatsApp Number"
-//                     value={formData.whatsappContact}
-//                     onChange={handleChange}
-//                     required
-//                   />
-//                   {error && (
-//                     <p style={{ color: "red", fontSize: "14px" }}>{error}</p>
-//                   )}
-//                 </div>
-
-//                 {/* Email Address */}
-//                 <div className="mb-3">
-//                   <label htmlFor="emailAddress" className="form-label">
-//                     Email Address
-//                   </label>
-//                   <input
-//                     type="email"
-//                     className="form-control"
-//                     id="emailAddress"
-//                     required
-//                   />
-//                 </div>
-
-//                 {/* Government ID Upload */}
-//                 <div className="mb-3">
-//                   <label htmlFor="uploadId" className="form-label">
-//                     Please upload any Government ID, size less than 400KB
-//                   </label>
-//                   <input className="form-control" type="file" id="uploadId" required/>
-//                   <div className="form-text">
-//                     *This Doc. will be used for check-in purpose only
-//                   </div>
-//                 </div>
-
-//                 {/* Occupancy Selection */}
-//                 {/* <div className="mb-3">
-//                   <label className="form-label">Select Occupancy</label>
-//                   <select className="form-select" value={selectedOccupancy} onChange={handleOccupancyChange}>
-//                     <option value="">Select Occupancy</option>
-//                     {availableOccupancies.map((occupancy) => (
-//                       <option key={occupancy} value={occupancy}>
-//                         {occupancy}
-//                       </option>
+//                     {/* Room Entry for Each Occupancy Type */}
+//                     {["Single", "Double", "Triple", "Fourth"].map((occ) => (
+//                       <div key={occ} className="mb-3">
+//                         <label className="form-label">
+//                           {occ} Occupancy Room Numbers
+//                         </label>
+//                         <input
+//                           type="text"
+//                           className="form-control"
+//                           value={roomData[occ] || ""}
+//                           onChange={(e) =>
+//                             handleRoomInputChange(occ, e.target.value)
+//                           }
+//                           placeholder="Enter room numbers (comma-separated)"
+//                         />
+//                       </div>
 //                     ))}
-//                   </select>
-//                 </div> */}
 
-//                 <div>
-//                   {/* Occupancy Selection */}
-//                   <div className="mb-3">
-//                     <label className="form-label">Select Occupancy</label>
-//                     <select value={occupancy} onChange={handleOccupancyChange}>
-//         <option value="">Select Occupancy</option>
-//         {["Single", "Double", "Triple", "Fourth"].map((type) => (
-//           <option key={type} value={type} disabled={occupancyCount[type] >= occupancyLimits[type]}>
-//             {type} {occupancyCount[type] >= occupancyLimits[type] ? "(Full)" : ""}
-//           </option>
-//         ))}
-//       </select>
+//                     {/* Submit Button */}
+//                     <button type="submit" className="btn btn-submit w-100">
+//                       Generate Link
+//                     </button>
+
+//                     {/* Display Generated Link */}
+//                     {generatedLink && (
+//                       <div className="mt-3 d-flex">
+//                         <input
+//                           type="text"
+//                           className="form-control"
+//                           value={generatedLink}
+//                           readOnly
+//                         />
+//                         <button
+//                           type="button"
+//                           className="btn btn-secondary ms-2"
+//                           onClick={handleCopyLink}
+//                         >
+//                           Copy
+//                         </button>
+//                       </div>
+//                     )}
+
+//                     {/* Show duplicate room numbers */}
+//                     {duplicateRooms.length > 0 && (
+//                       <div className="alert alert-danger mt-2">
+//                         Duplicate rooms found: {duplicateRooms.join(", ")}
+//                       </div>
+//                     )}
+//                   </form>
+//                 ) : (
+//                   /* User Check-In Form */
+
+//                   <form onSubmit={handleSubmitted}>
+//                     <h2 className="guest-check mb-4">Guest Check-In</h2>
+
+//                     {/* Company Name (Read-Only) */}
+//                     <div className="mb-3">
+//                       <label className="form-label">Company Name</label>
+//                       <input
+//                         type="text"
+//                         className="form-control"
+//                         value={companyName}
+//                         readOnly
+//                       />
+//                     </div>
+
+                   
+
+
+//                   <div className="row">
+//                     <div className="col-md-6 mb-3">
+//                       <label htmlFor="fullName" className="form-label">
+//                         Full Name
+//                       </label>
+//                       <input
+//                         type="text"
+//                         className="form-control"
+//                         id="fullName"
+//                         required
+//                       />
+//                     </div>
+//                     <div className="col-md-6 mb-3 p-relative">
+//                       <label htmlFor="whatsappContact" className="form-label">
+//                         WhatsApp Contact
+//                       </label>
+//                       <span className="country-num">+91 </span>
+//                       <input
+//                         type="text"
+//                         className="form-control pl-20"
+//                         id="whatsappContact"
+//                         name="whatsappContact"
+//                         // placeholder="+91:"
+//                         value={formData.whatsappContact}
+//                         onChange={handleChange}
+//                         maxLength={10}
+//                         required
+//                       />
+//                       {error && (
+//                         <p style={{ color: "red", fontSize: "14px" }}>{error}</p>
+//                       )}
+//                     </div>
 //                   </div>
 
-//                   {selectedOccupancy && (
-//                     <p>Selected Occupancy: {selectedOccupancy}</p>
-//                   )}
-//                 </div>
 
-//                 {/* Room Selection */}
-//                 {selectedOccupancy && (
-//                   <div className="mb-3">
-//                     <label className="form-label">Select Room</label>
-//                     <select
-//                       className="form-select"
-//                       value={selectedRoom}
-//                       onChange={(e) => setSelectedRoom(e.target.value)}
-//                     >
-//                       <option value="">Select Room</option>
-//                       {availableRooms.map((room) => (
-//                         <option key={room} value={room}>
-//                           {room}
-//                         </option>
-//                       ))}
-//                     </select>
-//                   </div>
+//                     {/* Email Address */}
+//                     <div className="mb-3">
+//                       <label htmlFor="emailAddress" className="form-label">
+//                         Email Address
+//                       </label>
+//                       <input
+//                         type="email"
+//                         className="form-control"
+//                         id="emailAddress"
+//                         required
+//                       />
+//                     </div>
+
+//                     {/* Government ID Upload */}
+//                     <div className="mb-3">
+//                       <label htmlFor="uploadId" className="form-label">
+//                         Please upload any Government ID, size less than 400KB
+//                       </label>
+//                       <input
+//                         className="form-control"
+//                         type="file"
+//                         id="uploadId"
+//                         required
+//                       />
+//                       <div className="form-text">
+//                         *This Doc. will be used for check-in purpose only
+//                       </div>
+//                     </div>
+
+//                     {/* Occupancy Selection */}
+//                     <div className="mb-3">
+//                       <label className="form-label">Select Occupancy</label>
+//                       <select
+//                         value={occupancy}
+//                         onChange={handleOccupancyChange}
+//                       >
+//                         <option value="">Select Occupancy</option>
+//                         {["Single", "Double", "Triple", "Fourth"].map(
+//                           (type) => (
+//                             <option
+//                               key={type}
+//                               value={type}
+//                               disabled={
+//                                 occupancyCount[type] >= occupancyLimits[type]
+//                               }
+//                             >
+//                               {type}{" "}
+//                               {occupancyCount[type] >= occupancyLimits[type]
+//                                 ? "(Full)"
+//                                 : ""}
+//                             </option>
+//                           )
+//                         )}
+//                       </select>
+//                     </div>
+
+//                     {selectedOccupancy && (
+//                       <p>Selected Occupancy: {selectedOccupancy}</p>
+//                     )}
+
+//                     {/* Room Selection */}
+//                     {selectedOccupancy && (
+//                       <div className="mb-3">
+//                         <label className="form-label">Select Room</label>
+//                         <select
+//                           className="form-select"
+//                           value={selectedRoom}
+//                           onChange={(e) => setSelectedRoom(e.target.value)}
+//                         >
+//                           <option value="">Select Room</option>
+//                           {availableRooms.map((room) => (
+//                             <option key={room} value={room}>
+//                               {room}
+//                             </option>
+//                           ))}
+//                         </select>
+//                       </div>
+//                     )}
+
+//                     {/* Check-In Button */}
+//                     <button type="submit" className="btn btn-submit w-100">
+//                       Check-In
+//                     </button>
+//                   </form>
 //                 )}
+//               </div>
 
-//                 {/* Check-In Button */}
-//                 <button type="submit" className="btn btn-submit w-100">
-//                   Check-In
-//                 </button>
-//               </form>
-//             )}
+//               <div className="col-md-6 form_imgs mobile-none">
+//                 <div className="img__bx">
+//                   <img src="/assets/images/check.webp" alt="img"></img>
+//                 </div>
+//                 <div className="overlay-logo-bx">
+//                   <img src="/assets/images/logo.png" alt="Logo"></img>
+//                 </div>
+//               </div>
+//             </div>
 //           </div>
+//         </div>
+//         <div className="checkin-footer">
+//           <p>Let’s Stay in Touch!</p>
+//           <ul className="social-list-icons">
+            
+//             <li>
+//               <Link href="https://www.facebook.com/TourWatchout/"  target="_blank">
+//                 <img
+//                   src="./assets/images/icons/facebook.png"
+//                   alt="Facebook Icon"
+//                 />
+//               </Link>
+//             </li>
+//             <li>
+//               <Link href="https://www.instagram.com/tourwatchout/" target="_blank">
+//                 <img
+//                   src="./assets/images/icons/insta.png"
+//                   alt="Instagram Icon"
+//                 />
+//               </Link>
+//             </li>
+//             <li>
+//               <Link href="https://tourwatchout.com/" target="_blank">
+//                 <img src="./assets/images/icons/web.png" alt="Web Icon" />
+//               </Link>
+//             </li>
+//             <li>
+//               <Link href="https://www.youtube.com/@Tourwatchout" target="_blank">
+//                 <img src="./assets/images/icons/youtube.png" alt="Youtube Icon" />
+//               </Link>
+//             </li>
+//           </ul>
 //         </div>
 //       </div>
 //     </section>
@@ -572,6 +575,17 @@
 //   console.log("Server Side Query Params:", context.query);
 //   return { props: {} };
 // }
+
+
+
+
+
+
+
+
+
+
+
 
 "use client";
 import { useState, useEffect } from "react";
@@ -629,19 +643,8 @@ export default function CheckIn() {
       [e.target.name]: e.target.value,
     });
   };
+  
 
-  // ----------------------------
-  // useEffect to fetch live occupancy counts using companyName
-  useEffect(() => {
-    if (companyName) {
-      fetch(`/api/occupancyCounts?company=${encodeURIComponent(companyName)}`)
-        .then((res) => res.json())
-        .then((data) => {
-          setOccupancyCount(data);
-        })
-        .catch(() => alert("Error fetching occupancy counts"));
-    }
-  }, [companyName]);
 
   // useEffect to process router query parameters
   useEffect(() => {
@@ -761,38 +764,35 @@ export default function CheckIn() {
 
   // ----------------------------
   // Handler for occupancy change (User Form)
+  
   const handleOccupancyChange = async (e) => {
     const selected = e.target.value;
-
-    if (occupancyCount[selected] >= occupancyLimits[selected]) {
-      alert(`${selected} occupancy is fully booked.`);
-      return;
-    }
-
-    // Update the occupancy count in the DB
-    const response = await fetch("/api/occupancy", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ occupancyType: selected }),
+  
+    if (!roomData[selected]) return;
+  
+    // Split all rooms and trim
+    const allRooms = roomData[selected].split(",").map((room) => room.trim());
+  
+    // Fetch current room counts
+    const res = await fetch(`/api/roomOccupancyCounts?company=${encodeURIComponent(companyName)}&occupancy=${selected}`);
+    const roomCounts = await res.json(); // { "101": 2, "102": 1, ... }
+  
+    // Get limit for the selected occupancy type
+    const maxPerRoom = occupancyLimits[selected];
+  
+    // Filter rooms that have not reached their limit
+    const available = allRooms.filter((room) => {
+      const currentCount = roomCounts[room] || 0;
+      return currentCount < maxPerRoom;
     });
-
-    if (response.ok) {
-      // Re-fetch live counts after update
-      const res = await fetch(
-        `/api/occupancyCounts?company=${encodeURIComponent(companyName)}`
-      );
-      const data = await res.json();
-      setOccupancyCount(data);
-    } else {
-      alert("Error updating occupancy data.");
-      return;
-    }
-
+  
     setSelectedOccupancy(selected);
-    setAvailableRooms(roomData[selected]?.split(",") || []);
+    setAvailableRooms(available);
     setSelectedRoom("");
   };
+  
 
+   
   // ----------------------------
   // Handler for check-in submission (User Form)
   const handleSubmitted = async (e) => {
@@ -970,39 +970,7 @@ export default function CheckIn() {
                       />
                     </div>
 
-                    {/* Full Name */}
-                    {/* <div className="mb-3">
-                      <label htmlFor="fullName" className="form-label">
-                        Full Name
-                      </label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="fullName"
-                        required
-                      />
-                    </div>
-
-                    <div className="mb-3">
-                      <label htmlFor="whatsappContact" className="form-label">
-                        WhatsApp Contact
-                      </label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="whatsappContact"
-                        name="whatsappContact"
-                        placeholder="+91"
-                        value={formData.whatsappContact}
-                        onChange={handleChange}
-                        required
-                      />
-                      {error && (
-                        <p style={{ color: "red", fontSize: "14px" }}>
-                          {error}
-                        </p>
-                      )}
-                    </div> */}
+                   
 
 
                   <div className="row">
@@ -1100,24 +1068,22 @@ export default function CheckIn() {
                       <p>Selected Occupancy: {selectedOccupancy}</p>
                     )}
 
-                    {/* Room Selection */}
-                    {selectedOccupancy && (
-                      <div className="mb-3">
-                        <label className="form-label">Select Room</label>
-                        <select
-                          className="form-select"
-                          value={selectedRoom}
-                          onChange={(e) => setSelectedRoom(e.target.value)}
-                        >
-                          <option value="">Select Room</option>
-                          {availableRooms.map((room) => (
-                            <option key={room} value={room}>
-                              {room}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    )}
+                    <div className="mb-3">
+                      <label className="form-label">Select Room</label>
+                      <select
+                        className="form-control"
+                        value={selectedRoom}
+                        onChange={(e) => setSelectedRoom(e.target.value)}
+                      >
+                        <option value="">Select a room</option>
+                        {availableRooms.map((room, idx) => (
+                          <option key={idx} value={room}>
+                            {room}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
 
                     {/* Check-In Button */}
                     <button type="submit" className="btn btn-submit w-100">
@@ -1179,3 +1145,8 @@ export async function getServerSideProps(context) {
   console.log("Server Side Query Params:", context.query);
   return { props: {} };
 }
+
+
+
+
+

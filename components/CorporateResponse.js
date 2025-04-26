@@ -289,9 +289,6 @@
 // export default Response;
 
 
-
-
-
 import ReactPaginate from "react-paginate";
 import { useEffect, useState } from "react";
 import { FaTrash, FaUndo, FaDownload } from "react-icons/fa";

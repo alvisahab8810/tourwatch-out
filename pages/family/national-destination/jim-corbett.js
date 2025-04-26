@@ -1,62 +1,52 @@
-import React from "react";
-
-import Topbar from "../../../components/header/Header";
+import React from 'react'
+import Topbar from '../../../components/header/Header'
+import Offcanvas from '../../../components/header/Offcanvas'
+import Link from 'next/link'
 import Footer from "../../../components/footer/Footer";
 import TravelerReviews from "../../../components/kashmir/TravelerReviews";
 import Map from "../../../components/kashmir/Map";
-import Link from "next/link";
 import Popup from "../../../components/corporate/Popup";
-import Offcanvas from "../../../components/header/Offcanvas";
 
-export default function kashmir() {
-
-  
+export default function JimCorbett() {
   return (
-    <div className="bg-prime">
-      <Topbar />
-      <Offcanvas/>
-      {/* --------------- Hero start -------------------- */}
-      <section className="kashmir-hero">
-        <div className="container">
-          <div className="row align-items-center pt-200">
-            <div className="col-md-12 about-contennt">
-              <h2 className="fs-64 text-white fw-bold">
-                The heaven of earth, Kashmir
-              </h2>
-              <p>
-                Plan your trips, honeymoons, or family getaways with
-                Tourwatchout! Enjoy a hassle-free experience and create
-                unforgettable memories that last a lifetime.
-              </p>
-              <button className="btn btn-primary mt-0 mobile-none" data-bs-toggle="modal"
-                    data-bs-target="#exampleModalCenter"
-                    fdprocessedid="s6df8j">
-                Start Your Journey Now
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-      {/* --------------- Hero end -------------------- */}
+    <div className='bg-prime'>
+        <Topbar/>
+        <Offcanvas/>
 
-      {/* ------------------------- Kashmir Tour Package start -------------------------------- */}
+        {/* --------------- Hero start -------------------- */}
+        <section className="kashmir-hero">
+            <div className="container">
+            <div className="row align-items-center pt-200">
+                <div className="col-md-12 about-contennt">
+                <h2 className="fs-64 text-white fw-bold">
+                    The heaven of earth, Jim Corbett
+                </h2>
+                <p>
+                    Plan your trips, honeymoons, or family getaways with
+                    Tourwatchout! Enjoy a hassle-free experience and create
+                    unforgettable memories that last a lifetime.
+                </p>
+                <button className="btn btn-primary mt-0 mobile-none" data-bs-toggle="modal"
+                        data-bs-target="#exampleModalCenter"
+                        fdprocessedid="s6df8j">
+                    Start Your Journey Now
+                </button>
+                </div>
+            </div>
+            </div>
+        </section>
+        {/* --------------- Hero end -------------------- */}
+
+
+         {/* ------------------------- Kashmir Tour Package start -------------------------------- */}
 
       <section className="destination-row ptb-50">
         <div className="container">
           <div className="parent-package w-100" id="package">
             <div className="max-800">
               <div className="content-section">
-                <h1>Kashmir Family Tour Package</h1>
-                {/* <ul className="location-list">
-                  <li className="list-item-none">(7 Days)</li>
-                  <li className="locaton-items">
-                    <img
-                      src="/assets/images/kashmir/icons/pin.png"
-                      alt="Location Icon"
-                    />{" "}
-                    Srinagar • Gulmarg • Pahalgam • Sonamarg
-                  </li>
-                </ul> */}
+                <h1>Jim Corbett Family Tour Package</h1>
+                
               </div>
 
               <div className="tour-package pt-80">
@@ -151,7 +141,7 @@ export default function kashmir() {
                           src="/assets/images/kashmir/icons/pin.png"
                           alt="Location Icon"
                         />{" "}
-                        Srinagar • Gulmarg • Pahalgam • Sonamarg
+                        Jim Corbett
                       </li>
                     </ul>
                         <ul className="features-lists">
@@ -173,12 +163,12 @@ export default function kashmir() {
                           <li>
                           <img src="/assets/images/icons/meal.png" alt="meals Icon"/>
 
-                            <span>Meals</span> : Daily Breakfast  Only
+                            <span>Meals</span> :  Breakfast 
                           </li>
                           <li>
                           <img src="/assets/images/icons/duration.png" alt="duration Icon"/>
 
-                            <span>Duration</span> : 4N 5D
+                            <span>Duration</span> : 3N 4D
                           </li>
                           {/* <li>
                             <span>Photos & Videos</span> : Included
@@ -208,9 +198,9 @@ export default function kashmir() {
                             </p>
                             <div>
 
-                            <h3>Srinagar Arrival + Srinagar Local Sightseeing</h3>
+                            <h3>Arrival Kathgodam / Pantnagar and Transfer to Pre Booked hotel in Corbett</h3>
                             <p className="sche-details">
-                              Arrival at Srinagar Airport. Pickup by our tour Representative and transfer to Hotel. Rest and proceed towards Srinagar Local Sightseeing 
+                                Arrival Kathgodam and you will be received from our representative and transfer to Jim Corbett pre booked resort. Day at leisure.
                             </p>
 
                             </div>
@@ -223,9 +213,9 @@ export default function kashmir() {
                             </p>
                             
                             <div>
-                            <h3>Srinagar - Gulmarg - Srinagar</h3>
+                            <h3>Morning Jungle safari and Day at Lesiure in Resort Only</h3>
                             <p className="sche-details">
-                                Breakfast and proceed towards Gulmarg to explore a ride on Gondola both Phases (Extra Cost). You may also  Cover Drung Water Fall 
+                               Early morning ready for Jungle safari. After that return hotel and day at lesiure at resort. 
                             </p>
                             </div>
                           </div>
@@ -235,9 +225,9 @@ export default function kashmir() {
                               Day 3
                             </p>
                             <div>
-                            <h3>Srinagar - Pahalgam - Srinagar</h3>
+                            <h3> A Day to Explore Corbett Local Sightseeing</h3>
                             <p className="sche-details">
-                               Breakfast and drive to Pahalgam. En-route saffron feilds, Awantipura ruins drive through pine forests, Lidder streams. ABC Valley (By Direct Basis)
+                               Enjoy Breakfast & Head out for Corbett local sightseeing which covers - Corbett Museum, Garjia Temple.
                             </p>
                             </div>
                           </div>
@@ -247,24 +237,13 @@ export default function kashmir() {
                               Day 4
                             </p>
                            <div>
-                           <h3>Srinagar - Sonmarg - Srinagar (Houseboat)</h3>
+                           <h3>Check-out and transfer to Kathgodam/Pantnagar Airport</h3>
                             <p className="sche-details">
-                               Breakfast and proceed towards sonmarg Famous for Thajiwas Glacier (By Ponies at Extra Cost)
+                              Breakfast and do check-out. Later catch your train towards to your destination with Happy memories
                             </p>
                            </div>
                           </div>
-                          <div className="schedule-items">
-                            <p className="schedule-timing">
-                             
-                              Day 5
-                            </p>
-                           <div>
-                           <h3>Srinagar - Airport Drop</h3>
-                            <p className="sche-details">
-                               Breakfast and transferred to Srinagar Airport. Return Home with Everlasting memories 
-                            </p>
-                           </div>
-                          </div>
+                      
                         </div>
                         <div className="cancellation-policy-bx">
                           <Link href="#">*Cancellation Policy</Link>
@@ -309,7 +288,7 @@ export default function kashmir() {
                           src="/assets/images/kashmir/icons/pin.png"
                           alt="Location Icon"
                         />{" "}
-                        Srinagar • Gulmarg • Pahalgam • Sonamarg
+                          Nanital
                       </li>
                     </ul>
                         <ul className="features-lists">
@@ -322,12 +301,12 @@ export default function kashmir() {
                           <li>
                           <img src="/assets/images/icons/pax.png" alt="pax Icon"/>
 
-                            <span>No of Pax</span> : 02 Adults 02 Childs
+                            <span>No of Pax</span> : 02 Adults & 01 Child (Below 5 yrs)
                           </li>
                           <li>
                           <img src="/assets/images/icons/transferes.png" alt="transfer Icon"/>
 
-                            <span>Airport Transfers</span> : Included (Srinagar - Srinagar)
+                            <span>Airport Transfers</span> : Included (Sedan) 
                           </li>
                           <li>
                           <img src="/assets/images/icons/meal.png" alt="meals Icon"/>
@@ -337,7 +316,7 @@ export default function kashmir() {
                           <li>
                           <img src="/assets/images/icons/duration.png" alt="duration Icon"/>
 
-                            <span>Duration</span> : 5N 6D
+                            <span>Duration</span> : 3N 4D
                           </li>
                         
                         </ul>
@@ -361,9 +340,9 @@ export default function kashmir() {
                               Day 1
                             </p>
                             <div>
-                            <h3>Srinagar Arrival + Srinagar Local Sightseeing</h3>
+                            <h3>Arrival Kathgodam / Pantnagar and Transfer to Pre Booked hotel in Corbett</h3>
                             <p className="sche-details">
-                               Arrival at Srinagar Airport. Pickup by our tour Representative and transfer to Hotel. Rest and proceed towards Srinagar Local Sightseeing 
+                               Arrival Kathgodam and you will be received from our representative and transfer to Jim Corbett pre booked resort. Day at leisure. 
                             </p>
                             </div>
                           </div>
@@ -373,9 +352,9 @@ export default function kashmir() {
                               Day 2
                             </p>
                             <div>
-                            <h3>Srinagar - Sonmarg - Srinagar</h3>
+                            <h3>Morning Jungle safari and Day at Lesiure in Resort Only</h3>
                             <p className="sche-details">
-                               Breakfast and proceed towards sonmarg Famous for Thajiwas Glacier (By Ponies at Extra Cost)
+                               Early morning ready for Jungle safari. After that return hotel and day at lesiure at resort. 
                             </p>
                             </div>
                           </div>
@@ -385,9 +364,9 @@ export default function kashmir() {
                               Day 3
                             </p>
                            <div>
-                           <h3>Srinagar - Gulmarg - Srinagar</h3>
+                           <h3> A Day to Explore Corbett Local Sightseeing</h3>
                             <p className="sche-details">
-                              Breakfast and proceed towards Gulmarg to explore a ride on Gondola both Phases (Extra Cost). You may also  Cover Drung Water Fall 
+                              Enjoy Breakfast & Head out for Corbett local sightseeing which covers - Corbett Museum, Garjia Temple. 
                             </p>
                            </div>
                           </div>
@@ -397,37 +376,13 @@ export default function kashmir() {
                               Day 4
                             </p>
                             <div>
-                            <h3>Srinagar - Pahalgam</h3>
+                            <h3>Check-out and transfer to Kathgodam/Pantnagar Airport</h3>
                             <p className="sche-details">
-                               Breakfast and drive to Pahalgam. En-route saffron feilds, Awantipura ruins drive through pine forests, Lidder streams. ABC Valley (By Direct Basis)
+                               Breakfast and do check-out. Later catch your train towards to your destination with Happy memories
                             </p>
                             </div>
                           </div>
-                          <div className="schedule-items">
-                            <p className="schedule-timing">
-                             
-                              Day 5
-                            </p>
-                            <div>
-                            <h3>Pahalgam - Srinagar (Houseboat)</h3>
-                            <p className="sche-details">
-                              Breakfast and proceed for Baisaran Valley (Mini -Switzerland) cause of its bueaty (By Direct). Pahalgam Local sightseeing. Evening Return Srinagar & Do check-in Houseboat at Dal Lake.
-                            </p>
-                            </div>
-                          </div>
-
-                          <div className="schedule-items">
-                            <p className="schedule-timing">
-                            
-                              Day 6
-                            </p>
-                          <div>
-                          <h3>Srinagar - Airport Drop</h3>
-                            <p className="sche-details">
-                            Breakfast and transferred to Srinagar Airport. Return Home with Everlasting memories 
-                            </p>
-                          </div>
-                          </div>
+                        
                         </div>
                         <div className="cancellation-policy-bx">
                           <Link href="#">*Cancellation Policy</Link>
@@ -451,10 +406,6 @@ export default function kashmir() {
                     aria-labelledby="pills-premium-tab"
                     tabIndex="0"
                   >
-
-
-                    
-                 
                     <div className="basic-hotel-features">
                       <div className="feature-media mobile-none">
                         <video
@@ -475,7 +426,7 @@ export default function kashmir() {
                           src="/assets/images/kashmir/icons/pin.png"
                           alt="Location Icon"
                         />{" "}
-                        Srinagar • Gulmarg • Pahalgam • Sonamarg • Doodhpathri
+                        Nanital
                       </li>
                     </ul>
                         <ul className="features-lists">
@@ -487,13 +438,13 @@ export default function kashmir() {
                           <li>
                           <img src="/assets/images/icons/pax.png" alt="pax Icon"/>
 
-                            <span>No of Pax</span> : 02 Adults 01 Child (below 6 yrs)
+                            <span>No of Pax</span> : 02 Adults & 02 Childs
                           </li>
                           <li>
 
                           <img src="/assets/images/icons/transferes.png" alt="transfer Icon"/>
 
-                            <span>Airport Transfers</span> : 2 adults & 1child (Below 5 yrs)
+                            <span>Airport Transfers</span> : Sedan 
                           </li>
                           <li>
                           <img src="/assets/images/icons/meal.png" alt="meals Icon"/>
@@ -503,7 +454,7 @@ export default function kashmir() {
                           <li>
                           <img src="/assets/images/icons/duration.png" alt="duration Icon"/>
 
-                            <span>Duration</span> : 6N 7D
+                            <span>Duration</span> :3N 4D
                           </li>
                          
                         </ul>
@@ -526,9 +477,9 @@ export default function kashmir() {
                               Day 1
                             </p>
                             <div>
-                            <h3>Srinagar Arrival and Pick-up+ Srinagar Local Sightseeing</h3>
+                            <h3>Arrival Kathgodam / Pantnagar and Transfer to Pre Booked hotel in Corbett</h3>
                             <p className="sche-details">
-                            Arrival at Srinagar Airport. Pickup by our tour Representative and transfer to Hotel. Rest and proceed towards Srinagar Local Sightseeing 
+                              Arrival Kathgodam and you will be received from our representative and transfer to Jim Corbett pre booked resort. Day at leisure.
                             </p>
                             </div>
                           </div>
@@ -538,9 +489,9 @@ export default function kashmir() {
                               Day 2
                             </p>
                            <div>
-                           <h3>Srinagar - Doodhpathri - Srinagar</h3>
+                           <h3>Morning Jungle safari and Day at Lesiure in Resort Only</h3>
                             <p className="sche-details">
-                              Breakfast and you would be taken to Doodhpathri to witness sheep and strikingly beautiful cascading WATERFALL.
+                              Early morning ready for Jungle safari. After that return hotel and day at lesiure at resort. 
                             </p>
                            </div>
                           </div>
@@ -550,9 +501,9 @@ export default function kashmir() {
                               Day 3
                             </p>
                             <div>
-                            <h3>Srinagar - Sonmarg - Srinagar</h3>
+                            <h3>A Day to Explore Corbett Local Sightseeing</h3>
                             <p className="sche-details">
-                               Breakfast and proceed towards sonmarg Famous for Thajiwas Glacier (By Ponies at Extra Cost)
+                              Enjoy Breakfast & Head out for Corbett local sightseeing which covers - Corbett Museum, Garjia Temple.
                             </p>
                             </div>
                           </div>
@@ -562,52 +513,13 @@ export default function kashmir() {
                               Day 4
                             </p>
                             <div>
-                            <h3>Srinagar - Gulmarg - Srinagar</h3>
+                            <h3>Check-out and transfer to Kathgodam/Pantnagar Airport</h3>
                             <p className="sche-details">
-                            Breakfast and proceed towards Gulmarg to explore a ride on Gondola both Phases (Extra Cost). You may also  Cover Drung Water Fall 
+                              Breakfast and do check-out. Later catch your train towards to your destination with Happy memories
                             </p>
                             </div>
                           </div>
-                          <div className="schedule-items">
-                            <p className="schedule-timing">
-                            
-                              Day 5
-                            </p>
-                          <div>
-                          <h3>Srinagar - Pahalgam</h3>
-                            <p className="sche-details">
-                               Breakfast and drive to Pahalgam. En-route saffron feilds, Awantipura ruins drive through pine forests, Lidder streams. ABC Valley (By Direct Basis)
-                            </p>
-                          </div>
-                          </div>
-
-                          <div className="schedule-items">
-                            <p className="schedule-timing">
-                            
-                              Day 6
-                            </p>
-                           <div>
-                           <h3>Pahalgam - Srinagar (Houseboat)</h3>
-                            <p className="sche-details">
-                            Breakfast and proceed for Baisaran Valley (Mini -Switzerland) cause of its bueaty (By Direct). Pahalgam Local sightseeing. Evening Return Srinagar & Do check-in Houseboat at Dal Lake.
-                            </p>
-                           </div>
-                          </div>
-
-
-                          
-                          <div className="schedule-items">
-                            <p className="schedule-timing">
-                             
-                              Day 7
-                            </p>
-                            <div>
-                            <h3>Srinagar - Airport Drop</h3>
-                            <p className="sche-details">
-                               Breakfast and transferred to Srinagar Airport. Return Home with Everlasting memories 
-                            </p>
-                            </div>
-                          </div>
+                      
                         </div>
                         <div className="cancellation-policy-bx">
                           <Link href="#">*Cancellation Policy</Link>
@@ -632,15 +544,15 @@ export default function kashmir() {
                 of contents
               </h2>
               <div className="table-contents">
-                <Link href="#package">Kashmir Packages</Link>
+                <Link href="#package">Jim Corbett Packages</Link>
 
-                <Link href="#about-us">About Kashmir</Link>
+                <Link href="#about-us">About Jim Corbett</Link>
 
-                <Link href="#headingTwo">Kashmir Bucket List</Link>
+                <Link href="#headingTwo">Jim Corbett Bucket List</Link>
 
-                <Link href="#headingThree">Kashmir FAQ’s </Link>
+                <Link href="#headingThree">Jim Corbett FAQ’s </Link>
 
-                <Link href="#location">Kashmir Location</Link>
+                <Link href="#location">Jim Corbett Location</Link>
 
                 <Link href="#traveler-reviews">Trip Reviews</Link>
               </div>
@@ -672,15 +584,15 @@ export default function kashmir() {
                 of contents
               </h2>
               <div className="table-contents">
-                <Link href="#package">Kashmir Packages</Link>
+                <Link href="#package">Jim Corbett Packages</Link>
 
-                <Link href="#about-us">About Kashmir</Link>
+                <Link href="#about-us">About Jim Corbett</Link>
 
-                <Link href="#headingTwo">Kashmir Bucket List</Link>
+                <Link href="#headingTwo">Jim Corbett Bucket List</Link>
 
-                <Link href="#headingThree">Kashmir FAQ’s </Link>
+                <Link href="#headingThree">Jim Corbett FAQ’s </Link>
 
-                <Link href="#location">Kashmir Location</Link>
+                <Link href="#location">Jim Corbett Location</Link>
 
                 <Link href="#traveler-reviews">Trip Reviews</Link>
               </div>
@@ -733,7 +645,7 @@ export default function kashmir() {
                     aria-expanded="true"
                     aria-controls="collapseOne"
                   >
-                    About Kashmir
+                    About Jim Corbett
                   </button>
                 </h2>
                 <div
@@ -745,10 +657,10 @@ export default function kashmir() {
                   <div className="accordion-body bg-prime">
                     <div className="about-items">
                       <p>
-                        Kashmir, often referred to as "Paradise on Earth," is a
+                        Jim Corbett, often referred to as "Paradise on Earth," is a
                         breathtaking region nestled in the northern part of the
                         Indian subcontinent. Renowned for its stunning natural
-                        beauty, Kashmir is characterized by its majestic
+                        beauty, Jim Corbett is characterized by its majestic
                         mountains, lush valleys, and serene lakes, making it a
                         dream destination for travelers and nature enthusiasts
                         alike.
@@ -855,7 +767,7 @@ export default function kashmir() {
                     aria-expanded="false"
                     aria-controls="collapseTwo"
                   >
-                    Kashmir Bucket List
+                    Jim Corbett Bucket List
                   </button>
                 </h2>
                 <div
@@ -977,7 +889,7 @@ export default function kashmir() {
                     aria-expanded="false"
                     aria-controls="collapseThree"
                   >
-                    Kashmir FAQ’s?
+                    Jim Corbett FAQ’s?
                   </button>
                 </h2>
                 <div
@@ -1095,17 +1007,20 @@ export default function kashmir() {
       </section>
       {/* ------------------------------  About end ---------------------- */}
 
-      {/* --------------------------- Map Area ------------------------ */}
-      <Map />
-      {/* --------------------------- Map Area ------------------------ */}
 
-      {/* ------------------------------ traveler Reviews Start------------------------------- */}
-      <TravelerReviews />
-      {/* ------------------------------ traveler Reviews Start------------------------------- */}
 
-      <Popup/>
+        {/* --------------------------- Map Area ------------------------ */}
+            <Map />
+            {/* --------------------------- Map Area ------------------------ */}
+      
+            {/* ------------------------------ traveler Reviews Start------------------------------- */}
+            <TravelerReviews />
+            {/* ------------------------------ traveler Reviews Start------------------------------- */}
+      
+            <Popup/>
+      
+            <Footer />
 
-      <Footer />
     </div>
-  );
+  )
 }

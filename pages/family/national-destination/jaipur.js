@@ -1,36 +1,37 @@
 import React from "react";
-
 import Topbar from "../../../components/header/Header";
+import Offcanvas from "../../../components/header/Offcanvas";
+import Link from "next/link";
 import Footer from "../../../components/footer/Footer";
 import TravelerReviews from "../../../components/kashmir/TravelerReviews";
 import Map from "../../../components/kashmir/Map";
-import Link from "next/link";
 import Popup from "../../../components/corporate/Popup";
-import Offcanvas from "../../../components/header/Offcanvas";
 
-export default function kashmir() {
-
-  
+export default function Jaipur() {
   return (
     <div className="bg-prime">
       <Topbar />
-      <Offcanvas/>
+      <Offcanvas />
+
       {/* --------------- Hero start -------------------- */}
       <section className="kashmir-hero">
         <div className="container">
           <div className="row align-items-center pt-200">
             <div className="col-md-12 about-contennt">
               <h2 className="fs-64 text-white fw-bold">
-                The heaven of earth, Kashmir
+                The heaven of earth, Jaipur
               </h2>
               <p>
                 Plan your trips, honeymoons, or family getaways with
                 Tourwatchout! Enjoy a hassle-free experience and create
                 unforgettable memories that last a lifetime.
               </p>
-              <button className="btn btn-primary mt-0 mobile-none" data-bs-toggle="modal"
-                    data-bs-target="#exampleModalCenter"
-                    fdprocessedid="s6df8j">
+              <button
+                className="btn btn-primary mt-0 mobile-none"
+                data-bs-toggle="modal"
+                data-bs-target="#exampleModalCenter"
+                fdprocessedid="s6df8j"
+              >
                 Start Your Journey Now
               </button>
             </div>
@@ -46,17 +47,7 @@ export default function kashmir() {
           <div className="parent-package w-100" id="package">
             <div className="max-800">
               <div className="content-section">
-                <h1>Kashmir Family Tour Package</h1>
-                {/* <ul className="location-list">
-                  <li className="list-item-none">(7 Days)</li>
-                  <li className="locaton-items">
-                    <img
-                      src="/assets/images/kashmir/icons/pin.png"
-                      alt="Location Icon"
-                    />{" "}
-                    Srinagar • Gulmarg • Pahalgam • Sonamarg
-                  </li>
-                </ul> */}
+                <h1>Jaipur Family Tour Package</h1>
               </div>
 
               <div className="tour-package pt-80">
@@ -119,7 +110,6 @@ export default function kashmir() {
                   </li>
                 </ul>
                 <div className="tab-content" id="pills-tabContent">
-
                   {/* ------------------ Basic ------------------- */}
                   <div
                     className="tab-pane fade show active"
@@ -128,7 +118,6 @@ export default function kashmir() {
                     aria-labelledby="pills-basic-tab"
                     tabIndex="0"
                   >
-
                     <div className="basic-hotel-features">
                       <div className="feature-media mobile-none">
                         <video
@@ -142,59 +131,66 @@ export default function kashmir() {
                         <button id="playButton" className="play-btn"></button>
                       </div>
                       <div className="feature-list">
-
-                        
-                    <ul className="location-list">
-                      {/* <li className="list-item-none">(4 Night 5 Days )</li> */}
-                      <li className="locaton-items">
-                        <img
-                          src="/assets/images/kashmir/icons/pin.png"
-                          alt="Location Icon"
-                        />{" "}
-                        Srinagar • Gulmarg • Pahalgam • Sonamarg
-                      </li>
-                    </ul>
+                        <ul className="location-list">
+                          {/* <li className="list-item-none">(4 Night 5 Days )</li> */}
+                          <li className="locaton-items">
+                            <img
+                              src="/assets/images/kashmir/icons/pin.png"
+                              alt="Location Icon"
+                            />{" "}
+                            Jaipur
+                          </li>
+                        </ul>
                         <ul className="features-lists">
                           <li>
-                            <img src="/assets/images/icons/hotel.png" alt="Hotel Icon"/>
+                            <img
+                              src="/assets/images/icons/hotel.png"
+                              alt="Hotel Icon"
+                            />
                             <span>Hotel</span> : 3* Deluxe
                           </li>
 
                           <li>
-                           <img src="/assets/images/icons/pax.png" alt="pax Icon"/>
-                            <span>No of Pax</span> : 2 adults & 1 child (Below 5 yrs)
+                            <img
+                              src="/assets/images/icons/pax.png"
+                              alt="pax Icon"
+                            />
+                            <span>No of Pax</span> : 2 adults & 1 child (Below 5
+                            yrs)
                           </li>
                           <li>
-                          <img src="/assets/images/icons/transferes.png" alt="transfer Icon"/>
+                            <img
+                              src="/assets/images/icons/transferes.png"
+                              alt="transfer Icon"
+                            />
+                            <span>Airport Transfers</span> : Sedan
+                          </li>
 
-                            <span>Airport Transfers</span> : Included (Sedan)
-                          </li>
-                         
                           <li>
-                          <img src="/assets/images/icons/meal.png" alt="meals Icon"/>
-
-                            <span>Meals</span> : Daily Breakfast  Only
-                          </li>
-                          <li>
-                          <img src="/assets/images/icons/duration.png" alt="duration Icon"/>
-
-                            <span>Duration</span> : 4N 5D
-                          </li>
-                          {/* <li>
-                            <span>Photos & Videos</span> : Included
+                            <img
+                              src="/assets/images/icons/meal.png"
+                              alt="meals Icon"
+                            />
+                            <span>Meals</span> : Breakfast
                           </li>
                           <li>
-                            <span>DJ Nights </span> : Included{" "}
-                          </li> */}
+                            <img
+                              src="/assets/images/icons/duration.png"
+                              alt="duration Icon"
+                            />
+                            <span>Duration</span> : 2N 3D
+                          </li>
                         </ul>
-                        <button className="btn btn-primary1" data-bs-toggle="modal"
-                        data-bs-target="#exampleModalCenter"
-                         fdprocessedid="s6df8j">
+                        <button
+                          className="btn btn-primary1"
+                          data-bs-toggle="modal"
+                          data-bs-target="#exampleModalCenter"
+                          fdprocessedid="s6df8j"
+                        >
                           Request A Callback
                         </button>
                       </div>
                     </div>
-
 
                     {/* ------=--------------------- time in tabs ===================== */}
 
@@ -202,81 +198,62 @@ export default function kashmir() {
                       <div className="container">
                         <div className="schedule-list">
                           <div className="schedule-items">
-                            <p className="schedule-timing">
-                             
-                              Day 1
-                            </p>
+                            <p className="schedule-timing">Day 1</p>
                             <div>
+                              <h3>Arrival At Jaipur & Local Sightseeing</h3>
+                              <p className="sche-details">
+                                Upon your arrival at Jaipur airport/railway
+                                station. After rest cover sightseeing like -
+                                City Palace, Jantar Mantar, Hawa Mahal, Jal
+                                Mahal and Amer Fort. In the evening visit
+                                Chaukhi Dhani, the traditional Heritage ethnic
+                                village and then back to hotel for overnight
+                                stay
+                              </p>
+                            </div>
+                          </div>
+                          <div className="schedule-items">
+                            <p className="schedule-timing">Day 2</p>
 
-                            <h3>Srinagar Arrival + Srinagar Local Sightseeing</h3>
-                            <p className="sche-details">
-                              Arrival at Srinagar Airport. Pickup by our tour Representative and transfer to Hotel. Rest and proceed towards Srinagar Local Sightseeing 
-                            </p>
-
-                            </div>
-                            
-                          </div>
-                          <div className="schedule-items">
-                            <p className="schedule-timing">
-                              
-                              Day 2
-                            </p>
-                            
                             <div>
-                            <h3>Srinagar - Gulmarg - Srinagar</h3>
-                            <p className="sche-details">
-                                Breakfast and proceed towards Gulmarg to explore a ride on Gondola both Phases (Extra Cost). You may also  Cover Drung Water Fall 
-                            </p>
+                              <h3>Jaipur Local Tour</h3>
+                              <p className="sche-details">
+                                After breakfast enjoy the visit Jaigarh Fort,
+                                Nahargarh Fort along with City Museum and Birla
+                                Temple. You can also enjoy the famous Rawat Ki
+                                Kachori and Lassi of Jaipur and visit local
+                                market to shop around. In the evening back to
+                                Hotel and overnight stay at hotel
+                              </p>
                             </div>
                           </div>
                           <div className="schedule-items">
-                            <p className="schedule-timing">
-                             
-                              Day 3
-                            </p>
+                            <p className="schedule-timing">Day 3</p>
                             <div>
-                            <h3>Srinagar - Pahalgam - Srinagar</h3>
-                            <p className="sche-details">
-                               Breakfast and drive to Pahalgam. En-route saffron feilds, Awantipura ruins drive through pine forests, Lidder streams. ABC Valley (By Direct Basis)
-                            </p>
+                              <h3> Jaipur & Depature</h3>
+                              <p className="sche-details">
+                                Morning after your breakfast, pack your luggage
+                                our driver will drop you at Jaipur
+                                Airport/Railwaystation/Bus stop
+                              </p>
                             </div>
-                          </div>
-                          <div className="schedule-items">
-                            <p className="schedule-timing">
-                             
-                              Day 4
-                            </p>
-                           <div>
-                           <h3>Srinagar - Sonmarg - Srinagar (Houseboat)</h3>
-                            <p className="sche-details">
-                               Breakfast and proceed towards sonmarg Famous for Thajiwas Glacier (By Ponies at Extra Cost)
-                            </p>
-                           </div>
-                          </div>
-                          <div className="schedule-items">
-                            <p className="schedule-timing">
-                             
-                              Day 5
-                            </p>
-                           <div>
-                           <h3>Srinagar - Airport Drop</h3>
-                            <p className="sche-details">
-                               Breakfast and transferred to Srinagar Airport. Return Home with Everlasting memories 
-                            </p>
-                           </div>
                           </div>
                         </div>
                         <div className="cancellation-policy-bx">
                           <Link href="#">*Cancellation Policy</Link>
-                          <button className="btn btn-primary1" data-bs-toggle="modal"
-                                  data-bs-target="#exampleModalCenter"
-                                  fdprocessedid="s6df8j">Request A Callback</button>
+                          <button
+                            className="btn btn-primary1"
+                            data-bs-toggle="modal"
+                            data-bs-target="#exampleModalCenter"
+                            fdprocessedid="s6df8j"
+                          >
+                            Request A Callback
+                          </button>
                         </div>
                       </div>
                     </section>
 
                     {/* ------=--------------------- time in tabs ===================== */}
-
                   </div>
                   {/* ------------------ Basic ------------------- */}
 
@@ -288,152 +265,152 @@ export default function kashmir() {
                     aria-labelledby="pills-standard-tab"
                     tabIndex="0"
                   >
-
                     <div className="basic-hotel-features">
                       <div className="feature-media mobile-none">
-                      <video
+                        <video
                           id="videoPlayer"
                           src="/assets/images/kashmir/video.mp4"
                           muted
                           autoPlay
                           loop
                           playsInline
-                        ></video> 
+                        ></video>
                         <button id="playButton" className="play-btn"></button>
                       </div>
                       <div className="feature-list">
-
-                      <ul className="location-list">
-                      <li className="locaton-items">
-                        <img
-                          src="/assets/images/kashmir/icons/pin.png"
-                          alt="Location Icon"
-                        />{" "}
-                        Srinagar • Gulmarg • Pahalgam • Sonamarg
-                      </li>
-                    </ul>
+                        <ul className="location-list">
+                          <li className="locaton-items">
+                            <img
+                              src="/assets/images/kashmir/icons/pin.png"
+                              alt="Location Icon"
+                            />{" "}
+                            Jaipur & Udaipur
+                          </li>
+                        </ul>
                         <ul className="features-lists">
                           <li>
-                            
-                          <img src="/assets/images/icons/hotel.png" alt="Hotel Icon"/>
-
+                            <img
+                              src="/assets/images/icons/hotel.png"
+                              alt="Hotel Icon"
+                            />
                             <span>Hotel</span> : 3* Premium
                           </li>
                           <li>
-                          <img src="/assets/images/icons/pax.png" alt="pax Icon"/>
-
-                            <span>No of Pax</span> : 02 Adults 02 Childs
+                            <img
+                              src="/assets/images/icons/pax.png"
+                              alt="pax Icon"
+                            />
+                            <span>No of Pax</span> : 02 Adults & 01 Child (Below
+                            5 yrs)
                           </li>
                           <li>
-                          <img src="/assets/images/icons/transferes.png" alt="transfer Icon"/>
-
-                            <span>Airport Transfers</span> : Included (Srinagar - Srinagar)
+                            <img
+                              src="/assets/images/icons/transferes.png"
+                              alt="transfer Icon"
+                            />
+                            <span>Transfers</span> : Sedan (Railway Station / Airport)
                           </li>
                           <li>
-                          <img src="/assets/images/icons/meal.png" alt="meals Icon"/>
-
-                            <span>Meals</span> : Breakfast and Dinner 
+                            <img
+                              src="/assets/images/icons/meal.png"
+                              alt="meals Icon"
+                            />
+                            <span>Meals</span> : Breakfast and Dinner
                           </li>
                           <li>
-                          <img src="/assets/images/icons/duration.png" alt="duration Icon"/>
-
-                            <span>Duration</span> : 5N 6D
+                            <img
+                              src="/assets/images/icons/duration.png"
+                              alt="duration Icon"
+                            />
+                            <span>Duration</span> : 4N 5D
                           </li>
-                        
                         </ul>
-                        <button className="btn btn-primary1" data-bs-toggle="modal"
-                    data-bs-target="#exampleModalCenter"
-                    fdprocessedid="s6df8j">
+                        <button
+                          className="btn btn-primary1"
+                          data-bs-toggle="modal"
+                          data-bs-target="#exampleModalCenter"
+                          fdprocessedid="s6df8j"
+                        >
                           Request A Callback
                         </button>
                       </div>
                     </div>
 
+                    {/* ------=--------------------- time in tabs ===================== */}
 
-                     {/* ------=--------------------- time in tabs ===================== */}
-
-                     <section className="time-schedule-section ">
+                    <section className="time-schedule-section ">
                       <div className="container">
                         <div className="schedule-list">
                           <div className="schedule-items">
-                            <p className="schedule-timing">
-                            
-                              Day 1
-                            </p>
+                            <p className="schedule-timing">Day 1</p>
                             <div>
-                            <h3>Srinagar Arrival + Srinagar Local Sightseeing</h3>
-                            <p className="sche-details">
-                               Arrival at Srinagar Airport. Pickup by our tour Representative and transfer to Hotel. Rest and proceed towards Srinagar Local Sightseeing 
-                            </p>
+                              <h3>
+                                 Arrival in Jaipur & Pink City Exploration
+                              </h3>
+                              <p className="sche-details">
+                                Arrive at Jaipur Airport (JAI) or Railway Station.Check into your hotel.City Palace, a grand palace complex with museums and courtyards.Visit Hawa Mahal (Palace of Winds), a unique structure with numerous windows offering views of the street below.
+                              </p>
                             </div>
                           </div>
                           <div className="schedule-items">
-                            <p className="schedule-timing">
-                             
-                              Day 2
-                            </p>
+                            <p className="schedule-timing">Day 2</p>
                             <div>
-                            <h3>Srinagar - Sonmarg - Srinagar</h3>
-                            <p className="sche-details">
-                               Breakfast and proceed towards sonmarg Famous for Thajiwas Glacier (By Ponies at Extra Cost)
-                            </p>
+                              <h3>
+                                Amber Fort & Jaipur Sightseeing
+                              </h3>
+                              <p className="sche-details">
+                                 Take an elephant ride or jeep ride up to Amber Fort, a historic fort on a hill. Explore the fort's intricate courtyards, palaces, and galleries.Visit Jal Mahal (Water Palace), a palace situated in the middle of a lake.
+                                 Evening: Explore the local markets, such as Bapu Bazaar or Johri Bazaar, for shopping and street food. 
+                              </p>
                             </div>
                           </div>
                           <div className="schedule-items">
-                            <p className="schedule-timing">
-                          
-                              Day 3
-                            </p>
-                           <div>
-                           <h3>Srinagar - Gulmarg - Srinagar</h3>
-                            <p className="sche-details">
-                              Breakfast and proceed towards Gulmarg to explore a ride on Gondola both Phases (Extra Cost). You may also  Cover Drung Water Fall 
-                            </p>
-                           </div>
-                          </div>
-                          <div className="schedule-items">
-                            <p className="schedule-timing">
-                             
-                              Day 4
-                            </p>
+                            <p className="schedule-timing">Day 3</p>
                             <div>
-                            <h3>Srinagar - Pahalgam</h3>
-                            <p className="sche-details">
-                               Breakfast and drive to Pahalgam. En-route saffron feilds, Awantipura ruins drive through pine forests, Lidder streams. ABC Valley (By Direct Basis)
-                            </p>
+                              <h3>
+                                {" "}
+                                Travel to Udaipur & City Palace
+                              </h3>
+                              <p className="sche-details">
+                                 Depart from Jaipur for Udaipur. The journey is around 6-7 hours by road. Check into your hotel in Udaipur.Explore the City Palace, a sprawling complex on the banks of Lake Pichola, with various courtyards, palaces, and museums.
+                              </p>
                             </div>
                           </div>
                           <div className="schedule-items">
-                            <p className="schedule-timing">
-                             
-                              Day 5
-                            </p>
+                            <p className="schedule-timing">Day 4</p>
                             <div>
-                            <h3>Pahalgam - Srinagar (Houseboat)</h3>
-                            <p className="sche-details">
-                              Breakfast and proceed for Baisaran Valley (Mini -Switzerland) cause of its bueaty (By Direct). Pahalgam Local sightseeing. Evening Return Srinagar & Do check-in Houseboat at Dal Lake.
-                            </p>
+                              <h3>
+                                Udaipur Sightseeing
+                               </h3>
+                              <p className="sche-details">
+                                Take a boat ride on Lake Pichola for a scenic view of the city and the surrounding hill. Visit Saheliyon-Ki-Bari, a beautiful garden with fountains, pavilions, and musical instruments.Explore the local markets in Udaipur, such as the old city market or the Bada Bazaar. 
+                              </p>
                             </div>
                           </div>
 
+
                           <div className="schedule-items">
-                            <p className="schedule-timing">
-                            
-                              Day 6
-                            </p>
-                          <div>
-                          <h3>Srinagar - Airport Drop</h3>
-                            <p className="sche-details">
-                            Breakfast and transferred to Srinagar Airport. Return Home with Everlasting memories 
-                            </p>
-                          </div>
+                            <p className="schedule-timing">Day 5</p>
+                            <div>
+                              <h3>
+                                Departure
+                               </h3>
+                              <p className="sche-details">
+                                 Enjoy breakfast and do some last-minute souvenir shopping. Depart from Udaipur Airport (IDR) or Railway Station. 
+                              </p>
+                            </div>
                           </div>
                         </div>
                         <div className="cancellation-policy-bx">
                           <Link href="#">*Cancellation Policy</Link>
-                          <button className="btn btn-primary1" data-bs-toggle="modal"
-                                  data-bs-target="#exampleModalCenter"
-                                  fdprocessedid="s6df8j">Request A Callback</button>
+                          <button
+                            className="btn btn-primary1"
+                            data-bs-toggle="modal"
+                            data-bs-target="#exampleModalCenter"
+                            fdprocessedid="s6df8j"
+                          >
+                            Request A Callback
+                          </button>
                         </div>
                       </div>
                     </section>
@@ -451,10 +428,6 @@ export default function kashmir() {
                     aria-labelledby="pills-premium-tab"
                     tabIndex="0"
                   >
-
-
-                    
-                 
                     <div className="basic-hotel-features">
                       <div className="feature-media mobile-none">
                         <video
@@ -467,153 +440,137 @@ export default function kashmir() {
                         <button id="playButton" className="play-btn"></button>
                       </div>
                       <div className="feature-list">
-
-                      <ul className="location-list">
-                      {/* <li className="list-item-none">(6 Night 7 Days )</li> */}
-                      <li className="locaton-items">
-                        <img
-                          src="/assets/images/kashmir/icons/pin.png"
-                          alt="Location Icon"
-                        />{" "}
-                        Srinagar • Gulmarg • Pahalgam • Sonamarg • Doodhpathri
-                      </li>
-                    </ul>
+                        <ul className="location-list">
+                          {/* <li className="list-item-none">(6 Night 7 Days )</li> */}
+                          <li className="locaton-items">
+                            <img
+                              src="/assets/images/kashmir/icons/pin.png"
+                              alt="Location Icon"
+                            />{" "}
+                            Jaipur & Udaipur
+                          </li>
+                        </ul>
                         <ul className="features-lists">
                           <li>
-                          <img src="/assets/images/icons/hotel.png" alt="Hotel Icon"/>
-
+                            <img
+                              src="/assets/images/icons/hotel.png"
+                              alt="Hotel Icon"
+                            />
                             <span>Hotel</span> : 4*
                           </li>
                           <li>
-                          <img src="/assets/images/icons/pax.png" alt="pax Icon"/>
-
-                            <span>No of Pax</span> : 02 Adults 01 Child (below 6 yrs)
+                            <img
+                              src="/assets/images/icons/pax.png"
+                              alt="pax Icon"
+                            />
+                            <span>No of Pax</span> : 02 Adults & 02 Childs
                           </li>
                           <li>
-
-                          <img src="/assets/images/icons/transferes.png" alt="transfer Icon"/>
-
-                            <span>Airport Transfers</span> : 2 adults & 1child (Below 5 yrs)
+                            <img
+                              src="/assets/images/icons/transferes.png"
+                              alt="transfer Icon"
+                            />
+                            <span>Transfers</span> : Sedan (Railway station / Airport)
                           </li>
                           <li>
-                          <img src="/assets/images/icons/meal.png" alt="meals Icon"/>
-
-                            <span>Meals</span> : Breakfast and Dinner 
+                            <img
+                              src="/assets/images/icons/meal.png"
+                              alt="meals Icon"
+                            />
+                            <span>Meals</span> : Breakfast and Dinner
                           </li>
                           <li>
-                          <img src="/assets/images/icons/duration.png" alt="duration Icon"/>
-
-                            <span>Duration</span> : 6N 7D
+                            <img
+                              src="/assets/images/icons/duration.png"
+                              alt="duration Icon"
+                            />
+                            <span>Duration</span> : 4N 5D
                           </li>
-                         
                         </ul>
-                        <button className="btn btn-primary1" data-bs-toggle="modal"
+                        <button
+                          className="btn btn-primary1"
+                          data-bs-toggle="modal"
                           data-bs-target="#exampleModalCenter"
-                           fdprocessedid="s6df8j">
+                          fdprocessedid="s6df8j"
+                        >
                           Request A Callback
                         </button>
                       </div>
                     </div>
 
-                     {/* ------=--------------------- time in tabs ===================== */}
+                    {/* ------=--------------------- time in tabs ===================== */}
 
-                     <section className="time-schedule-section ">
+                    <section className="time-schedule-section ">
                       <div className="container">
                         <div className="schedule-list">
                           <div className="schedule-items">
-                            <p className="schedule-timing">
-                           
-                              Day 1
-                            </p>
+                            <p className="schedule-timing">Day 1</p>
                             <div>
-                            <h3>Srinagar Arrival and Pick-up+ Srinagar Local Sightseeing</h3>
-                            <p className="sche-details">
-                            Arrival at Srinagar Airport. Pickup by our tour Representative and transfer to Hotel. Rest and proceed towards Srinagar Local Sightseeing 
-                            </p>
+                              <h3>
+                                Arrival in Jaipur & Pink City Exploration
+                              </h3>
+                              <p className="sche-details">
+                                Arrive at Jaipur Airport (JAI) or Railway Station.Check into your hotel.City Palace, a grand palace complex with museums and courtyards.Visit Hawa Mahal (Palace of Winds), a unique structure with numerous windows offering views of the street below.
+                              </p>
                             </div>
                           </div>
                           <div className="schedule-items">
-                            <p className="schedule-timing">
-                             
-                              Day 2
-                            </p>
-                           <div>
-                           <h3>Srinagar - Doodhpathri - Srinagar</h3>
-                            <p className="sche-details">
-                              Breakfast and you would be taken to Doodhpathri to witness sheep and strikingly beautiful cascading WATERFALL.
-                            </p>
-                           </div>
-                          </div>
-                          <div className="schedule-items">
-                            <p className="schedule-timing">
-                         
-                              Day 3
-                            </p>
+                            <p className="schedule-timing">Day 2</p>
                             <div>
-                            <h3>Srinagar - Sonmarg - Srinagar</h3>
-                            <p className="sche-details">
-                               Breakfast and proceed towards sonmarg Famous for Thajiwas Glacier (By Ponies at Extra Cost)
-                            </p>
+                              <h3>
+                                Amber Fort & Jaipur Sightseeing
+                              </h3>
+                              <p className="sche-details">
+                              Take an elephant ride or jeep ride up to Amber Fort, a historic fort on a hill. Explore the fort's intricate courtyards, palaces, and galleries.Visit Jal Mahal (Water Palace), a palace situated in the middle of a lake.
+                              Evening: Explore the local markets, such as Bapu Bazaar or Johri Bazaar, for shopping and street food. 
+                              </p>
                             </div>
                           </div>
                           <div className="schedule-items">
-                            <p className="schedule-timing">
-                             
-                              Day 4
-                            </p>
+                            <p className="schedule-timing">Day 3</p>
                             <div>
-                            <h3>Srinagar - Gulmarg - Srinagar</h3>
-                            <p className="sche-details">
-                            Breakfast and proceed towards Gulmarg to explore a ride on Gondola both Phases (Extra Cost). You may also  Cover Drung Water Fall 
-                            </p>
+                              <h3>
+                                 Travel to Udaipur & City Palace
+                              </h3>
+                              <p className="sche-details">
+                                 Depart from Jaipur for Udaipur. The journey is around 6-7 hours by road. Check into your hotel in Udaipur.Explore the City Palace, a sprawling complex on the banks of Lake Pichola, with various courtyards, palaces, and museums.
+                              </p>
                             </div>
                           </div>
                           <div className="schedule-items">
-                            <p className="schedule-timing">
-                            
-                              Day 5
-                            </p>
-                          <div>
-                          <h3>Srinagar - Pahalgam</h3>
-                            <p className="sche-details">
-                               Breakfast and drive to Pahalgam. En-route saffron feilds, Awantipura ruins drive through pine forests, Lidder streams. ABC Valley (By Direct Basis)
-                            </p>
-                          </div>
-                          </div>
-
-                          <div className="schedule-items">
-                            <p className="schedule-timing">
-                            
-                              Day 6
-                            </p>
-                           <div>
-                           <h3>Pahalgam - Srinagar (Houseboat)</h3>
-                            <p className="sche-details">
-                            Breakfast and proceed for Baisaran Valley (Mini -Switzerland) cause of its bueaty (By Direct). Pahalgam Local sightseeing. Evening Return Srinagar & Do check-in Houseboat at Dal Lake.
-                            </p>
-                           </div>
-                          </div>
-
-
-                          
-                          <div className="schedule-items">
-                            <p className="schedule-timing">
-                             
-                              Day 7
-                            </p>
+                            <p className="schedule-timing">Day 4</p>
                             <div>
-                            <h3>Srinagar - Airport Drop</h3>
-                            <p className="sche-details">
-                               Breakfast and transferred to Srinagar Airport. Return Home with Everlasting memories 
-                            </p>
+                              <h3>
+                                 Udaipur Sightseeing
+                              </h3>
+                              <p className="sche-details">
+                              Take a boat ride on Lake Pichola for a scenic view of the city and the surrounding hill. Visit Saheliyon-Ki-Bari, a beautiful garden with fountains, pavilions, and musical instruments.Explore the local markets in Udaipur, such as the old city market or the Bada Bazaar. 
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="schedule-items">
+                            <p className="schedule-timing">Day 5</p>
+                            <div>
+                              <h3>
+                                Departure
+                              </h3>
+                              <p className="sche-details">
+                              Enjoy breakfast and do some last-minute souvenir shopping. Depart from Udaipur Airport (IDR) or Railway Station.  
+                              </p>
                             </div>
                           </div>
                         </div>
                         <div className="cancellation-policy-bx">
                           <Link href="#">*Cancellation Policy</Link>
-                          <button className="btn btn-primary1" data-bs-toggle="modal"
-                                  data-bs-target="#exampleModalCenter"
-                                  fdprocessedid="s6df8j">Request A Callback</button>
+                          <button
+                            className="btn btn-primary1"
+                            data-bs-toggle="modal"
+                            data-bs-target="#exampleModalCenter"
+                            fdprocessedid="s6df8j"
+                          >
+                            Request A Callback
+                          </button>
                         </div>
                       </div>
                     </section>
@@ -621,7 +578,6 @@ export default function kashmir() {
                     {/* ------=--------------------- time in tabs ===================== */}
                   </div>
                   {/* ------------------ Premium ------------------- */}
-                  
                 </div>
               </div>
             </div>
@@ -632,15 +588,15 @@ export default function kashmir() {
                 of contents
               </h2>
               <div className="table-contents">
-                <Link href="#package">Kashmir Packages</Link>
+                <Link href="#package">Jaipur Packages</Link>
 
-                <Link href="#about-us">About Kashmir</Link>
+                <Link href="#about-us">About Jaipur</Link>
 
-                <Link href="#headingTwo">Kashmir Bucket List</Link>
+                <Link href="#headingTwo">Jaipur Bucket List</Link>
 
-                <Link href="#headingThree">Kashmir FAQ’s </Link>
+                <Link href="#headingThree">Jaipur FAQ’s </Link>
 
-                <Link href="#location">Kashmir Location</Link>
+                <Link href="#location">Jaipur Location</Link>
 
                 <Link href="#traveler-reviews">Trip Reviews</Link>
               </div>
@@ -652,47 +608,43 @@ export default function kashmir() {
 
       {/* ==================================== Moibile-things ================================= */}
       <section className="onlyl-mobile desktop-none">
-          <div className="container">
-             <div className="table-of-row tour-package">
-                 <div className="feature-media ">
-                        <video
-                          id="videoPlayer"
-                          src="/assets/images/kashmir/video.mp4"
-                          muted
-                          loop
-                          playsInline
-                        ></video>
-                        <button id="playButton" className="play-btn"></button>
-                  </div>
+        <div className="container">
+          <div className="table-of-row tour-package">
+            <div className="feature-media ">
+              <video
+                id="videoPlayer"
+                src="/assets/images/kashmir/video.mp4"
+                muted
+                loop
+                playsInline
+              ></video>
+              <button id="playButton" className="play-btn"></button>
+            </div>
 
-                <div className="max-400 ">
+            <div className="max-400 ">
               <h2>
                 {" "}
                 Table <br />
                 of contents
               </h2>
               <div className="table-contents">
-                <Link href="#package">Kashmir Packages</Link>
+                <Link href="#package">Jaipur Packages</Link>
 
-                <Link href="#about-us">About Kashmir</Link>
+                <Link href="#about-us">About Jaipur</Link>
 
-                <Link href="#headingTwo">Kashmir Bucket List</Link>
+                <Link href="#headingTwo">Jaipur Bucket List</Link>
 
-                <Link href="#headingThree">Kashmir FAQ’s </Link>
+                <Link href="#headingThree">Jaipur FAQ’s </Link>
 
-                <Link href="#location">Kashmir Location</Link>
+                <Link href="#location">Jaipur Location</Link>
 
                 <Link href="#traveler-reviews">Trip Reviews</Link>
               </div>
-                </div>
-
-
-             </div>
+            </div>
           </div>
+        </div>
       </section>
       {/* ==================================== Moibile-things ================================= */}
-
-    
 
       {/* ---------------------------------- CTa ----------------------- */}
 
@@ -704,14 +656,24 @@ export default function kashmir() {
               <h1 className="pacifico-regular">Kashmir</h1>
               <p>And get exciting offers</p>
 
-              <button className="btn btn-primary1 desktop-none" data-bs-toggle="modal"
-                    data-bs-target="#exampleModalCenter"
-                    fdprocessedid="s6df8j">Start Journey Now</button>
+              <button
+                className="btn btn-primary1 desktop-none"
+                data-bs-toggle="modal"
+                data-bs-target="#exampleModalCenter"
+                fdprocessedid="s6df8j"
+              >
+                Start Journey Now
+              </button>
             </div>
             <div className="con-ctabx">
-              <button className="btn btn-primary1 mobile-none" data-bs-toggle="modal"
-                    data-bs-target="#exampleModalCenter"
-                    fdprocessedid="s6df8j">Start Journey Now</button>
+              <button
+                className="btn btn-primary1 mobile-none"
+                data-bs-toggle="modal"
+                data-bs-target="#exampleModalCenter"
+                fdprocessedid="s6df8j"
+              >
+                Start Journey Now
+              </button>
             </div>
           </div>
         </div>
@@ -733,7 +695,7 @@ export default function kashmir() {
                     aria-expanded="true"
                     aria-controls="collapseOne"
                   >
-                    About Kashmir
+                    About Jaipur
                   </button>
                 </h2>
                 <div
@@ -745,13 +707,13 @@ export default function kashmir() {
                   <div className="accordion-body bg-prime">
                     <div className="about-items">
                       <p>
-                        Kashmir, often referred to as "Paradise on Earth," is a
-                        breathtaking region nestled in the northern part of the
-                        Indian subcontinent. Renowned for its stunning natural
-                        beauty, Kashmir is characterized by its majestic
-                        mountains, lush valleys, and serene lakes, making it a
-                        dream destination for travelers and nature enthusiasts
-                        alike.
+                        Jaipur, often referred to as "Paradise on Earth,"
+                        is a breathtaking region nestled in the northern part of
+                        the Indian subcontinent. Renowned for its stunning
+                        natural beauty, Jaipur is characterized by its
+                        majestic mountains, lush valleys, and serene lakes,
+                        making it a dream destination for travelers and nature
+                        enthusiasts alike.
                       </p>
                     </div>
                     <div className="about-items">
@@ -855,7 +817,7 @@ export default function kashmir() {
                     aria-expanded="false"
                     aria-controls="collapseTwo"
                   >
-                    Kashmir Bucket List
+                    Jaipur Bucket List
                   </button>
                 </h2>
                 <div
@@ -977,7 +939,7 @@ export default function kashmir() {
                     aria-expanded="false"
                     aria-controls="collapseThree"
                   >
-                    Kashmir FAQ’s?
+                    Jaipur FAQ’s?
                   </button>
                 </h2>
                 <div
@@ -1103,7 +1065,7 @@ export default function kashmir() {
       <TravelerReviews />
       {/* ------------------------------ traveler Reviews Start------------------------------- */}
 
-      <Popup/>
+      <Popup />
 
       <Footer />
     </div>
