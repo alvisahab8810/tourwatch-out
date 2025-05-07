@@ -1038,7 +1038,7 @@ export default function CheckIn() {
                     </div>
 
                     {/* Occupancy Selection */}
-                    <div className="mb-3">
+                    {/* <div className="mb-3">
                       <label className="form-label">Select Occupancy</label>
                       <select
                         value={occupancy}
@@ -1062,7 +1062,29 @@ export default function CheckIn() {
                           )
                         )}
                       </select>
-                    </div>
+                    </div> */}
+
+
+                    {/* Occupancy Selection */}
+                      <div className="mb-3">
+                        <label className="form-label">Select Occupancy</label>
+                        <select value={occupancy} onChange={handleOccupancyChange}>
+                          <option value="">Select Occupancy</option>
+                          {Object.keys(roomData)
+                            .filter((type) => roomData[type] && roomData[type].trim() !== "")
+                            .map((type) => (
+                              <option
+                                key={type}
+                                value={type}
+                                disabled={occupancyCount[type] >= occupancyLimits[type]}
+                              >
+                                {type}{" "}
+                                {occupancyCount[type] >= occupancyLimits[type] ? "(Full)" : ""}
+                              </option>
+                            ))}
+                        </select>
+                      </div>
+
 
                     {selectedOccupancy && (
                       <p>Selected Occupancy: {selectedOccupancy}</p>
