@@ -812,12 +812,12 @@ export default function CheckIn() {
       !selectedRoom ||
       !uploadedFile
     ) {
-      setError("Please fill all fields and upload an ID.");
+      alert("Please fill all fields and upload an ID.");
       return;
     }
 
     if (uploadedFile.size > 400 * 1024) {
-      setError("File must be under 400KB.");
+      alert("File must be under 400KB.");
       return;
     }
 
@@ -835,7 +835,7 @@ export default function CheckIn() {
       const checkData = await checkResponse.json();
 
       if (checkData.exists) {
-        setError("This WhatsApp number is already registered!");
+        alert("This WhatsApp number is already registered!");
         return;
       }
 

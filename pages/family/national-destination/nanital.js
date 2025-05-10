@@ -161,7 +161,7 @@ export default function Nanital() {
                           </li>
                           <li>
                            <img src="/assets/images/icons/transferes.png" alt="transfer Icon"/>
-                            <span>Airport Transfers</span> : Sedan 
+                            <span>Transfers</span> : Sedan 
                           </li>
                           <li>
                             <img src="/assets/images/icons/pax.png" alt="pax Icon"/>
@@ -308,7 +308,7 @@ export default function Nanital() {
                           <li>
                           <img src="/assets/images/icons/transferes.png" alt="transfer Icon"/>
 
-                            <span>Airport Transfers</span> : Included (Sedan)
+                            <span>Transfers</span> : Included (Sedan)
                           </li>
                           <li>
                           <img src="/assets/images/icons/meal.png" alt="meals Icon"/>
@@ -450,7 +450,7 @@ export default function Nanital() {
                           </li>
                           <li>
                             <img src="/assets/images/icons/transferes.png" alt="transfer Icon"/>
-                            <span>Airport Transfers</span> : Included (Sedan)
+                            <span>Transfers</span> : Included (Sedan)
                           </li>
                           <li>
                           <img src="/assets/images/icons/meal.png" alt="meals Icon"/>

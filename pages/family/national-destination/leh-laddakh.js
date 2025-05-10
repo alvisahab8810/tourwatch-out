@@ -167,7 +167,7 @@ export default function LehLaddakh() {
                           <li>
                            <img src="/assets/images/icons/transferes.png" alt="transfer Icon"/>
 
-                            <span>Airport Transfers</span> : Included (Scorpio/Xylo/Innova)
+                            <span>Transfers</span> : Included (Scorpio/Xylo/Innova)
                           </li>
                         
                           <li>
@@ -308,7 +308,7 @@ export default function LehLaddakh() {
                           </li>
                           <li>
                             <img src="/assets/images/icons/transferes.png" alt="transfer Icon"/>
-                            <span>Airport Transfers</span> : Included (Srinagar - Srinagar)
+                            <span>Transfers</span> : Included (Srinagar - Srinagar)
                           </li>
                           <li>
                             <img src="/assets/images/icons/meal.png" alt="meals Icon"/>
@@ -467,7 +467,7 @@ export default function LehLaddakh() {
                           src="/assets/images/kashmir/icons/pin.png"
                           alt="Location Icon"
                         />{" "}
-                        Null • Null • Null • Null • Null
+                       Leh • Khardungla •Nubra •Pangong •Tsomoriri •Tsokar •Tanglangla
                       </li>
                     </ul>
                         <ul className="features-lists">
@@ -484,7 +484,7 @@ export default function LehLaddakh() {
                           <li>
                           <img src="/assets/images/icons/transferes.png" alt="transfer Icon"/>
 
-                            <span>Airport Transfers</span> : Included (Scorpio/Xylo/Innova)
+                            <span>Transfers</span> : Included (Scorpio/Xylo/Innova)
                           </li>
                           <li>
                           <img src="/assets/images/icons/meal.png" alt="meals Icon"/>

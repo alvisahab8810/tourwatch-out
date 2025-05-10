@@ -167,7 +167,7 @@ export default function kashmir() {
                           <li>
                           <img src="/assets/images/icons/transferes.png" alt="transfer Icon"/>
 
-                            <span>Airport Transfers</span> : Included (Sedan)
+                            <span>Transfers</span> : Included (Sedan)
                           </li>
                          
                           <li>
@@ -327,7 +327,7 @@ export default function kashmir() {
                           <li>
                           <img src="/assets/images/icons/transferes.png" alt="transfer Icon"/>
 
-                            <span>Airport Transfers</span> : Included (Srinagar - Srinagar)
+                            <span>Transfers</span> : Included (Srinagar - Srinagar)
                           </li>
                           <li>
                           <img src="/assets/images/icons/meal.png" alt="meals Icon"/>
@@ -487,13 +487,13 @@ export default function kashmir() {
                           <li>
                           <img src="/assets/images/icons/pax.png" alt="pax Icon"/>
 
-                            <span>No of Pax</span> : 02 Adults 01 Child (below 6 yrs)
+                            <span>No of Pax</span> : 02 Adults 01 Child (Below 5 yrs)
                           </li>
                           <li>
 
                           <img src="/assets/images/icons/transferes.png" alt="transfer Icon"/>
 
-                            <span>Airport Transfers</span> : 2 adults & 1child (Below 5 yrs)
+                            <span>Transfers</span> : Included (Srinagar - Srinagar)
                           </li>
                           <li>
                           <img src="/assets/images/icons/meal.png" alt="meals Icon"/>

@@ -413,7 +413,38 @@ export default function Destination() {
             {/* ================== CTA ================== */}
 
 
-            <div className="national-features mt-2">
+           
+          </div>
+        </div>
+      </section>
+
+      {/* ================== CTA ================== */}
+      <section className="banner-sections ptb-40-30 ptb-80">
+            <div className="container">
+                <div className="banner-section">
+                  <div className="banner-content">
+                    <p>Visit the Paradise of earth</p>
+                    <h1 className="pacifico-regular">Kashmir</h1>
+                    <p>And get exciting offers</p>
+                    <button className="btn btn-primary1 desktop-none" data-bs-toggle="modal"
+                          data-bs-target="#exampleModalCenter"
+                          fdprocessedid="s6df8j">Start Journey Now</button>
+                  </div>
+                  <div className="con-ctabx">
+                    <button className="btn btn-primary1 mobile-none" data-bs-toggle="modal"
+                          data-bs-target="#exampleModalCenter"
+                          fdprocessedid="s6df8j">Start Journey Now</button>
+                  </div>
+                </div>
+              </div>
+      </section>
+       {/* ================== CTA ================== */}
+      <section className="destination-row ">
+        <div className="container">
+          <div className="national-list-bx pb-80">
+            
+
+             <div className="national-features mt-2">
               <Link href="/family/national-destination/nanital">
                 <div className="desti-img">
                   {" "}
@@ -519,144 +550,6 @@ export default function Destination() {
                 </div>
               </Link>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ================== CTA ================== */}
-      <section className="banner-sections ptb-40-30 ptb-80">
-            <div className="container">
-                <div className="banner-section">
-                  <div className="banner-content">
-                    <p>Visit the Paradise of earth</p>
-                    <h1 className="pacifico-regular">Kashmir</h1>
-                    <p>And get exciting offers</p>
-                    <button className="btn btn-primary1 desktop-none" data-bs-toggle="modal"
-                          data-bs-target="#exampleModalCenter"
-                          fdprocessedid="s6df8j">Start Journey Now</button>
-                  </div>
-                  <div className="con-ctabx">
-                    <button className="btn btn-primary1 mobile-none" data-bs-toggle="modal"
-                          data-bs-target="#exampleModalCenter"
-                          fdprocessedid="s6df8j">Start Journey Now</button>
-                  </div>
-                </div>
-              </div>
-      </section>
-       {/* ================== CTA ================== */}
-      <section className="destination-row d-none">
-        <div className="container">
-          <div className="national-list-bx pb-80">
-            <div className="national-features">
-              <Link href="/dehradun">
-                <div className="desti-img">
-                  {" "}
-                  <img
-                    src="/assets/images/n-destination/dehradun.webp"
-                    alt="National Destination"
-                  />{" "}
-                </div>
-                <div className="desti-main">
-                  <div className="desti-info">
-                    <h3>Dehradun & Mussoorie</h3>
-                    <p>
-                      Dehradun and Mussoorie, both nestled in the foothills of the Himalayas, offer scenic beauty, cool weather, and a perfect blend of nature and adventure. Mussoorie, known as the “Queen of Hills,” is ideal for a tranquil escape, while Dehradun is great for its vibrant culture and nearby attractions.
-                    </p>
-                  </div>
-                  <div className="facility-section">
-                    <div className="faci-1">
-                      <ul>
-                        <li className="ml-0">
-                          <img
-                            src="/assets/images/destination/icons/hotel.png"
-                            alt="Hotel Icon"
-                          />
-                          <p> Upto 3 Stars</p>
-                        </li>
-                        <li>
-                          <img
-                            src="/assets/images/destination/icons/meal.png"
-                            alt="Meal Icon"
-                          />
-                          <p> Meal</p>
-                        </li>
-                        <li>
-                          <img
-                            src="/assets/images/destination/icons/sight.png"
-                            alt="sight Icon"
-                          />
-                          <p> Sightseeing</p>
-                        </li>
-                      </ul>
-                    </div>
-                    <div className="faci-ratings">
-                      {" "}
-                      <img
-                        src="/assets/images/destination/icons/heart.png"
-                        alt="Heart Icon"
-                      />{" "}
-                      <span>4.8</span>{" "}
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            </div>
-
-            <div className="national-features">
-              <Link href="/nanital">
-                <div className="desti-img">
-                  {" "}
-                  <img
-                    src="/assets/images/n-destination/img3.webp"
-                    alt="National Destination"
-                  ></img>{" "}
-                </div>
-                <div className="desti-main">
-                  <div className="desti-info">
-                    <h3>Kashmir</h3>
-                    <p>
-                     Kashmir, known as “Paradise on Earth,” boasts breathtaking landscapes, serene lakes, and vibrant culture, offering a truly magical experience..
-
-                    </p>
-                  </div>
-                  <div className="facility-section">
-                    <div className="faci-1">
-                      <ul>
-                        <li className="ml-0">
-                          <img
-                            src="/assets/images/destination/icons/hotel.png"
-                            alt="Hotel Icon"
-                          ></img>
-                          <p> Upto 3 Stars</p>
-                        </li>
-                        <li>
-                          <img
-                            src="/assets/images/destination/icons/meal.png"
-                            alt="Meal Icon"
-                          ></img>
-                          <p> Meal</p>
-                        </li>
-                        <li>
-                          <img
-                            src="/assets/images/destination/icons/sight.png"
-                            alt="sight Icon"
-                          ></img>
-                          <p> Sightseeing</p>
-                        </li>
-                      </ul>
-                    </div>
-                    <div className="faci-ratings">
-                      {" "}
-                      <img
-                        src="/assets/images/destination/icons/heart.png"
-                        alt="Heart Icon"
-                      ></img>{" "}
-                      <span>4.8</span>{" "}
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            </div>
 
             
              {/* ================== CTA ================== */}
@@ -682,7 +575,7 @@ export default function Destination() {
             {/* ================== CTA ================== */}
 
             <div className="national-features">
-              <Link href="#">
+              <Link href="/family/national-destination/goa">
                 <div className="desti-img">
                   {" "}
                   <img
@@ -739,7 +632,7 @@ export default function Destination() {
             </div>
 
             <div className="national-features mt-2">
-              <Link href="/kashmir">
+              <Link href="/family/national-destination/jim-corbett">
                 <div className="desti-img">
                   {" "}
                   <img
@@ -749,9 +642,9 @@ export default function Destination() {
                 </div>
                 <div className="desti-main">
                   <div className="desti-info">
-                    <h3>Kashmir</h3>
+                    <h3>Jim Corbett </h3>
                     <p>
-                      Kashmir is a breathtaking paradise, featuring majestic
+                      Jim Corbett is a breathtaking paradise, featuring majestic
                       mountains and serene lakes, perfect for nature lovers and
                       adventure seekers.
                     </p>
@@ -819,7 +712,7 @@ export default function Destination() {
             {/* ================== CTA ================== */}
             
             <div className="national-features mt-2">
-              <Link href="#">
+              <Link href="/family/national-destination/jaipur">
                 <div className="desti-img">
                   {" "}
                   <img
@@ -829,9 +722,9 @@ export default function Destination() {
                 </div>
                 <div className="desti-main">
                   <div className="desti-info">
-                    <h3>Darjeeling</h3>
+                    <h3>Jaipur</h3>
                     <p>
-                      Darjeeling, with its lush tea gardens and panoramic views
+                      Jaipur, with its lush tea gardens and panoramic views
                       of the Himalayas, is a charming hill station that
                       captivates visitors seeking tranquility & natural beauty.
                     </p>
@@ -876,7 +769,7 @@ export default function Destination() {
             </div>
 
             <div className="national-features mt-2">
-              <Link href="/kashmir">
+              <Link href="/family/national-destination/north-sikkim">
                 <div className="desti-img">
                   {" "}
                   <img
@@ -886,9 +779,143 @@ export default function Destination() {
                 </div>
                 <div className="desti-main">
                   <div className="desti-info">
-                    <h3>Kashmir</h3>
+                    <h3>North Sikkim</h3>
                     <p>
-                      Kashmir is a breathtaking paradise, featuring majestic
+                      North Sikkim is a breathtaking paradise, featuring majestic
+                      mountains and serene lakes, perfect for nature lovers and
+                      adventure seekers.
+                    </p>
+                  </div>
+                  <div className="facility-section">
+                    <div className="faci-1">
+                      <ul>
+                        <li className="ml-0">
+                          <img
+                            src="/assets/images/destination/icons/hotel.png"
+                            alt="Hotel Icon"
+                          ></img>
+                          <p> Upto 3 Stars</p>
+                        </li>
+                        <li>
+                          <img
+                            src="/assets/images/destination/icons/meal.png"
+                            alt="Meal Icon"
+                          ></img>
+                          <p> Meal</p>
+                        </li>
+                        <li>
+                          <img
+                            src="/assets/images/destination/icons/sight.png"
+                            alt="sight Icon"
+                          ></img>
+                          <p> Sightseeing</p>
+                        </li>
+                      </ul>
+                    </div>
+                    <div className="faci-ratings">
+                      {" "}
+                      <img
+                        src="/assets/images/destination/icons/heart.png"
+                        alt="Heart Icon"
+                      ></img>{" "}
+                      <span>4.8</span>{" "}
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            </div>
+
+               {/* ================== CTA ================== */}
+             <section className="banner-sections desktop-none ptb-40-30">
+              <div className="container">
+                <div className="banner-section">
+                  <div className="banner-content">
+                    <p>Visit the Paradise of earth</p>
+                    <h1 className="pacifico-regular">Kashmir</h1>
+                    <p>And get exciting offers</p>
+                    <button className="btn btn-primary1 desktop-none" data-bs-toggle="modal"
+                          data-bs-target="#exampleModalCenter"
+                          fdprocessedid="s6df8j">Start Journey Now</button>
+                  </div>
+                  <div className="con-ctabx">
+                    <button className="btn btn-primary1 mobile-none" data-bs-toggle="modal"
+                          data-bs-target="#exampleModalCenter"
+                          fdprocessedid="s6df8j">Start Journey Now</button>
+                  </div>
+                </div>
+              </div>
+            </section>
+            {/* ================== CTA ================== */}
+             <div className="national-features mt-2">
+              <Link href="/family/national-destination/lonavala-khandala">
+                <div className="desti-img">
+                  {" "}
+                  <img
+                    src="/assets/images/n-destination/img3.webp"
+                    alt="National Destination"
+                  ></img>{" "}
+                </div>
+                <div className="desti-main">
+                  <div className="desti-info">
+                    <h3>Lonavala & Khandala</h3>
+                    <p>
+                      Lonavala & Khandala is a breathtaking paradise, featuring majestic
+                      mountains and serene lakes, perfect for nature lovers and
+                      adventure seekers.
+                    </p>
+                  </div>
+                  <div className="facility-section">
+                    <div className="faci-1">
+                      <ul>
+                        <li className="ml-0">
+                          <img
+                            src="/assets/images/destination/icons/hotel.png"
+                            alt="Hotel Icon"
+                          ></img>
+                          <p> Upto 3 Stars</p>
+                        </li>
+                        <li>
+                          <img
+                            src="/assets/images/destination/icons/meal.png"
+                            alt="Meal Icon"
+                          ></img>
+                          <p> Meal</p>
+                        </li>
+                        <li>
+                          <img
+                            src="/assets/images/destination/icons/sight.png"
+                            alt="sight Icon"
+                          ></img>
+                          <p> Sightseeing</p>
+                        </li>
+                      </ul>
+                    </div>
+                    <div className="faci-ratings">
+                      {" "}
+                      <img
+                        src="/assets/images/destination/icons/heart.png"
+                        alt="Heart Icon"
+                      ></img>{" "}
+                      <span>4.8</span>{" "}
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            </div>
+              <div className="national-features mt-2">
+              <Link href="/family/national-destination/andaman">
+                <div className="desti-img">
+                  {" "}
+                  <img
+                    src="/assets/images/n-destination/img3.webp"
+                    alt="National Destination"
+                  ></img>{" "}
+                </div>
+                <div className="desti-main">
+                  <div className="desti-info">
+                    <h3>Andaman</h3>
+                    <p>
+                      Andaman is a breathtaking paradise, featuring majestic
                       mountains and serene lakes, perfect for nature lovers and
                       adventure seekers.
                     </p>

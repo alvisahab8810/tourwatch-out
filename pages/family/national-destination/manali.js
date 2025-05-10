@@ -149,7 +149,7 @@ export default function Manali() {
                           src="/assets/images/kashmir/icons/pin.png"
                           alt="Location Icon"
                         />{" "}
-                          Null • Null
+                          Manali-Solang • Atal Tunnel • Manali - Manikaran
                       </li>
                     </ul>
                         <ul className="features-lists">
@@ -159,7 +159,7 @@ export default function Manali() {
                           </li>
                           <li>
                              <img src="/assets/images/icons/transferes.png" alt="transfer Icon"/>
-                             <span>Airport Transfers</span> : Included (Sedan)
+                             <span>Transfers</span> : Included (Sedan)
                           </li>
                           <li>
                              <img src="/assets/images/icons/pax.png" alt="pax Icon"/>
@@ -278,7 +278,7 @@ export default function Manali() {
                           src="/assets/images/kashmir/icons/pin.png"
                           alt="Location Icon"
                         />{" "}
-                         Null • Null  • Null  • Null  • Null
+                        Manali-Solang • Atal Tunnel • Manali - Manikaran
                       </li>
                     </ul>
                         <ul className="features-lists">
@@ -292,7 +292,7 @@ export default function Manali() {
                           </li>
                           <li>
                            <img src="/assets/images/icons/transferes.png" alt="transfer Icon"/>
-                            <span>Airport Transfers</span> : Included (Sedan)
+                            <span>Transfers</span> : Included (Sedan)
                           </li>
                           <li>
                           <img src="/assets/images/icons/meal.png" alt="meals Icon"/>
@@ -429,7 +429,7 @@ export default function Manali() {
                           src="/assets/images/kashmir/icons/pin.png"
                           alt="Location Icon"
                         />{" "}
-                        Null • Null • Null • Null • Null
+                          Manali-Solang • Atal Tunnel • Manali - Manikaran
                       </li>
                     </ul>
                         <ul className="features-lists">
@@ -444,7 +444,7 @@ export default function Manali() {
                             <span>No of Pax</span> : 3 adults & 2 childs (Below 5 yrs)
                           </li>
                           <li>
-                            <span>Airport Transfers</span> : Included (Sedan)
+                            <span>Transfers</span> : Included (Sedan)
                           </li>
                           <li>
                           <img src="/assets/images/icons/meal.png" alt="meals Icon"/>

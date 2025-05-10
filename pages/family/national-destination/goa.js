@@ -1,36 +1,37 @@
 import React from "react";
-
 import Topbar from "../../../components/header/Header";
+import Offcanvas from "../../../components/header/Offcanvas";
+import Link from "next/link";
 import Footer from "../../../components/footer/Footer";
 import TravelerReviews from "../../../components/kashmir/TravelerReviews";
 import Map from "../../../components/kashmir/Map";
-import Link from "next/link";
 import Popup from "../../../components/corporate/Popup";
-import Offcanvas from "../../../components/header/Offcanvas";
 
-export default function Shimla() {
-
-  
+export default function Goa() {
   return (
     <div className="bg-prime">
       <Topbar />
-      <Offcanvas/>
+      <Offcanvas />
+
       {/* --------------- Hero start -------------------- */}
       <section className="kashmir-hero">
         <div className="container">
           <div className="row align-items-center pt-200">
             <div className="col-md-12 about-contennt">
               <h2 className="fs-64 text-white fw-bold">
-                The heaven of earth, Shimla
+                The heaven of earth, Goa
               </h2>
               <p>
                 Plan your trips, honeymoons, or family getaways with
                 Tourwatchout! Enjoy a hassle-free experience and create
                 unforgettable memories that last a lifetime.
               </p>
-              <button className="btn btn-primary mt-0 mobile-none" data-bs-toggle="modal"
-                    data-bs-target="#exampleModalCenter"
-                    fdprocessedid="s6df8j">
+              <button
+                className="btn btn-primary mt-0 mobile-none"
+                data-bs-toggle="modal"
+                data-bs-target="#exampleModalCenter"
+                fdprocessedid="s6df8j"
+              >
                 Start Your Journey Now
               </button>
             </div>
@@ -46,17 +47,7 @@ export default function Shimla() {
           <div className="parent-package w-100" id="package">
             <div className="max-800">
               <div className="content-section">
-                <h1>Shimla Family Package</h1>
-                {/* <ul className="location-list">
-                  <li className="list-item-none">(7 Days)</li>
-                  <li className="locaton-items">
-                    <img
-                      src="/assets/images/kashmir/icons/pin.png"
-                      alt="Location Icon"
-                    />{" "}
-                    Srinagar • Gulmarg • Pahalgam • Sonamarg
-                  </li>
-                </ul> */}
+                <h1>Goa Family Tour Package</h1>
               </div>
 
               <div className="tour-package pt-80">
@@ -119,7 +110,6 @@ export default function Shimla() {
                   </li>
                 </ul>
                 <div className="tab-content" id="pills-tabContent">
-
                   {/* ------------------ Basic ------------------- */}
                   <div
                     className="tab-pane fade show active"
@@ -128,7 +118,6 @@ export default function Shimla() {
                     aria-labelledby="pills-basic-tab"
                     tabIndex="0"
                   >
-
                     <div className="basic-hotel-features">
                       <div className="feature-media mobile-none">
                         <video
@@ -142,60 +131,66 @@ export default function Shimla() {
                         <button id="playButton" className="play-btn"></button>
                       </div>
                       <div className="feature-list">
-
-                        
-                    <ul className="location-list">
-                      {/* <li className="list-item-none">(4 Night 5 Days )</li> */}
-                      <li className="locaton-items">
-                        <img
-                          src="/assets/images/kashmir/icons/pin.png"
-                          alt="Location Icon"
-                        />{" "}
-                          Null • Null
-                      </li>
-                    </ul>
+                        <ul className="location-list">
+                          {/* <li className="list-item-none">(4 Night 5 Days )</li> */}
+                          <li className="locaton-items">
+                            <img
+                              src="/assets/images/kashmir/icons/pin.png"
+                              alt="Location Icon"
+                            />{" "}
+                             North Goa, South Goa 
+                          </li>
+                        </ul>
                         <ul className="features-lists">
                           <li>
-                          <img src="/assets/images/icons/hotel.png" alt="Hotel Icon"/>
+                            <img
+                              src="/assets/images/icons/hotel.png"
+                              alt="Hotel Icon"
+                            />
                             <span>Hotel</span> : 3* Deluxe
                           </li>
 
                           <li>
-                          <img src="/assets/images/icons/pax.png" alt="pax Icon"/>
-
-                            <span>No of Pax</span> : 2 adults & 1 child (Below 5 yrs)
+                            <img
+                              src="/assets/images/icons/pax.png"
+                              alt="pax Icon"
+                            />
+                            <span>No of Pax</span> : 2 adults & 1 child (Below 5
+                            yrs)
                           </li>
                           <li>
-                           <img src="/assets/images/icons/transferes.png" alt="transfer Icon"/>
-
-                            <span>Transfers</span> : Included (Sedan)
+                            <img
+                              src="/assets/images/icons/transferes.png"
+                              alt="transfer Icon"
+                            />
+                            <span>Transfers</span> : Railway Station / Airport (Sedan)
                           </li>
-                         
+
                           <li>
-                          <img src="/assets/images/icons/meal.png" alt="meals Icon"/>
-
-                            <span>Meals</span> : Daily Breakfast  Only
-                          </li>
-                          <li>
-                          <img src="/assets/images/icons/duration.png" alt="duration Icon"/>
-
-                            <span>Duration</span> : 3N 4D
-                          </li>
-                          {/* <li>
-                            <span>Photos & Videos</span> : Included
+                            <img
+                              src="/assets/images/icons/meal.png"
+                              alt="meals Icon"
+                            />
+                            <span>Meals</span> : Breakfast
                           </li>
                           <li>
-                            <span>DJ Nights </span> : Included{" "}
-                          </li> */}
+                            <img
+                              src="/assets/images/icons/duration.png"
+                              alt="duration Icon"
+                            />
+                            <span>Duration</span> : 2N 3D
+                          </li>
                         </ul>
-                        <button className="btn btn-primary1" data-bs-toggle="modal"
-                        data-bs-target="#exampleModalCenter"
-                         fdprocessedid="s6df8j">
+                        <button
+                          className="btn btn-primary1"
+                          data-bs-toggle="modal"
+                          data-bs-target="#exampleModalCenter"
+                          fdprocessedid="s6df8j"
+                        >
                           Request A Callback
                         </button>
                       </div>
                     </div>
-
 
                     {/* ------=--------------------- time in tabs ===================== */}
 
@@ -203,66 +198,51 @@ export default function Shimla() {
                       <div className="container">
                         <div className="schedule-list">
                           <div className="schedule-items">
-                            <p className="schedule-timing">
-                             
-                              Day 1
-                            </p>
-                           <div>
-                           <h3>Pickup from Delhi or Chandigarh and Transfer to Shimla By Volvo in Night</h3>
-                            <p className="sche-details">
-                              Your journey will start from Delhi. Overnight volvo Journey towards Shimla.
-                            </p>
-                           </div>
-                          </div>
-                          <div className="schedule-items">
-                            <p className="schedule-timing">
-                       
-                              Day 2
-                            </p>
-                            <div >
-                            <h3>Shimla Local Sightseeing</h3>
-                            <p className="sche-details">
-                               Morning arrival in Shimla and today we will explore Local sightseeing like  Jakhu Temple and Shimla Ridge Church, Vice Regal Lodge, Christ Church, Gaiety Theatre and Scandal Point.  
-                            </p>
-                            </div>
-                          </div>
-                          <div className="schedule-items">
-                            <p className="schedule-timing">
-                           
-                              Day 3
-                            </p>
-                           <div>
-                           <h3>Excursion to Kufri, Mashobra and Naldehra</h3>
-                            <p className="sche-details">
-                              Breakfast and Himalayan National Park, Yak Ride and one can see the endless Himalayan Panorama from Kufri.Visit Apple orchards in Mashobra and Naldehra, famous for its dense forest, and take a jungle walk.
-                              </p>
-                           </div>
-                          </div>
-                          <div className="schedule-items">
-                            <p className="schedule-timing">
-                             
-                              Day 4
-                            </p>
+                            <p className="schedule-timing">Day 1</p>
                             <div>
-                            <h3>Overnight Volvo to Delhi</h3>
-                            <p className="sche-details">
-                              Breakfast and you will do check-out at 12pm appx. Overnight volvo Journey towards Delhi.
-                            </p>
+                              <h3>Reach Goa and North Goa Tour</h3>
+                              <p className="sche-details">
+                                 Reach Goa and get picked up from Railway Station, Checking hotel and rest a while , after that go for excursion to North Goa. visit to the famous Fort Aguada, Calangute Beach, Baga Beach, Anjuna Beach, VagatorBeach, Candolim Beach.
+                              </p>
                             </div>
                           </div>
-                          
+                          <div className="schedule-items">
+                            <p className="schedule-timing">Day 2</p>
+
+                            <div>
+                              <h3>South GOA</h3>
+                              <p className="sche-details">
+                                 tour includes the Old Goa Church, St. Xavier Body, Mangeshi Temple, Spice Plantation, Dona Paula,Panaji Church, Miramar Beach, Boat Cruise, Balaji Temple, Panjim Market and finally drop at hotel. On the way back you have the option of going to the Boat Cruise with Music on the Mandovi River.
+                              </p>
+                            </div>
+                          </div>
+                          <div className="schedule-items">
+                            <p className="schedule-timing">Day 3</p>
+                            <div>
+                              <h3> Khandala Exploration & Lohagad Fort</h3>
+                              <p className="sche-details">
+                                Morning after your breakfast, pack your luggage our driver will drop you at GOA Airport/Railwaystation
+                              </p>
+                            </div>
+                          </div>
+
+                         
                         </div>
                         <div className="cancellation-policy-bx">
                           <Link href="#">*Cancellation Policy</Link>
-                          <button className="btn btn-primary1" data-bs-toggle="modal"
-                                  data-bs-target="#exampleModalCenter"
-                                  fdprocessedid="s6df8j">Request A Callback</button>
+                          <button
+                            className="btn btn-primary1"
+                            data-bs-toggle="modal"
+                            data-bs-target="#exampleModalCenter"
+                            fdprocessedid="s6df8j"
+                          >
+                            Request A Callback
+                          </button>
                         </div>
                       </div>
                     </section>
 
                     {/* ------=--------------------- time in tabs ===================== */}
-
                   </div>
                   {/* ------------------ Basic ------------------- */}
 
@@ -274,126 +254,141 @@ export default function Shimla() {
                     aria-labelledby="pills-standard-tab"
                     tabIndex="0"
                   >
-
                     <div className="basic-hotel-features">
                       <div className="feature-media mobile-none">
-                      <video
+                        <video
                           id="videoPlayer"
                           src="/assets/images/kashmir/video.mp4"
                           muted
                           autoPlay
                           loop
                           playsInline
-                        ></video> 
+                        ></video>
                         <button id="playButton" className="play-btn"></button>
                       </div>
                       <div className="feature-list">
-
-                      <ul className="location-list">
-                      <li className="locaton-items">
-                        <img
-                          src="/assets/images/kashmir/icons/pin.png"
-                          alt="Location Icon"
-                        />{" "}
-                         Null • Null  • Null  • Null  • Null
-                      </li>
-                    </ul>
+                        <ul className="location-list">
+                          <li className="locaton-items">
+                            <img
+                              src="/assets/images/kashmir/icons/pin.png"
+                              alt="Location Icon"
+                            />{" "}
+                              North Goa, South Goa, Doodhsagar 
+                          </li>
+                        </ul>
                         <ul className="features-lists">
                           <li>
-                           <img src="/assets/images/icons/hotel.png" alt="Hotel Icon"/>
-                            <span>Hotel</span> :3* Deluxe
+                            <img
+                              src="/assets/images/icons/hotel.png"
+                              alt="Hotel Icon"
+                            />
+                            <span>Hotel</span> : 3* Premium
                           </li>
                           <li>
-                          <img src="/assets/images/icons/pax.png" alt="pax Icon"/>
-
-                            <span>No of Pax</span> : 3 adults & 2 childs (Below 5 yrs)
+                            <img
+                              src="/assets/images/icons/pax.png"
+                              alt="pax Icon"
+                            />
+                            <span>No of Pax</span> : 02 Adults & 01 Child (Below
+                            5 yrs)
                           </li>
                           <li>
-                          <img src="/assets/images/icons/transferes.png" alt="transfer Icon"/>
-
-                            <span>Transfers</span> : Included (Sedan)
+                            <img
+                              src="/assets/images/icons/transferes.png"
+                              alt="transfer Icon"
+                            />
+                            <span>Transfers</span> : Sedan (Railway Station / Airport)
                           </li>
                           <li>
-                          <img src="/assets/images/icons/meal.png" alt="meals Icon"/>
-
-                            <span>Meals</span> : Daily Breakfast  and Dinner 
+                            <img
+                              src="/assets/images/icons/meal.png"
+                              alt="meals Icon"
+                            />
+                            <span>Meals</span> : Breakfast
                           </li>
                           <li>
-                          <img src="/assets/images/icons/duration.png" alt="duration Icon"/>
-
+                            <img
+                              src="/assets/images/icons/duration.png"
+                              alt="duration Icon"
+                            />
                             <span>Duration</span> : 3N 4D
                           </li>
-                        
                         </ul>
-                        <button className="btn btn-primary1" data-bs-toggle="modal"
-                    data-bs-target="#exampleModalCenter"
-                    fdprocessedid="s6df8j">
+                        <button
+                          className="btn btn-primary1"
+                          data-bs-toggle="modal"
+                          data-bs-target="#exampleModalCenter"
+                          fdprocessedid="s6df8j"
+                        >
                           Request A Callback
                         </button>
                       </div>
                     </div>
 
+                    {/* ------=--------------------- time in tabs ===================== */}
 
-                     {/* ------=--------------------- time in tabs ===================== */}
-
-                     <section className="time-schedule-section ">
+                    <section className="time-schedule-section ">
                       <div className="container">
                         <div className="schedule-list">
                           <div className="schedule-items">
-                            <p className="schedule-timing">
-                      
-                              Day 1
-                            </p>
-                           <div>
-                             <h3>Pickup from Delhi or Chandigarh and Transfer to Shimla By Volvo in Night</h3>
-                            <p className="sche-details">
-                               Your journey will start from Delhi. Overnight volvo Journey towards Shimla.
-                            </p>
-                           </div>
-                          </div>
-                          <div className="schedule-items">
-                            <p className="schedule-timing">
-                             
-                              Day 2
-                            </p>
+                            <p className="schedule-timing">Day 1</p>
                             <div>
-                            <h3>Shimla Local Sightseeing</h3>
-                            <p className="sche-details">
-                               Morning arrival in Shimla and today we will explore Local sightseeing like  Jakhu Temple and Shimla Ridge Church, Vice Regal Lodge, Christ Church, Gaiety Theatre and Scandal Point.  
-                            </p>
+                              <h3>
+                                Reach Goa and North Goa Tour
+                              </h3>
+                              <p className="sche-details">
+                                 Reach Goa and get picked up from Railway Station, Checking hotel and rest a while , after that go for excursion to North Goa. visit to the famous Fort Aguada, Calangute Beach, Baga Beach, Anjuna Beach, VagatorBeach, Candolim Beach.
+                              </p>
                             </div>
                           </div>
                           <div className="schedule-items">
-                            <p className="schedule-timing">
-                             
-                              Day 3
-                            </p>
+                            <p className="schedule-timing">Day 2</p>
                             <div>
-                            <h3>Excursion to Kufri, Mashobra and Naldehra</h3>
-                            <p className="sche-details">
-                               Breakfast and Himalayan National Park, Yak Ride and one can see the endless Himalayan Panorama from Kufri.Visit Apple orchards in Mashobra and Naldehra, famous for its dense forest, and take a jungle walk.
-                            </p>
+                              <h3>
+                                 South GOA
+                              </h3>
+                              <p className="sche-details">
+                                 tour includes the Old Goa Church, St. Xavier Body, Mangeshi Temple, Spice Plantation, Dona Paula,Panaji Church, Miramar Beach, Boat Cruise, Balaji Temple, Panjim Market and finally drop at hotel. On the way back you have the option of going to the Boat Cruise with Music on the Mandovi River.
+                              </p>
                             </div>
                           </div>
                           <div className="schedule-items">
-                            <p className="schedule-timing">
-                            
-                              Day 4
-                            </p>
-                           <div>
-                           <h3>Overnight Volvo to Delhi</h3>
-                            <p className="sche-details">
-                              Breakfast and you will do check-out at 12pm appx. Overnight volvo Journey towards Delhi.
-                            </p>
-                           </div>
+                            <p className="schedule-timing">Day 3</p>
+                            <div>
+                              <h3>
+                                {" "}
+                                Excursion to Dudhsagar Waterfalls
+                              </h3>
+                              <p className="sche-details">
+                                 After enjoying a hearty breakfast, visit the Dudhsagar Waterfalls, which is regarded as one of the most beautiful waterfalls of Goa and is situated on the eastern border with Karnataka.
+                              </p>
+                            </div>
                           </div>
-                        
+                          <div className="schedule-items">
+                            <p className="schedule-timing">Day 4</p>
+                            <div>
+                              <h3>
+                              Departure
+                               </h3>
+                              <p className="sche-details">
+                                Morning after your breakfast, pack your luggage our driver will drop you at GOA Airport/Railwaystation
+                              </p>
+                            </div>
+                          </div>
+
+
+                    
                         </div>
                         <div className="cancellation-policy-bx">
                           <Link href="#">*Cancellation Policy</Link>
-                          <button className="btn btn-primary1" data-bs-toggle="modal"
-                                  data-bs-target="#exampleModalCenter"
-                                  fdprocessedid="s6df8j">Request A Callback</button>
+                          <button
+                            className="btn btn-primary1"
+                            data-bs-toggle="modal"
+                            data-bs-target="#exampleModalCenter"
+                            fdprocessedid="s6df8j"
+                          >
+                            Request A Callback
+                          </button>
                         </div>
                       </div>
                     </section>
@@ -411,10 +406,6 @@ export default function Shimla() {
                     aria-labelledby="pills-premium-tab"
                     tabIndex="0"
                   >
-
-
-                    
-                 
                     <div className="basic-hotel-features">
                       <div className="feature-media mobile-none">
                         <video
@@ -427,113 +418,125 @@ export default function Shimla() {
                         <button id="playButton" className="play-btn"></button>
                       </div>
                       <div className="feature-list">
-
-                      <ul className="location-list">
-                      {/* <li className="list-item-none">(6 Night 7 Days )</li> */}
-                      <li className="locaton-items">
-                        <img
-                          src="/assets/images/kashmir/icons/pin.png"
-                          alt="Location Icon"
-                        />{" "}
-                        Null • Null • Null • Null • Null
-                      </li>
-                    </ul>
+                        <ul className="location-list">
+                          {/* <li className="list-item-none">(6 Night 7 Days )</li> */}
+                          <li className="locaton-items">
+                            <img
+                              src="/assets/images/kashmir/icons/pin.png"
+                              alt="Location Icon"
+                            />{" "}
+                            North Goa, South Goa, Doodhsagar 
+                          </li>
+                        </ul>
                         <ul className="features-lists">
                           <li>
-                          <img src="/assets/images/icons/hotel.png" alt="Hotel Icon"/>
-
-                            <span>Hotel</span> : 3* Deluxe
+                            <img
+                              src="/assets/images/icons/hotel.png"
+                              alt="Hotel Icon"
+                            />
+                            <span>Hotel</span> : 4*
                           </li>
                           <li>
-                          <img src="/assets/images/icons/pax.png" alt="pax Icon"/>
-
-                            <span>No of Pax</span> : 3 adults & 2 childs (Below 5 yrs)
+                            <img
+                              src="/assets/images/icons/pax.png"
+                              alt="pax Icon"
+                            />
+                            <span>No of Pax</span> : 02 Adults & 02 Childs
                           </li>
                           <li>
-                          <img src="/assets/images/icons/transferes.png" alt="transfer Icon"/>
-
-                            <span>Transfers</span> : Included (Sedan)
+                            <img
+                              src="/assets/images/icons/transferes.png"
+                              alt="transfer Icon"
+                            />
+                            <span>Transfers</span> : Sedan (Railway station / Airport)
                           </li>
                           <li>
-                          <img src="/assets/images/icons/meal.png" alt="meals Icon"/>
-
-                            <span>Meals</span> : Daily Breakfast  and Dinner 
+                            <img
+                              src="/assets/images/icons/meal.png"
+                              alt="meals Icon"
+                            />
+                            <span>Meals</span> : Breakfast and Dinner
                           </li>
                           <li>
-                          <img src="/assets/images/icons/duration.png" alt="duration Icon"/>
-
+                            <img
+                              src="/assets/images/icons/duration.png"
+                              alt="duration Icon"
+                            />
                             <span>Duration</span> : 3N 4D
                           </li>
-                         
                         </ul>
-                        <button className="btn btn-primary1" data-bs-toggle="modal"
+                        <button
+                          className="btn btn-primary1"
+                          data-bs-toggle="modal"
                           data-bs-target="#exampleModalCenter"
-                           fdprocessedid="s6df8j">
+                          fdprocessedid="s6df8j"
+                        >
                           Request A Callback
                         </button>
                       </div>
                     </div>
 
-                     {/* ------=--------------------- time in tabs ===================== */}
+                    {/* ------=--------------------- time in tabs ===================== */}
 
-                     <section className="time-schedule-section ">
+                    <section className="time-schedule-section ">
                       <div className="container">
                         <div className="schedule-list">
                           <div className="schedule-items">
-                            <p className="schedule-timing">
-                           
-                              Day 1
-                            </p>
-                           <div>
-                           <h3>Pickup from Delhi or Chandigarh and Transfer to Shimla By Volvo in Night</h3>
-                            <p className="sche-details">
-                              Your journey will start from Delhi. Overnight volvo Journey towards Shimla.
-                            </p>
-                           </div>
-                          </div>
-                          <div className="schedule-items">
-                            <p className="schedule-timing">
-                             
-                              Day 2
-                            </p>
+                            <p className="schedule-timing">Day 1</p>
                             <div>
-                            <h3>Shimla Local Sightseeing</h3>
-                            <p className="sche-details">
-                               Morning arrival in Shimla and today we will explore Local sightseeing like  Jakhu Temple and Shimla Ridge Church, Vice Regal Lodge, Christ Church, Gaiety Theatre and Scandal Point.  
-                            </p>
+                              <h3>
+                                Reach Goa and North Goa Tour
+                              </h3>
+                              <p className="sche-details">
+                                Reach Goa and get picked up from Railway Station, Checking hotel and rest a while , after that go for excursion to North Goa. visit to the famous Fort Aguada, Calangute Beach, Baga Beach, Anjuna Beach, VagatorBeach, Candolim Beach.
+                              </p>
                             </div>
                           </div>
                           <div className="schedule-items">
-                            <p className="schedule-timing">
-                              
-                              Day 3
-                            </p>
-                           <div>
-                           <h3>Excursion to Kufri, Mashobra and Naldehra</h3>
-                            <p className="sche-details">
-                              Breakfast and Himalayan National Park, Yak Ride and one can see the endless Himalayan Panorama from Kufri.Visit Apple orchards in Mashobra and Naldehra, famous for its dense forest, and take a jungle walk.
-                            </p>
-                           </div>
-                          </div>
-                          <div className="schedule-items">
-                            <p className="schedule-timing">
-                             
-                              Day 4
-                            </p>
+                            <p className="schedule-timing">Day 2</p>
                             <div>
-                            <h3>Overnight Volvo to Delhi</h3>
-                            <p className="sche-details">
-                            Breakfast and you will do check-out at 12pm appx. Overnight volvo Journey towards Delhi.
-                            </p>
+                              <h3>
+                                South GOA
+                              </h3>
+                              <p className="sche-details">
+                                 tour includes the Old Goa Church, St. Xavier Body, Mangeshi Temple, Spice Plantation, Dona Paula,Panaji Church, Miramar Beach, Boat Cruise, Balaji Temple, Panjim Market and finally drop at hotel. On the way back you have the option of going to the Boat Cruise with Music on the Mandovi River.
+                              </p>
                             </div>
                           </div>
-                          
+                          <div className="schedule-items">
+                            <p className="schedule-timing">Day 3</p>
+                            <div>
+                              <h3>
+                                 Excursion to Dudhsagar Waterfalls
+                              </h3>
+                              <p className="sche-details">
+                                 After enjoying a hearty breakfast, visit the Dudhsagar Waterfalls, which is regarded as one of the most beautiful waterfalls of Goa and is situated on the eastern border with Karnataka.
+                              </p>
+                            </div>
+                          </div>
+                          <div className="schedule-items">
+                            <p className="schedule-timing">Day 4</p>
+                            <div>
+                              <h3>
+                                Departure
+                              </h3>
+                              <p className="sche-details">
+                                Morning after your breakfast, pack your luggage our driver will drop you at GOA Airport/Railwaystation
+                              </p>
+                            </div>
+                          </div>
+
                         </div>
                         <div className="cancellation-policy-bx">
                           <Link href="#">*Cancellation Policy</Link>
-                          <button className="btn btn-primary1" data-bs-toggle="modal"
-                                  data-bs-target="#exampleModalCenter"
-                                  fdprocessedid="s6df8j">Request A Callback</button>
+                          <button
+                            className="btn btn-primary1"
+                            data-bs-toggle="modal"
+                            data-bs-target="#exampleModalCenter"
+                            fdprocessedid="s6df8j"
+                          >
+                            Request A Callback
+                          </button>
                         </div>
                       </div>
                     </section>
@@ -541,7 +544,6 @@ export default function Shimla() {
                     {/* ------=--------------------- time in tabs ===================== */}
                   </div>
                   {/* ------------------ Premium ------------------- */}
-                  
                 </div>
               </div>
             </div>
@@ -552,15 +554,15 @@ export default function Shimla() {
                 of contents
               </h2>
               <div className="table-contents">
-                <Link href="#package">Leh Packages</Link>
+                <Link href="#package">Goa Packages</Link>
 
-                <Link href="#about-us">About Leh</Link>
+                <Link href="#about-us">About Goa</Link>
 
-                <Link href="#headingTwo">Leh Bucket List</Link>
+                <Link href="#headingTwo">Goa Bucket List</Link>
 
-                <Link href="#headingThree">Leh FAQ’s </Link>
+                <Link href="#headingThree">Goa FAQ’s </Link>
 
-                <Link href="#location">Leh Location</Link>
+                <Link href="#location">Goa Location</Link>
 
                 <Link href="#traveler-reviews">Trip Reviews</Link>
               </div>
@@ -572,148 +574,43 @@ export default function Shimla() {
 
       {/* ==================================== Moibile-things ================================= */}
       <section className="onlyl-mobile desktop-none">
-          <div className="container">
-             <div className="table-of-row tour-package">
-                 <div className="feature-media ">
-                        <video
-                          id="videoPlayer"
-                          src="/assets/images/kashmir/video.mp4"
-                          muted
-                          loop
-                          playsInline
-                        ></video>
-                        <button id="playButton" className="play-btn"></button>
-                  </div>
+        <div className="container">
+          <div className="table-of-row tour-package">
+            <div className="feature-media ">
+              <video
+                id="videoPlayer"
+                src="/assets/images/kashmir/video.mp4"
+                muted
+                loop
+                playsInline
+              ></video>
+              <button id="playButton" className="play-btn"></button>
+            </div>
 
-                <div className="max-400 ">
+            <div className="max-400 ">
               <h2>
                 {" "}
                 Table <br />
                 of contents
               </h2>
               <div className="table-contents">
-                <Link href="#package">Leh Packages</Link>
+                <Link href="#package">Goa Packages</Link>
 
-                <Link href="#about-us">About Leh</Link>
+                <Link href="#about-us">About Goa</Link>
 
-                <Link href="#headingTwo">Leh Bucket List</Link>
+                <Link href="#headingTwo">Goa Bucket List</Link>
 
-                <Link href="#headingThree">Leh FAQ’s </Link>
+                <Link href="#headingThree">Goa FAQ’s </Link>
 
-                <Link href="#location">Leh Location</Link>
+                <Link href="#location">Goa Location</Link>
 
                 <Link href="#traveler-reviews">Trip Reviews</Link>
               </div>
-                </div>
-
-
-             </div>
+            </div>
           </div>
+        </div>
       </section>
       {/* ==================================== Moibile-things ================================= */}
-
-
-      {/* ---------------------------- Time Scheduled Start ----------------------------------- */}
-
-
-          {/* <section className="time-schedule-section ">
-            <div className="container">
-              <div className="schedule-list">
-                <div className="schedule-items">
-                  <p className="schedule-timing">
-                    <img
-                      src="/assets/images/kashmir/icons/time.png"
-                      alt="watch icon"
-                    />{" "}
-                    Day 1
-                  </p>
-                  <h3>Arrival and welcome dinner.</h3>
-                  <p className="sche-details">
-                    Arrive at your lodge and settle in before enjoying a delicious
-                    welcome dinner. Savor local and international dishes while
-                    meeting our fellow travelers and preparing for the adventure
-                    ahead.
-                  </p>
-                </div>
-                <div className="schedule-items">
-                  <p className="schedule-timing">
-                    <img
-                      src="/assets/images/kashmir/icons/time.png"
-                      alt="watch icon"
-                    />{" "}
-                    Day 2-3
-                  </p>
-                  <h3>Game drives and wildlife exploration.</h3>
-                  <p className="sche-details">
-                    Embark on thrilling morning and afternoon game drives through
-                    the stunning safari landscape. Spot the "Big Five" and other
-                    incredible wildlife in their natural habitat, guided by
-                    experienced rangers who provide fascinating insights into the
-                    region’s flora and fauna.
-                  </p>
-                </div>
-                <div className="schedule-items">
-                  <p className="schedule-timing">
-                    <img
-                      src="/assets/images/kashmir/icons/time.png"
-                      alt="watch icon"
-                    />{" "}
-                    Day 4
-                  </p>
-                  <h3>Cultural visit to a local village.</h3>
-                  <p className="sche-details">
-                    Immerse yourself in the rich traditions of the region with a
-                    visit to a local village. Engage with the community, learn about
-                    their customs, and experience authentic cultural practices,
-                    offering a unique perspective on local life.
-                  </p>
-                </div>
-                <div className="schedule-items">
-                  <p className="schedule-timing">
-                    <img
-                      src="/assets/images/kashmir/icons/time.png"
-                      alt="watch icon"
-                    />{" "}
-                    Day 5-6
-                  </p>
-                  <h3>Luxury camping under the stars.</h3>
-                  <p className="sche-details">
-                    Experience the ultimate in comfort with luxury camping,
-                    combining the beauty of nature with premium amenities. Sleep
-                    under the stars in a spacious tent, complete with plush bedding
-                    and stunning views of the African night sky.
-                  </p>
-                </div>
-                <div className="schedule-items">
-                  <p className="schedule-timing">
-                    <img
-                      src="/assets/images/kashmir/icons/time.png"
-                      alt="watch icon"
-                    />{" "}
-                    Day 7
-                  </p>
-                  <h3>Departure with memories to last a lifetime.</h3>
-                  <p className="sche-details">
-                    As your safari adventure comes to a close, reflect on the
-                    unforgettable experiences and stunning wildlife encounters.
-                    Depart with cherished memories, a camera full of pictures, and a
-                    heart full of stories to share.
-                  </p>
-                </div>
-              </div>
-              <div className="cancellation-policy-bx">
-                <Link href="#">*Cancellation Policy</Link>
-                <button className="btn btn-primary1" data-bs-toggle="modal"
-                        data-bs-target="#exampleModalCenter"
-                        fdprocessedid="s6df8j">Request A Callback</button>
-              </div>
-            </div>
-          </section> */}
-   
-      {/* ---------------------------- Time Scheduled Start ----------------------------------- */}
-
-
-
 
       {/* ---------------------------------- CTa ----------------------- */}
 
@@ -725,14 +622,24 @@ export default function Shimla() {
               <h1 className="pacifico-regular">Kashmir</h1>
               <p>And get exciting offers</p>
 
-              <button className="btn btn-primary1 desktop-none" data-bs-toggle="modal"
-                    data-bs-target="#exampleModalCenter"
-                    fdprocessedid="s6df8j">Start Journey Now</button>
+              <button
+                className="btn btn-primary1 desktop-none"
+                data-bs-toggle="modal"
+                data-bs-target="#exampleModalCenter"
+                fdprocessedid="s6df8j"
+              >
+                Start Journey Now
+              </button>
             </div>
             <div className="con-ctabx">
-              <button className="btn btn-primary1 mobile-none" data-bs-toggle="modal"
-                    data-bs-target="#exampleModalCenter"
-                    fdprocessedid="s6df8j">Start Journey Now</button>
+              <button
+                className="btn btn-primary1 mobile-none"
+                data-bs-toggle="modal"
+                data-bs-target="#exampleModalCenter"
+                fdprocessedid="s6df8j"
+              >
+                Start Journey Now
+              </button>
             </div>
           </div>
         </div>
@@ -754,7 +661,7 @@ export default function Shimla() {
                     aria-expanded="true"
                     aria-controls="collapseOne"
                   >
-                    About Leh
+                    About Goa
                   </button>
                 </h2>
                 <div
@@ -766,13 +673,13 @@ export default function Shimla() {
                   <div className="accordion-body bg-prime">
                     <div className="about-items">
                       <p>
-                        Kashmir, often referred to as "Paradise on Earth," is a
-                        breathtaking region nestled in the northern part of the
-                        Indian subcontinent. Renowned for its stunning natural
-                        beauty, Kashmir is characterized by its majestic
-                        mountains, lush valleys, and serene lakes, making it a
-                        dream destination for travelers and nature enthusiasts
-                        alike.
+                        Goa, often referred to as "Paradise on Earth,"
+                        is a breathtaking region nestled in the northern part of
+                        the Indian subcontinent. Renowned for its stunning
+                        natural beauty, Goa is characterized by its
+                        majestic mountains, lush valleys, and serene lakes,
+                        making it a dream destination for travelers and nature
+                        enthusiasts alike.
                       </p>
                     </div>
                     <div className="about-items">
@@ -876,7 +783,7 @@ export default function Shimla() {
                     aria-expanded="false"
                     aria-controls="collapseTwo"
                   >
-                    Leh Bucket List
+                    Goa Bucket List
                   </button>
                 </h2>
                 <div
@@ -998,7 +905,7 @@ export default function Shimla() {
                     aria-expanded="false"
                     aria-controls="collapseThree"
                   >
-                    Leh FAQ’s?
+                    Goa FAQ’s?
                   </button>
                 </h2>
                 <div
@@ -1124,7 +1031,7 @@ export default function Shimla() {
       <TravelerReviews />
       {/* ------------------------------ traveler Reviews Start------------------------------- */}
 
-      <Popup/>
+      <Popup />
 
       <Footer />
     </div>

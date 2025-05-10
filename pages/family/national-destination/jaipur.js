@@ -163,7 +163,7 @@ export default function Jaipur() {
                               src="/assets/images/icons/transferes.png"
                               alt="transfer Icon"
                             />
-                            <span>Airport Transfers</span> : Sedan
+                            <span>Transfers</span> : Sedan
                           </li>
 
                           <li>
