@@ -791,8 +791,6 @@ export default function CheckIn() {
     setSelectedRoom("");
   };
   
-
-   
   // ----------------------------
   // Handler for check-in submission (User Form)
   const handleSubmitted = async (e) => {
@@ -807,7 +805,7 @@ export default function CheckIn() {
     if (
       !fullName ||
       !whatsappContact ||
-      !emailAddress ||
+      // !emailAddress ||
       !selectedOccupancy ||
       !selectedRoom ||
       !uploadedFile
@@ -1011,13 +1009,14 @@ export default function CheckIn() {
                     {/* Email Address */}
                     <div className="mb-3">
                       <label htmlFor="emailAddress" className="form-label">
-                        Email Address
+                        Email Address (Optional)
                       </label>
                       <input
                         type="email"
                         className="form-control"
                         id="emailAddress"
-                        required
+
+                        // required
                       />
                     </div>
 
