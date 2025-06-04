@@ -4,6 +4,7 @@ import CheckIn from '../components/checkin/CheckIn'
 import Footer from '../components/checkin/Footer'
 
 export default function checkinCorporate() {
+  
   return (
     <div className="bg-prime check-corporate">
         <Hero/>
@@ -13,3 +14,5 @@ export default function checkinCorporate() {
     </div>
   )
 }
+
+

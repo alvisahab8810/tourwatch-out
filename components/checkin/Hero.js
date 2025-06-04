@@ -7,7 +7,7 @@ export default function Hero() {
         <div className="container">
             <div className="row align-items-center">
                 <div className="col-md-12 check-in">
-                  <img src="./assets/images/logo-l.png" alt="Logo Icon"/>
+                  <img src="/assets/images/logo-l.png" alt="Logo Icon"/>
                 </div>
             </div>
         </div>

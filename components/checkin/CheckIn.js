@@ -1,5 +1,3 @@
-
-
 // "use client";
 // import { useState, useEffect } from "react";
 // import { useRouter } from "next/router";
@@ -56,7 +54,6 @@
 //       [e.target.name]: e.target.value,
 //     });
 //   };
-  
 
 //   // ----------------------------
 //   // useEffect to fetch live occupancy counts using companyName
@@ -316,7 +313,7 @@
 //         <div className="checkinbox">
 //           <div className="form-container">
 //             <div className="row">
-              
+
 //               <div className="col-md-6">
 //                 {/* Admin Form */}
 //                 {isAdmin ? (
@@ -398,9 +395,6 @@
 //                       />
 //                     </div>
 
-                   
-
-
 //                   <div className="row">
 //                     <div className="col-md-6 mb-3">
 //                       <label htmlFor="fullName" className="form-label">
@@ -434,7 +428,6 @@
 //                       )}
 //                     </div>
 //                   </div>
-
 
 //                     {/* Email Address */}
 //                     <div className="mb-3">
@@ -537,7 +530,7 @@
 //         <div className="checkin-footer">
 //           <p>Let’s Stay in Touch!</p>
 //           <ul className="social-list-icons">
-            
+
 //             <li>
 //               <Link href="https://www.facebook.com/TourWatchout/"  target="_blank">
 //                 <img
@@ -575,17 +568,6 @@
 //   console.log("Server Side Query Params:", context.query);
 //   return { props: {} };
 // }
-
-
-
-
-
-
-
-
-
-
-
 
 "use client";
 import { useState, useEffect } from "react";
@@ -643,8 +625,6 @@ export default function CheckIn() {
       [e.target.name]: e.target.value,
     });
   };
-  
-
 
   // useEffect to process router query parameters
   useEffect(() => {
@@ -720,40 +700,105 @@ export default function CheckIn() {
   };
 
   // Handler for generating the link (Admin Form)
-  const handleSubmit = (e) => {
+
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   if (!companyName) return alert("Please enter a company name.");
+
+  //   const allEnteredRooms = new Set();
+  //   const duplicateRoomsFound = new Set();
+
+  //   const roomParams = Object.entries(roomData)
+  //     .filter(([_, rooms]) => rooms.trim() !== "")
+  //     .map(([occ, rooms]) => {
+  //       const roomArray = rooms.split(",").map((room) => room.trim());
+  //       roomArray.forEach((room) => {
+  //         if (allEnteredRooms.has(room)) {
+  //           duplicateRoomsFound.add(room);
+  //         }
+  //         allEnteredRooms.add(room);
+  //       });
+  //       return `${occ}=${encodeURIComponent(rooms)}`;
+  //     })
+  //     .join("&");
+
+  //   if (duplicateRoomsFound.size > 0) {
+  //     setDuplicateRooms([...duplicateRoomsFound]);
+  //     return alert(
+  //       `Duplicate room numbers found: ${[...duplicateRoomsFound].join(", ")}`
+  //     );
+  //   }
+
+  //   setDuplicateRooms([]);
+  //   const shareableLink = `https://tourwatchout.com/checkin-corporate?company=${encodeURIComponent(
+  //     companyName
+  //   )}&${roomParams}`;
+
+  //   setGeneratedLink(shareableLink);
+  // };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!companyName) return alert("Please enter a company name.");
+
+    if (!companyName) {
+      alert("Please enter a company name.");
+      return;
+    }
 
     const allEnteredRooms = new Set();
     const duplicateRoomsFound = new Set();
 
-    const roomParams = Object.entries(roomData)
-      .filter(([_, rooms]) => rooms.trim() !== "")
-      .map(([occ, rooms]) => {
-        const roomArray = rooms.split(",").map((room) => room.trim());
+    const rooms = {};
+
+    for (const [occupancy, roomStr] of Object.entries(roomData)) {
+      if (roomStr.trim() !== "") {
+        const roomArray = roomStr
+          .split(",")
+          .map((room) => room.trim())
+          .filter((room) => room !== "");
+
         roomArray.forEach((room) => {
           if (allEnteredRooms.has(room)) {
             duplicateRoomsFound.add(room);
           }
           allEnteredRooms.add(room);
         });
-        return `${occ}=${encodeURIComponent(rooms)}`;
-      })
-      .join("&");
+
+        rooms[occupancy] = roomArray;
+      }
+    }
 
     if (duplicateRoomsFound.size > 0) {
       setDuplicateRooms([...duplicateRoomsFound]);
-      return alert(
+      alert(
         `Duplicate room numbers found: ${[...duplicateRoomsFound].join(", ")}`
       );
+      return;
     }
 
     setDuplicateRooms([]);
-    const shareableLink = `https://tourwatchout.com/checkin-corporate?company=${encodeURIComponent(
-      companyName
-    )}&${roomParams}`;
 
-    setGeneratedLink(shareableLink);
+    try {
+      const response = await fetch("/api/generateLink", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ companyName, rooms }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to generate link.");
+      }
+
+      const data = await response.json();
+      
+      const shareableLink = `${window.location.origin}${data.link}`;
+      setGeneratedLink(shareableLink);
+    } catch (error) {
+      console.error("Error generating link:", error);
+      alert("An error occurred while generating the link.");
+    }
   };
 
   // Copy link handler
@@ -764,33 +809,37 @@ export default function CheckIn() {
 
   // ----------------------------
   // Handler for occupancy change (User Form)
-  
+
   const handleOccupancyChange = async (e) => {
     const selected = e.target.value;
-  
+
     if (!roomData[selected]) return;
-  
+
     // Split all rooms and trim
     const allRooms = roomData[selected].split(",").map((room) => room.trim());
-  
+
     // Fetch current room counts
-    const res = await fetch(`/api/roomOccupancyCounts?company=${encodeURIComponent(companyName)}&occupancy=${selected}`);
+    const res = await fetch(
+      `/api/roomOccupancyCounts?company=${encodeURIComponent(
+        companyName
+      )}&occupancy=${selected}`
+    );
     const roomCounts = await res.json(); // { "101": 2, "102": 1, ... }
-  
+
     // Get limit for the selected occupancy type
     const maxPerRoom = occupancyLimits[selected];
-  
+
     // Filter rooms that have not reached their limit
     const available = allRooms.filter((room) => {
       const currentCount = roomCounts[room] || 0;
       return currentCount < maxPerRoom;
     });
-  
+
     setSelectedOccupancy(selected);
     setAvailableRooms(available);
     setSelectedRoom("");
   };
-  
+
   // ----------------------------
   // Handler for check-in submission (User Form)
   const handleSubmitted = async (e) => {
@@ -886,7 +935,6 @@ export default function CheckIn() {
         <div className="checkinbox">
           <div className="form-container">
             <div className="row">
-              
               <div className="col-md-6">
                 {/* Admin Form */}
                 {isAdmin ? (
@@ -968,43 +1016,41 @@ export default function CheckIn() {
                       />
                     </div>
 
-                   
-
-
-                  <div className="row">
-                    <div className="col-md-6 mb-3">
-                      <label htmlFor="fullName" className="form-label">
-                        Full Name
-                      </label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="fullName"
-                        required
-                      />
+                    <div className="row">
+                      <div className="col-md-6 mb-3">
+                        <label htmlFor="fullName" className="form-label">
+                          Full Name
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          id="fullName"
+                          required
+                        />
+                      </div>
+                      <div className="col-md-6 mb-3 p-relative">
+                        <label htmlFor="whatsappContact" className="form-label">
+                          WhatsApp Contact
+                        </label>
+                        <span className="country-num">+91 </span>
+                        <input
+                          type="text"
+                          className="form-control pl-20"
+                          id="whatsappContact"
+                          name="whatsappContact"
+                          // placeholder="+91:"
+                          value={formData.whatsappContact}
+                          onChange={handleChange}
+                          maxLength={10}
+                          required
+                        />
+                        {error && (
+                          <p style={{ color: "red", fontSize: "14px" }}>
+                            {error}
+                          </p>
+                        )}
+                      </div>
                     </div>
-                    <div className="col-md-6 mb-3 p-relative">
-                      <label htmlFor="whatsappContact" className="form-label">
-                        WhatsApp Contact
-                      </label>
-                      <span className="country-num">+91 </span>
-                      <input
-                        type="text"
-                        className="form-control pl-20"
-                        id="whatsappContact"
-                        name="whatsappContact"
-                        // placeholder="+91:"
-                        value={formData.whatsappContact}
-                        onChange={handleChange}
-                        maxLength={10}
-                        required
-                      />
-                      {error && (
-                        <p style={{ color: "red", fontSize: "14px" }}>{error}</p>
-                      )}
-                    </div>
-                  </div>
-
 
                     {/* Email Address */}
                     <div className="mb-3">
@@ -1037,15 +1083,19 @@ export default function CheckIn() {
                     </div>
 
                     {/* Occupancy Selection */}
-                    {/* <div className="mb-3">
+                    <div className="mb-3">
                       <label className="form-label">Select Occupancy</label>
                       <select
                         value={occupancy}
                         onChange={handleOccupancyChange}
                       >
                         <option value="">Select Occupancy</option>
-                        {["Single", "Double", "Triple", "Fourth"].map(
-                          (type) => (
+                        {Object.keys(roomData)
+                          .filter(
+                            (type) =>
+                              roomData[type] && roomData[type].trim() !== ""
+                          )
+                          .map((type) => (
                             <option
                               key={type}
                               value={type}
@@ -1058,32 +1108,9 @@ export default function CheckIn() {
                                 ? "(Full)"
                                 : ""}
                             </option>
-                          )
-                        )}
+                          ))}
                       </select>
-                    </div> */}
-
-
-                    {/* Occupancy Selection */}
-                      <div className="mb-3">
-                        <label className="form-label">Select Occupancy</label>
-                        <select value={occupancy} onChange={handleOccupancyChange}>
-                          <option value="">Select Occupancy</option>
-                          {Object.keys(roomData)
-                            .filter((type) => roomData[type] && roomData[type].trim() !== "")
-                            .map((type) => (
-                              <option
-                                key={type}
-                                value={type}
-                                disabled={occupancyCount[type] >= occupancyLimits[type]}
-                              >
-                                {type}{" "}
-                                {occupancyCount[type] >= occupancyLimits[type] ? "(Full)" : ""}
-                              </option>
-                            ))}
-                        </select>
-                      </div>
-
+                    </div>
 
                     {selectedOccupancy && (
                       <p>Selected Occupancy: {selectedOccupancy}</p>
@@ -1104,7 +1131,6 @@ export default function CheckIn() {
                         ))}
                       </select>
                     </div>
-
 
                     {/* Check-In Button */}
                     <button type="submit" className="btn btn-submit w-100">
@@ -1128,9 +1154,11 @@ export default function CheckIn() {
         <div className="checkin-footer">
           <p>Let’s Stay in Touch!</p>
           <ul className="social-list-icons">
-            
             <li>
-              <Link href="https://www.facebook.com/TourWatchout/"  target="_blank">
+              <Link
+                href="https://www.facebook.com/TourWatchout/"
+                target="_blank"
+              >
                 <img
                   src="./assets/images/icons/facebook.png"
                   alt="Facebook Icon"
@@ -1138,7 +1166,10 @@ export default function CheckIn() {
               </Link>
             </li>
             <li>
-              <Link href="https://www.instagram.com/tourwatchout/" target="_blank">
+              <Link
+                href="https://www.instagram.com/tourwatchout/"
+                target="_blank"
+              >
                 <img
                   src="./assets/images/icons/insta.png"
                   alt="Instagram Icon"
@@ -1151,8 +1182,14 @@ export default function CheckIn() {
               </Link>
             </li>
             <li>
-              <Link href="https://www.youtube.com/@Tourwatchout" target="_blank">
-                <img src="./assets/images/icons/youtube.png" alt="Youtube Icon" />
+              <Link
+                href="https://www.youtube.com/@Tourwatchout"
+                target="_blank"
+              >
+                <img
+                  src="./assets/images/icons/youtube.png"
+                  alt="Youtube Icon"
+                />
               </Link>
             </li>
           </ul>
@@ -1166,8 +1203,3 @@ export async function getServerSideProps(context) {
   console.log("Server Side Query Params:", context.query);
   return { props: {} };
 }
-
-
-
-
-
