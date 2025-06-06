@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 
 export default function BlogList() {
   return (
@@ -20,25 +21,25 @@ export default function BlogList() {
                     <li className="category-blogs">Adventure</li>
                     <li className="time-blogs">5 min read</li>
                   </ul>
-                  <a href="#">
+                  <Link href="#">
                     <h2>
                       Conquer Bali’s Thrilling Rapids: A Guide to White-Water
                       Rafting
                     </h2>
-                  </a>
+                  </Link>
                   <p>
                     Experience the adrenaline rush of white-water rafting on
                     Bali’s Ayung River, surrounded by lush jungles and
                     breathtaking landscapes.
                   </p>
 
-                  <a href="#" className="read-more-btn">
+                  <Link href="#" className="read-more-btn">
                     Read more{" "}
                     <img
                       src="./assets/images/blogs/icons/arrow.png"
                       alt="arrow icon"
                     />
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -55,26 +56,26 @@ export default function BlogList() {
                     <li className="category-blogs">Food</li>
                     <li className="time-blogs">5 min read</li>
                   </ul>
-                  <a href="#">
+                  <Link href="#">
                     {" "}
                     <h2>
                       Savor the Flavors of Kashmir: Must-Try Traditional
                       Delicaciess
                     </h2>
-                  </a>
+                  </Link>
                   <p>
                     From the rich Wazwan feast to the warm sweetness of Kahwa
                     tea, explore the authentic tastes of Kashmir that tell
                     stories of its vibrant culture.
                   </p>
 
-                  <a href="#" className="read-more-btn">
+                  <Link href="#" className="read-more-btn">
                     Read more{" "}
                     <img
                       src="./assets/images/blogs/icons/arrow.png"
                       alt="arrow icon"
                     />
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -91,24 +92,24 @@ export default function BlogList() {
                     <li className="category-blogs">Hidden Gems</li>
                     <li className="time-blogs">5 min read</li>
                   </ul>
-                  <a href="#">
+                  <Link href="#">
                     <h2>
                       Discover Gangtok’s Best-Kept Secret: Ranka Monastery
                     </h2>
-                  </a>
+                  </Link>
                   <p>
                     Escape the crowds and find tranquility at Ranka Monastery, a
                     peaceful retreat offering stunning views and a serene
                     atmosphere.
                   </p>
 
-                  <a href="#" className="read-more-btn">
+                  <Link href="#" className="read-more-btn">
                     Read more{" "}
                     <img
                       src="./assets/images/blogs/icons/arrow.png"
                       alt="arrow icon"
                     />
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -126,22 +127,22 @@ export default function BlogList() {
                     <li className="category-blogs">Adventure</li>
                     <li className="time-blogs">5 min read</li>
                   </ul>
-                  <a href="#">
+                  <Link href="#">
                     <h2>Jungle Adventures: Night Safaris in Jim Corbett</h2>
-                  </a>
+                  </Link>
                   <p>
                     Dive into the wild side of Jim Corbett with a night safari,
                     where you can witness the jungle’s nocturnal life in all its
                     glory.
                   </p>
 
-                  <a href="#" className="read-more-btn">
+                  <Link href="#" className="read-more-btn">
                     Read more{" "}
                     <img
                       src="./assets/images/blogs/icons/arrow.png"
                       alt="arrow icon"
                     />
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -158,24 +159,24 @@ export default function BlogList() {
                     <li className="category-blogs">Hidden Gems</li>
                     <li className="time-blogs">5 min read</li>
                   </ul>
-                  <a href="#">
+                  <Link href="#">
                     <h2>
                       Leh Ladakh’s Turtuk Village: A Slice of History and Beauty
                     </h2>
-                  </a>
+                  </Link>
                   <p>
                     Discover the untouched charm of Turtuk Village, a remote
                     paradise with stunning landscapes and a rich Balti culture
                     near the Indo-Pak border.
                   </p>
 
-                  <a href="#" className="read-more-btn">
+                  <Link href="#" className="read-more-btn">
                     Read more{" "}
                     <img
                       src="./assets/images/blogs/icons/arrow.png"
                       alt="arrow icon"
                     />
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -192,21 +193,21 @@ export default function BlogList() {
                     <li className="category-blogs">Food</li>
                     <li className="time-blogs">5 min read</li>
                   </ul>
-                  <a href="#">
+                  <Link href="#">
                     <h2>A Culinary Tour of Europe: Dishes You Can’t Miss</h2>
-                  </a>
+                  </Link>
                   <p>
                     From French croissants to Italian pasta, embark on a journey
                     across Europe through its iconic and mouthwatering dishes.
                   </p>
 
-                  <a href="#" className="read-more-btn">
+                  <Link href="#" className="read-more-btn">
                     Read more{" "}
                     <img
                       src="./assets/images/blogs/icons/arrow.png"
                       alt="arrow icon"
                     />
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>

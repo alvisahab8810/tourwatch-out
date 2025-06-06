@@ -4,12 +4,12 @@ import Link from 'next/link'
 export default function AbHww() {
   return (
     <>
-       <section className="ab-hww how-we-work-container ptb-80">
+       <section className="ab-hww how-we-work-container ptb-80 mb-80">
           <div className="container">
              <div className="row">
                 <div className="col-md-6 how-we-work">
                        <p className="heading">How we work</p>
-                       <h1>Book Your trip easily with just a few steps</h1>
+                       <h1>Book Your trip easily with<br/> just a few steps</h1>
                        <p className="para1">The solution for those of you who don't want the hassle of ordering travel tickets, with just 3 steps you can travel anywhere you want.</p>
                        <Link href="#" className="main-btn1" data-bs-toggle="modal"
                     data-bs-target="#exampleModalCenter"

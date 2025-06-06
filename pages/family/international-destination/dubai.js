@@ -1,8 +1,8 @@
 import React from "react";
-import Topbar from "../components/header/Header";
-import Footer from "../components/footer/Footer";
-import Map from "../components/kashmir/Map";
-import TravelerReviews from "../components/kashmir/TravelerReviews";
+import Topbar from "../../../components/header/Header";
+import Footer from "../../../components/footer/Footer";
+import Map from "../../../components/kashmir/Map";
+import TravelerReviews from "../../../components/kashmir/TravelerReviews";
 import Link from "next/link";
 
 export default function dubai() {
@@ -41,7 +41,7 @@ export default function dubai() {
             <div class="max-800">
               <div class="content-section">
                 <h1>Dubai Travel Package</h1>
-                <ul class="location-list">
+                {/* <ul class="location-list">
                   <li class="list-item-none">(7 Days)</li>
                   <li class="locaton-items">
                     <img
@@ -50,7 +50,7 @@ export default function dubai() {
                     />{" "}
                     Downtown Dubai • Old Dubai • Desert Safari • Palm Jumeirah
                   </li>
-                </ul>
+                </ul> */}
               </div>
 
               <div class="tour-package pt-80">
@@ -120,7 +120,7 @@ export default function dubai() {
                       <div class="feature-media mobile-none">
                         <video
                           id="videoPlayer"
-                          src="./assets/images/kashmir/video.mp4"
+                          src="/assets/images/kashmir/video.mp4"
                           muted
                           loop
                           playsinline
@@ -128,6 +128,17 @@ export default function dubai() {
                         <button id="playButton" class="play-btn"></button>
                       </div>
                       <div class="feature-list">
+                        <ul class="location-list">
+                          {/* <li class="list-item-none">(7 Days)</li> */}
+                          <li class="locaton-items">
+                            <img
+                              src="/assets/images/kashmir/icons/pin.png"
+                              alt="Location Icon"
+                            />{" "}
+                            Downtown Dubai • Old Dubai • Desert Safari • Palm
+                            Jumeirah
+                          </li>
+                        </ul>
                         <ul>
                           <li>
                             <span>Hotel</span> : 3 Star
@@ -156,6 +167,87 @@ export default function dubai() {
                         </button>
                       </div>
                     </div>
+
+                       {/* ------=--------------------- time in tabs ===================== */}
+
+                    <section className="time-schedule-section ">
+                      <div className="container">
+                        <div className="schedule-list">
+                          <div className="schedule-items">
+                            <p className="schedule-timing">
+                             
+                              Day 1
+                            </p>
+                            <div>
+
+                            <h3>Arrival and welcome dinner.</h3>
+                            <p className="sche-details">
+                               Arrive at your lodge and settle in before enjoying a delicious welcome dinner. Savor local and international dishes while meeting our fellow travelers and preparing for the adventure ahead.
+                            </p>
+
+                            </div>
+                            
+                          </div>
+                          <div className="schedule-items">
+                            <p className="schedule-timing">
+                              
+                              Day 2-3
+                            </p>
+                            
+                            <div>
+                            <h3>Game drives and wildlife exploration.</h3>
+                            <p className="sche-details">
+                               Embark on thrilling morning and afternoon game drives through the stunning safari landscape. Spot the "Big Five" and other incredible wildlife in their natural habitat, guided by experienced rangers who provide fascinating insights into the region’s flora and fauna.
+                            </p>
+                            </div>
+                          </div>
+                          <div className="schedule-items">
+                            <p className="schedule-timing">
+                             
+                              Day 4
+                            </p>
+                            <div>
+                            <h3>Cultural visit to a local village</h3>
+                            <p className="sche-details">
+                              Immerse yourself in the rich traditions of the region with a visit to a local village. Engage with the community, learn about their customs, and experience authentic cultural practices, offering a unique perspective on local life.
+                            </p>
+                            </div>
+                          </div>
+                          <div className="schedule-items">
+                            <p className="schedule-timing">
+                             
+                              Day 5-6
+                            </p>
+                           <div>
+                           <h3>Luxury camping under the stars.</h3>
+                            <p className="sche-details">
+                               Experience the ultimate in comfort with luxury camping, combining the beauty of nature with premium amenities. Sleep under the stars in a spacious tent, complete with plush bedding and stunning views of the African night sky.
+                            </p>
+                           </div>
+                          </div>
+                          <div className="schedule-items">
+                            <p className="schedule-timing">
+                             
+                              Day 7
+                            </p>
+                           <div>
+                           <h3>Departure with memories to last a lifetime.</h3>
+                            <p className="sche-details">
+                              As your safari adventure comes to a close, reflect on the unforgettable experiences and stunning wildlife encounters. Depart with cherished memories, a camera full of pictures, and a heart full of stories to share.
+                            </p>
+                           </div>
+                          </div>
+                        </div>
+                        <div className="cancellation-policy-bx">
+                          <Link href="#">*Cancellation Policy</Link>
+                          <button className="btn btn-primary1" data-bs-toggle="modal"
+                                  data-bs-target="#exampleModalCenter"
+                                  fdprocessedid="s6df8j">Request A Callback</button>
+                        </div>
+                      </div>
+                    </section>
+
+                    {/* ------=--------------------- time in tabs ===================== */}
                   </div>
                   <div
                     class="tab-pane fade"
@@ -168,7 +260,7 @@ export default function dubai() {
                       <div class="feature-media mobile-none">
                         <video
                           id="videoPlayer"
-                          src="./assets/images/kashmir/video.mp4"
+                          src="/assets/images/kashmir/video.mp4"
                           muted
                           loop
                           playsinline
@@ -204,6 +296,83 @@ export default function dubai() {
                         </button>
                       </div>
                     </div>
+
+                       <section className="time-schedule-section ">
+                      <div className="container">
+                        <div className="schedule-list">
+                          <div className="schedule-items">
+                            <p className="schedule-timing">
+                             
+                              Day 1
+                            </p>
+                            <div>
+
+                            <h3>Arrival and welcome dinner.</h3>
+                            <p className="sche-details">
+                               Arrive at your lodge and settle in before enjoying a delicious welcome dinner. Savor local and international dishes while meeting our fellow travelers and preparing for the adventure ahead.
+                            </p>
+
+                            </div>
+                            
+                          </div>
+                          <div className="schedule-items">
+                            <p className="schedule-timing">
+                              
+                              Day 2-3
+                            </p>
+                            
+                            <div>
+                            <h3>Game drives and wildlife exploration.</h3>
+                            <p className="sche-details">
+                               Embark on thrilling morning and afternoon game drives through the stunning safari landscape. Spot the "Big Five" and other incredible wildlife in their natural habitat, guided by experienced rangers who provide fascinating insights into the region’s flora and fauna.
+                            </p>
+                            </div>
+                          </div>
+                          <div className="schedule-items">
+                            <p className="schedule-timing">
+                             
+                              Day 4
+                            </p>
+                            <div>
+                            <h3>Cultural visit to a local village</h3>
+                            <p className="sche-details">
+                              Immerse yourself in the rich traditions of the region with a visit to a local village. Engage with the community, learn about their customs, and experience authentic cultural practices, offering a unique perspective on local life.
+                            </p>
+                            </div>
+                          </div>
+                          <div className="schedule-items">
+                            <p className="schedule-timing">
+                             
+                              Day 5-6
+                            </p>
+                           <div>
+                           <h3>Luxury camping under the stars.</h3>
+                            <p className="sche-details">
+                               Experience the ultimate in comfort with luxury camping, combining the beauty of nature with premium amenities. Sleep under the stars in a spacious tent, complete with plush bedding and stunning views of the African night sky.
+                            </p>
+                           </div>
+                          </div>
+                          <div className="schedule-items">
+                            <p className="schedule-timing">
+                             
+                              Day 7
+                            </p>
+                           <div>
+                           <h3>Departure with memories to last a lifetime.</h3>
+                            <p className="sche-details">
+                              As your safari adventure comes to a close, reflect on the unforgettable experiences and stunning wildlife encounters. Depart with cherished memories, a camera full of pictures, and a heart full of stories to share.
+                            </p>
+                           </div>
+                          </div>
+                        </div>
+                        <div className="cancellation-policy-bx">
+                          <Link href="#">*Cancellation Policy</Link>
+                          <button className="btn btn-primary1" data-bs-toggle="modal"
+                                  data-bs-target="#exampleModalCenter"
+                                  fdprocessedid="s6df8j">Request A Callback</button>
+                        </div>
+                      </div>
+                    </section>
                   </div>
                   <div
                     class="tab-pane fade"
@@ -216,7 +385,7 @@ export default function dubai() {
                       <div class="feature-media mobile-none">
                         <video
                           id="videoPlayer"
-                          src="./assets/images/kashmir/video.mp4"
+                          src="/assets/images/kashmir/video.mp4"
                           muted
                           loop
                           playsinline
@@ -252,6 +421,84 @@ export default function dubai() {
                         </button>
                       </div>
                     </div>
+
+
+                       <section className="time-schedule-section ">
+                      <div className="container">
+                        <div className="schedule-list">
+                          <div className="schedule-items">
+                            <p className="schedule-timing">
+                             
+                              Day 1
+                            </p>
+                            <div>
+
+                            <h3>Arrival and welcome dinner.</h3>
+                            <p className="sche-details">
+                               Arrive at your lodge and settle in before enjoying a delicious welcome dinner. Savor local and international dishes while meeting our fellow travelers and preparing for the adventure ahead.
+                            </p>
+
+                            </div>
+                            
+                          </div>
+                          <div className="schedule-items">
+                            <p className="schedule-timing">
+                              
+                              Day 2-3
+                            </p>
+                            
+                            <div>
+                            <h3>Game drives and wildlife exploration.</h3>
+                            <p className="sche-details">
+                               Embark on thrilling morning and afternoon game drives through the stunning safari landscape. Spot the "Big Five" and other incredible wildlife in their natural habitat, guided by experienced rangers who provide fascinating insights into the region’s flora and fauna.
+                            </p>
+                            </div>
+                          </div>
+                          <div className="schedule-items">
+                            <p className="schedule-timing">
+                             
+                              Day 4
+                            </p>
+                            <div>
+                            <h3>Cultural visit to a local village</h3>
+                            <p className="sche-details">
+                              Immerse yourself in the rich traditions of the region with a visit to a local village. Engage with the community, learn about their customs, and experience authentic cultural practices, offering a unique perspective on local life.
+                            </p>
+                            </div>
+                          </div>
+                          <div className="schedule-items">
+                            <p className="schedule-timing">
+                             
+                              Day 5-6
+                            </p>
+                           <div>
+                           <h3>Luxury camping under the stars.</h3>
+                            <p className="sche-details">
+                               Experience the ultimate in comfort with luxury camping, combining the beauty of nature with premium amenities. Sleep under the stars in a spacious tent, complete with plush bedding and stunning views of the African night sky.
+                            </p>
+                           </div>
+                          </div>
+                          <div className="schedule-items">
+                            <p className="schedule-timing">
+                             
+                              Day 7
+                            </p>
+                           <div>
+                           <h3>Departure with memories to last a lifetime.</h3>
+                            <p className="sche-details">
+                              As your safari adventure comes to a close, reflect on the unforgettable experiences and stunning wildlife encounters. Depart with cherished memories, a camera full of pictures, and a heart full of stories to share.
+                            </p>
+                           </div>
+                          </div>
+                        </div>
+                        <div className="cancellation-policy-bx">
+                          <Link href="#">*Cancellation Policy</Link>
+                          <button className="btn btn-primary1" data-bs-toggle="modal"
+                                  data-bs-target="#exampleModalCenter"
+                                  fdprocessedid="s6df8j">Request A Callback</button>
+                        </div>
+                      </div>
+                    </section>
                   </div>
                 </div>
               </div>
@@ -281,23 +528,22 @@ export default function dubai() {
       </section>
       {/* ============================== Dubai tour Package ======================== */}
 
-      
-         {/* ==================================== Moibile-things ================================= */}
-         <section className="onlyl-mobile desktop-none">
-          <div className="container">
-             <div className="table-of-row tour-package">
-                 <div className="feature-media ">
-                        <video
-                          id="videoPlayer"
-                          src="./assets/images/kashmir/video.mp4"
-                          muted
-                          loop
-                          playsInline
-                        ></video>
-                        <button id="playButton" className="play-btn"></button>
-                  </div>
+      {/* ==================================== Moibile-things ================================= */}
+      <section className="onlyl-mobile desktop-none">
+        <div className="container">
+          <div className="table-of-row tour-package">
+            <div className="feature-media ">
+              <video
+                id="videoPlayer"
+                src="/assets/images/kashmir/video.mp4"
+                muted
+                loop
+                playsInline
+              ></video>
+              <button id="playButton" className="play-btn"></button>
+            </div>
 
-                  <div class="max-400">
+            <div class="max-400">
               <h2>
                 {" "}
                 Table <br />
@@ -317,105 +563,12 @@ export default function dubai() {
                 <Link href="#traveler-reviews">Trip Reviews</Link>
               </div>
             </div>
-
-             </div>
-          </div>
-           </section>
-      {/* ==================================== Moibile-things ================================= */}
-
-      {/* ============================= Dubai time Schedule ======================= */}
-      <section class="dubai-area time-schedule-section ">
-        <div class="container">
-          <div class="schedule-list">
-            <div class="schedule-items">
-              <p class="schedule-timing">
-                <img
-                  src="./assets/images/kashmir/icons/time.png"
-                  alt="watch icon"
-                />{" "}
-                Day 1
-              </p>
-              <h3>Arrival and welcome dinner.</h3>
-              <p class="sche-details">
-                Arrive at your lodge and settle in before enjoying a delicious
-                welcome dinner. Savor local and international dishes while
-                meeting our fellow travelers and preparing for the adventure
-                ahead.
-              </p>
-            </div>
-            <div class="schedule-items">
-              <p class="schedule-timing">
-                <img
-                  src="./assets/images/kashmir/icons/time.png"
-                  alt="watch icon"
-                />{" "}
-                Day 2-3
-              </p>
-              <h3>Game drives and wildlife exploration.</h3>
-              <p class="sche-details">
-                Embark on thrilling morning and afternoon game drives through
-                the stunning safari landscape. Spot the "Big Five" and other
-                incredible wildlife in their natural habitat, guided by
-                experienced rangers who provide fascinating insights into the
-                region’s flora and fauna.
-              </p>
-            </div>
-            <div class="schedule-items">
-              <p class="schedule-timing">
-                <img
-                  src="./assets/images/kashmir/icons/time.png"
-                  alt="watch icon"
-                />{" "}
-                Day 4
-              </p>
-              <h3>Cultural visit to a local village.</h3>
-              <p class="sche-details">
-                Immerse yourself in the rich traditions of the region with a
-                visit to a local village. Engage with the community, learn about
-                their customs, and experience authentic cultural practices,
-                offering a unique perspective on local life.
-              </p>
-            </div>
-            <div class="schedule-items">
-              <p class="schedule-timing">
-                <img
-                  src="./assets/images/kashmir/icons/time.png"
-                  alt="watch icon"
-                />{" "}
-                Day 5-6
-              </p>
-              <h3>Luxury camping under the stars.</h3>
-              <p class="sche-details">
-                Experience the ultimate in comfort with luxury camping,
-                combining the beauty of nature with premium amenities. Sleep
-                under the stars in a spacious tent, complete with plush bedding
-                and stunning views of the African night sky.
-              </p>
-            </div>
-            <div class="schedule-items">
-              <p class="schedule-timing">
-                <img
-                  src="./assets/images/kashmir/icons/time.png"
-                  alt="watch icon"
-                />{" "}
-                Day 7
-              </p>
-              <h3>Departure with memories to last a lifetime.</h3>
-              <p class="sche-details">
-                As your safari adventure comes to a close, reflect on the
-                unforgettable experiences and stunning wildlife encounters.
-                Depart with cherished memories, a camera full of pictures, and a
-                heart full of stories to share.
-              </p>
-            </div>
-          </div>
-          <div class="cancellation-policy-bx">
-            <Link href="#">*Cancellation Policy</Link>
-            <button class="btn btn-primary1">Request A Callback</button>
           </div>
         </div>
       </section>
-      {/* ============================= Dubai time Schedule ======================= */}
+      {/* ==================================== Moibile-things ================================= */}
+
+ 
 
       {/* =============================== dubai Cta ============================ */}
       <section class="dubai-banner banner-sections  ptb-30">
@@ -425,11 +578,14 @@ export default function dubai() {
               <p>Where Dreams Touch the Sky</p>
               <h1 class="pacifico-regular">DUBAI</h1>
               <p>Explore get exciting offers</p>
-              <button class="btn btn-primary1 desktop-none">Request A Callback</button>
-
+              <button class="btn btn-primary1 desktop-none">
+                Request A Callback
+              </button>
             </div>
             <div class="con-ctabx">
-              <button class="btn btn-primary1 mobile-none">Request A Callback</button>
+              <button class="btn btn-primary1 mobile-none">
+                Request A Callback
+              </button>
             </div>
           </div>
         </div>

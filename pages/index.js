@@ -24,7 +24,6 @@ import Offcanvas from "../components/header/Offcanvas";
 import Help from "../components/corporate/Help";
 import OnloadPopup from "../components/home/OnloadPopup";
 
-
 export default function IndexPage({ data }) {
   return (
     <section id="home" className="bg-prime">
