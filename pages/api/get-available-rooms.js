@@ -1,10 +1,10 @@
 // pages/api/get-available-rooms.js
 // import dbConnect from "@/utils/dbconnect";
-import AdminCheckinModel from "@/models/AdminCheckinModel";
-import CheckinModel from "@/models/CheckinModel";
+// import AdminCheckinModel from "@/models/AdminCheckinModel";
+// import CheckinModel from "@/models/CheckinModel";
 
 import connectDB from "../../utils/mongodb";
-import Checkin from "../../models/Checkin";
+// import Checkin from "../../models/Checkin";
 const OCCUPANCY_LIMIT = {
   Single: 1,
   Double: 2,
