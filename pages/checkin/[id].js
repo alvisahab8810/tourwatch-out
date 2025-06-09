@@ -1,5 +1,7 @@
 // pages/checkin/[id].js
-import connectDB from "../../utils/dbconnect";
+// import connectDB from "../../utils/dbconnect";
+import connectDB from '../../utils/mongodb';
+
 import RoomLinks from "../../models/RoomLinks";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";

@@ -127,7 +127,7 @@ export default function NationalDestination() {
             </SwiperSlide> */}
 
             <SwiperSlide className="swiper-slide">
-              <div class="new-desti-card">
+              <div className="new-desti-card">
                   <div className="desti-img-wrapper">
                   <div className="desti-img change-hover">
                     <img
@@ -142,17 +142,17 @@ export default function NationalDestination() {
                     />
                   </div>
                 </div>
-                <div class="p-4">
-                  <div class="header">
+                <div className="p-4">
+                  <div className="header">
                     <h2>Kashmir</h2>
                     <div className="share-area">
-                      <span class="duration-badge">4N/5D</span>
+                      <span className="duration-badge">4N/5D</span>
                       <Link href="#" >
                         <img src="/assets/images/icons/share.png" alt="share icon"/>
                       </Link>
                     </div>
                   </div>
-                  <div class="location">
+                  <div className="location">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       fill="currentColor"
@@ -167,7 +167,7 @@ export default function NationalDestination() {
                       Srinagar • Gulmarg • Pahalgam • Sonamarg
                     </span>
                   </div>
-                  <div class="icons" aria-label="Travel icons">
+                  <div className="icons" aria-label="Travel icons">
                     <ul className="amenities-icons">
                       <li>
                         <img src="/assets/images/icons/amenities/icon1.png"></img>
@@ -195,13 +195,13 @@ export default function NationalDestination() {
                       </li>
                     </ul>
                   </div>
-                  <div class="price-section">
-                    <div class="price-info">
-                      <p class="old-price">
+                  <div className="price-section">
+                    <div className="price-info">
+                      <p className="old-price">
                         Starting from <span className="oldcut">₹80,000</span>
                       </p>
-                      <p class="new-price">₹50,000</p>
-                      <p class="price-desc">per person on twin sharing </p>
+                      <p className="new-price">₹50,000</p>
+                      <p className="price-desc">per person on twin sharing </p>
                     </div>
                     <Link href="/family/national-destination/kashmir">View Package</Link>
                   </div>
@@ -210,7 +210,7 @@ export default function NationalDestination() {
             </SwiperSlide>
 
             <SwiperSlide className="swiper-slide">
-              <div class="new-desti-card">
+              <div className="new-desti-card">
                   <div className="desti-img-wrapper">
                   <div className="desti-img change-hover">
                     <img
@@ -225,17 +225,17 @@ export default function NationalDestination() {
                     />
                   </div>
                 </div>
-                <div class="p-4">
-                  <div class="header">
+                <div className="p-4">
+                  <div className="header">
                     <h2>Leh Ladakh</h2>
                     <div className="share-area">
-                      <span class="duration-badge">3N/4D</span>
+                      <span className="duration-badge">3N/4D</span>
                       <Link href="#" >
                         <img src="/assets/images/icons/share.png" alt="share icon"/>
                       </Link>
                     </div>
                   </div>
-                  <div class="location">
+                  <div className="location">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       fill="currentColor"
@@ -250,7 +250,7 @@ export default function NationalDestination() {
                      Leh • Pangong
                     </span>
                   </div>
-                  <div class="icons" aria-label="Travel icons">
+                  <div className="icons" aria-label="Travel icons">
                     <ul className="amenities-icons">
                       <li>
                         <img src="/assets/images/icons/amenities/icon1.png"></img>
@@ -278,13 +278,13 @@ export default function NationalDestination() {
                       </li>
                     </ul>
                   </div>
-                  <div class="price-section">
-                    <div class="price-info">
-                      <p class="old-price">
+                  <div className="price-section">
+                    <div className="price-info">
+                      <p className="old-price">
                         Starting from <span className="oldcut">₹60,000</span>
                       </p>
-                      <p class="new-price">₹40,000</p>
-                      <p class="price-desc">per person on twin sharing </p>
+                      <p className="new-price">₹40,000</p>
+                      <p className="price-desc">per person on twin sharing </p>
                     </div>
                     <Link href="/family/national-destination/leh-laddakh">View Package</Link>
                   </div>
@@ -294,7 +294,7 @@ export default function NationalDestination() {
 
 
             <SwiperSlide className="swiper-slide">
-              <div class="new-desti-card">
+              <div className="new-desti-card">
                   <div className="desti-img-wrapper">
                   <div className="desti-img change-hover">
                     <img
@@ -309,17 +309,17 @@ export default function NationalDestination() {
                     />
                   </div>
                 </div>
-                <div class="p-4">
-                  <div class="header">
+                <div className="p-4">
+                  <div className="header">
                     <h2>Manali</h2>
                     <div className="share-area">
-                      <span class="duration-badge">3N/4D</span>
+                      <span className="duration-badge">3N/4D</span>
                       <Link href="#" >
                         <img src="/assets/images/icons/share.png" alt="share icon"/>
                       </Link>
                     </div>
                   </div>
-                  <div class="location">
+                  <div className="location">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       fill="currentColor"
@@ -334,7 +334,7 @@ export default function NationalDestination() {
                      Manali-Solang • Atal Tunnel • Manali - Manikaran
                     </span>
                   </div>
-                  <div class="icons" aria-label="Travel icons">
+                  <div className="icons" aria-label="Travel icons">
                     <ul className="amenities-icons">
                       <li>
                         <img src="/assets/images/icons/amenities/icon1.png"></img>
@@ -362,13 +362,13 @@ export default function NationalDestination() {
                       </li>
                     </ul>
                   </div>
-                  <div class="price-section">
-                    <div class="price-info">
-                      <p class="old-price">
+                  <div className="price-section">
+                    <div className="price-info">
+                      <p className="old-price">
                         Starting from <span className="oldcut">₹60,000</span>
                       </p>
-                      <p class="new-price">₹40,000</p>
-                      <p class="price-desc">per person on twin sharing </p>
+                      <p className="new-price">₹40,000</p>
+                      <p className="price-desc">per person on twin sharing </p>
                     </div>
                     <Link href="/family/national-destination/manali">View Package</Link>
                   </div>
@@ -378,7 +378,7 @@ export default function NationalDestination() {
 
 
              <SwiperSlide className="swiper-slide">
-              <div class="new-desti-card">
+              <div className="new-desti-card">
                   <div className="desti-img-wrapper">
                   <div className="desti-img change-hover">
                     <img
@@ -393,17 +393,17 @@ export default function NationalDestination() {
                     />
                   </div>
                 </div>
-                <div class="p-4">
-                  <div class="header">
+                <div className="p-4">
+                  <div className="header">
                     <h2>Shimla</h2>
                     <div className="share-area">
-                      <span class="duration-badge">3N/4D</span>
+                      <span className="duration-badge">3N/4D</span>
                       <Link href="#" >
                         <img src="/assets/images/icons/share.png" alt="share icon"/>
                       </Link>
                     </div>
                   </div>
-                  <div class="location">
+                  <div className="location">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       fill="currentColor"
@@ -418,7 +418,7 @@ export default function NationalDestination() {
                      Shimla  • Kufri • Mashobra - Naldehra
                     </span>
                   </div>
-                  <div class="icons" aria-label="Travel icons">
+                  <div className="icons" aria-label="Travel icons">
                     <ul className="amenities-icons">
                       <li>
                         <img src="/assets/images/icons/amenities/icon1.png"></img>
@@ -446,13 +446,13 @@ export default function NationalDestination() {
                       </li>
                     </ul>
                   </div>
-                  <div class="price-section">
-                    <div class="price-info">
-                      <p class="old-price">
+                  <div className="price-section">
+                    <div className="price-info">
+                      <p className="old-price">
                         Starting from <span className="oldcut">₹60,000</span>
                       </p>
-                      <p class="new-price">₹40,000</p>
-                      <p class="price-desc">per person on twin sharing </p>
+                      <p className="new-price">₹40,000</p>
+                      <p className="price-desc">per person on twin sharing </p>
                     </div>
                     <Link href="/family/national-destination/shimla">View Package</Link>
                   </div>
@@ -463,7 +463,7 @@ export default function NationalDestination() {
      
 
              <SwiperSlide className="swiper-slide">
-              <div class="new-desti-card">
+              <div className="new-desti-card">
                   <div className="desti-img-wrapper">
                   <div className="desti-img change-hover">
                     <img
@@ -478,17 +478,17 @@ export default function NationalDestination() {
                     />
                   </div>
                 </div>
-                <div class="p-4">
-                  <div class="header">
+                <div className="p-4">
+                  <div className="header">
                     <h2>Dharamshala</h2>
                     <div className="share-area">
-                      <span class="duration-badge">3N/4D</span>
+                      <span className="duration-badge">3N/4D</span>
                       <Link href="#" >
                         <img src="/assets/images/icons/share.png" alt="share icon"/>
                       </Link>
                     </div>
                   </div>
-                  <div class="location">
+                  <div className="location">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       fill="currentColor"
@@ -503,7 +503,7 @@ export default function NationalDestination() {
                      Dharmshala McLeod Ganj & Dalhousie
                     </span>
                   </div>
-                  <div class="icons" aria-label="Travel icons">
+                  <div className="icons" aria-label="Travel icons">
                     <ul className="amenities-icons">
                       <li>
                         <img src="/assets/images/icons/amenities/icon1.png"></img>
@@ -531,13 +531,13 @@ export default function NationalDestination() {
                       </li>
                     </ul>
                   </div>
-                  <div class="price-section">
-                    <div class="price-info">
-                      <p class="old-price">
+                  <div className="price-section">
+                    <div className="price-info">
+                      <p className="old-price">
                         Starting from <span className="oldcut">₹70,000</span>
                       </p>
-                      <p class="new-price">₹45,000</p>
-                      <p class="price-desc">per person on twin sharing </p>
+                      <p className="new-price">₹45,000</p>
+                      <p className="price-desc">per person on twin sharing </p>
                     </div>
                     <Link href="/family/national-destination/dharamshala">View Package</Link>
                   </div>
@@ -548,7 +548,7 @@ export default function NationalDestination() {
 
             
              <SwiperSlide className="swiper-slide">
-              <div class="new-desti-card">
+              <div className="new-desti-card">
                   <div className="desti-img-wrapper">
                   <div className="desti-img change-hover">
                     <img
@@ -563,17 +563,17 @@ export default function NationalDestination() {
                     />
                   </div>
                 </div>
-                <div class="p-4">
-                  <div class="header">
+                <div className="p-4">
+                  <div className="header">
                     <h2>Dehradun</h2>
                     <div className="share-area">
-                      <span class="duration-badge">4N/5D</span>
+                      <span className="duration-badge">4N/5D</span>
                       <Link href="#" >
                         <img src="/assets/images/icons/share.png" alt="share icon"/>
                       </Link>
                     </div>
                   </div>
-                  <div class="location">
+                  <div className="location">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       fill="currentColor"
@@ -588,7 +588,7 @@ export default function NationalDestination() {
                      Dehradun & Mussoorie
                     </span>
                   </div>
-                  <div class="icons" aria-label="Travel icons">
+                  <div className="icons" aria-label="Travel icons">
                     <ul className="amenities-icons">
                       <li>
                         <img src="/assets/images/icons/amenities/icon1.png"></img>
@@ -616,13 +616,13 @@ export default function NationalDestination() {
                       </li>
                     </ul>
                   </div>
-                  <div class="price-section">
-                    <div class="price-info">
-                      <p class="old-price">
+                  <div className="price-section">
+                    <div className="price-info">
+                      <p className="old-price">
                         Starting from <span className="oldcut">₹70,000</span>
                       </p>
-                      <p class="new-price">₹45,000</p>
-                      <p class="price-desc">per person on twin sharing </p>
+                      <p className="new-price">₹45,000</p>
+                      <p className="price-desc">per person on twin sharing </p>
                     </div>
                     <Link href="/family/national-destination/dehradun">View Package</Link>
                   </div>

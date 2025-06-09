@@ -1,4 +1,5 @@
 import connectDB from '../../utils/mongodb';
+
 import RoomLinks from '../../models/RoomLinks';
 import { nanoid } from 'nanoid';
 

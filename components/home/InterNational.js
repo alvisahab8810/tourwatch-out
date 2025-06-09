@@ -53,7 +53,7 @@ export default function InterNational() {
             className="swiper mySwiper4 pt-80"
           >
             <SwiperSlide className="swiper-slide">
-              <div class="new-desti-card">
+              <div className="new-desti-card">
                 <img
                   src="/assets/images/i-destination/dubai.webp"
                   alt="Dubai cityscape showing Burj Khalifa tower and waterfront with people"
@@ -61,11 +61,11 @@ export default function InterNational() {
                   width="400"
                   height="250"
                 />
-                <div class="p-4">
-                  <div class="header">
+                <div className="p-4">
+                  <div className="header">
                     <h2>Dubai - Abudhabi</h2>
                     <div className="share-area">
-                      <span class="duration-badge">8N/7D</span>
+                      <span className="duration-badge">8N/7D</span>
                       <Link href="#">
                         <img
                           src="/assets/images/icons/share.png"
@@ -74,7 +74,7 @@ export default function InterNational() {
                       </Link>
                     </div>
                   </div>
-                  <div class="location">
+                  <div className="location">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       fill="currentColor"
@@ -89,7 +89,7 @@ export default function InterNational() {
                       Downtown Dubai • Old Dubai • Desert Safari • Palm Jumeirah
                     </span>
                   </div>
-                  <div class="icons" aria-label="Travel icons">
+                  <div className="icons" aria-label="Travel icons">
                     <ul className="amenities-icons">
                       <li>
                         <img src="/assets/images/icons/amenities/icon1.png"></img>
@@ -117,13 +117,13 @@ export default function InterNational() {
                       </li>
                     </ul>
                   </div>
-                  <div class="price-section">
-                    <div class="price-info">
-                      <p class="old-price">
+                  <div className="price-section">
+                    <div className="price-info">
+                      <p className="old-price">
                         Starting from <span className="oldcut">₹80,000</span>
                       </p>
-                      <p class="new-price">₹50,000</p>
-                      <p class="price-desc">per person on twin sharing </p>
+                      <p className="new-price">₹50,000</p>
+                      <p className="price-desc">per person on twin sharing </p>
                     </div>
                     <Link href="/family/international-destination/dubai">View Package</Link>
                   </div>
@@ -132,7 +132,7 @@ export default function InterNational() {
             </SwiperSlide>
 
             <SwiperSlide className="swiper-slide">
-              <div class="new-desti-card">
+              <div className="new-desti-card">
                 <img
                   src="/assets/images/i-destination/bali.webp"
                   alt="Bali"
@@ -140,11 +140,11 @@ export default function InterNational() {
                   width="400"
                   height="250"
                 />
-                <div class="p-4">
-                  <div class="header">
+                <div className="p-4">
+                  <div className="header">
                     <h2>Bali</h2>
                     <div className="share-area">
-                      <span class="duration-badge">4N/5D</span>
+                      <span className="duration-badge">4N/5D</span>
                       <Link href="#">
                         <img
                           src="/assets/images/icons/share.png"
@@ -153,7 +153,7 @@ export default function InterNational() {
                       </Link>
                     </div>
                   </div>
-                  <div class="location">
+                  <div className="location">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       fill="currentColor"
@@ -166,7 +166,7 @@ export default function InterNational() {
                     </svg>
                     <span> Kintamani • Ubud • Tanjung Benoa</span>
                   </div>
-                  <div class="icons" aria-label="Travel icons">
+                  <div className="icons" aria-label="Travel icons">
                     <ul className="amenities-icons">
                       <li>
                         <img src="/assets/images/icons/amenities/icon1.png"></img>
@@ -204,13 +204,13 @@ export default function InterNational() {
                       </li>
                     </ul>
                   </div>
-                  <div class="price-section">
-                    <div class="price-info">
-                      <p class="old-price">
+                  <div className="price-section">
+                    <div className="price-info">
+                      <p className="old-price">
                         Starting from <span className="oldcut">₹180,000</span>
                       </p>
-                      <p class="new-price">₹150,000</p>
-                      <p class="price-desc">per person on twin sharing </p>
+                      <p className="new-price">₹150,000</p>
+                      <p className="price-desc">per person on twin sharing </p>
                     </div>
                     <Link href="#">View Package</Link>
                   </div>
@@ -220,7 +220,7 @@ export default function InterNational() {
 
             
             <SwiperSlide className="swiper-slide">
-              <div class="new-desti-card">
+              <div className="new-desti-card">
                 <img
                   src="/assets/images/i-destination/thailand.webp"
                   alt="Bali"
@@ -228,11 +228,11 @@ export default function InterNational() {
                   width="400"
                   height="250"
                 />
-                <div class="p-4">
-                  <div class="header">
+                <div className="p-4">
+                  <div className="header">
                     <h2>Thailand</h2>
                     <div className="share-area">
-                      <span class="duration-badge">4N/5D</span>
+                      <span className="duration-badge">4N/5D</span>
                       <Link href="#">
                         <img
                           src="/assets/images/icons/share.png"
@@ -241,7 +241,7 @@ export default function InterNational() {
                       </Link>
                     </div>
                   </div>
-                  <div class="location">
+                  <div className="location">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       fill="currentColor"
@@ -254,7 +254,7 @@ export default function InterNational() {
                     </svg>
                     <span> Kintamani • Ubud • Tanjung Benoa</span>
                   </div>
-                  <div class="icons" aria-label="Travel icons">
+                  <div className="icons" aria-label="Travel icons">
                     <ul className="amenities-icons">
                       <li>
                         <img src="/assets/images/icons/amenities/icon1.png"></img>
@@ -292,13 +292,13 @@ export default function InterNational() {
                       </li>
                     </ul>
                   </div>
-                  <div class="price-section">
-                    <div class="price-info">
-                      <p class="old-price">
+                  <div className="price-section">
+                    <div className="price-info">
+                      <p className="old-price">
                         Starting from <span className="oldcut">₹180,000</span>
                       </p>
-                      <p class="new-price">₹150,000</p>
-                      <p class="price-desc">per person on twin sharing </p>
+                      <p className="new-price">₹150,000</p>
+                      <p className="price-desc">per person on twin sharing </p>
                     </div>
                     <Link href="#">View Package</Link>
                   </div>
@@ -307,7 +307,7 @@ export default function InterNational() {
             </SwiperSlide>
 
             <SwiperSlide className="swiper-slide">
-              <div class="new-desti-card">
+              <div className="new-desti-card">
                 <img
                   src="/assets/images/i-destination/singapore.webp"
                   alt="Singapore"
@@ -315,11 +315,11 @@ export default function InterNational() {
                   width="400"
                   height="250"
                 />
-                <div class="p-4">
-                  <div class="header">
+                <div className="p-4">
+                  <div className="header">
                     <h2>Singapore</h2>
                     <div className="share-area">
-                      <span class="duration-badge">4N/5D</span>
+                      <span className="duration-badge">4N/5D</span>
                       <Link href="#">
                         <img
                           src="/assets/images/icons/share.png"
@@ -328,7 +328,7 @@ export default function InterNational() {
                       </Link>
                     </div>
                   </div>
-                  <div class="location">
+                  <div className="location">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       fill="currentColor"
@@ -341,7 +341,7 @@ export default function InterNational() {
                     </svg>
                     <span> Kintamani • Ubud • Tanjung Benoa</span>
                   </div>
-                  <div class="icons" aria-label="Travel icons">
+                  <div className="icons" aria-label="Travel icons">
                     <ul className="amenities-icons">
                       <li>
                         <img src="/assets/images/icons/amenities/icon1.png"></img>
@@ -379,13 +379,13 @@ export default function InterNational() {
                       </li>
                     </ul>
                   </div>
-                  <div class="price-section">
-                    <div class="price-info">
-                      <p class="old-price">
+                  <div className="price-section">
+                    <div className="price-info">
+                      <p className="old-price">
                         Starting from <span className="oldcut">₹180,000</span>
                       </p>
-                      <p class="new-price">₹150,000</p>
-                      <p class="price-desc">per person on twin sharing </p>
+                      <p className="new-price">₹150,000</p>
+                      <p className="price-desc">per person on twin sharing </p>
                     </div>
                     <Link href="#">View Package</Link>
                   </div>
@@ -394,7 +394,7 @@ export default function InterNational() {
             </SwiperSlide>
 
              <SwiperSlide className="swiper-slide">
-              <div class="new-desti-card">
+              <div className="new-desti-card">
                 <img
                   src="/assets/images/i-destination/malaysia.webp"
                   alt="malaysia"
@@ -402,11 +402,11 @@ export default function InterNational() {
                   width="400"
                   height="250"
                 />
-                <div class="p-4">
-                  <div class="header">
+                <div className="p-4">
+                  <div className="header">
                     <h2>Malaysia</h2>
                     <div className="share-area">
-                      <span class="duration-badge">4N/5D</span>
+                      <span className="duration-badge">4N/5D</span>
                       <Link href="#">
                         <img
                           src="/assets/images/icons/share.png"
@@ -415,7 +415,7 @@ export default function InterNational() {
                       </Link>
                     </div>
                   </div>
-                  <div class="location">
+                  <div className="location">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       fill="currentColor"
@@ -428,7 +428,7 @@ export default function InterNational() {
                     </svg>
                     <span> Kintamani • Ubud • Tanjung Benoa</span>
                   </div>
-                  <div class="icons" aria-label="Travel icons">
+                  <div className="icons" aria-label="Travel icons">
                     <ul className="amenities-icons">
                       <li>
                         <img src="/assets/images/icons/amenities/icon1.png"></img>
@@ -466,13 +466,13 @@ export default function InterNational() {
                       </li>
                     </ul>
                   </div>
-                  <div class="price-section">
-                    <div class="price-info">
-                      <p class="old-price">
+                  <div className="price-section">
+                    <div className="price-info">
+                      <p className="old-price">
                         Starting from <span className="oldcut">₹180,000</span>
                       </p>
-                      <p class="new-price">₹150,000</p>
-                      <p class="price-desc">per person on twin sharing </p>
+                      <p className="new-price">₹150,000</p>
+                      <p className="price-desc">per person on twin sharing </p>
                     </div>
                     <Link href="#">View Package</Link>
                   </div>
