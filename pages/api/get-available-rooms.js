@@ -1,8 +1,10 @@
 // pages/api/get-available-rooms.js
-import dbConnect from "@/utils/dbconnect";
+// import dbConnect from "@/utils/dbconnect";
 import AdminCheckinModel from "@/models/AdminCheckinModel";
 import CheckinModel from "@/models/CheckinModel";
 
+import connectDB from "../../utils/mongodb";
+import Checkin from "../../models/Checkin";
 const OCCUPANCY_LIMIT = {
   Single: 1,
   Double: 2,
@@ -11,7 +13,7 @@ const OCCUPANCY_LIMIT = {
 };
 
 export default async function handler(req, res) {
-  await dbConnect();
+  await connectDB();
 
   const { sharedId, occupancy } = req.query;
 

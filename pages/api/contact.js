@@ -1,6 +1,8 @@
-import dbConnect from '../utils/dbconnect';
+import dbConnect from '../../utils/dbconnect';
 
-import Contact from '../models/Contact';
+// import Contact from '../../models/Contact';
+
+
 
 export default async function handler(req, res) {
   await dbConnect(); // Ensure the connection is established
