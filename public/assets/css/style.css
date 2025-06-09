@@ -3718,7 +3718,7 @@ ul.amenities-icons li{
       }
       .new-desti-card .icons {
         max-width: 100%;
-        justify-content: space-around;
+        justify-content: space-between;
       }
     }
 

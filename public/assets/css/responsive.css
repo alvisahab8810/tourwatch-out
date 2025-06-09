@@ -454,6 +454,38 @@ right: 0;
 
 
 @media(max-width:760px){
+
+
+    .new-desti-card .location {
+    margin-bottom: 5px;
+    }
+    .new-desti-card .header {
+    margin-bottom: 10px;
+}
+    ul.amenities-icons li {
+    margin-right: 7px;
+}
+    .amenities-icons{
+        flex-wrap: wrap;
+    }
+
+    .new-desti-card .share-area .duration-badge {
+    margin-right: 7px;
+}
+    .new-desti-card .price-section a {
+    font-size: 11px;
+    padding: 8px 10px;
+}
+    .new-desti-card .price-section .price-info .new-price {
+    font-size: 18px;
+}
+    .new-desti-card .header h2 {
+    font-size: 18px;
+}
+
+.new-desti-card .duration-badge {
+    font-size: 10px;
+}
     .mb-80 {
     margin-bottom: 40px;
 }
