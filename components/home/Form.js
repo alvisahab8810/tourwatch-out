@@ -134,7 +134,7 @@
     };
   
     return (
-      <section className="form-section">
+      <section className="form-section ptb-80">
         <div className="container p-relative">
           <div className="container-form">
             <Toaster />

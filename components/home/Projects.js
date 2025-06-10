@@ -6,7 +6,7 @@ export default function Projects() {
   const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.3 });
 
   return (
-    <section ref={ref} className="project-counter bg-prime how-we-work-container ptb-80">
+    <section ref={ref} className="project-counter bg-prime how-we-work-container pb-80">
       <div className="container">
         <div className="counter-area">
           <div className="counter-items">

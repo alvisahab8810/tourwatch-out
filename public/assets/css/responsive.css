@@ -351,8 +351,8 @@
     }
 
     .how-we-work-container {
-        padding-top: 0px;
-        padding-bottom: 0!important;
+        padding-top: 40px;
+        padding-bottom: 40px!important;
     }
 
     .counter-area > div{
@@ -455,6 +455,24 @@ right: 0;
 
 @media(max-width:760px){
 
+    .explore-row h2 {
+    font-size: 20px;
+}
+    
+    .stripe_items .feature-item {
+    gap: 0;
+    min-width: unset;
+}
+
+    .stripe_items .feature-text {
+    font-size: 12px;
+    margin-left: 5px;;
+}
+
+.stripe_items .feature-icons {
+    width: 14px;
+    height: 14px;
+}
 
     .new-desti-card .location {
     margin-bottom: 5px;
@@ -936,9 +954,7 @@ color: #667085;
         font-size: 18px;
     }
 
-    .explore-more-btn {
-        font-size: 18px;
-    }
+  
 
     .testimonials .swiper-backface-hidden .swiper-slide {
         padding: 15px;
@@ -1278,7 +1294,7 @@ color: #667085;
     width:100%;
 }
 .destination-row .desti-img {
-    height: 340px;
+    height: auto;
 }
 
 #national-destination{
@@ -2123,6 +2139,46 @@ section.national-dest {
 .check-corporate .country-num {
     left: 13px;
 }
+
+
+.explore-more-btn {
+    font-size: 14px;
+    padding: 5px 10px;
+    width: auto;
+    height: auto;
+}
+
+
+
+.pt-80 {
+    padding-top: 25px !important;
+}
+
+.mini-container {
+    max-width: 100%;
+}
+
+
+.container {
+    max-width: 100%;
+}
+
+.national-dest .swiper {
+    padding-bottom: 40px;
+}
+
+.explore-more-btn img {
+    margin-left: 5px;
+    width: 12px;
+}
+
+.stars img {
+    width: 100px;
+}
+
+.g_reviews .review-text {
+    font-size: 14px;
+}
 }
 @media(max-width:380px){
     .banner-section {
@@ -2158,10 +2214,7 @@ section.national-dest {
         font-size: 12px;
     }
   
-    .explore-more-btn {
-        font-size: 16px;
-        margin-top: 11px !important;
-    }
+   
     .heading {
         font-size: 22px;
         line-height: 1;

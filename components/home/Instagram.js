@@ -191,7 +191,7 @@ import { Autoplay, Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import { FaVolumeMute, FaVolumeUp } from "react-icons/fa";
-
+import Link from "next/link";
 const videoSources = [
   "/assets/images/instagram/video1.mp4",
   "/assets/images/instagram/video2.mp4",
@@ -226,16 +226,22 @@ export default function Instagram() {
 
           <div className="container">
           <div className="insta-row ">
-         <h1 className="heading lh-75">Instagram videos</h1>
-            <a
+         <h1 className="heading">Instagram videos</h1>
+
+            <Link
               href="https://www.instagram.com/tourwatchout/?hl=en"
               className="explore-more-btn"
             >
-               Visit Instagram
-           </a>
+              Visit Instagram
+              <img
+                src="/assets/images/icons/right-arrow.png"
+                alt="right arrow"
+              ></img>
+            </Link>
+           
           </div>
         </div>
-        <div className="contianer">
+        <div className="mini-container">
           <Swiper
             spaceBetween={20}
             loop={true}
@@ -247,12 +253,12 @@ export default function Instagram() {
             // }}
             breakpoints={{
               240: {
-                slidesPerView: 1.5,
+                slidesPerView: 1.4,
                 spaceBetween: 10,
                 centeredSlides: true,
               },
               768: { slidesPerView: 2.5, spaceBetween: 20 },
-              1024: { slidesPerView: 4, spaceBetween: 20 },
+              1024: { slidesPerView: 3.9, spaceBetween: 20 },
             }}
             navigation={{
               nextEl: ".swiper-button-next-1",

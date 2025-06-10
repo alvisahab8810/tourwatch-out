@@ -23,6 +23,7 @@ import Popup from "../components/corporate/Popup";
 import Offcanvas from "../components/header/Offcanvas";
 import Help from "../components/corporate/Help";
 import OnloadPopup from "../components/home/OnloadPopup";
+import Stripe from "../components/home/Stripe";
 
 export default function IndexPage({ data }) {
   return (
@@ -35,6 +36,7 @@ export default function IndexPage({ data }) {
       <Topbar/>
       <Offcanvas/>
       <Hero/>
+      <Stripe/>
       <Form/>
       {/* <Hww/> */}
       <Projects/>
