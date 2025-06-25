@@ -42,7 +42,7 @@ function MyApp({ Component, pageProps }) {
 
         
 
-        <title>Tourwatchout</title>
+        <title>tourwatchout</title>
       </Head>
 
       {/* Non-Critical Scripts */}

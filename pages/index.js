@@ -29,7 +29,7 @@ export default function IndexPage({ data }) {
   return (
     <section id="home" className="bg-prime">
       <CustomHead
-        title="TourWatchout"
+        title="Tourwatchout"
         keywords=""
         description="#"
       />
