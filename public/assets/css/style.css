@@ -3905,3 +3905,21 @@ ul.amenities-icons li{
 .swiper-wrapper {
   align-items: stretch;
 }
+
+
+.privacy-policy h2{
+    font-size: 30px;
+    margin-top: 30px;
+}
+
+.footer-area{
+border-top: 1px solid #ddd;
+padding-top: 30px;
+padding-bottom: 30px!important;;
+font-size: 13px!important;
+}
+
+
+.all-right a:hover{
+    color:white;
+}

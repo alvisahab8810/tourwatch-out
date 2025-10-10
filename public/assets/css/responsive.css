@@ -1279,6 +1279,10 @@ color: #667085;
     display: none;;
 }
 
+.privacy-policy h2{
+    font-size: 18px;
+}
+
 /* ================================== National Page ================================= */
 
 .national-destination-hero {
