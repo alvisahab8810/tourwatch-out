@@ -24,6 +24,15 @@ import Offcanvas from "../components/header/Offcanvas";
 import Help from "../components/corporate/Help";
 import OnloadPopup from "../components/home/OnloadPopup";
 import Stripe from "../components/home/Stripe";
+import WhatMakeus from "../components/home/WhatMakeus";
+import BenifitSection from "../components/home/BenifitSection";
+import PromoSection from "../components/home/PromoSection";
+import TopReviews from "../components/home/TopReviews";
+import MostPopular from "../components/home/MostPopular";
+import FAQs from "../components/home/FAQs";
+import BottomReviews from "../components/home/BottomReviews";
+import Blogs from "../components/home/Blogs";
+import NewFooter from "../components/footer/NewFooter";
 
 export default function IndexPage({ data }) {
   return (
@@ -36,20 +45,44 @@ export default function IndexPage({ data }) {
       <Topbar/>
       <Offcanvas/>
       <Hero/>
-      <Stripe/>
-      <Form/>
+      <WhatMakeus/>
+      <BenifitSection/>
+
+      <PromoSection/>
+      {/* <Stripe/>x */}
+      {/* <Form/> */}
       {/* <Hww/> */}
-      <Projects/>
+      {/* <Projects/> */}
+       <InterNational/>
       <NationalDestination/>
-      <InterNational/>
-      <Testimonials/>
+
+
+      <TopReviews/>
+     
+      {/* <Testimonials/> */}
       <Instagram/>
       {/* <Kashmircta/> */}
-      <Help/>
-      <Faq/>
+
+      <PromoSection/>
+
+      <MostPopular/>
+
+
+      <FAQs/>
+
+      <BottomReviews/>
+
+
+      <Blogs/>
+
+
+
+      {/* <Help/> */}
+      {/* <Faq/> */}
       <Popup/>
       {/* <OnloadPopup/> */}
-     <Footer/>
+     {/* <Footer/> */}
+     <NewFooter/>
     </section>
   );
 }

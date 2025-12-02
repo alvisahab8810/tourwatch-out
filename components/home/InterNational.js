@@ -8,22 +8,22 @@ export default function InterNational() {
   return (
     <>
       <section className="international-dest national-dest">
-        <div className="container">
+        <div className="mini-container1">
           <div className="explore-row">
-            <h2>International Destinations</h2>
+            <h2 className="section-title">International Destinations</h2>
             <Link
               href="/family/international-destination"
               className="explore-more-btn"
             >
               View all
-              <img
+              {/* <img
                 src="/assets/images/icons/right-arrow.png"
                 alt="right arrow"
-              ></img>
+              ></img> */}
             </Link>
           </div>
         </div>
-        <div className="mini-container">
+        <div className="mini-container1">
           {/* <div className="row pt-80">
             <div className="col-md-12">
              
@@ -31,15 +31,15 @@ export default function InterNational() {
             </div>
           </div> */}
           <Swiper
-            spaceBetween={20}
+            spaceBetween={10}
             // centeredSlides={true}
             // grabCursor={true}
             loop={true}
-            slidesPerView={3.5}
-            autoplay={{
-              delay: 2500,
-              disableOnInteraction: false,
-            }}
+            slidesPerView={3.2}
+            // autoplay={{
+            //   delay: 2500,
+            //   disableOnInteraction: false,
+            // }}
             pagination={{
               clickable: true,
               el: ".swiper-pagination", // Ensure a pagination element is available
@@ -57,11 +57,11 @@ export default function InterNational() {
               },
               768: {
                 slidesPerView: 2.5,
-                spaceBetween: 20,
+                spaceBetween: 10,
               },
               1024: {
-                slidesPerView: 3.5,
-                spaceBetween: 20,
+                slidesPerView: 3.2,
+                spaceBetween: 10,
               },
             }}
             modules={[Autoplay, Navigation, Pagination]}
@@ -69,21 +69,25 @@ export default function InterNational() {
           >
             <SwiperSlide className="swiper-slide">
               <div className="new-desti-card">
-                <img
-                  src="/assets/images/i-destination/dubai.webp"
-                  alt="Dubai cityscape showing Burj Khalifa tower and waterfront with people"
-                  loading="lazy"
-                  width="400"
-                  height="250"
-                />
+                <Link href="#">
+                  <img
+                    src="/assets/images/i-destination/dubai.webp"
+                    alt="Dubai cityscape showing Burj Khalifa tower and waterfront with people"
+                    loading="lazy"
+                    width="400"
+                    height="250"
+                  />
+                </Link>
                 <div className="p-4">
                   <div className="header">
-                    <h2>Dubai</h2>
+                    <Link href="#">
+                      <h2>Dubai</h2>
+                    </Link>
                     <div className="share-area">
                       <span className="duration-badge">8N/7D</span>
                       <Link href="#">
                         <img
-                          src="/assets/images/icons/share.png"
+                          src="/assets/images/hero/icons/share1.svg"
                           alt="share icon"
                         />
                       </Link>
@@ -101,34 +105,35 @@ export default function InterNational() {
                       <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM12 11.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"></path>
                     </svg>
                     <span>
-                      Downtown Dubai • Old Dubai • Desert Safari • Palm Jumeirah
+                      Downtown Dubai • Old Dubai • Desert Safari ...
+                       {/* • Palm Jumeirah */}
                     </span>
                   </div>
                   <div className="icons" aria-label="Travel icons">
                     <ul className="amenities-icons">
                       <li>
-                        <img src="/assets/images/icons/amenities/icon1.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon1.svg"></img>
                       </li>
                       <li>
-                        <img src="/assets/images/icons/amenities/icon2.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon2.svg"></img>
                       </li>
                       <li>
-                        <img src="/assets/images/icons/amenities/icon3.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon3.svg"></img>
                       </li>
                       <li>
-                        <img src="/assets/images/icons/amenities/icon4.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon4.svg"></img>
                       </li>
                       <li>
-                        <img src="/assets/images/icons/amenities/icon5.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon5.svg"></img>
                       </li>
                       <li>
-                        <img src="/assets/images/icons/amenities/icon6.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon6.svg"></img>
                       </li>
                       <li>
-                        <img src="/assets/images/icons/amenities/icon7.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon7.svg"></img>
                       </li>
                       <li>
-                        <img src="/assets/images/icons/amenities/icon8.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon8.svg"></img>
                       </li>
                     </ul>
                   </div>
@@ -140,31 +145,58 @@ export default function InterNational() {
                       <p className="new-price">₹50,000</p>
                       <p className="price-desc">per person on twin sharing </p>
                     </div>
-                    <Link href="/family/international-destination/dubai">
-                      View Package
-                    </Link>
+
+                    <div className="contact-icons">
+                      <Link href="tel:+91 8882701800">
+                        <img
+                          src="/assets/images/hero/icons/call.svg"
+                          alt="Call"
+                          class="contact-icon"
+                        />
+                      </Link>
+
+                      <Link href="https://wa.link/pshqg5">
+                        <img
+                          src="/assets/images/hero/icons/whatsapp.svg"
+                          alt="WhatsApp"
+                          class="contact-icon"
+                        />
+                      </Link>
+                    </div>
                   </div>
+
+                  <button
+                    className="package-button interactive"
+                    data-bs-toggle="modal"
+                    data-bs-target="#exampleModalCenter"
+                  >
+                    Request A Callback
+                  </button>
                 </div>
               </div>
             </SwiperSlide>
 
             <SwiperSlide className="swiper-slide">
               <div className="new-desti-card">
-                <img
-                  src="/assets/images/i-destination/bali.webp"
-                  alt="Bali"
-                  loading="lazy"
-                  width="400"
-                  height="250"
-                />
+                <Link href="#">
+                  <img
+                    src="/assets/images/i-destination/bali.webp"
+                    alt="Bali"
+                    loading="lazy"
+                    width="400"
+                    height="250"
+                  />
+                </Link>
                 <div className="p-4">
                   <div className="header">
-                    <h2>Bali</h2>
+                    <Link href="#">
+                      <h2>Bali</h2>
+                    </Link>
                     <div className="share-area">
                       <span className="duration-badge">4N/5D</span>
                       <Link href="#">
                         <img
-                          src="/assets/images/icons/share.png"
+                          src="/assets/images/hero/icons/share1.svg"
                           alt="share icon"
                         />
                       </Link>
@@ -186,38 +218,28 @@ export default function InterNational() {
                   <div className="icons" aria-label="Travel icons">
                     <ul className="amenities-icons">
                       <li>
-                        <img src="/assets/images/icons/amenities/icon1.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon1.svg"></img>
                       </li>
                       <li>
-                        <img src="/assets/images/icons/amenities/icon2.png"></img>
-                      </li>
-
-                      <li>
-                        <img src="/assets/images/icons/amenities/icon6.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon2.svg"></img>
                       </li>
                       <li>
-                        <img src="/assets/images/icons/amenities/icon3.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon3.svg"></img>
                       </li>
                       <li>
-                        <img src="/assets/images/icons/amenities/icon5.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon4.svg"></img>
                       </li>
                       <li>
-                        <img src="/assets/images/icons/amenities/icon9.png"></img>
-                      </li>
-
-                      <li>
-                        <img src="/assets/images/icons/amenities/icon10.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon5.svg"></img>
                       </li>
                       <li>
-                        <img src="/assets/images/icons/amenities/icon11.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon6.svg"></img>
                       </li>
-
                       <li>
-                        <img src="/assets/images/icons/amenities/icon12.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon7.svg"></img>
                       </li>
-
                       <li>
-                        <img src="/assets/images/icons/amenities/icon8.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon8.svg"></img>
                       </li>
                     </ul>
                   </div>
@@ -229,21 +251,47 @@ export default function InterNational() {
                       <p className="new-price">₹150,000</p>
                       <p className="price-desc">per person on twin sharing </p>
                     </div>
-                    <Link href="#">View Package</Link>
+                    <div className="contact-icons">
+                      <Link href="tel:+91 8882701800">
+                        <img
+                          src="/assets/images/hero/icons/call.svg"
+                          alt="Call"
+                          class="contact-icon"
+                        />
+                      </Link>
+
+                      <Link href="https://wa.link/pshqg5">
+                        <img
+                          src="/assets/images/hero/icons/whatsapp.svg"
+                          alt="WhatsApp"
+                          class="contact-icon"
+                        />
+                      </Link>
+                    </div>
                   </div>
+
+                  <button
+                    className="package-button interactive"
+                    data-bs-toggle="modal"
+                    data-bs-target="#exampleModalCenter"
+                  >
+                    Request A Callback
+                  </button>
                 </div>
               </div>
             </SwiperSlide>
 
             <SwiperSlide className="swiper-slide">
               <div className="new-desti-card">
-                <img
-                  src="/assets/images/i-destination/thailand.webp"
-                  alt="Bali"
-                  loading="lazy"
-                  width="400"
-                  height="250"
-                />
+                <Link href="#">
+                  <img
+                    src="/assets/images/i-destination/thailand.webp"
+                    alt="Bali"
+                    loading="lazy"
+                    width="400"
+                    height="250"
+                  />
+                </Link>
                 <div className="p-4">
                   <div className="header">
                     <h2>Thailand</h2>
@@ -251,7 +299,7 @@ export default function InterNational() {
                       <span className="duration-badge">4N/5D</span>
                       <Link href="#">
                         <img
-                          src="/assets/images/icons/share.png"
+                          src="/assets/images/hero/icons/share1.svg"
                           alt="share icon"
                         />
                       </Link>
@@ -273,38 +321,28 @@ export default function InterNational() {
                   <div className="icons" aria-label="Travel icons">
                     <ul className="amenities-icons">
                       <li>
-                        <img src="/assets/images/icons/amenities/icon1.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon1.svg"></img>
                       </li>
                       <li>
-                        <img src="/assets/images/icons/amenities/icon2.png"></img>
-                      </li>
-
-                      <li>
-                        <img src="/assets/images/icons/amenities/icon6.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon2.svg"></img>
                       </li>
                       <li>
-                        <img src="/assets/images/icons/amenities/icon3.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon3.svg"></img>
                       </li>
                       <li>
-                        <img src="/assets/images/icons/amenities/icon5.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon4.svg"></img>
                       </li>
                       <li>
-                        <img src="/assets/images/icons/amenities/icon9.png"></img>
-                      </li>
-
-                      <li>
-                        <img src="/assets/images/icons/amenities/icon10.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon5.svg"></img>
                       </li>
                       <li>
-                        <img src="/assets/images/icons/amenities/icon11.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon6.svg"></img>
                       </li>
-
                       <li>
-                        <img src="/assets/images/icons/amenities/icon12.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon7.svg"></img>
                       </li>
-
                       <li>
-                        <img src="/assets/images/icons/amenities/icon8.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon8.svg"></img>
                       </li>
                     </ul>
                   </div>
@@ -313,32 +351,60 @@ export default function InterNational() {
                       <p className="old-price">
                         Starting from <span className="oldcut">₹180,000</span>
                       </p>
-                      <p className="new-price">₹150,000</p>
+                      <p className="new-price">₹130,000</p>
                       <p className="price-desc">per person on twin sharing </p>
                     </div>
-                    <Link href="#">View Package</Link>
+                    <div className="contact-icons">
+                      <Link href="tel:+91 8882701800">
+                        <img
+                          src="/assets/images/hero/icons/call.svg"
+                          alt="Call"
+                          class="contact-icon"
+                        />
+                      </Link>
+
+                      <Link href="https://wa.link/pshqg5">
+                        <img
+                          src="/assets/images/hero/icons/whatsapp.svg"
+                          alt="WhatsApp"
+                          class="contact-icon"
+                        />
+                      </Link>
+                    </div>
                   </div>
+
+                  <button
+                    className="package-button interactive"
+                    data-bs-toggle="modal"
+                    data-bs-target="#exampleModalCenter"
+                  >
+                    Request A Callback
+                  </button>
                 </div>
               </div>
             </SwiperSlide>
 
             <SwiperSlide className="swiper-slide">
               <div className="new-desti-card">
-                <img
-                  src="/assets/images/i-destination/singapore.webp"
-                  alt="Singapore"
-                  loading="lazy"
-                  width="400"
-                  height="250"
-                />
+                <Link href="#">
+                  <img
+                    src="/assets/images/i-destination/singapore.webp"
+                    alt="Singapore"
+                    loading="lazy"
+                    width="400"
+                    height="250"
+                  />
+                </Link>
                 <div className="p-4">
                   <div className="header">
-                    <h2>Singapore</h2>
+                    <Link href="#">
+                      <h2>Singapore</h2>
+                    </Link>
                     <div className="share-area">
                       <span className="duration-badge">4N/5D</span>
                       <Link href="#">
                         <img
-                          src="/assets/images/icons/share.png"
+                          src="/assets/images/hero/icons/share1.svg"
                           alt="share icon"
                         />
                       </Link>
@@ -360,38 +426,28 @@ export default function InterNational() {
                   <div className="icons" aria-label="Travel icons">
                     <ul className="amenities-icons">
                       <li>
-                        <img src="/assets/images/icons/amenities/icon1.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon1.svg"></img>
                       </li>
                       <li>
-                        <img src="/assets/images/icons/amenities/icon2.png"></img>
-                      </li>
-
-                      <li>
-                        <img src="/assets/images/icons/amenities/icon6.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon2.svg"></img>
                       </li>
                       <li>
-                        <img src="/assets/images/icons/amenities/icon3.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon3.svg"></img>
                       </li>
                       <li>
-                        <img src="/assets/images/icons/amenities/icon5.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon4.svg"></img>
                       </li>
                       <li>
-                        <img src="/assets/images/icons/amenities/icon9.png"></img>
-                      </li>
-
-                      <li>
-                        <img src="/assets/images/icons/amenities/icon10.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon5.svg"></img>
                       </li>
                       <li>
-                        <img src="/assets/images/icons/amenities/icon11.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon6.svg"></img>
                       </li>
-
                       <li>
-                        <img src="/assets/images/icons/amenities/icon12.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon7.svg"></img>
                       </li>
-
                       <li>
-                        <img src="/assets/images/icons/amenities/icon8.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon8.svg"></img>
                       </li>
                     </ul>
                   </div>
@@ -403,29 +459,57 @@ export default function InterNational() {
                       <p className="new-price">₹150,000</p>
                       <p className="price-desc">per person on twin sharing </p>
                     </div>
-                    <Link href="#">View Package</Link>
+                    <div className="contact-icons">
+                      <Link href="tel:+91 8882701800">
+                        <img
+                          src="/assets/images/hero/icons/call.svg"
+                          alt="Call"
+                          class="contact-icon"
+                        />
+                      </Link>
+
+                      <Link href="https://wa.link/pshqg5">
+                        <img
+                          src="/assets/images/hero/icons/whatsapp.svg"
+                          alt="WhatsApp"
+                          class="contact-icon"
+                        />
+                      </Link>
+                    </div>
                   </div>
+
+                  <button
+                    className="package-button interactive"
+                    data-bs-toggle="modal"
+                    data-bs-target="#exampleModalCenter"
+                  >
+                    Request A Callback
+                  </button>
                 </div>
               </div>
             </SwiperSlide>
 
             <SwiperSlide className="swiper-slide">
               <div className="new-desti-card">
-                <img
-                  src="/assets/images/i-destination/malaysia.webp"
-                  alt="malaysia"
-                  loading="lazy"
-                  width="400"
-                  height="250"
-                />
+                <Link href="#">
+                  <img
+                    src="/assets/images/i-destination/malaysia.webp"
+                    alt="malaysia"
+                    loading="lazy"
+                    width="400"
+                    height="250"
+                  />
+                </Link>
                 <div className="p-4">
                   <div className="header">
-                    <h2>Malaysia</h2>
+                    <Link href="#">
+                      <h2>Malaysia</h2>
+                    </Link>
                     <div className="share-area">
                       <span className="duration-badge">4N/5D</span>
                       <Link href="#">
                         <img
-                          src="/assets/images/icons/share.png"
+                          src="/assets/images/hero/icons/share1.svg"
                           alt="share icon"
                         />
                       </Link>
@@ -447,38 +531,28 @@ export default function InterNational() {
                   <div className="icons" aria-label="Travel icons">
                     <ul className="amenities-icons">
                       <li>
-                        <img src="/assets/images/icons/amenities/icon1.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon1.svg"></img>
                       </li>
                       <li>
-                        <img src="/assets/images/icons/amenities/icon2.png"></img>
-                      </li>
-
-                      <li>
-                        <img src="/assets/images/icons/amenities/icon6.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon2.svg"></img>
                       </li>
                       <li>
-                        <img src="/assets/images/icons/amenities/icon3.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon3.svg"></img>
                       </li>
                       <li>
-                        <img src="/assets/images/icons/amenities/icon5.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon4.svg"></img>
                       </li>
                       <li>
-                        <img src="/assets/images/icons/amenities/icon9.png"></img>
-                      </li>
-
-                      <li>
-                        <img src="/assets/images/icons/amenities/icon10.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon5.svg"></img>
                       </li>
                       <li>
-                        <img src="/assets/images/icons/amenities/icon11.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon6.svg"></img>
                       </li>
-
                       <li>
-                        <img src="/assets/images/icons/amenities/icon12.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon7.svg"></img>
                       </li>
-
                       <li>
-                        <img src="/assets/images/icons/amenities/icon8.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon8.svg"></img>
                       </li>
                     </ul>
                   </div>
@@ -487,34 +561,62 @@ export default function InterNational() {
                       <p className="old-price">
                         Starting from <span className="oldcut">₹180,000</span>
                       </p>
-                      <p className="new-price">₹150,000</p>
+                      <p className="new-price">₹170,000</p>
                       <p className="price-desc">per person on twin sharing </p>
                     </div>
-                    <Link href="#">View Package</Link>
+                    <div className="contact-icons">
+                      <Link href="tel:+91 8882701800">
+                        <img
+                          src="/assets/images/hero/icons/call.svg"
+                          alt="Call"
+                          class="contact-icon"
+                        />
+                      </Link>
+
+                      <Link href="https://wa.link/pshqg5">
+                        <img
+                          src="/assets/images/hero/icons/whatsapp.svg"
+                          alt="WhatsApp"
+                          class="contact-icon"
+                        />
+                      </Link>
+                    </div>
                   </div>
+
+                  <button
+                    className="package-button interactive"
+                    data-bs-toggle="modal"
+                    data-bs-target="#exampleModalCenter"
+                  >
+                    Request A Callback
+                  </button>
                 </div>
               </div>
             </SwiperSlide>
 
             {/* ============= Repeat --------------- */}
 
-            <SwiperSlide className="swiper-slide">
+             <SwiperSlide className="swiper-slide">
               <div className="new-desti-card">
-                <img
-                  src="/assets/images/i-destination/dubai.webp"
-                  alt="Dubai cityscape showing Burj Khalifa tower and waterfront with people"
-                  loading="lazy"
-                  width="400"
-                  height="250"
-                />
+                <Link href="#">
+                  <img
+                    src="/assets/images/i-destination/dubai.webp"
+                    alt="Dubai cityscape showing Burj Khalifa tower and waterfront with people"
+                    loading="lazy"
+                    width="400"
+                    height="250"
+                  />
+                </Link>
                 <div className="p-4">
                   <div className="header">
-                    <h2>Dubai</h2>
+                    <Link href="#">
+                      <h2>Dubai</h2>
+                    </Link>
                     <div className="share-area">
                       <span className="duration-badge">8N/7D</span>
                       <Link href="#">
                         <img
-                          src="/assets/images/icons/share.png"
+                          src="/assets/images/hero/icons/share1.svg"
                           alt="share icon"
                         />
                       </Link>
@@ -532,34 +634,35 @@ export default function InterNational() {
                       <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM12 11.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"></path>
                     </svg>
                     <span>
-                      Downtown Dubai • Old Dubai • Desert Safari • Palm Jumeirah
+                        Downtown Dubai • Old Dubai • Desert Safari ...
+                       {/* • Palm Jumeirah */}
                     </span>
                   </div>
                   <div className="icons" aria-label="Travel icons">
                     <ul className="amenities-icons">
                       <li>
-                        <img src="/assets/images/icons/amenities/icon1.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon1.svg"></img>
                       </li>
                       <li>
-                        <img src="/assets/images/icons/amenities/icon2.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon2.svg"></img>
                       </li>
                       <li>
-                        <img src="/assets/images/icons/amenities/icon3.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon3.svg"></img>
                       </li>
                       <li>
-                        <img src="/assets/images/icons/amenities/icon4.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon4.svg"></img>
                       </li>
                       <li>
-                        <img src="/assets/images/icons/amenities/icon5.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon5.svg"></img>
                       </li>
                       <li>
-                        <img src="/assets/images/icons/amenities/icon6.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon6.svg"></img>
                       </li>
                       <li>
-                        <img src="/assets/images/icons/amenities/icon7.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon7.svg"></img>
                       </li>
                       <li>
-                        <img src="/assets/images/icons/amenities/icon8.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon8.svg"></img>
                       </li>
                     </ul>
                   </div>
@@ -571,31 +674,58 @@ export default function InterNational() {
                       <p className="new-price">₹50,000</p>
                       <p className="price-desc">per person on twin sharing </p>
                     </div>
-                    <Link href="/family/international-destination/dubai">
-                      View Package
-                    </Link>
+
+                    <div className="contact-icons">
+                      <Link href="tel:+91 8882701800">
+                        <img
+                          src="/assets/images/hero/icons/call.svg"
+                          alt="Call"
+                          class="contact-icon"
+                        />
+                      </Link>
+
+                      <Link href="https://wa.link/pshqg5">
+                        <img
+                          src="/assets/images/hero/icons/whatsapp.svg"
+                          alt="WhatsApp"
+                          class="contact-icon"
+                        />
+                      </Link>
+                    </div>
                   </div>
+
+                  <button
+                    className="package-button interactive"
+                    data-bs-toggle="modal"
+                    data-bs-target="#exampleModalCenter"
+                  >
+                    Request A Callback
+                  </button>
                 </div>
               </div>
             </SwiperSlide>
 
             <SwiperSlide className="swiper-slide">
               <div className="new-desti-card">
-                <img
-                  src="/assets/images/i-destination/bali.webp"
-                  alt="Bali"
-                  loading="lazy"
-                  width="400"
-                  height="250"
-                />
+                <Link href="#">
+                  <img
+                    src="/assets/images/i-destination/bali.webp"
+                    alt="Bali"
+                    loading="lazy"
+                    width="400"
+                    height="250"
+                  />
+                </Link>
                 <div className="p-4">
                   <div className="header">
-                    <h2>Bali</h2>
+                    <Link href="#">
+                      <h2>Bali</h2>
+                    </Link>
                     <div className="share-area">
                       <span className="duration-badge">4N/5D</span>
                       <Link href="#">
                         <img
-                          src="/assets/images/icons/share.png"
+                          src="/assets/images/hero/icons/share1.svg"
                           alt="share icon"
                         />
                       </Link>
@@ -617,38 +747,28 @@ export default function InterNational() {
                   <div className="icons" aria-label="Travel icons">
                     <ul className="amenities-icons">
                       <li>
-                        <img src="/assets/images/icons/amenities/icon1.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon1.svg"></img>
                       </li>
                       <li>
-                        <img src="/assets/images/icons/amenities/icon2.png"></img>
-                      </li>
-
-                      <li>
-                        <img src="/assets/images/icons/amenities/icon6.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon2.svg"></img>
                       </li>
                       <li>
-                        <img src="/assets/images/icons/amenities/icon3.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon3.svg"></img>
                       </li>
                       <li>
-                        <img src="/assets/images/icons/amenities/icon5.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon4.svg"></img>
                       </li>
                       <li>
-                        <img src="/assets/images/icons/amenities/icon9.png"></img>
-                      </li>
-
-                      <li>
-                        <img src="/assets/images/icons/amenities/icon10.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon5.svg"></img>
                       </li>
                       <li>
-                        <img src="/assets/images/icons/amenities/icon11.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon6.svg"></img>
                       </li>
-
                       <li>
-                        <img src="/assets/images/icons/amenities/icon12.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon7.svg"></img>
                       </li>
-
                       <li>
-                        <img src="/assets/images/icons/amenities/icon8.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon8.svg"></img>
                       </li>
                     </ul>
                   </div>
@@ -660,21 +780,47 @@ export default function InterNational() {
                       <p className="new-price">₹150,000</p>
                       <p className="price-desc">per person on twin sharing </p>
                     </div>
-                    <Link href="#">View Package</Link>
+                    <div className="contact-icons">
+                      <Link href="tel:+91 8882701800">
+                        <img
+                          src="/assets/images/hero/icons/call.svg"
+                          alt="Call"
+                          class="contact-icon"
+                        />
+                      </Link>
+
+                      <Link href="https://wa.link/pshqg5">
+                        <img
+                          src="/assets/images/hero/icons/whatsapp.svg"
+                          alt="WhatsApp"
+                          class="contact-icon"
+                        />
+                      </Link>
+                    </div>
                   </div>
+
+                  <button
+                    className="package-button interactive"
+                    data-bs-toggle="modal"
+                    data-bs-target="#exampleModalCenter"
+                  >
+                    Request A Callback
+                  </button>
                 </div>
               </div>
             </SwiperSlide>
 
             <SwiperSlide className="swiper-slide">
               <div className="new-desti-card">
-                <img
-                  src="/assets/images/i-destination/thailand.webp"
-                  alt="Bali"
-                  loading="lazy"
-                  width="400"
-                  height="250"
-                />
+                <Link href="#">
+                  <img
+                    src="/assets/images/i-destination/thailand.webp"
+                    alt="Bali"
+                    loading="lazy"
+                    width="400"
+                    height="250"
+                  />
+                </Link>
                 <div className="p-4">
                   <div className="header">
                     <h2>Thailand</h2>
@@ -682,7 +828,7 @@ export default function InterNational() {
                       <span className="duration-badge">4N/5D</span>
                       <Link href="#">
                         <img
-                          src="/assets/images/icons/share.png"
+                          src="/assets/images/hero/icons/share1.svg"
                           alt="share icon"
                         />
                       </Link>
@@ -704,38 +850,28 @@ export default function InterNational() {
                   <div className="icons" aria-label="Travel icons">
                     <ul className="amenities-icons">
                       <li>
-                        <img src="/assets/images/icons/amenities/icon1.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon1.svg"></img>
                       </li>
                       <li>
-                        <img src="/assets/images/icons/amenities/icon2.png"></img>
-                      </li>
-
-                      <li>
-                        <img src="/assets/images/icons/amenities/icon6.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon2.svg"></img>
                       </li>
                       <li>
-                        <img src="/assets/images/icons/amenities/icon3.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon3.svg"></img>
                       </li>
                       <li>
-                        <img src="/assets/images/icons/amenities/icon5.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon4.svg"></img>
                       </li>
                       <li>
-                        <img src="/assets/images/icons/amenities/icon9.png"></img>
-                      </li>
-
-                      <li>
-                        <img src="/assets/images/icons/amenities/icon10.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon5.svg"></img>
                       </li>
                       <li>
-                        <img src="/assets/images/icons/amenities/icon11.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon6.svg"></img>
                       </li>
-
                       <li>
-                        <img src="/assets/images/icons/amenities/icon12.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon7.svg"></img>
                       </li>
-
                       <li>
-                        <img src="/assets/images/icons/amenities/icon8.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon8.svg"></img>
                       </li>
                     </ul>
                   </div>
@@ -744,32 +880,60 @@ export default function InterNational() {
                       <p className="old-price">
                         Starting from <span className="oldcut">₹180,000</span>
                       </p>
-                      <p className="new-price">₹150,000</p>
+                      <p className="new-price">₹130,000</p>
                       <p className="price-desc">per person on twin sharing </p>
                     </div>
-                    <Link href="#">View Package</Link>
+                    <div className="contact-icons">
+                      <Link href="tel:+91 8882701800">
+                        <img
+                          src="/assets/images/hero/icons/call.svg"
+                          alt="Call"
+                          class="contact-icon"
+                        />
+                      </Link>
+
+                      <Link href="https://wa.link/pshqg5">
+                        <img
+                          src="/assets/images/hero/icons/whatsapp.svg"
+                          alt="WhatsApp"
+                          class="contact-icon"
+                        />
+                      </Link>
+                    </div>
                   </div>
+
+                  <button
+                    className="package-button interactive"
+                    data-bs-toggle="modal"
+                    data-bs-target="#exampleModalCenter"
+                  >
+                    Request A Callback
+                  </button>
                 </div>
               </div>
             </SwiperSlide>
 
             <SwiperSlide className="swiper-slide">
               <div className="new-desti-card">
-                <img
-                  src="/assets/images/i-destination/singapore.webp"
-                  alt="Singapore"
-                  loading="lazy"
-                  width="400"
-                  height="250"
-                />
+                <Link href="#">
+                  <img
+                    src="/assets/images/i-destination/singapore.webp"
+                    alt="Singapore"
+                    loading="lazy"
+                    width="400"
+                    height="250"
+                  />
+                </Link>
                 <div className="p-4">
                   <div className="header">
-                    <h2>Singapore</h2>
+                    <Link href="#">
+                      <h2>Singapore</h2>
+                    </Link>
                     <div className="share-area">
                       <span className="duration-badge">4N/5D</span>
                       <Link href="#">
                         <img
-                          src="/assets/images/icons/share.png"
+                          src="/assets/images/hero/icons/share1.svg"
                           alt="share icon"
                         />
                       </Link>
@@ -791,38 +955,28 @@ export default function InterNational() {
                   <div className="icons" aria-label="Travel icons">
                     <ul className="amenities-icons">
                       <li>
-                        <img src="/assets/images/icons/amenities/icon1.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon1.svg"></img>
                       </li>
                       <li>
-                        <img src="/assets/images/icons/amenities/icon2.png"></img>
-                      </li>
-
-                      <li>
-                        <img src="/assets/images/icons/amenities/icon6.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon2.svg"></img>
                       </li>
                       <li>
-                        <img src="/assets/images/icons/amenities/icon3.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon3.svg"></img>
                       </li>
                       <li>
-                        <img src="/assets/images/icons/amenities/icon5.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon4.svg"></img>
                       </li>
                       <li>
-                        <img src="/assets/images/icons/amenities/icon9.png"></img>
-                      </li>
-
-                      <li>
-                        <img src="/assets/images/icons/amenities/icon10.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon5.svg"></img>
                       </li>
                       <li>
-                        <img src="/assets/images/icons/amenities/icon11.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon6.svg"></img>
                       </li>
-
                       <li>
-                        <img src="/assets/images/icons/amenities/icon12.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon7.svg"></img>
                       </li>
-
                       <li>
-                        <img src="/assets/images/icons/amenities/icon8.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon8.svg"></img>
                       </li>
                     </ul>
                   </div>
@@ -834,29 +988,57 @@ export default function InterNational() {
                       <p className="new-price">₹150,000</p>
                       <p className="price-desc">per person on twin sharing </p>
                     </div>
-                    <Link href="#">View Package</Link>
+                    <div className="contact-icons">
+                      <Link href="tel:+91 8882701800">
+                        <img
+                          src="/assets/images/hero/icons/call.svg"
+                          alt="Call"
+                          class="contact-icon"
+                        />
+                      </Link>
+
+                      <Link href="https://wa.link/pshqg5">
+                        <img
+                          src="/assets/images/hero/icons/whatsapp.svg"
+                          alt="WhatsApp"
+                          class="contact-icon"
+                        />
+                      </Link>
+                    </div>
                   </div>
+
+                  <button
+                    className="package-button interactive"
+                    data-bs-toggle="modal"
+                    data-bs-target="#exampleModalCenter"
+                  >
+                    Request A Callback
+                  </button>
                 </div>
               </div>
             </SwiperSlide>
 
             <SwiperSlide className="swiper-slide">
               <div className="new-desti-card">
-                <img
-                  src="/assets/images/i-destination/malaysia.webp"
-                  alt="malaysia"
-                  loading="lazy"
-                  width="400"
-                  height="250"
-                />
+                <Link href="#">
+                  <img
+                    src="/assets/images/i-destination/malaysia.webp"
+                    alt="malaysia"
+                    loading="lazy"
+                    width="400"
+                    height="250"
+                  />
+                </Link>
                 <div className="p-4">
                   <div className="header">
-                    <h2>Malaysia</h2>
+                    <Link href="#">
+                      <h2>Malaysia</h2>
+                    </Link>
                     <div className="share-area">
                       <span className="duration-badge">4N/5D</span>
                       <Link href="#">
                         <img
-                          src="/assets/images/icons/share.png"
+                          src="/assets/images/hero/icons/share1.svg"
                           alt="share icon"
                         />
                       </Link>
@@ -878,38 +1060,28 @@ export default function InterNational() {
                   <div className="icons" aria-label="Travel icons">
                     <ul className="amenities-icons">
                       <li>
-                        <img src="/assets/images/icons/amenities/icon1.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon1.svg"></img>
                       </li>
                       <li>
-                        <img src="/assets/images/icons/amenities/icon2.png"></img>
-                      </li>
-
-                      <li>
-                        <img src="/assets/images/icons/amenities/icon6.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon2.svg"></img>
                       </li>
                       <li>
-                        <img src="/assets/images/icons/amenities/icon3.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon3.svg"></img>
                       </li>
                       <li>
-                        <img src="/assets/images/icons/amenities/icon5.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon4.svg"></img>
                       </li>
                       <li>
-                        <img src="/assets/images/icons/amenities/icon9.png"></img>
-                      </li>
-
-                      <li>
-                        <img src="/assets/images/icons/amenities/icon10.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon5.svg"></img>
                       </li>
                       <li>
-                        <img src="/assets/images/icons/amenities/icon11.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon6.svg"></img>
                       </li>
-
                       <li>
-                        <img src="/assets/images/icons/amenities/icon12.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon7.svg"></img>
                       </li>
-
                       <li>
-                        <img src="/assets/images/icons/amenities/icon8.png"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon8.svg"></img>
                       </li>
                     </ul>
                   </div>
@@ -918,11 +1090,35 @@ export default function InterNational() {
                       <p className="old-price">
                         Starting from <span className="oldcut">₹180,000</span>
                       </p>
-                      <p className="new-price">₹150,000</p>
+                      <p className="new-price">₹170,000</p>
                       <p className="price-desc">per person on twin sharing </p>
                     </div>
-                    <Link href="#">View Package</Link>
+                    <div className="contact-icons">
+                      <Link href="tel:+91 8882701800">
+                        <img
+                          src="/assets/images/hero/icons/call.svg"
+                          alt="Call"
+                          class="contact-icon"
+                        />
+                      </Link>
+
+                      <Link href="https://wa.link/pshqg5">
+                        <img
+                          src="/assets/images/hero/icons/whatsapp.svg"
+                          alt="WhatsApp"
+                          class="contact-icon"
+                        />
+                      </Link>
+                    </div>
                   </div>
+
+                  <button
+                    className="package-button interactive"
+                    data-bs-toggle="modal"
+                    data-bs-target="#exampleModalCenter"
+                  >
+                    Request A Callback
+                  </button>
                 </div>
               </div>
             </SwiperSlide>

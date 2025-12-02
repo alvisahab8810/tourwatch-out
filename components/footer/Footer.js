@@ -105,7 +105,7 @@ export default function Footer() {
                     Term & Conditions
                   </Link>{" "}
                 </li>
-                <li>
+                <li>x 
                   {" "}
                   <Link href="/refund-cancellation-policy">
                     {" "}

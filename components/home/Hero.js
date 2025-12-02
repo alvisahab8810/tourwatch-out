@@ -1,95 +1,79 @@
+
+
 import React from "react";
 import Link from "next/link";
 export default function Hero() {
   return (
     <>
-      <section className="hero-section ">
+      <section className="hero">
         <div className="container">
-          <div className="row align-items-center pt-200">
-            <div className="col-md-6 hero-contennt">
-              <h2 className="fs-40 text-white fw-bold">Get Upto</h2>
-              <h1 className="fs-88 text-white fw-bold">
-                <span className="fs-161 text-white fw-bold">30</span>% Off
-                <br />
-                And Explore
-              </h1>
+          <div className="contain-hero">
+              <div className="hero-content">
+            <p className="hero-subtitle">
+              Your Dream Destination Just One Click away
+            </p>
+            <h1 className="hero-title">
+              <span className="highlight">Flat 20% Off</span> on Your First Tour
+              Package!
+            </h1>
 
-              <div className="process-section">
-                <div className="row justify-content-center">
-                  <div className="col-md-3 pl-0">
-                    <div className="feature-card">
-                      <div className="feature-icon">
-                        <img
-                          src="./assets/images/icons/rtcu/1.png"
-                          alt="Booking Icon"
-                        />
-                      </div>
-                      <div className="feature-title">
-                        Hassle-Free <br />
-                        Booking
-                      </div>
-                      
-                    </div>
-                  </div>
-                  <div className="col-md-3">
-                    <div className="feature-card">
-                      <div className="feature-icon">
-                        <img
-                          src="./assets/images/icons/rtcu/2.png"
-                          alt="Money Icon"
-                        />
-                      </div>
-                      <div className="feature-title">
-                        Value For <br />
-                        Money
-                      </div>
-                      
-                    </div>
-                  </div>
-                  <div className="col-md-3">
-                    <div className="feature-card">
-                      <div className="feature-icon">
-                        <img
-                          src="./assets/images/icons/rtcu/3.png"
-                          alt="Packages Icon"
-                        />
-                      </div>
-                      <div className="feature-title">
-                        Personalised
-                        <br />
-                        Packages
-                      </div>
-                      
-                    </div>
-                  </div>
-                  <div className="col-md-3">
-                    <div className="feature-card">
-                      <div className="feature-icon">
-                        <img
-                          src="./assets/images/icons/rtcu/4.png"
-                          alt="Customer Icon"
-                        />
-                      </div>
-                      <div className="feature-title">
-                        24/7 Customer <br />
-                        Support
-                      </div>
-                     
-                    </div>
-                  </div>
-                </div>
-              </div>
-              {/* <Link href="#" className="main-btn">
-                Explore Now{" "}
-                <img
-                  src="./assets/images/icons/arrow-right.png"
-                  alt="Arrow Right"
-                />
-              </Link> */}
+            <img src="/assets/images/hero/horizontal.svg"></img>
+
+          
+            <button className="cta-button interactive" data-bs-toggle="modal"
+                    data-bs-target="#exampleModalCenter">
+              Request A Call back
+            </button>
+          </div>
+          <div class="stats-container">
+          <div class="stat-item">
+            <div class="stat-icon">
+              <img src="/assets/images/icons/home/icon1.svg" alt="Experience icon"/>
             </div>
-            <div className="col-md-6"></div>
+            <div class="stat-content">
+              <h3>10+</h3>
+              <p>Years of Expertise</p>
+            </div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-icon">
+              <img src="/assets/images/icons/home/icon2.svg" alt="Clients icon"/>
+            </div>
+            <div class="stat-content">
+              <h3>5000+</h3>
+              <p>Happy Clients</p>
+            </div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-icon">
+              <img src="/assets/images/icons/home/icon3.svg" alt="Hotels icon"/>
+            </div>
+            <div class="stat-content">
+              <h3>500+</h3>
+              <p>Hotel Collaboration</p>
+            </div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-icon">
+              <img src="/assets/images/icons/home/icon4.svg" alt="Destinations icon"/>
+            </div>
+            <div class="stat-content">
+              <h3>50+</h3>
+              <p>Destinations</p>
+            </div>
+          </div>
+          <div class="stat-item">
+            <img src="/assets/images/icons/home/review.svg" alt="Google Reviews" />
+            <div class="stat-content">
+              <h3>4.5 Google Reviews</h3>
+              <p>675 Google Reviews</p>
+            </div>
+          </div>
+          </div>
           </div>
         </div>
+
+       
       </section>
     </>
   );

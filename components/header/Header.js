@@ -10,7 +10,10 @@ export default function Topbar() {
             href="/"
             className="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none desk-logo"
           >
-            <img src="/assets/images/logo.png" alt="Logo Image" />
+            <img src="/assets/images/logo.svg" alt="Logo Image"  className="light-pages"/>
+            <img src="/assets/images/dark-logo.svg" alt="Logo Image"  className="dark-pages d-none"/>
+
+
           </Link>
 
           <ul className="menus nav nav-pills mobile-none">
