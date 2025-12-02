@@ -10,7 +10,7 @@ export default function SimiliarPackage() {
       <section className="international-dest national-dest">
         <div className="container">
           <div className="explore-row">
-            <h2 className="section-title">Similar Packages. </h2>
+            <h2 className="section-title">Similar Packages</h2>
             <Link
               href="/family/international-destination"
               className="explore-more-btn"
