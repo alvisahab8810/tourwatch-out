@@ -69,7 +69,7 @@ export default function InterNational() {
           >
             <SwiperSlide className="swiper-slide">
               <div className="new-desti-card">
-                <Link href="#">
+                <Link href="/dubai-package">
                   <img
                     src="/assets/images/i-destination/dubai.webp"
                     alt="Dubai cityscape showing Burj Khalifa tower and waterfront with people"
@@ -598,7 +598,7 @@ export default function InterNational() {
 
              <SwiperSlide className="swiper-slide">
               <div className="new-desti-card">
-                <Link href="#">
+                <Link href="/dubai-package">
                   <img
                     src="/assets/images/i-destination/dubai.webp"
                     alt="Dubai cityscape showing Burj Khalifa tower and waterfront with people"
@@ -609,7 +609,7 @@ export default function InterNational() {
                 </Link>
                 <div className="p-4">
                   <div className="header">
-                    <Link href="#">
+                    <Link href="/dubai-package">
                       <h2>Dubai</h2>
                     </Link>
                     <div className="share-area">
