@@ -33,6 +33,7 @@ import FAQs from "../components/home/FAQs";
 import BottomReviews from "../components/home/BottomReviews";
 import Blogs from "../components/home/Blogs";
 import NewFooter from "../components/footer/NewFooter";
+import BottomReviewsMobile from "../components/home/BottomReviewsMobile";
 
 export default function IndexPage({ data }) {
   return (
@@ -45,6 +46,16 @@ export default function IndexPage({ data }) {
       <Topbar/>
       <Offcanvas/>
       <Hero/>
+
+        <div className="desktop-none mobile-g-reviews">
+           <div class="stat-item">
+            <img src="/assets/images/icons/home/review-mob.svg" alt="Google Reviews" />
+            <div class="stat-content">
+              <h3>4.5 Google Reviews</h3>
+              <p>675 Google Reviews</p>
+            </div>
+          </div>
+      </div>
       <WhatMakeus/>
       <BenifitSection/>
 
@@ -58,6 +69,8 @@ export default function IndexPage({ data }) {
 
 
       <TopReviews/>
+      <BottomReviewsMobile/>
+
      
       {/* <Testimonials/> */}
       <Instagram/>

@@ -6,7 +6,10 @@ export default function BenifitSection() {
       <div className="mini-container1">
         <div className="benefits-grid">
           <div className="benefit-item">
+            <div className="benefit-icon">
+
             <img src="/assets/images/hero/icons/icon1.svg" alt="Hassle-free Booking"/>
+            </div>
             <span className="benefit-text">Hassle-free<br/>Booking</span>
           </div>
           <div className="benefit-item">

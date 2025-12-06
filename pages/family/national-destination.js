@@ -8,6 +8,7 @@ import Help from '../../components/corporate/Help'
 import Reviews from '../../components/corporate/Reviews'
 import Popup from '../../components/corporate/Popup'
 import Offcanvas from '../../components/header/Offcanvas'
+import NewFooter from '../../components/footer/NewFooter'
 
 export default function nationaldestination() {
   return (
@@ -20,7 +21,8 @@ export default function nationaldestination() {
        <Help/>
        <Reviews/>
        <Popup/>
-      <Footer/>
+      {/* <Footer/> */}
+      <NewFooter/>
     </div>
   )
 }

@@ -3943,3 +3943,18 @@ font-size: 13px!important;
     display: flex;
     align-items: center;
 }
+
+ .about-page .instagram-section {
+    margin-bottom: 150px;
+}
+section.blogs-list-section.ptb-80 {
+    margin-bottom: 100px;
+}
+
+.contact-us-page .ab-cta {
+    margin-bottom: 72px;
+}
+
+.dfn-panel h2{
+    font-size: 18px;
+}

@@ -10,10 +10,11 @@ import AbHww from '../components/about/AbHww'
 import Instagram from '../components/home/Instagram'
 import Popup from '../components/corporate/Popup'
 import Offcanvas from '../components/header/Offcanvas'
+import NewFooter from '../components/footer/NewFooter'
 
 export default function about() {
   return (
-    <>
+    <div className='about-page'>
         <Topbar/>
         <Offcanvas/>
          <Hero/>
@@ -23,9 +24,10 @@ export default function about() {
          <HelpingSection/>
          <AbHww/>
          <Instagram/>
-         <Footer/>
+         {/* <Footer/> */}
+         <NewFooter/>
          <Popup/>
 
-    </>
+    </div>
   )
 }

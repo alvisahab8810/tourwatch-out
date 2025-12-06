@@ -30,7 +30,7 @@ export default function DubaiPackage() {
 
       <TopReviews />
       <PromoSection />
-      <DubaiFamilyNotes/>
+      {/* <DubaiFamilyNotes/> */}
       <MostPopular />
       <FAQs />
       <Blogs />

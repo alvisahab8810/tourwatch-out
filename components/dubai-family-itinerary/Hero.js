@@ -2,8 +2,8 @@ import React from "react";
 
 export default function Hero() {
   return (
-    <div className="container">
-        <div className="dubai-gallery-section">
+    <div className="container mobile-none">
+      <div className="dubai-gallery-section">
       <div className="dgs-grid">
 
         {/* BIG LEFT IMAGE */}

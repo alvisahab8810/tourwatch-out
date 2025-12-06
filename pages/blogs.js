@@ -5,6 +5,7 @@ import Hero from '../components/blogs/Hero'
 import BlogList from '../components/blogs/BlogList'
 import About from '../components/blogs/About'
 import Offcanvas from '../components/header/Offcanvas'
+import NewFooter from '../components/footer/NewFooter'
 
 export default function blogs() {
   return (
@@ -15,7 +16,10 @@ export default function blogs() {
        <About/>
        <BlogList/>
       
-      <Footer/>
+      {/* <Footer/>
+       */}
+
+       <NewFooter/>
     </>
   )
 }

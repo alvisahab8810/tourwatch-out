@@ -2,9 +2,9 @@
 
 import React from "react";
 import Link from "next/link";
-export default function Hero() {
+export default function HeroMobile() {
   return (
-    <>
+    <div className="desktop-none">
       <section className="dubai-hero">
         <div className="container">
           <div className="contain-hero">
@@ -75,6 +75,6 @@ export default function Hero() {
 
        
       </section>
-    </>
+    </div>
   );
 }

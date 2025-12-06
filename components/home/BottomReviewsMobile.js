@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 
-export default function BottomReviews() {
+export default function BottomReviewsMobile() {
   const [showMore, setShowMore] = useState(false);
 
   return (
     <div>
-         <section className="google-reviews mobile-none">
+         <section className="google-reviews desktop-none">
           <div className="mini-container1">
             <h2 className="google-reviews-header">Google reviews</h2>
 

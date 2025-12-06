@@ -80,7 +80,7 @@ export default function InterNational() {
                 </Link>
                 <div className="p-4">
                   <div className="header">
-                    <Link href="#">
+                    <Link href="/dubai-package">
                       <h2>Dubai</h2>
                     </Link>
                     <div className="share-area">
@@ -1130,3 +1130,4 @@ export default function InterNational() {
     </>
   );
 }
+

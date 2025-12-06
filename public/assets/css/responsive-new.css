@@ -1,0 +1,867 @@
+@media(max-width:760px){
+
+    #home{
+        overflow: hidden;
+    }
+    .hero {
+      padding: 50px 15px 30px;
+  
+    background-image: url(../images/hero/home-hero.png);
+    width: 100%;
+    height: 100vh;
+    background-position: bottom;
+    background-size: cover;
+ 
+
+}
+
+.dubai-family-package .dubai-hero {
+    background-image: url(../images/dubai/dubai-banner.png);
+}
+
+.hero-content {
+    max-width: 100%;
+    margin: 0 auto;
+    text-align: left;
+}
+
+.stat-item {
+    gap: 7px;
+}
+
+.stats-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0;
+    padding-top: 30px;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.stats-container > div {
+    width: calc(50% - 10px);
+    margin-bottom: 20px;
+}
+.cta-button {
+    width: 100%;
+}
+
+.hero-subtitle {
+    font-size: 14px;
+    line-height: 1px;
+    margin-bottom: 15px;
+}
+
+.hero-title {
+    font-size: 24px;
+    line-height: 28px;
+    margin-bottom: 24px;
+}
+
+    .cta-button {
+        background-color: #f74c4d;
+        color: #ffffff;
+        font-size: 14px;
+        font-weight: 500;
+        width: 100%;
+        height: 50px;
+        line-height: 16px;
+        /* padding: 15px 35px; */
+        border-radius: 12px;
+        display: inline-block;
+        margin-top: 16px;
+}
+
+.stat-content h3 {
+    font-size: 20px;
+    line-height: 20px;
+}
+
+.stat-content p {
+    font-size: 11px;
+}
+
+.stat-icon img {
+    width: 20px;
+    height: 20px;
+}
+
+.stat-icon {
+    width: 45px;
+    height: 45px;
+    background-color: #292929;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+         .mobile-g-reviews .stat-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        color: #434E58;
+        background: #fdbb2130;
+        border-radius: 16px;
+        height: auto;
+        justify-content: space-between;
+        padding: 16px 30px;
+    }
+
+.mini-container1 {
+
+    max-width: 100%;
+    margin: auto;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+
+    .mobile-g-reviews .stat-content p {
+        font-size: 12px;
+        color: #6B6E80;
+    }
+    .desktop-none.mobile-g-reviews {
+        margin-top: 30px;
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+.mobile-g-reviews .stat-content h3 {
+        font-size: 20px;
+        line-height: 20px;
+        font-weight: bold;
+                margin-bottom: 3px !important;
+    }
+
+    .what-makes-us {
+    padding: 30px 0;
+}
+
+.section-subtitle {
+    font-size: 16px;
+    line-height: 11px;
+    color: #6B6E80;
+    margin-bottom: 0px;
+
+
+}
+.section-header {
+    margin-bottom: 12px;
+}
+.section-title {
+    font-size: 20px;
+    line-height: 44px;
+        color: #111527;
+}
+
+  .features-grid {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 15px;
+    padding: 10px 0;
+    padding-top: 0;
+  }
+
+  /* Hide scrollbar (optional) */
+  .features-grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .feature-card {
+    min-width: 85%; /* show 1 card at a time */
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+    border-radius: 12px;
+  }
+
+  .feature-image {
+    position: relative;
+    height: 400px;
+ 
+  }
+
+  .wm-video {
+    border-radius: 12px;
+  }
+
+  .what-makes-us .feature-card {
+    height: 400px;
+    padding: 0;
+}
+
+.benefits-grid {
+    display: flex;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.benefits-grid > div {
+    width: calc(50% - 10px);
+    margin-bottom: 15px;
+}
+
+.benefit-text {
+    font-size: 13px;
+    font-weight: 500;
+   line-height: 18px;
+    color: #4B4F63;
+}
+.faq-section {
+    padding-bottom: 30px;
+    padding-top: 30px;
+}
+.promo-section{
+    margin:30px 0px;
+}
+
+.mobile-promoe .promo-section{
+
+        background-image: url("/assets/images/hero/hero-mobile.png");
+        border-radius: 0;
+            padding: 35px;
+    
+}
+
+.promot-contant-area{
+    max-width: 150px;
+}
+
+.promo-button {
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 20px;
+    padding: 6px 20px;
+}
+
+.promo-subtitle {
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 18px;
+    margin-bottom: 30px;
+}
+
+.promo-title {
+    font-size: 27px;
+    font-weight: 800;
+    text-transform: uppercase;
+    margin-bottom: 0px;
+}
+
+.new-desti-card .location span {
+    font-size: 10px;
+}
+.amenities-icons li img {
+    height: 15px;
+}
+
+.new-desti-card .price-section .price-info .price-desc {
+    font-size: 10px;
+}
+
+.new-desti-card .price-section .price-info .old-price{
+    font-size: 10px;
+
+}
+
+.package-button {
+    font-size: 13px;
+    font-weight: 500;
+    padding:8px 35px;
+}
+
+.new-desti-card > a img {
+    height: 228px;
+}
+
+.contact-icons {
+    gap: 0px;
+}
+
+.faq-title {
+    font-size: 20px;
+    font-weight: 600;
+    line-height: normal;
+    margin-bottom: 15px;
+}
+
+.faq-section {
+    padding-bottom: 30px;
+    padding-top: 30px;
+}
+
+.faq-question {
+    padding: 10px 0px 10px 0px;
+}
+
+.faq-answer.active {
+    max-height: 200px;
+    padding: 10px;
+    padding-top: 0;
+}
+
+.faq-question.active h3{
+    padding-left: 10px;
+    line-height: 18px;
+}
+.faq-question.active {
+    background-color: #e4fcff;
+    display: flex;
+    align-items: flex-start;
+    padding-right: 10px;
+}
+
+.faq-answer p {
+    font-size: 13px;
+}
+
+.blogs-section .explore-row h2 {
+        line-height: normal;
+    }
+
+
+    .blogs-grid {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 15px;
+    padding-bottom: 10px;
+  }
+
+  /* Hide scrollbar (optional) */
+  .blogs-grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .blog-card {
+    min-width: 80%;  /* Show 1 card at a time */
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
+  .blog-image {
+    height: 280px;
+    background-size: cover;
+    background-position: center;
+    border-radius: 14px;
+  }
+
+  .blog-overlay {
+    padding: 15px;
+  }
+
+  
+
+.footer .mini-container1{
+    padding:0!important;
+}
+
+      .footer-content {
+        border-radius: 11px;
+        padding: 30px 20px;
+        padding-bottom: 5px;
+            transform: translate(0px, -40px);
+    }
+
+    .blogs-section {
+    margin-bottom: 50px;
+}
+
+    .footer-links {
+    display: flex;
+    gap: 0;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.footer-links .footer-column {
+    width: calc(50% - 10px);
+    margin-bottom: 20px;
+}
+
+.footer-column h3 {
+    font-size: 18px;
+}
+
+.footer-column ul {
+    gap: 7px;
+}
+
+.footer-column h3 {
+    margin-bottom: 11px !important;
+}
+
+.footer-copyright-divider {
+    width: 45px;
+}
+
+.footer-area1 {
+    flex-wrap: nowrap;
+}
+
+.footer-area1 > img{
+    width: 180px;
+}
+
+.footer-divider{
+    display:none;;
+}
+
+.footer-copyright {
+    font-size: 12px;
+    margin-top: 15px;
+    font-weight: 400;
+    line-height: 22px;
+    margin-bottom: 30px;
+}
+
+.footer-disclaimer {
+    font-size: 12px;
+    max-width: 100%;
+    margin: 0 auto 30px;
+}
+
+.footer-policies {
+    display: flex;
+    gap: 7px;
+    flex-wrap: nowrap;
+}
+
+.policy-button {
+    font-size: 10px;
+    line-height: 14px;
+    padding: 5px 8px;
+}
+
+
+.google-reviews-header {
+    font-size: 20px;
+    line-height: 45px;
+    color: #34384c;
+    margin-bottom: 20px;
+}
+
+.rating-breakdown{
+    display: none;;
+}
+
+.reviews-summary {
+    width: 100%;
+}
+
+.rating-number {
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 24px;
+    color: #34384c;
+    margin-bottom: 8px;
+}
+
+.rating-stars {
+    width: 114px;
+    height: auto;
+    /* margin: 0 auto 16px; */
+}
+
+.rating-display {
+    margin-bottom: 0;
+    border-right: 1px solid #EFF3FF;
+    background: white;
+    padding: 30px 20px;
+    border-radius: 5px;
+}
+.reviews-overview {
+    margin-bottom: 30px;
+}
+
+.customer-review-text {
+    font-size: 13px;
+    line-height: normal;
+}
+
+.customer-profile {
+    height: 35px;
+    width: 35px;
+}
+
+.customer-info h4 {
+    font-size: 14px;
+    line-height: 18px;
+    margin-bottom: 4px;
+}
+
+.customer-info .date {
+    font-size: 10px;
+}
+
+.booking-info {
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.customer-header {
+    flex-wrap: nowrap;
+    gap: 11px;
+}
+
+.load-more-button {
+    font-size: 14px;
+    font-weight: 400;
+    padding: 8px 25px;
+    margin: 20px auto;
+}
+
+section.google-reviews.desktop-none {
+    padding-bottom: 40px;
+}
+
+.dubai-packages {
+    overflow: hidden;
+}
+
+.dubai-packages .dubai-hero{
+    background-image: url(../images/dubai/mobile-banner.png);
+}
+
+ .family-dubai-row {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 15px;
+    padding-bottom: 10px;
+  }
+
+  /* Hide scrollbar (optional) */
+  .family-dubai-row::-webkit-scrollbar {
+    display: none;
+  }
+
+  .family-dubai-row > div {
+    min-width: 85%; /* show one card at a time */
+    height: auto;
+    scroll-snap-align: start;
+  }
+.family-dubai-row .new-desti-card .header h2 {
+    font-size: 20px;
+}
+
+
+   .dubai-packages .new-desti-card .price-section .price-info .new-price {
+        font-size: 18px;
+    }
+
+    .dubai-packages .family-dubai-row .new-desti-card .location span {
+    font-size: 10px;
+}
+
+.f-dubai-main-card {
+    height: 401px;
+}
+
+.benefit-icon {
+    width: 40px;
+    height: 40px;
+}
+
+.benefit-icon img {
+    width: 27px;
+    height: 27px;
+    padding: 2px;
+}
+
+.couple-dubai-packages {
+    padding-top: 30px;
+    padding-bottom: 30px;
+}
+
+.feature-content p {
+    font-size: 14px;
+}
+
+.blogs-section {
+    padding: 30px 0;
+}
+
+
+.package-details-page{
+        background: white;
+    border-radius: 20px;
+    transform: translate(0px, -30px);
+}
+
+
+.package-details-page .package-details-tabs{
+    padding-top: 30px!important;
+}
+
+.package-details-tabs .pdt-tab.is-active {
+    background: #3F52B4;
+}
+
+.package-details-tabs .pdt-tab {
+    border-radius: 50px;
+    padding: 10px 12px;
+    height: auto;
+    width: auto;
+    display: flex;
+    font-size: 12px;
+}
+
+.package-details-tabs .pdt-tabs-row {
+    gap: 5px;
+    margin-bottom: 30px;
+}
+
+.package-details-tabs .pdt-best {
+   
+    border-radius: 50px;
+}
+
+.package-details-tabs .pdt-title {
+    font-size: 20px;
+}
+
+.package-details-tabs .pdt-header {
+    gap: 5px;
+    flex-flow: column;
+    align-items: flex-start;
+}
+
+.package-details-tabs .pdt-tag {
+    background: transparent;
+    color: #3F52B4;
+    padding: 0;
+    font-weight: 500;
+    font-size: 12px;
+}
+
+.pdt-left .location {
+    font-size: 12px;
+    margin-bottom: 15px;
+    line-height: 16px;
+    margin-top: 10px;
+}
+
+
+span.chip.left > img {
+    margin-right: 3px;
+    width: 20px;
+}
+
+.package-details-tabs .pdt-banner .chip {
+    padding: 5px 6px;
+    border-radius: 50px;
+    color: #fff;
+    border: 1px solid #fff;
+    font-weight: 600;
+    font-size: 10px;
+    /* backdrop-filter: blur(4px); */
+}
+
+.package-details-tabs .pdt-banner .chip.right img {
+    margin-left: 7px;
+    width: 50px;
+}
+
+.package-details-tabs .pdt-banner {
+
+    height: 150px;
+}
+
+.package-details-tabs .pdt-amenities .amenity {
+    padding: 0px 0px;
+    font-size: 12px;
+    gap: 5px;
+}
+
+.package-details-tabs .pdt-amenities .amenity img {
+    height: 13px;
+
+}
+
+
+
+
+.package-details-tabs .pdt-amenities {
+    display: flex;
+    gap: 10px;
+    line-height: 0;
+}
+.package-details-tabs .pdt-section-title {
+    font-size: 20px;
+    margin-bottom: 15px !important;
+}
+
+.package-details-tabs .it-day-body li {
+    gap: 5px;
+    padding: 5px 0;
+    font-size: 13px;
+}
+
+.package-details-tabs .it-day-body {
+    padding: 10px 10px 10px;
+    /* background: linear-gradient(180deg, rgba(255, 255, 255, 0.01), rgba(255, 255, 255, 0.00)); */
+}
+
+.package-details-tabs .it-day-header {
+    gap: 5px;
+    padding: 8px 8px 8px 0px;
+}
+
+.package-details-tabs .it-day-pill {
+    padding: 5px 8px;
+    min-width: 65px;
+    font-size: 14px;
+}
+
+.package-details-tabs .pc-amount {
+    font-size: 20px;
+}
+
+    .price-card-cta .pc-cta {
+        margin-top: 0;
+        padding: 8px;
+        font-size: 12px;
+    }
+.package-details-tabs .pc-top {
+    margin-bottom: 4px;
+}
+
+    .price-card-cta {
+        display: flex;
+        align-items: center;
+        margin-top: 15px;
+    }
+
+
+.price-card-cta a {
+    font-size: 14px;
+    color: #26AAFD;
+    white-space: nowrap;
+    margin-right: 30px;
+}
+
+.package-details-tabs .pdt-content{
+    gap: 0;
+    
+}
+
+
+
+.dubai-family-package .promo-section {
+        margin: 15px 0px;
+    }
+.dubai-family-package .dubai-family-notes{
+    padding-top: 10px;
+    padding-bottom: 30px;
+}
+
+
+
+
+    .dubai-family-package .dfn-highlights {
+        display: flex !important;
+        flex-wrap: nowrap;
+            gap: 4px;
+    margin-bottom: 8px;
+    padding-left: 0;
+    }
+.dubai-family-package .dfn-highlights > img {
+    width: 50%;
+}
+
+.dubai-family-notes .dfn-left-line {
+    left: 30px;
+    top: 39px;
+    bottom: 12px;
+    width: 1px;
+    height: 78%;
+}
+
+.dubai-family-notes .dfn-pill {
+
+    font-size: 14px;
+}
+
+.dubai-family-notes .dfn-section-header {
+    /* padding: 10px 20px; */
+}
+
+.tw-why-tourwatchout .tw-title {
+    font-size: 20px;
+    margin-bottom: 25px;
+}
+
+.tw-why-tourwatchout .tw-feature-box img {
+    width: 50px;
+    height: 50px;
+}
+
+.tw-why-tourwatchout .tw-feature-box p {
+    font-size: 14px;
+}
+
+.tw-why-tourwatchout .tw-feature-box {
+    min-width: 115px;
+}
+.tw-why-tourwatchout .tw-features-row {
+    gap: 8px;
+    flex-wrap: nowrap;
+    overflow: auto;
+}
+.package-details-tabs .pdt-sep {
+    margin: 20px 0;
+}
+
+.promo-section {
+    padding: 25px;
+    height: 150px;
+}
+    .tw-why-tourwatchout {
+        padding: 30px 0;
+        padding-top: 5px;
+    }
+
+    .dubai-family-package .national-dest .swiper {
+    padding-bottom: 20px;
+}
+
+.dubai-family-package     .blogs-section {
+        padding: 30px 0;
+        padding-top: 0;
+    }
+
+    .dubai-family-package .light-pages {
+    display: block !important;
+}
+
+.dubai-family-package img.dark-pages.d-none {
+    display: none !important;
+}
+
+.about-page .instagram-section {
+    margin-bottom: 80px;
+}
+
+section.blogs-list-section.ptb-80 {
+    margin-bottom: 30px;
+}
+
+
+}
+
+
+
+
+
+
+
+
+

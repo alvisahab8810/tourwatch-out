@@ -457,6 +457,7 @@ right: 0;
 
     .explore-row h2 {
     font-size: 20px;
+    margin-bottom: 0;
 }
     
     .stripe_items .feature-item {
@@ -495,10 +496,10 @@ right: 0;
     padding: 8px 10px;
 }
     .new-desti-card .price-section .price-info .new-price {
-    font-size: 18px;
+    font-size: 16px;
 }
     .new-desti-card .header h2 {
-    font-size: 18px;
+    font-size: 16px;
 }
 
 .new-desti-card .duration-badge {
@@ -1910,11 +1911,10 @@ p.schedule-timing img {
 }
 
 /* =============================== Dubai========================= */
-
-.dubai-hero {
-    padding-bottom: 70px;
-    padding-top: 70px;
-}
+    .dubai-hero {
+        padding-bottom: 30px;
+        padding-top: 70px;
+    }
 
 .dubai-banner .banner-section {
     background-size: cover;
@@ -2223,6 +2223,17 @@ section.national-dest {
         font-size: 22px;
         line-height: 1;
     }
+
+    .dubai-packages .what-makes-us {
+    padding-bottom: 30px;
+}
     
-    
+ .dubai-packages .what-makes-us {
+    padding: 30px 0;
+    padding-bottom: 30px;
+}  
+
+.dubai-packages .benefits-grid {
+    margin-bottom: 30px;
+}
 } 

@@ -25,6 +25,8 @@ function MyApp({ Component, pageProps }) {
         <link rel="stylesheet" href="/assets/css/home.css" />
 
         <link rel="stylesheet" href="/assets//css/responsive.css" />
+        <link rel="stylesheet" href="/assets//css/responsive-new.css" />
+
 
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
 

@@ -312,7 +312,68 @@ export default function DubaiFamilyNotes({ activeTab = "economy" }) {
 
               {open.inclusions && (
                 <div id="inclusions-panel" className="dfn-panel">
-                  <p>Includeyour package details here — transfer, meals, sightseeing etc.</p>
+
+                    <h2>INCLUSIONS:</h2>
+
+
+                      <div className="it-day-body">
+                        <ul>
+                          <li>
+                            <span className="it-icon">▸</span>  <b> Transfers:</b>  Airport on Private basis <br/>
+                          </li>
+                          <li>
+                            <span className="it-icon">▸</span>  <b>Cab:</b> Airport / hotel /Sightseeings / airport transfers on (SIC Basis)
+                          </li>
+                          <li>
+                            <span className="it-icon">▸</span>    <b>Meals:</b> Daily Breakfast
+                            
+                          </li>
+
+                           <h2>Sightseeing:</h2>
+                          
+                           <li>
+                            <span className="it-icon">▸</span>  Dhow Creek with Dinner
+                            
+                          </li>
+
+
+                            <li>
+                            <span className="it-icon">▸</span> <b>Dubai City Tour:- </b> Zabeel Palace, Dubai Frame, Palm Jumeirah, Palm Atlantis, Future Museum, Dubai Creek, Fountain show and Dubai Mall
+                            
+                          </li>
+
+
+                            <li>
+                            <span className="it-icon">▸</span>  Burj Khalifa Non Prime Hrs (124th & 125th Floor ) with Tickets
+                            
+                          </li>
+
+
+                           <li>
+                            <span className="it-icon">▸</span>    Desert Safari with BBQ Dinner (4 x 4 Vehicle) Standard
+                            
+                          </li>
+                            <li>
+                            <span className="it-icon">▸</span> <b>     Others: </b> Toll Tax, Parking, and driver allowance.
+                            
+                          </li>
+                        
+                        </ul>
+                      </div>
+
+
+
+
+                    <h2>EXCLUSIONS:</h2>
+
+                  <p>
+                    Early check-in & late checkout<br/>
+                      <b>Meals:</b> Lunch & Dinner <br/>
+                      Boating, Garden Entry Tickets.<br/>
+                      Anything not mentioned in the inclusions is excluded.<br/>
+                      TCS charges<br/>
+                      Visa Charges<br/>
+                  </p>
                 </div>
               )}
             </div>

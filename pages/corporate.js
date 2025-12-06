@@ -8,6 +8,7 @@ import Help from '../components/corporate/Help'
 import Reviews from '../components/corporate/Reviews'
 import Popup from '../components/corporate/Popup'
 import Offcanvas from '../components/header/Offcanvas'
+import NewFooter from '../components/footer/NewFooter'
 
 export default function corporate() {
   return (
@@ -21,7 +22,8 @@ export default function corporate() {
      <Reviews/>
      <Popup/>
 
-    <Footer/>
+    {/* <Footer/> */}
+    <NewFooter/>
     </div>
   )
 }

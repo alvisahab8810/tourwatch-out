@@ -31,7 +31,8 @@ export default function TopReviews() {
   };
 
   return (
-    <section className="reviews-section">
+    <div>
+    <section className="reviews-section mobile-none">
       <div className="mini-container1">
         <div className="explore-row">
           <h2 className="section-title">Google Reviews</h2>
@@ -226,5 +227,9 @@ export default function TopReviews() {
         </div>
       </div>
     </section>
+
+    
+
+    </div>
   );
 }

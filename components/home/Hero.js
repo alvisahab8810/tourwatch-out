@@ -17,7 +17,7 @@ export default function Hero() {
               Package!
             </h1>
 
-            <img src="/assets/images/hero/horizontal.svg"></img>
+            <img src="/assets/images/hero/horizontal.svg" className="mobile-none"></img>
 
           
             <button className="cta-button interactive" data-bs-toggle="modal"
@@ -62,7 +62,7 @@ export default function Hero() {
               <p>Destinations</p>
             </div>
           </div>
-          <div class="stat-item">
+          <div class="stat-item mobile-none">
             <img src="/assets/images/icons/home/review.svg" alt="Google Reviews" />
             <div class="stat-content">
               <h3>4.5 Google Reviews</h3>

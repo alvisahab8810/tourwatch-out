@@ -8,6 +8,7 @@ import Cta from '../components/honeymoon/Cta'
 import Popup from '../components/corporate/Popup'
 import Reviews from '../components/corporate/Reviews'
 import Offcanvas from '../components/header/Offcanvas'
+import NewFooter from '../components/footer/NewFooter'
 
 export default function honeymoon() {
   return (
@@ -20,7 +21,8 @@ export default function honeymoon() {
        <Cta/>
        <Reviews/>
        <Popup/>
-      <Footer/>
+      {/* <Footer/> */}
+      <NewFooter/>
       
     </div>
   )
