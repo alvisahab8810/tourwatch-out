@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+// import React, { useState } from "react";
 import PromoSection1 from "../dubai-package/PromoSection1";
 import DubaiFamilyNotes from "../dubai-package/DubaiFamilyNotes";
 import WhyTourwatchout from "./WhyTourwatchout";
@@ -7,6 +7,9 @@ import BottomReviews from "../home/BottomReviews";
 import FAQs from "../home/FAQs";
 import Blogs from "../home/Blogs";
 import NewFooter from "../footer/NewFooter";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+
 
 const TABS = [
   {
@@ -37,7 +40,22 @@ const TABS = [
 
 
 export default function PackageDetailsTabs() {
-  const [activeTab, setActiveTab] = useState("economy");
+  // const [activeTab, setActiveTab] = useState("economy");
+
+  const router = useRouter();
+const { tab } = router.query;
+
+const [activeTab, setActiveTab] = useState("economy");
+
+
+useEffect(() => {
+  if (tab && ["economy", "deluxe", "premium"].includes(tab)) {
+    setActiveTab(tab);
+    setOpenDay(1);
+  }
+}, [tab]);
+
+
   const [openDay, setOpenDay] = useState(1);
 
   const active = TABS.find((t) => t.id === activeTab);

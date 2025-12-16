@@ -25,6 +25,11 @@ export default function NationalDestination() {
             spaceBetween={10}
             loop={true}
             slidesPerView={3.2}
+
+             autoplay={{
+              delay: 2500,
+              disableOnInteraction: false,
+            }}
             pagination={{
               clickable: true,
               el: ".swiper-pagination",
@@ -55,7 +60,7 @@ export default function NationalDestination() {
             {/* =========== Kashmir =========== */}
             <SwiperSlide className="swiper-slide">
               <div className="new-desti-card">
-                <Link href="/family/national-destination/kashmir">
+                <Link href="#">
                   <img
                     src="/assets/images/n-destination/kashmir.webp"
                     alt="Kashmir"
@@ -65,7 +70,7 @@ export default function NationalDestination() {
 
                 <div className="p-4">
                   <div className="header">
-                    <Link href="/family/national-destination/kashmir">
+                    <Link href="#">
                       <h2>Kashmir</h2>
                     </Link>
 
@@ -96,7 +101,7 @@ export default function NationalDestination() {
                   <PriceBlock
                     oldPrice="₹80,000"
                     newPrice="₹50,000"
-                    link="/family/national-destination/kashmir"
+                    link="#"
                   />
                 </div>
               </div>
@@ -105,7 +110,7 @@ export default function NationalDestination() {
             {/* =========== Leh Ladakh =========== */}
             <SwiperSlide className="swiper-slide">
               <div className="new-desti-card">
-                <Link href="/family/national-destination/leh-laddakh">
+                <Link href="#">
                   <img
                     src="/assets/images/n-destination/leh.webp"
                     alt="Leh Ladakh"
@@ -115,7 +120,7 @@ export default function NationalDestination() {
 
                 <div className="p-4">
                   <div className="header">
-                    <Link href="/family/national-destination/leh-laddakh">
+                    <Link href="#">
                       <h2>Leh Ladakh</h2>
                     </Link>
 
@@ -146,7 +151,7 @@ export default function NationalDestination() {
                   <PriceBlock
                     oldPrice="₹60,000"
                     newPrice="₹40,000"
-                    link="/family/national-destination/leh-laddakh"
+                    link="#"
                   />
                 </div>
               </div>
@@ -155,7 +160,7 @@ export default function NationalDestination() {
             {/* =========== Manali =========== */}
             <SwiperSlide className="swiper-slide">
               <div className="new-desti-card">
-                <Link href="/family/national-destination/manali">
+                <Link href="#">
                   <img
                     src="/assets/images/n-destination/manali.webp"
                     alt="Manali"
@@ -165,7 +170,7 @@ export default function NationalDestination() {
 
                 <div className="p-4">
                   <div className="header">
-                    <Link href="/family/national-destination/manali">
+                    <Link href="#">
                       <h2>Manali</h2>
                     </Link>
 
@@ -196,7 +201,7 @@ export default function NationalDestination() {
                   <PriceBlock
                     oldPrice="₹60,000"
                     newPrice="₹40,000"
-                    link="/family/national-destination/manali"
+                    link="#"
                   />
                 </div>
               </div>
@@ -205,7 +210,7 @@ export default function NationalDestination() {
             {/* =========== Shimla =========== */}
             <SwiperSlide className="swiper-slide">
               <div className="new-desti-card">
-                <Link href="/family/national-destination/shimla">
+                <Link href="#">
                   <img
                     src="/assets/images/n-destination/shimla.webp"
                     alt="Shimla"
@@ -215,7 +220,7 @@ export default function NationalDestination() {
 
                 <div className="p-4">
                   <div className="header">
-                    <Link href="/family/national-destination/shimla">
+                    <Link href="#">
                       <h2>Shimla</h2>
                     </Link>
 
@@ -246,7 +251,7 @@ export default function NationalDestination() {
                   <PriceBlock
                     oldPrice="₹60,000"
                     newPrice="₹40,000"
-                    link="/family/national-destination/shimla"
+                    link="#"
                   />
                 </div>
               </div>
@@ -255,7 +260,7 @@ export default function NationalDestination() {
             {/* =========== Dharamshala =========== */}
             <SwiperSlide className="swiper-slide">
               <div className="new-desti-card">
-                <Link href="/family/national-destination/dharamshala">
+                <Link href="#">
                   <img
                     src="/assets/images/n-destination/dharamshala.webp"
                     alt="Dharamshala"
@@ -265,7 +270,7 @@ export default function NationalDestination() {
 
                 <div className="p-4">
                   <div className="header">
-                    <Link href="/family/national-destination/dharamshala">
+                    <Link href="#">
                       <h2>Dharamshala</h2>
                     </Link>
 
@@ -296,7 +301,7 @@ export default function NationalDestination() {
                   <PriceBlock
                     oldPrice="₹70,000"
                     newPrice="₹45,000"
-                    link="/family/national-destination/dharamshala"
+                    link="#"
                   />
                 </div>
               </div>
@@ -305,7 +310,7 @@ export default function NationalDestination() {
             {/* =========== Dehradun =========== */}
             <SwiperSlide className="swiper-slide">
               <div className="new-desti-card">
-                <Link href="/family/national-destination/dehradun">
+                <Link href="#">
                   <img
                     src="/assets/images/n-destination/dehradun.webp"
                     alt="Dehradun"
@@ -315,7 +320,7 @@ export default function NationalDestination() {
 
                 <div className="p-4">
                   <div className="header">
-                    <Link href="/family/national-destination/dehradun">
+                    <Link href="#">
                       <h2>Dehradun</h2>
                     </Link>
 
@@ -346,7 +351,7 @@ export default function NationalDestination() {
                   <PriceBlock
                     oldPrice="₹70,000"
                     newPrice="₹45,000"
-                    link="/family/national-destination/dehradun"
+                    link="#"
                   />
                 </div>
               </div>

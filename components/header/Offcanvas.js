@@ -29,13 +29,28 @@ export default function Offcanvas() {
         <div className="offcanvas-body">
           <div className="mob-menus">
             <ul className=" nav nav-pills">
+
+               <li className="nav-item">
+                <Link href="/" className="nav-link ">
+                  {" "}
+                  Home
+                </Link>
+              </li>
               <li className="nav-item">
                 <Link href="/about" className="nav-link ">
                   {" "}
                   Our Story
                 </Link>
               </li>
-              <li className="nav-item mob-dropdown">
+
+
+              <li className="nav-item">
+                <Link href="/dubai-package" className="nav-link ">
+                  {" "}
+                 Dubai
+                </Link>
+              </li>
+              {/* <li className="nav-item mob-dropdown">
               <div className="accordion" id="familyAccordion">
                   <div className="accordion-item">
                     <h2 className="accordion-header" id="headingOne">
@@ -66,8 +81,8 @@ export default function Offcanvas() {
                   </div>
                 </div>
 
-              </li>
-              <li className="nav-item">
+              </li> */}
+              {/* <li className="nav-item">
                 <Link href="/corporate" className="nav-link">
                   Corporate
                 </Link>
@@ -76,7 +91,7 @@ export default function Offcanvas() {
                 <Link href="/honeymoon" className="nav-link">
                   Honeymoon
                 </Link>
-              </li>
+              </li> */}
               <li className="nav-item">
                 <Link href="/blogs" className="nav-link">
                   Blogs

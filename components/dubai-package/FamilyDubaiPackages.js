@@ -31,9 +31,13 @@ export default function FamilyDubaiPackages() {
 
               <div className="f-dubai-contanetbx">
                 <div className="header">
-                  <Link href="/dubai/dubai-family">
+                  {/* <Link href="/dubai/dubai-family">
                     <h2>Economy Dubai</h2>
-                  </Link>
+                  </Link> */}
+
+                  <Link href="/dubai/dubai-family?tab=economy">
+                      <h2>Economy Dubai</h2>
+                    </Link>
                 </div>
 
                 <div className="price-section">
@@ -89,7 +93,10 @@ export default function FamilyDubaiPackages() {
                   </ul>
                 </div>
 
-                <Link href="/dubai/dubai-family" className="package-button interactive">
+                <Link
+                  href="/dubai/dubai-family?tab=economy"
+                  className="package-button interactive"
+                >
                   View Package
                 </Link>
               </div>
@@ -114,9 +121,9 @@ export default function FamilyDubaiPackages() {
 
               <div className="f-dubai-contanetbx">
                 <div className="header">
-                  <Link href="/dubai/dubai-family">
-                    <h2>Delux Dubai</h2>
-                  </Link>
+                   <Link href="/dubai/dubai-family?tab=deluxe">
+                      <h2>Deluxe Dubai</h2>
+                    </Link>
                 </div>
 
                 <div className="price-section">
@@ -172,9 +179,12 @@ export default function FamilyDubaiPackages() {
                   </ul>
                 </div>
 
-                <Link href="/dubai/dubai-family" className="package-button interactive">
-                  View Package
-                </Link>
+               <Link
+  href="/dubai/dubai-family?tab=deluxe"
+  className="package-button interactive"
+>
+  View Package
+</Link>
               </div>
             </div>
           </div>
@@ -199,9 +209,9 @@ export default function FamilyDubaiPackages() {
 
               <div className="f-dubai-contanetbx">
                 <div className="header">
-                  <Link href="#">
-                    <h2>Premium Dubai</h2>
-                  </Link>
+                 <Link href="/dubai/dubai-family?tab=premium">
+  <h2>Premium Dubai</h2>
+</Link>
                 </div>
 
                 <div className="price-section">
@@ -257,9 +267,12 @@ export default function FamilyDubaiPackages() {
                   </ul>
                 </div>
 
-                <Link href="/dubai/dubai-family" className="package-button interactive">
-                  View Package
-                </Link>
+             <Link
+  href="/dubai/dubai-family?tab=premium"
+  className="package-button interactive"
+>
+  View Package
+</Link>
               </div>
             </div>
           </div>

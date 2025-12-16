@@ -1,5 +1,5 @@
 import React from 'react'
-
+import Link from 'next/link'
 export default function NewFooter() {
   return (
     
@@ -39,7 +39,7 @@ export default function NewFooter() {
           <div className="footer-column">
             <h3>International</h3>
             <ul>
-              <li><a href="#">Dubai - Abudhabi</a></li>
+              <li><Link href="/dubai-package">Dubai - Abudhabi</Link></li>
               <li><a href="#">Bali</a></li>
               <li><a href="#">Thailand</a></li>
               <li><a href="#">Singapore</a></li>
@@ -52,10 +52,10 @@ export default function NewFooter() {
           <div className="footer-column">
             <h3>Explore</h3>
             <ul>
-              <li><a href="#">Our Story</a></li>
+              <li><Link href="/about">Our Story</Link></li>
               <li><a href="#">Corporate</a></li>
               <li><a href="#">Honeymoon</a></li>
-              <li><a href="#">Contact Us</a></li>
+              <li><Link href="/contact-us">Contact Us</Link></li>
             </ul>
           </div>
         </div>
@@ -71,20 +71,50 @@ export default function NewFooter() {
         <p className="footer-copyright">Copyright © 2025 <span className="brand">Tourwatchout.</span> All Rights Reserved</p>
         
         <div className="footer-social">
-          <img src="/assets/images/icons/home/facebook.svg" alt="Facebook"/>
-          <img src="/assets/images/icons/home/twitter.svg" alt="Twitter"/>
-          <img src="/assets/images/icons/home/instagram.svg" alt="Instagram"/>
+         
+
+              
+                <Link href="https://www.instagram.com/tourwatchout/">
+                   <img src="/assets/images/icons/home/instagram.svg" alt="Instagram"/>
+                </Link>
+                <Link href="https://www.facebook.com/TourWatchout/">
+                    <img src="/assets/images/icons/home/facebook.svg" alt="Facebook"/>
+                  
+                </Link>
+
+                <Link href="https://x.com/tourwatchout/status/1372176665351053313">
+                 <img src="/assets/images/icons/home/twitter.svg" alt="Twitter"/>
+
+                 </Link>
+
+                 <Link href="https://in.linkedin.com/company/tourwatchout">
           <img src="/assets/images/icons/home/linkedin.svg" alt="LinkedIn"/>
+          </Link>
+
+                 <Link href="https://www.youtube.com/@Tourwatchout">
+
           <img src="/assets/images/icons/home/youtube.svg" alt="YouTube"/>
+
+          </Link>
         </div>
         
         <p className="footer-legal">Copyright © 2025 <span className="brand">Tourwatchout.</span> All Rights Reserved</p>
         <p className="footer-disclaimer">The content and images used on this site are copyright protected and copyrights vests with the respective Owners. The usage Of the content and images on this website is intended to promote the works and no endorsement Of the artist Shall be implied. Unauthorized use is prohbited and punishable by law.</p>
         
         <div className="footer-policies">
-          <button className="policy-button interactive">Cancellation Policy</button>
-          <button className="policy-button interactive">Privacy Policy</button>
-          <button className="policy-button interactive">Terms and Conditions</button>
+          {/* <button className="">Privacy Policy</button> */}
+          <Link href="/privacy-policy" className='policy-button interactive'> Privacy Policy </Link>
+
+           <Link href="/term-and-conditions" className='policy-button interactive'>
+                    {" "}
+                    Term & Conditions
+                  </Link>{" "}
+
+
+                  <Link href="/refund-cancellation-policy" className='policy-button interactive'>
+                    {" "}
+                    Refund & Cancellation
+                  </Link>{" "}
         </div>
       </div>
     </div>

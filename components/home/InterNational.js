@@ -36,10 +36,10 @@ export default function InterNational() {
             // grabCursor={true}
             loop={true}
             slidesPerView={3.2}
-            // autoplay={{
-            //   delay: 2500,
-            //   disableOnInteraction: false,
-            // }}
+            autoplay={{
+              delay: 2500,
+              disableOnInteraction: false,
+            }}
             pagination={{
               clickable: true,
               el: ".swiper-pagination", // Ensure a pagination element is available
@@ -94,6 +94,9 @@ export default function InterNational() {
                     </div>
                   </div>
                   <div className="location">
+
+                  <Link href="/dubai-package">
+
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       fill="currentColor"
@@ -108,8 +111,13 @@ export default function InterNational() {
                       Downtown Dubai • Old Dubai • Desert Safari ...
                        {/* • Palm Jumeirah */}
                     </span>
+
+                    </Link>
                   </div>
                   <div className="icons" aria-label="Travel icons">
+
+                <Link href="/dubai-package">
+
                     <ul className="amenities-icons">
                       <li>
                         <img src="/assets/images/hero/icons/amenities/icon1.svg"></img>
@@ -136,8 +144,11 @@ export default function InterNational() {
                         <img src="/assets/images/hero/icons/amenities/icon8.svg"></img>
                       </li>
                     </ul>
+                    </Link>
                   </div>
                   <div className="price-section">
+
+                   <Link href="/dubai-package">
                     <div className="price-info">
                       <p className="old-price">
                         Starting from <span className="oldcut">₹80,000</span>
@@ -145,6 +156,8 @@ export default function InterNational() {
                       <p className="new-price">₹50,000</p>
                       <p className="price-desc">per person on twin sharing </p>
                     </div>
+
+                    </Link>
 
                     <div className="contact-icons">
                       <Link href="tel:+91 8882701800">
@@ -623,6 +636,8 @@ export default function InterNational() {
                     </div>
                   </div>
                   <div className="location">
+                <Link href="/dubai-package">
+
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       fill="currentColor"
@@ -633,12 +648,19 @@ export default function InterNational() {
                     >
                       <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM12 11.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"></path>
                     </svg>
+
+                    
                     <span>
                         Downtown Dubai • Old Dubai • Desert Safari ...
                        {/* • Palm Jumeirah */}
                     </span>
+
+                    </Link>
                   </div>
                   <div className="icons" aria-label="Travel icons">
+
+                <Link href="/dubai-package">
+
                     <ul className="amenities-icons">
                       <li>
                         <img src="/assets/images/hero/icons/amenities/icon1.svg"></img>
@@ -665,8 +687,12 @@ export default function InterNational() {
                         <img src="/assets/images/hero/icons/amenities/icon8.svg"></img>
                       </li>
                     </ul>
+                    </Link>
                   </div>
                   <div className="price-section">
+
+                <Link href="/dubai-package">
+
                     <div className="price-info">
                       <p className="old-price">
                         Starting from <span className="oldcut">₹80,000</span>
@@ -674,6 +700,8 @@ export default function InterNational() {
                       <p className="new-price">₹50,000</p>
                       <p className="price-desc">per person on twin sharing </p>
                     </div>
+
+                    </Link>
 
                     <div className="contact-icons">
                       <Link href="tel:+91 8882701800">

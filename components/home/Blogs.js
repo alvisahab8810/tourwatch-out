@@ -28,7 +28,7 @@ export default function Blogs() {
                 <div className="blog-divider"></div>
                 <div className="blog-price">
                   <span className="price-label">Starts at</span>
-                  <span className="price-value">₹ 137</span>
+                  <span className="price-value">₹ ***</span>
                 </div>
               </div>
             </div>
@@ -48,7 +48,7 @@ export default function Blogs() {
                 <div className="blog-divider"></div>
                 <div className="blog-price">
                   <span className="price-label">Starts at</span>
-                  <span className="price-value">₹ 155</span>
+                  <span className="price-value">₹ ***</span>
                 </div>
               </div>
             </div>
@@ -68,7 +68,7 @@ export default function Blogs() {
                 <div className="blog-divider"></div>
                 <div className="blog-price">
                   <span className="price-label">Starts at</span>
-                  <span className="price-value">₹ 137</span>
+                  <span className="price-value">₹ ***</span>
                 </div>
               </div>
             </div>
@@ -88,7 +88,7 @@ export default function Blogs() {
                 <div className="blog-divider"></div>
                 <div className="blog-price">
                   <span className="price-label">Starts at</span>
-                  <span className="price-value">₹ 745</span>
+                  <span className="price-value">₹ ***</span>
                 </div>
               </div>
             </div>

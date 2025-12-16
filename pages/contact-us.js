@@ -15,7 +15,7 @@ export default function ContactUs() {
     <Offcanvas/>
     <Hero/>
     <ContactForm/>
-    <Cta/>
+    {/* <Cta/> */}
     <Popup/>
     {/* <Footer/> */}
     <NewFooter/>

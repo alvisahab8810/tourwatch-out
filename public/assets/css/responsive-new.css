@@ -188,12 +188,17 @@
   .wm-video {
     border-radius: 12px;
   }
-
+/* 
   .what-makes-us .feature-card {
     height: 400px;
     padding: 0;
-}
+} */
 
+    .what-makes-us .feature-card {
+        height: auto;
+        width: 80%;
+        padding: 0;
+    }
 .benefits-grid {
     display: flex;
     grid-template-columns: 1fr;
@@ -854,8 +859,30 @@ span.chip.left > img {
 section.blogs-list-section.ptb-80 {
     margin-bottom: 30px;
 }
+.contact-form-section {
+    padding-bottom: 70px;
+}
+
+.social-icons img {
+    width: 24px;
+    height: 13px;
+    width: auto !important;
+}
 
 
+.contact-form-section .social-icons1 a i {
+    color: #fff;
+    font-size: 16px;
+    margin-right: 10px;
+    height: 25px;
+    width: 25px;
+    border-radius: 50px;
+    background: #ee4c4e;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 }
 
 
