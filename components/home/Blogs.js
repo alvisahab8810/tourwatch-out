@@ -7,7 +7,7 @@ export default function Blogs() {
       <div className="mini-container1">
         <div className="explore-row">
           <h2 className="section-title">Blogs</h2>
-          <Link href="#" className="explore-more-btn">
+          <Link href="/blogs" className="explore-more-btn">
             View all
           </Link>
         </div>
@@ -75,7 +75,7 @@ export default function Blogs() {
           </div>
 
           {/* BLOG 4 */}
-          <div className="blog-card">
+          {/* <div className="blog-card">
             <div
               className="blog-image"
               style={{
@@ -92,7 +92,7 @@ export default function Blogs() {
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
 
       
 

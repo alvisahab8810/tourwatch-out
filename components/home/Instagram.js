@@ -63,10 +63,10 @@ export default function Instagram() {
             loop={true}
             grabCursor={true}
             slidesPerView={3.2}
-            autoplay={{
-              delay: 2500,
-              disableOnInteraction: false,
-            }}
+            // autoplay={{
+            //   delay: 2500,
+            //   disableOnInteraction: false,
+            // }}
             breakpoints={{
               240: {
                 slidesPerView: 1.4,

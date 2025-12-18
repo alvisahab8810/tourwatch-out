@@ -2,8 +2,8 @@ import React, { useRef, useState } from "react";
 import { FaVolumeMute, FaVolumeUp } from "react-icons/fa";
 
 const videoSources = [
-  "/assets/images/instagram/video1.mp4",
   "/assets/images/instagram/video2.mp4",
+  "/assets/images/instagram/video1.mp4",
   "/assets/images/instagram/video3.mp4",
 ];
 
@@ -161,6 +161,7 @@ export default function WhatMakeus() {
         .wm-video {
           width: 100%;
           height: 100%;
+            aspect-ratio: 9 / 16;
           object-fit: cover;
           border-radius: 10px 10px 0 0;
         }

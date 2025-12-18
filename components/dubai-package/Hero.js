@@ -65,8 +65,8 @@ export default function Hero() {
           <div class="stat-item mobile-none">
             <img src="/assets/images/icons/home/review.svg" alt="Google Reviews" />
             <div class="stat-content">
-              <h3>4.5 Google Reviews</h3>
-              <p>675 Google Reviews</p>
+              <h3>4.9  Reviews</h3>
+              <p>Customer Reviews</p>
             </div>
           </div>
           </div>

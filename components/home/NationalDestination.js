@@ -23,41 +23,345 @@ export default function NationalDestination() {
         <div className="mini-container1">
           <Swiper
             spaceBetween={10}
-            loop={true}
-            slidesPerView={3.2}
-
-             autoplay={{
-              delay: 2500,
-              disableOnInteraction: false,
-            }}
-            pagination={{
-              clickable: true,
-              el: ".swiper-pagination",
-            }}
-            navigation={{
-              nextEl: ".swiper-button-next-1",
-              prevEl: ".swiper-button-prev-1",
-            }}
-            breakpoints={{
-              240: {
-                centeredSlides: true,
-                slidesPerView: 1.2,
-                spaceBetween: 10,
-              },
-              768: {
-                slidesPerView: 2.5,
-                spaceBetween: 10,
-              },
-              1024: {
-                slidesPerView: 3.2,
-                spaceBetween: 10,
-              },
-            }}
-            modules={[Autoplay, Navigation, Pagination]}
-            className="swiper mySwiper5 pt-80"
-          >
+                       // centeredSlides={true}
+                       // grabCursor={true}
+                       loop={true}
+                       slidesPerView={3.2}
+                       autoplay={{
+                         delay: 2500,
+                         disableOnInteraction: false,
+                       }}
+                       pagination={{
+                         clickable: true,
+                         el: ".swiper-pagination", // Ensure a pagination element is available
+                       }}
+                       navigation={{
+                         nextEl: ".swiper-button-next",
+                         prevEl: ".swiper-button-prev",
+                       }}
+                       breakpoints={{
+                         240: {
+                           centeredSlides: true,
+           
+                           slidesPerView: 1.2,
+                           spaceBetween: 10,
+                         },
+                         768: {
+                           slidesPerView: 2.5,
+                           spaceBetween: 10,
+                         },
+                         1024: {
+                           slidesPerView: 3.2,
+                           spaceBetween: 10,
+                         },
+                       }}
+                       modules={[Autoplay, Navigation, Pagination]}
+                       className="swiper mySwiper4 pt-80"
+                     >
 
             {/* =========== Kashmir =========== */}
+            <SwiperSlide className="swiper-slide">
+              <div className="new-desti-card">
+                <Link href="#">
+                  <img
+                    src="/assets/images/n-destination/kashmir.webp"
+                    alt="Kashmir"
+                    loading="lazy"
+                  />
+                </Link>
+
+                <div className="p-4">
+                  <div className="header">
+                    <Link href="#">
+                      <h2>Kashmir</h2>
+                    </Link>
+
+                    <div className="share-area">
+                      <span className="duration-badge">4N/5D</span>
+                      <Link href="#">
+                        <img src="/assets/images/hero/icons/share1.svg" alt="share" />
+                      </Link>
+                    </div>
+                  </div>
+
+                  <div className="location">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="currentColor"
+                      stroke="none"
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                      focusable="false"
+                    >
+                      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM12 11.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"></path>
+                    </svg>
+                    <span>Srinagar • Gulmarg • Pahalgam • Sonamarg</span>
+                  </div>
+
+                  <Amenities />
+
+                  <PriceBlock
+                    oldPrice="₹80,000"
+                    newPrice="₹50,000"
+                    link="#"
+                  />
+                </div>
+              </div>
+            </SwiperSlide>
+
+            {/* =========== Leh Ladakh =========== */}
+            <SwiperSlide className="swiper-slide">
+              <div className="new-desti-card">
+                <Link href="#">
+                  <img
+                    src="/assets/images/n-destination/leh.webp"
+                    alt="Leh Ladakh"
+                    loading="lazy"
+                  />
+                </Link>
+
+                <div className="p-4">
+                  <div className="header">
+                    <Link href="#">
+                      <h2>Leh Ladakh</h2>
+                    </Link>
+
+                    <div className="share-area">
+                      <span className="duration-badge">3N/4D</span>
+                      <Link href="#">
+                        <img src="/assets/images/hero/icons/share1.svg" alt="share" />
+                      </Link>
+                    </div>
+                  </div>
+
+                  <div className="location">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="currentColor"
+                      stroke="none"
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                      focusable="false"
+                    >
+                      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM12 11.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"></path>
+                    </svg>
+                    <span>Leh • Pangong</span>
+                  </div>
+
+                  <Amenities />
+
+                  <PriceBlock
+                    oldPrice="₹60,000"
+                    newPrice="₹40,000"
+                    link="#"
+                  />
+                </div>
+              </div>
+            </SwiperSlide>
+
+            {/* =========== Manali =========== */}
+            <SwiperSlide className="swiper-slide">
+              <div className="new-desti-card">
+                <Link href="#">
+                  <img
+                    src="/assets/images/n-destination/manali.webp"
+                    alt="Manali"
+                    loading="lazy"
+                  />
+                </Link>
+
+                <div className="p-4">
+                  <div className="header">
+                    <Link href="#">
+                      <h2>Manali</h2>
+                    </Link>
+
+                    <div className="share-area">
+                      <span className="duration-badge">3N/4D</span>
+                      <Link href="#">
+                        <img src="/assets/images/hero/icons/share1.svg" alt="share" />
+                      </Link>
+                    </div>
+                  </div>
+
+                  <div className="location">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="currentColor"
+                      stroke="none"
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                      focusable="false"
+                    >
+                      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM12 11.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"></path>
+                    </svg>
+                    <span>Manali • Solang • Atal Tunnel • Manikaran</span>
+                  </div>
+
+                  <Amenities />
+
+                  <PriceBlock
+                    oldPrice="₹60,000"
+                    newPrice="₹40,000"
+                    link="#"
+                  />
+                </div>
+              </div>
+            </SwiperSlide>
+
+            {/* =========== Shimla =========== */}
+            <SwiperSlide className="swiper-slide">
+              <div className="new-desti-card">
+                <Link href="#">
+                  <img
+                    src="/assets/images/n-destination/shimla.webp"
+                    alt="Shimla"
+                    loading="lazy"
+                  />
+                </Link>
+
+                <div className="p-4">
+                  <div className="header">
+                    <Link href="#">
+                      <h2>Shimla</h2>
+                    </Link>
+
+                    <div className="share-area">
+                      <span className="duration-badge">3N/4D</span>
+                      <Link href="#">
+                        <img src="/assets/images/hero/icons/share1.svg" alt="share" />
+                      </Link>
+                    </div>
+                  </div>
+
+                  <div className="location">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="currentColor"
+                      stroke="none"
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                      focusable="false"
+                    >
+                      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM12 11.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"></path>
+                    </svg>
+                    <span>Shimla • Kufri • Mashobra • Naldehra</span>
+                  </div>
+
+                  <Amenities />
+
+                  <PriceBlock
+                    oldPrice="₹60,000"
+                    newPrice="₹40,000"
+                    link="#"
+                  />
+                </div>
+              </div>
+            </SwiperSlide>
+
+            {/* =========== Dharamshala =========== */}
+            <SwiperSlide className="swiper-slide">
+              <div className="new-desti-card">
+                <Link href="#">
+                  <img
+                    src="/assets/images/n-destination/dharamshala.webp"
+                    alt="Dharamshala"
+                    loading="lazy"
+                  />
+                </Link>
+
+                <div className="p-4">
+                  <div className="header">
+                    <Link href="#">
+                      <h2>Dharamshala</h2>
+                    </Link>
+
+                    <div className="share-area">
+                      <span className="duration-badge">3N/4D</span>
+                      <Link href="#">
+                        <img src="/assets/images/hero/icons/share1.svg" alt="share" />
+                      </Link>
+                    </div>
+                  </div>
+
+                  <div className="location">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="currentColor"
+                      stroke="none"
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                      focusable="false"
+                    >
+                      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM12 11.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"></path>
+                    </svg>
+                    <span>McLeod Ganj • Dalhousie</span>
+                  </div>
+
+                  <Amenities />
+
+                  <PriceBlock
+                    oldPrice="₹70,000"
+                    newPrice="₹45,000"
+                    link="#"
+                  />
+                </div>
+              </div>
+            </SwiperSlide>
+
+            {/* =========== Dehradun =========== */}
+            <SwiperSlide className="swiper-slide">
+              <div className="new-desti-card">
+                <Link href="#">
+                  <img
+                    src="/assets/images/n-destination/dehradun.webp"
+                    alt="Dehradun"
+                    loading="lazy"
+                  />
+                </Link>
+
+                <div className="p-4">
+                  <div className="header">
+                    <Link href="#">
+                      <h2>Dehradun</h2>
+                    </Link>
+
+                    <div className="share-area">
+                      <span className="duration-badge">4N/5D</span>
+                      <Link href="#">
+                        <img src="/assets/images/hero/icons/share1.svg" alt="share" />
+                      </Link>
+                    </div>
+                  </div>
+
+                  <div className="location">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="currentColor"
+                      stroke="none"
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                      focusable="false"
+                    >
+                      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM12 11.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"></path>
+                    </svg>
+                    <span>Dehradun • Mussoorie</span>
+                  </div>
+
+                  <Amenities />
+
+                  <PriceBlock
+                    oldPrice="₹70,000"
+                    newPrice="₹45,000"
+                    link="#"
+                  />
+                </div>
+              </div>
+            </SwiperSlide>
+
+
+
+              {/* =========== Kashmir =========== */}
             <SwiperSlide className="swiper-slide">
               <div className="new-desti-card">
                 <Link href="#">

@@ -264,7 +264,8 @@
     
     .feature-image {
       width: 100%;
-      height: 510px;
+      /* aspect-ratio: 9 / 16; */
+      height: 640px;
       background: linear-gradient(180deg, #00000000 0%, #0000007f 100%);
       position: relative;
       border-radius: 10px 10px 0px 0px;
@@ -272,7 +273,7 @@
     
     @media (min-width: 768px) {
       .feature-image {
-        height: 510px;
+        /* height: auto; */
       }
     }
     
@@ -325,6 +326,7 @@
 
     .what-makes-us .feature-image{
       background-image: linear-gradient(180deg, #00000000 0%, #0000007f 100%);
+      /* aspect-ratio: 9 / 16; */
     }
 
     .feature-content p {
@@ -335,7 +337,7 @@
 
 
 .what-makes-us .feature-card{
-  height: 508px;
+  /* height: 508px; */
   padding:0;
 }
 
@@ -1035,7 +1037,7 @@
     
     @media (min-width: 1024px) {
       .blogs-grid {
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(3, 1fr);
         gap: 20px;
       }
     }
@@ -1063,7 +1065,7 @@
     
     @media (min-width: 768px) {
       .blog-image {
-        height: 180px;
+        height: 160px;
       }
     }
     
@@ -1086,12 +1088,12 @@
     
     @media (min-width: 768px) {
       .blog-category {
-        font-size: 18px;
+        font-size: 22px;
       }
     }
     
     .blog-subcategory {
-      font-size: 12px;
+      font-size: 14px;
       font-weight: 500;
       line-height: 16px;
       color: #eff3ff;
@@ -1112,7 +1114,7 @@
     }
     
     .price-label {
-      font-size: 12px;
+      font-size: 14px;
       font-weight: 500;
       line-height: 16px;
       color: #ffc250;

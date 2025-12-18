@@ -12,7 +12,7 @@ export default function MostPopular() {
           <div className="explore-row">
             <h2 className="section-title">Most popular </h2>
             <Link
-              href="/family/international-destination"
+              href="#"
               className="explore-more-btn"
             >
               View all

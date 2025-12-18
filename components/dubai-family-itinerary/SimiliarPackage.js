@@ -12,7 +12,7 @@ export default function SimiliarPackage() {
           <div className="explore-row">
             <h2 className="section-title">Similar Packages</h2>
             <Link
-              href="/family/international-destination"
+              href="#"
               className="explore-more-btn"
             >
               View all

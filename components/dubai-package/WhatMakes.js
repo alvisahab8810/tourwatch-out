@@ -2,9 +2,9 @@ import React, { useRef, useState } from "react";
 import { FaVolumeMute, FaVolumeUp } from "react-icons/fa";
 
 const videoSources = [
-  "/assets/images/instagram/video7.mp4",
-  "/assets/images/instagram/video6.mp4",
-  "/assets/images/instagram/video5.mp4",
+ "/assets/images/instagram/video2.mp4",
+  "/assets/images/instagram/video1.mp4",
+  "/assets/images/instagram/video3.mp4",
 //   "/assets/images/instagram/video4.mp4",
 ];
 
