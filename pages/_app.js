@@ -14,11 +14,12 @@ function MyApp({ Component, pageProps }) {
           type="image/x-icon"
           href="./assets/images/favicon.png"
         />
-        <meta
+        {/* <meta
           name="robots"
           content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
-        />
+        /> */}
 
+        <meta name="robots" content="noindex, nofollow"/>
         {/* Inline critical CSS if applicable */}
         <link rel="stylesheet" href="/assets/css/bootstrap.min.css" />
         <link rel="stylesheet" href="/assets/css/style.css" />
