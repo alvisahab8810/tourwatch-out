@@ -6,16 +6,35 @@ import PackageDetailsTabs from '../../components/dubai-family-itinerary/PackageD
 import HeroMobile from '../../components/dubai-family-itinerary/HeroMobile'
 import Popup from '../../components/corporate/Popup'
 
-export default function DubaiFamily() {
+export async function getServerSideProps() {
+  const { readAll: readPkgs } = require("../../utils/packageStore");
+
+  const SUBTYPE_ORDER = ["Economy", "Deluxe", "Premium"];
+
+  const pkgs = readPkgs()
+    .filter(p =>
+      p.destination === "Dubai" &&
+      p.packageType === "Family" &&
+      p.status === "Active"
+    )
+    .sort((a, b) =>
+      SUBTYPE_ORDER.indexOf(a.packageSubtype) - SUBTYPE_ORDER.indexOf(b.packageSubtype)
+    );
+
+  return {
+    props: { packages: JSON.parse(JSON.stringify(pkgs)) }
+  };
+}
+
+export default function DubaiFamily({ packages = [] }) {
   return (
     <div className='dubai-family-package'>
-        <Topbar/>
-        <Offcanvas/>
-        <Hero/>
-        <HeroMobile/>
-        <PackageDetailsTabs/>
-         <Popup/>
-
+      <Topbar />
+      <Offcanvas />
+      <Hero packages={packages} />
+      <HeroMobile />
+      <PackageDetailsTabs packages={packages} />
+      <Popup />
     </div>
-  )
+  );
 }

@@ -35,7 +35,30 @@ import Blogs from "../components/home/Blogs";
 import NewFooter from "../components/footer/NewFooter";
 import BottomReviewsMobile from "../components/home/BottomReviewsMobile";
 
-export default function IndexPage({ data }) {
+export async function getServerSideProps() {
+  const { readAll: readDests } = require("../utils/destStore");
+  const { readAll: readPkgs  } = require("../utils/packageStore");
+
+  const dests = readDests().filter(d => d.status === "Active");
+  const pkgs  = readPkgs().filter(p  => p.status === "Active");
+
+  // Build min price map: destination name → lowest finalPrice
+  const priceMap = {};
+  pkgs.forEach(p => {
+    const price = Number(p.finalPrice || p.basePrice || 0);
+    const key   = p.destination;
+    if (key && (!priceMap[key] || price < priceMap[key])) priceMap[key] = price;
+  });
+
+  const destinations = dests.map(d => ({
+    ...d,
+    startingPrice: priceMap[d.name] || priceMap[d.title] || null,
+  }));
+
+  return { props: { destinations: JSON.parse(JSON.stringify(destinations)) } };
+}
+
+export default function IndexPage({ destinations = [] }) {
   return (
     <section id="home" className="bg-prime">
       <CustomHead
@@ -46,6 +69,7 @@ export default function IndexPage({ data }) {
       <Topbar/>
       <Offcanvas/>
       <Hero/>
+       
 
         <div className="desktop-none mobile-g-reviews">
            <div class="stat-item">
@@ -64,8 +88,8 @@ export default function IndexPage({ data }) {
       {/* <Form/> */}
       {/* <Hww/> */}
       {/* <Projects/> */}
-       <InterNational/>
-      <NationalDestination/>
+       <InterNational destinations={destinations} />
+      <NationalDestination destinations={destinations} />
 
 
       <TopReviews/>

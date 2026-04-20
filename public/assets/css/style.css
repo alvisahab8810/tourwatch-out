@@ -3963,3 +3963,259 @@ section.blogs-list-section.ptb-80 {
 .contact-form-section {
     padding-bottom: 150px;
 }
+/* ================================================================
+   HOMEPAGE DESTINATION SLIDER CARDS
+   ================================================================ */
+.dest-slide-card {
+  display: block;
+  border-radius: 18px;
+  overflow: hidden;
+  text-decoration: none;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+.dest-slide-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 28px rgba(0,0,0,0.16);
+}
+.dest-slide-img {
+  position: relative;
+  width: 100%;
+  height: 442px;
+  overflow: hidden;
+}
+.dest-slide-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.35s ease;
+}
+.dest-slide-card:hover .dest-slide-img img {
+  transform: scale(1.05);
+}
+.dest-slide-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0) 55%);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 30px 22px;
+}
+.dest-slide-name {
+  font-size: 30px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 4px;
+  font-family: 'DM Sans', sans-serif;
+  line-height: 1.2;
+}
+.dest-slide-price {
+  font-size: 15px;
+  color: rgba(255,255,255,0.88);
+  margin: 0;
+  font-family: 'DM Sans', sans-serif;
+}
+.dest-slide-price strong {
+  color: #fff;
+  font-weight: 700;
+  font-size: 30px;
+}
+@media (max-width: 768px) {
+  .dest-slide-img { height: 210px; }
+  .dest-slide-name { font-size: 17px; }
+}
+
+/* ================================================================
+   DESTINATION PAGE (pages/destination/[slug].js)
+   ================================================================ */
+.dp-hero {
+  width: 100%;
+  height: 400px;
+  background-size: cover;
+  background-position: center;
+  background-color: #1e293b;
+  position: relative;
+}
+.dp-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.65) 100%);
+  display: flex;
+  align-items: flex-end;
+  padding-bottom: 48px;
+}
+.dp-hero-title {
+  font-size: 48px;
+  font-weight: 800;
+  color: #fff;
+  margin: 0 0 6px;
+  font-family: 'DM Sans', sans-serif;
+  line-height: 1.1;
+}
+.dp-hero-sub {
+  font-size: 16px;
+  color: rgba(255,255,255,0.8);
+  margin: 0;
+  font-family: 'DM Sans', sans-serif;
+}
+.dp-page {
+  padding: 60px 0 80px;
+}
+.dp-type-section {
+  margin-bottom: 64px;
+}
+.dp-type-header {
+  margin-bottom: 28px;
+}
+.dp-type-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #111827;
+  font-family: 'DM Sans', sans-serif;
+  margin: 0;
+}
+.dp-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+.dp-pkg-card {
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+.dp-pkg-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 28px rgba(0,0,0,0.13);
+}
+.dp-pkg-img-wrap {
+  position: relative;
+  height: 240px;
+  overflow: hidden;
+}
+.dp-pkg-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.35s ease;
+}
+.dp-pkg-card:hover .dp-pkg-img-wrap img {
+  transform: scale(1.05);
+}
+.dp-pkg-badge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-family: 'DM Sans', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.dp-pkg-body {
+  padding: 20px;
+}
+.dp-pkg-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 6px;
+  font-family: 'DM Sans', sans-serif;
+}
+.dp-pkg-duration {
+  font-size: 13px;
+  color: #6b7280;
+  margin: 0 0 6px;
+  font-family: 'DM Sans', sans-serif;
+}
+.dp-pkg-price {
+  font-size: 14px;
+  color: #374151;
+  margin: 0 0 16px;
+  font-family: 'DM Sans', sans-serif;
+}
+.dp-pkg-price strong {
+  color: #111827;
+  font-size: 18px;
+  font-weight: 700;
+}
+.dp-view-btn {
+  display: inline-block;
+  background: #2563eb;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 24px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-family: 'DM Sans', sans-serif;
+  transition: background 0.15s;
+}
+.dp-view-btn:hover { background: #1d4ed8; color: #fff; }
+.dp-empty {
+  text-align: center;
+  padding: 80px 0;
+  color: #6b7280;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
+}
+
+@media (max-width: 900px) {
+  .dp-cards-grid { grid-template-columns: 1fr 1fr; }
+  .dp-hero { height: 280px; }
+  .dp-hero-title { font-size: 34px; }
+}
+@media (max-width: 600px) {
+  .dp-cards-grid { grid-template-columns: 1fr; }
+  .dp-hero { height: 220px; }
+  .dp-hero-title { font-size: 26px; }
+}
+
+
+
+
+.prices-row > div img{
+  width: 100px;
+  height: 76px;
+  border-radius: 10px;
+}
+
+.it-day-body p {
+    color: #111;
+}
+/* ── Advertisement banner below itinerary ── */
+.pdt-promo-banner{margin:32px 0;border-radius:12px;overflow:hidden;}
+.pdt-promo-banner img{width:100%;display:block;object-fit:cover;}
+
+/* ── Enquiry card ad image ── */
+.enq-ad-img{width:100%;border-radius:8px;margin-bottom:12px;display:block;object-fit:cover;max-height:120px;}
+
+/* ── dfn-about without double panel ── */
+.dfn-about{width:100%;}
+.dfn-about .dfn-content{display:flex;flex-direction:column;gap:16px;}
+.dfn-about .dfn-intro{display:flex;gap:10px;align-items:flex-start;}
+.dfn-about .dfn-intro .info-icon{width:22px;height:22px;flex-shrink:0;margin-top:2px;}
+.dfn-about .dfn-intro p{margin:0;line-height:1.6;color:#374151;}
+.dfn-highlights{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px;}
+.dfn-highlights img{flex:1;min-width:200px;max-width:48%;border-radius:10px;object-fit:cover;height:200px;}
+.dfn-bullet-list{margin:8px 0 0 0;padding-left:20px;line-height:1.8;color:#374151;}
+.dfn-sub-heading{font-size:14px;font-weight:600;color:#111827;margin:12px 0 4px;}
+
+
+
+
+
+@font-face {
+  font-family: 'Erstoria';
+  src: url('../fonts/Erstoria-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}

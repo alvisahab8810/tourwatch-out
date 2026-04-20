@@ -1,35 +1,141 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
-import { MdAdd, MdEdit, MdDelete, MdFlight, MdLogout, MdConfirmationNumber } from "react-icons/md";
-import { isAuthenticated, logout } from "../../utils/voucherAuth";
+import {
+  MdPeople, MdMenu, MdKeyboardArrowDown, MdCallMade,
+} from "react-icons/md";
+import { isAuthenticated } from "../../utils/voucherAuth";
+import Sidebar from "../../components/backend/Sidebar";
 
+/* ─── Static chart data ─── */
+// NAV_ITEMS, CRM_ITEMS, and Sidebar extracted to components/backend/Sidebar.js
+const CONVERSION_DATA = [
+  { month: "Jan", Closed: 50, Quotations: 75, Lost: 30 },
+  { month: "Feb", Closed: 50, Quotations: 75, Lost: 20 },
+  { month: "Mar", Closed: 65, Quotations: 80, Lost: 35 },
+  { month: "Apr", Closed: 70, Quotations: 95, Lost: 28 },
+  { month: "May", Closed: 50, Quotations: 75, Lost: 45 },
+  { month: "Jun", Closed: 52, Quotations: 76, Lost: 40 },
+  { month: "Jul", Closed: 65, Quotations: 78, Lost: 48 },
+  { month: "Aug", Closed: 55, Quotations: 80, Lost: 48 },
+  { month: "Sep", Closed: 65, Quotations: 82, Lost: 48 },
+  { month: "Oct", Closed: 68, Quotations: 70, Lost: 38 },
+  { month: "Nov", Closed: 72, Quotations: 88, Lost: 12 },
+];
+
+const REVENUE_DATA = [
+  { month: "Jan",  Packages: 120, Hotels: 80,  Flights: 55 },
+  { month: "Feb",  Packages: 100, Hotels: 90,  Flights: 40 },
+  { month: "Mar",  Packages: 140, Hotels: 95,  Flights: 70 },
+  { month: "Apr",  Packages: 160, Hotels: 110, Flights: 85 },
+  { month: "May",  Packages: 130, Hotels: 75,  Flights: 65 },
+  { month: "Jun",  Packages: 145, Hotels: 88,  Flights: 72 },
+  { month: "Jul",  Packages: 155, Hotels: 105, Flights: 80 },
+  { month: "Aug",  Packages: 142, Hotels: 98,  Flights: 75 },
+  { month: "Sep",  Packages: 150, Hotels: 102, Flights: 78 },
+  { month: "Oct",  Packages: 148, Hotels: 92,  Flights: 68 },
+  { month: "Nov",  Packages: 168, Hotels: 115, Flights: 88 },
+];
+
+const CONVERSION_COLORS = ["#22c55e", "#eab308", "#ef4444"];
+const REVENUE_COLORS    = ["#2563eb", "#818cf8", "#a78bfa"];
+
+
+const STATS = [
+  { title: "Total Destinations", value: 30,  subNum: 28,  subLabel: "Active",    color: "bk-clr-green" },
+  { title: "Total Packages",     value: 105, subNum: 100, subLabel: "Active",    color: "bk-clr-green" },
+  { title: "Blogs",              value: 145, subNum: 120, subLabel: "Active",    color: "bk-clr-green" },
+  { title: "FAQ's",              value: 56,  subNum: 10,  subLabel: "New Added", color: "bk-clr-gray"  },
+  { title: "Leads",              value: 150, subNum: 18,  subLabel: "Pending",   color: "bk-clr-red"   },
+];
+
+/* ─── Reusable bar chart ─── */
+function BarChart({ data, maxVal, colors }) {
+  const [active, setActive] = useState(null);
+  const keys = Object.keys(data[0]).filter((k) => k !== "month");
+
+  return (
+    <div>
+      <div className="bk-chart-area">
+        {/* Y-axis */}
+        <div className="bk-y-axis">
+          {[maxVal, Math.round(maxVal * 0.75), Math.round(maxVal * 0.5), Math.round(maxVal * 0.25), 0].map((v) => (
+            <span key={v} className="bk-y-label">{v}</span>
+          ))}
+        </div>
+
+        {/* Bars */}
+        <div className="bk-bars-wrap">
+          <div className="bk-bars-inner">
+            <div className="bk-bar-chart-row">
+              {data.map((d, i) => (
+                <div
+                  key={d.month}
+                  className="bk-bar-group"
+                  onMouseEnter={() => setActive(i)}
+                  onMouseLeave={() => setActive(null)}
+                >
+                  {/* Tooltip */}
+                  <div className={`bk-tooltip ${active === i ? "visible" : ""}`}>
+                    {keys.map((k, ki) => (
+                      <div key={k} className="bk-tooltip-row">
+                        <div className="bk-tooltip-dot" style={{ background: colors[ki] }} />
+                        <span>{k}: {d[k]}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {keys.map((k, ki) => (
+                    <div
+                      key={k}
+                      className="bk-bar"
+                      style={{
+                        height: `${(d[k] / maxVal) * 100}%`,
+                        background: colors[ki],
+                        borderRadius: "3px 3px 0 0",
+                      }}
+                    />
+                  ))}
+                </div>
+              ))}
+            </div>
+
+            {/* X labels */}
+            <div className="bk-x-labels">
+              {data.map((d) => (
+                <div key={d.month} className="bk-x-label">{d.month}</div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Legend */}
+      <div className="bk-legend">
+        {keys.map((k, ki) => (
+          <div key={k} className="bk-legend-item">
+            <div className="bk-legend-dot" style={{ background: colors[ki] }} />
+            {k}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ─── Main page ─── */
 export default function Dashboard() {
   const router = useRouter();
   const [ready, setReady] = useState(false);
-  const [vouchers, setVouchers] = useState([]);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     if (!isAuthenticated()) {
       router.replace("/dashboard/login");
       return;
     }
-    const saved = JSON.parse(localStorage.getItem("tw_vouchers") || "[]");
-    setVouchers(saved);
     setReady(true);
   }, []);
-
-  function handleLogout() {
-    logout();
-    router.replace("/dashboard/login");
-  }
-
-  function deleteVoucher(id) {
-    if (!confirm("Delete this voucher?")) return;
-    const updated = vouchers.filter((v) => v.id !== id);
-    localStorage.setItem("tw_vouchers", JSON.stringify(updated));
-    setVouchers(updated);
-  }
 
   if (!ready) return null;
 
@@ -37,227 +143,99 @@ export default function Dashboard() {
     <>
       <Head>
         <title>Dashboard — TourWatchOut</title>
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
+        <link rel="stylesheet" href="/assets/css/backend.css" />
       </Head>
-      <div style={s.page}>
-        {/* Sidebar */}
-        <aside style={s.sidebar}>
-          <div style={s.sideLogoWrap}>
-            <img src="/assets/images/logo.png" alt="TW" style={s.sideLogo} />
-          </div>
-          <nav style={s.nav}>
-            <div style={{ ...s.navItem, ...s.navActive }}>
-              <MdConfirmationNumber size={17} /> Vouchers
-            </div>
-          </nav>
-          <button onClick={handleLogout} style={s.logoutBtn}>
-            <MdLogout size={15} /> Logout
-          </button>
-        </aside>
 
-        {/* Main */}
-        <main style={s.main}>
-          <header style={s.header}>
-            <div>
-              <h1 style={s.heading}>Voucher Management</h1>
-              <p style={s.subheading}>Create, manage and share travel vouchers</p>
-            </div>
-            <button
-              onClick={() => router.push("/dashboard/create-voucher")}
-              style={s.createBtn}
-            >
-              <MdAdd size={18} /> Create Voucher
-            </button>
-          </header>
+      <div className="bk-page">
+        <Sidebar
+          active="Dashboard"
+          isOpen={sidebarOpen}
+          onClose={() => setSidebarOpen(false)}
+        />
 
-          {vouchers.length === 0 ? (
-            <div style={s.empty}>
-              <div style={s.emptyIcon}>🎫</div>
-              <h3 style={s.emptyTitle}>No vouchers yet</h3>
-              <p style={s.emptyText}>Click "Create Voucher" to generate your first travel voucher.</p>
+        <main className="bk-main">
+          {/* ─── Header ─── */}
+          <header className="bk-header">
+            <div className="bk-header-left">
               <button
-                onClick={() => router.push("/dashboard/create-voucher")}
-                style={s.createBtn}
+                className="bk-hamburger"
+                onClick={() => setSidebarOpen(true)}
+                aria-label="Open menu"
               >
-                <MdAdd size={18} /> Create Voucher
+                <MdMenu size={22} />
+              </button>
+              <h1 className="bk-page-title">Dashboard</h1>
+            </div>
+
+            <div className="bk-header-right">
+              <div className="bk-team-pill">
+                <span>Sales Team</span>
+                <MdKeyboardArrowDown size={16} />
+              </div>
+              <button className="bk-avatar-btn">
+                <MdPeople size={18} color="#2563eb" />
+                <span className="bk-avatar-badge">4</span>
               </button>
             </div>
-          ) : (
-            <div style={s.grid}>
-              {vouchers.map((v) => (
-                <div key={v.id} style={s.card}>
-                  <div style={s.cardHeader}>
-                    <span style={s.badge}>#{v.voucherNo || v.id.slice(-6)}</span>
-                    <span style={s.cardDate}>
-                      {new Date(v.createdAt).toLocaleDateString("en-IN")}
-                    </span>
-                  </div>
-                  <h3 style={s.cardName}>{v.name || "—"}</h3>
-                  <p style={s.cardDest}>
-                    <MdFlight size={14} style={{ marginRight: 4, verticalAlign: "middle" }} />
-                    {v.destination || "No destination"}
-                  </p>
-                  <p style={s.cardTrip}>Trip ID: {v.tripId || "—"}</p>
-                  <div style={s.cardActions}>
-                    <button
-                      style={s.viewBtn}
-                      onClick={() =>
-                        router.push(`/dashboard/create-voucher?id=${v.id}`)
-                      }
-                    >
-                      <MdEdit size={14} style={{ verticalAlign: "middle" }} /> Edit / View
-                    </button>
-                    <button
-                      style={s.delBtn}
-                      onClick={() => deleteVoucher(v.id)}
-                    >
-                      <MdDelete size={16} />
-                    </button>
+          </header>
+
+          {/* ─── Content ─── */}
+          <div className="bk-content">
+            {/* Stats */}
+            <div className="bk-stats-grid">
+              {STATS.map((s) => (
+                <div key={s.title} className="bk-stat-card">
+                  <MdCallMade className="bk-stat-arrow-icon" size={17} />
+                  <div className="bk-stat-title">{s.title}</div>
+                  <div className="bk-stat-row">
+                    <div className="bk-stat-number">{s.value}</div>
+                    <div className="bk-stat-sub">
+                      <div className={`bk-stat-sub-num ${s.color}`}>{s.subNum}</div>
+                      <div className="bk-stat-sub-label">{s.subLabel}</div>
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
-          )}
+
+            {/* Conversions chart */}
+            <div className="bk-chart-card">
+              <div className="bk-chart-top">
+                <div className="bk-chart-title">Total Conversions this month</div>
+                <MdCallMade size={18} color="#9ca3af" />
+              </div>
+              <div className="bk-chart-sub-row">
+                <div className="bk-chart-subtitle">Monthly reporting</div>
+                <select className="bk-period-select">
+                  <option>Yearly</option>
+                  <option>Monthly</option>
+                </select>
+              </div>
+              <BarChart data={CONVERSION_DATA} maxVal={100} colors={CONVERSION_COLORS} />
+            </div>
+
+            {/* Revenue chart */}
+            <div className="bk-chart-card">
+              <div className="bk-chart-top">
+                <div className="bk-chart-title">Total revenue this month</div>
+                <MdCallMade size={18} color="#9ca3af" />
+              </div>
+              <div className="bk-chart-sub-row">
+                <div className="bk-chart-subtitle">Monthly reporting</div>
+                <select className="bk-period-select">
+                  <option>Yearly</option>
+                  <option>Monthly</option>
+                </select>
+              </div>
+              <BarChart data={REVENUE_DATA} maxVal={200} colors={REVENUE_COLORS} />
+            </div>
+          </div>
         </main>
       </div>
     </>
   );
 }
-
-const s = {
-  page: {
-    display: "flex",
-    minHeight: "100vh",
-    background: "#f5f6fa",
-    fontFamily: "'DM Sans', sans-serif",
-  },
-  sidebar: {
-    width: 220,
-    background: "#1a1a2e",
-    display: "flex",
-    flexDirection: "column",
-    padding: "0 0 24px",
-    position: "fixed",
-    top: 0,
-    left: 0,
-    height: "100vh",
-  },
-  sideLogoWrap: {
-    padding: "24px 20px",
-    borderBottom: "1px solid rgba(255,255,255,0.08)",
-    marginBottom: 16,
-  },
-  sideLogo: { height:28, objectFit: "contain", filter: "brightness(0) invert(1)" },
-  nav: { flex: 1, padding: "0 12px" },
-  navItem: {
-    display: "flex",
-    alignItems: "center",
-    gap: 10,
-    padding: "10px 14px",
-    borderRadius: 8,
-    color: "rgba(255,255,255,0.6)",
-    fontSize: 14,
-    fontWeight: 500,
-    cursor: "pointer",
-    marginBottom: 4,
-  },
-  navActive: {
-    background: "rgba(232,73,73,0.2)",
-    color: "#e84949",
-  },
-  logoutBtn: {
-    margin: "0 12px",
-    background: "none",
-    border: "1px solid rgba(255,255,255,0.15)",
-    borderRadius: 8,
-    color: "rgba(255,255,255,0.6)",
-    padding: "10px 14px",
-    cursor: "pointer",
-    fontSize: 14,
-    textAlign: "left",
-  },
-  main: {
-    marginLeft: 220,
-    flex: 1,
-    padding: "32px 40px",
-    minHeight: "100vh",
-  },
-  header: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    marginBottom: 32,
-  },
-  heading: { fontSize: 26, fontWeight: 700, color: "#1a1a2e", margin: 0 },
-  subheading: { fontSize: 14, color: "#888", margin: "6px 0 0" },
-  createBtn: {
-    background: "#e84949",
-    color: "#fff",
-    border: "none",
-    borderRadius: 8,
-    padding: "12px 22px",
-    fontSize: 14,
-    fontWeight: 600,
-    cursor: "pointer",
-    whiteSpace: "nowrap",
-  },
-  empty: {
-    textAlign: "center",
-    padding: "80px 20px",
-    background: "#fff",
-    borderRadius: 16,
-    boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
-  },
-  emptyIcon: { fontSize: 56, marginBottom: 16 },
-  emptyTitle: { fontSize: 20, fontWeight: 700, color: "#1a1a2e", margin: "0 0 8px" },
-  emptyText: { color: "#888", fontSize: 15, marginBottom: 24 },
-  grid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-    gap: 20,
-  },
-  card: {
-    background: "#fff",
-    borderRadius: 12,
-    padding: "20px",
-    boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
-    border: "1px solid #f0f0f0",
-  },
-  cardHeader: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 12,
-  },
-  badge: {
-    background: "#fff2f2",
-    color: "#e84949",
-    borderRadius: 6,
-    padding: "3px 10px",
-    fontSize: 12,
-    fontWeight: 600,
-  },
-  cardDate: { fontSize: 12, color: "#aaa" },
-  cardName: { fontSize: 17, fontWeight: 700, color: "#1a1a2e", margin: "0 0 6px" },
-  cardDest: { fontSize: 14, color: "#555", margin: "0 0 4px" },
-  cardTrip: { fontSize: 13, color: "#aaa", margin: "0 0 16px" },
-  cardActions: { display: "flex", gap: 8 },
-  viewBtn: {
-    flex: 1,
-    background: "#f5f6fa",
-    border: "none",
-    borderRadius: 7,
-    padding: "9px",
-    fontSize: 13,
-    fontWeight: 600,
-    cursor: "pointer",
-    color: "#333",
-  },
-  delBtn: {
-    background: "#fff2f2",
-    border: "none",
-    borderRadius: 7,
-    padding: "9px 12px",
-    fontSize: 14,
-    cursor: "pointer",
-  },
-};

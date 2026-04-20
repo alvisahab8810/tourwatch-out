@@ -1,0 +1,816 @@
+[
+  {
+    "id": "pkg-seed-3",
+    "destination": "Kashmir",
+    "packageType": "Family",
+    "packageSubtype": "Deluxe",
+    "packageName": "Kashmir Family Adventure",
+    "duration": "3N/4D",
+    "basePrice": "150000",
+    "finalPrice": "150000",
+    "priceType": "per person on twin sharing",
+    "itineraryTitle": "Kashmir Family Adventure",
+    "destinationHighlights": "Experience the paradise on earth with your family.",
+    "amenities": [
+      "Meals",
+      "Hotel",
+      "Sightseeing",
+      "Transport",
+      "Local Guide"
+    ],
+    "days": [
+      {
+        "day": 1,
+        "title": "Arrival in Srinagar",
+        "icon": "🛬",
+        "description": "Arrive in Srinagar. Dal Lake shikara ride."
+      }
+    ],
+    "inclusions": "• Hotel accommodation\n• Breakfast & dinner\n• Shikara ride",
+    "exclusions": "• Flights\n• Visa",
+    "aboutText": "",
+    "bucketListText": "",
+    "bookingPolicy": "",
+    "cancellationPolicy": "",
+    "termsConditions": "",
+    "metaTitle": "",
+    "metaDescription": "",
+    "metaKeywords": "",
+    "webBanner": {
+      "src": "/assets/images/n-destination/kashmir.webp",
+      "alt": "Kashmir"
+    },
+    "mobileBanner": {
+      "src": null,
+      "alt": ""
+    },
+    "gallery": [
+      {
+        "src": null,
+        "alt": ""
+      },
+      {
+        "src": null,
+        "alt": ""
+      },
+      {
+        "src": null,
+        "alt": ""
+      },
+      {
+        "src": null,
+        "alt": ""
+      }
+    ],
+    "priceImage": {
+      "src": null,
+      "alt": ""
+    },
+    "advertisement": {
+      "headline": "",
+      "subtext": "",
+      "callbackType": "",
+      "image": {
+        "src": null,
+        "alt": ""
+      }
+    },
+    "aboutImages": [
+      {
+        "src": null,
+        "alt": ""
+      },
+      {
+        "src": null,
+        "alt": ""
+      }
+    ],
+    "bucketImages": [
+      {
+        "src": null,
+        "alt": ""
+      },
+      {
+        "src": null,
+        "alt": ""
+      }
+    ],
+    "status": "Active",
+    "createdAt": "2026-04-01T00:00:00.000Z"
+  },
+  {
+    "destination": "Kerala",
+    "packageType": "Family",
+    "packageSubtype": "Economy",
+    "packageName": "kerala family economy",
+    "duration": "5N/6D",
+    "itineraryTitle": "test",
+    "destinationHighlights": "test,fte,ertret,",
+    "amenities": [
+      "Meals",
+      "Hotel",
+      "Sightseeing",
+      "WiFi",
+      "DJ Night"
+    ],
+    "basePrice": "11000",
+    "finalPrice": "15000",
+    "priceType": "per person on triple sharing",
+    "inclusions": "test",
+    "exclusions": "ewt",
+    "aboutText": "tewt",
+    "bucketListText": "wrer",
+    "bookingPolicy": "tewt",
+    "cancellationPolicy": "werw",
+    "termsConditions": "ewrwr",
+    "metaTitle": "wrwr",
+    "metaDescription": "werwrw",
+    "metaKeywords": "werwer",
+    "status": "Active",
+    "webBanner": {
+      "src": "/uploads/packages/4508d4c0-058b-4162-b9e5-9f7f9986051b/web-banner.webp",
+      "alt": ""
+    },
+    "mobileBanner": {
+      "src": "/uploads/packages/4508d4c0-058b-4162-b9e5-9f7f9986051b/mobile-banner.png",
+      "alt": ""
+    },
+    "gallery": [
+      {
+        "src": "/uploads/packages/4508d4c0-058b-4162-b9e5-9f7f9986051b/gallery-0.png",
+        "alt": ""
+      },
+      {
+        "src": "/uploads/packages/4508d4c0-058b-4162-b9e5-9f7f9986051b/gallery-1.png",
+        "alt": ""
+      },
+      {
+        "src": "/uploads/packages/4508d4c0-058b-4162-b9e5-9f7f9986051b/gallery-2.png",
+        "alt": ""
+      },
+      {
+        "src": "/uploads/packages/4508d4c0-058b-4162-b9e5-9f7f9986051b/gallery-3.png",
+        "alt": ""
+      }
+    ],
+    "priceImage": {
+      "src": "/uploads/packages/4508d4c0-058b-4162-b9e5-9f7f9986051b/price-image.webp",
+      "alt": ""
+    },
+    "advertisement": {
+      "headline": "test",
+      "subtext": "test",
+      "callbackType": "Call",
+      "image": {
+        "src": "/uploads/packages/4508d4c0-058b-4162-b9e5-9f7f9986051b/ad-image.webp",
+        "alt": ""
+      }
+    },
+    "aboutImages": [
+      {
+        "src": "/uploads/packages/4508d4c0-058b-4162-b9e5-9f7f9986051b/about-0.png",
+        "alt": ""
+      },
+      {
+        "src": null,
+        "alt": ""
+      }
+    ],
+    "bucketImages": [
+      {
+        "src": null,
+        "alt": ""
+      },
+      {
+        "src": null,
+        "alt": ""
+      }
+    ],
+    "days": [
+      {
+        "day": 1,
+        "title": "test",
+        "icon": "✈️",
+        "description": "tewt\ntest\nets"
+      },
+      {
+        "day": 2,
+        "title": "tewtw",
+        "icon": "🏯",
+        "description": "wrwr"
+      }
+    ],
+    "id": "4508d4c0-058b-4162-b9e5-9f7f9986051b",
+    "createdAt": "2026-04-20T05:32:29.759Z"
+  },
+  {
+    "destination": "lucknow",
+    "packageType": "Family",
+    "packageSubtype": "Economy",
+    "packageName": "lucknow city of nawab economy",
+    "duration": "5N/6D",
+    "itineraryTitle": "city of nawab ",
+    "destinationHighlights": "test",
+    "amenities": [
+      "Meals",
+      "Hotel",
+      "Sightseeing",
+      "WiFi",
+      "DJ Night",
+      "Safe to Travel"
+    ],
+    "basePrice": "4000",
+    "finalPrice": "7000",
+    "priceType": "per person on twin sharing",
+    "inclusions": "test tes, test ",
+    "exclusions": "twetwt",
+    "aboutText": "wrwrewr",
+    "bucketListText": "wrewrw",
+    "bookingPolicy": "wrewrwerewr\n",
+    "cancellationPolicy": "ewewrewrwr",
+    "termsConditions": "werwrw",
+    "metaTitle": "sstt",
+    "metaDescription": "stestwe",
+    "metaKeywords": "erwrwe, wrewr ",
+    "status": "Active",
+    "webBanner": {
+      "src": "/uploads/packages/11ea5ae5-a187-4560-bd74-ce678cf2a129/web-banner.webp",
+      "alt": ""
+    },
+    "mobileBanner": {
+      "src": "/uploads/packages/11ea5ae5-a187-4560-bd74-ce678cf2a129/mobile-banner.png",
+      "alt": ""
+    },
+    "gallery": [
+      {
+        "src": "/uploads/packages/11ea5ae5-a187-4560-bd74-ce678cf2a129/gallery-0.png",
+        "alt": ""
+      },
+      {
+        "src": "/uploads/packages/11ea5ae5-a187-4560-bd74-ce678cf2a129/gallery-1.png",
+        "alt": ""
+      },
+      {
+        "src": "/uploads/packages/11ea5ae5-a187-4560-bd74-ce678cf2a129/gallery-2.webp",
+        "alt": ""
+      },
+      {
+        "src": "/uploads/packages/11ea5ae5-a187-4560-bd74-ce678cf2a129/gallery-3.png",
+        "alt": ""
+      }
+    ],
+    "priceImage": {
+      "src": "/uploads/packages/11ea5ae5-a187-4560-bd74-ce678cf2a129/price-image.webp",
+      "alt": "test"
+    },
+    "advertisement": {
+      "headline": "Call us now",
+      "subtext": "free call testing",
+      "callbackType": "Call",
+      "image": {
+        "src": "/uploads/packages/11ea5ae5-a187-4560-bd74-ce678cf2a129/ad-image.png",
+        "alt": ""
+      }
+    },
+    "aboutImages": [
+      {
+        "src": null,
+        "alt": ""
+      },
+      {
+        "src": null,
+        "alt": ""
+      }
+    ],
+    "bucketImages": [
+      {
+        "src": null,
+        "alt": ""
+      },
+      {
+        "src": null,
+        "alt": ""
+      }
+    ],
+    "days": [
+      {
+        "day": 1,
+        "title": "test",
+        "icon": "🛬",
+        "description": "test"
+      },
+      {
+        "day": 2,
+        "title": "tett day 2",
+        "icon": "✈️",
+        "description": "test"
+      }
+    ],
+    "id": "11ea5ae5-a187-4560-bd74-ce678cf2a129",
+    "createdAt": "2026-04-20T07:47:47.558Z"
+  },
+  {
+    "destination": "lucknow",
+    "packageType": "Family",
+    "packageSubtype": "Deluxe",
+    "packageName": "tewt",
+    "duration": "5N/6D",
+    "itineraryTitle": "",
+    "destinationHighlights": "",
+    "amenities": [],
+    "basePrice": "83433",
+    "finalPrice": "343433",
+    "priceType": "per person on twin sharing",
+    "inclusions": "werw",
+    "exclusions": "",
+    "aboutText": "werwrwer",
+    "bucketListText": "werwre",
+    "bookingPolicy": "wererewewrewr",
+    "cancellationPolicy": "werr",
+    "termsConditions": "erwrwerw",
+    "metaTitle": "",
+    "metaDescription": "",
+    "metaKeywords": "",
+    "status": "Active",
+    "webBanner": {
+      "src": null,
+      "alt": ""
+    },
+    "mobileBanner": {
+      "src": null,
+      "alt": ""
+    },
+    "gallery": [],
+    "priceImage": {
+      "src": null,
+      "alt": ""
+    },
+    "advertisement": {
+      "headline": "werwe",
+      "subtext": "werwr",
+      "callbackType": "Call",
+      "image": {
+        "src": null,
+        "alt": ""
+      }
+    },
+    "aboutImages": [],
+    "bucketImages": [],
+    "days": [
+      {
+        "day": 1,
+        "title": "test",
+        "icon": "✈️",
+        "description": "stewt"
+      }
+    ],
+    "id": "a2cff7e4-5e4e-4956-9d89-6fa8a57f9312",
+    "createdAt": "2026-04-20T07:50:52.687Z"
+  },
+  {
+    "destination": "lucknow",
+    "packageType": "Family",
+    "packageSubtype": "Premium",
+    "packageName": "lucknow city of nawa premium",
+    "duration": "5N/6D",
+    "itineraryTitle": "wewr",
+    "destinationHighlights": "ewr",
+    "amenities": [],
+    "basePrice": "12600",
+    "finalPrice": "2333",
+    "priceType": "per couple",
+    "inclusions": "",
+    "exclusions": "wer",
+    "aboutText": "",
+    "bucketListText": "",
+    "bookingPolicy": "",
+    "cancellationPolicy": "",
+    "termsConditions": "",
+    "metaTitle": "",
+    "metaDescription": "",
+    "metaKeywords": "",
+    "status": "Active",
+    "webBanner": {
+      "src": null,
+      "alt": ""
+    },
+    "mobileBanner": {
+      "src": null,
+      "alt": ""
+    },
+    "gallery": [],
+    "priceImage": {
+      "src": null,
+      "alt": ""
+    },
+    "advertisement": {
+      "headline": "",
+      "subtext": "",
+      "callbackType": "Call",
+      "image": {
+        "src": null,
+        "alt": ""
+      }
+    },
+    "aboutImages": [],
+    "bucketImages": [],
+    "days": [
+      {
+        "day": 1,
+        "title": "tewt",
+        "icon": "✈️",
+        "description": "tewt"
+      },
+      {
+        "day": 2,
+        "title": "erwrew",
+        "icon": "✈️",
+        "description": "werwr"
+      }
+    ],
+    "id": "07a463d7-130d-4393-9483-18f694411e00",
+    "createdAt": "2026-04-20T07:52:11.534Z"
+  },
+  {
+    "destination": "Dubai",
+    "packageType": "Family",
+    "packageSubtype": "Economy",
+    "packageName": "Economy Dubai",
+    "duration": "3N 4D",
+    "itineraryTitle": "Economy Dubai Exploration",
+    "destinationHighlights": "• Zabeel Palace • Dubai Frame • Palm Jumeirah • Palm Atlantis • Future of Museum • Dubai Creek • Dubai Mall.",
+    "amenities": [
+      {
+        "name": "Meals",
+        "icon": "/assets/images/icons/itinerary/icon1.svg"
+      },
+      {
+        "name": "Hotel",
+        "icon": "/assets/images/icons/itinerary/icon2.svg"
+      },
+      {
+        "name": "Sightseeing",
+        "icon": "/assets/images/icons/itinerary/icon3.svg"
+      },
+      {
+        "name": "WiFi",
+        "icon": "/assets/images/icons/itinerary/icon4.svg"
+      },
+      {
+        "name": "Transport",
+        "icon": "/assets/images/icons/itinerary/icon5.svg"
+      },
+      {
+        "name": "Local Guide",
+        "icon": "/assets/images/icons/itinerary/icon6.svg"
+      },
+      {
+        "name": "Safe to Travel",
+        "icon": "/assets/images/icons/itinerary/icon7.svg"
+      }
+    ],
+    "basePrice": "50000",
+    "finalPrice": "80000",
+    "priceType": "per person on triple sharing",
+    "inclusions": "INCLUSIONS:\n\nTransfers:\nAirport on Private basis\n\nCab:\nAirport / hotel /Sightseeings / airport transfers on (SIC Basis)\n\nMeals:\nDaily Breakfast\nSightseeing:\n\nDhow Creek with Dinner\n\nDubai City Tour:-\nZabeel Palace, Dubai Frame, Palm Jumeirah, Palm Atlantis, Future Museum, Dubai Creek, Fountain show and Dubai Mall\n\nBurj Khalifa Non Prime Hrs (124th & 125th Floor ) with Tickets\n\nDesert Safari with BBQ Dinner (4 x 4 Vehicle) Standard\n\nOthers:\nToll Tax, Parking, and driver allowance.",
+    "exclusions": "EXCLUSIONS:\nEarly check-in & late checkout\nMeals: Lunch & Dinner\nBoating, Garden Entry Tickets.\nAnything not mentioned in the inclusions is excluded.\nTCS charges\nVisa Charges",
+    "aboutText": "Dubai: A Modern Marvel in the Heart of the Desert\nRising from the golden sands of the Arabian Peninsula, Dubai is a city where futuristic innovation meets rich heritage. Known for its iconic skyline, luxury lifestyle, and vibrant culture, Dubai has rapidly transformed into one of the world’s most sought-after travel destinations.\n\nArchitectural Wonders\nDubai’s skyline is a testament to human ambition and creativity. The Burj Khalifa, the tallest building in the world, offers breathtaking panoramic views.\n\nDesert Adventures\nBeyond the city’s glittering facade lies the serene expanse of the Arabian Desert.\n\nCultural Blend\nDubai’s soul lies in its unique blend of modernity and tradition.\n\nCulinary Excellence\nDubai is a haven for food lovers with Michelin-starred restaurants and authentic Emirati eateries.\n\nExperiences for Every Traveler\nFrom beaches to malls to skydiving — Dubai offers something for everyone.\n\nBest Time to Visit\nNovember to March is ideal for good weather and outdoor activities.",
+    "bucketListText": "Visit Burj Khalifa observation deck\nDesert safari with BBQ and shows\nExplore Dubai Mall & Aquarium",
+    "bookingPolicy": "Free cancellation up to 7 days before departure. Charges apply after that.\n",
+    "cancellationPolicy": "Free cancellation up to 7 days before departure. Charges apply after that.\n",
+    "termsConditions": "Free cancellation up to 7 days before departure. Charges apply after that.",
+    "metaTitle": "Free cancellation up to 7 days before departure. Charges apply after that.",
+    "metaDescription": "Free cancellation up to 7 days before departure. Charges apply after that.\n\n",
+    "metaKeywords": "dubai, uae",
+    "status": "Active",
+    "webBanner": {
+      "src": "/uploads/packages/fe543c2c-3cd7-481b-80fc-26467065b2e0/web-banner.png",
+      "alt": ""
+    },
+    "mobileBanner": {
+      "src": "/uploads/packages/fe543c2c-3cd7-481b-80fc-26467065b2e0/mobile-banner.png",
+      "alt": ""
+    },
+    "gallery": [
+      {
+        "src": "/uploads/packages/fe543c2c-3cd7-481b-80fc-26467065b2e0/gallery-0.png",
+        "alt": ""
+      },
+      {
+        "src": "/uploads/packages/fe543c2c-3cd7-481b-80fc-26467065b2e0/gallery-1.png",
+        "alt": ""
+      },
+      {
+        "src": "/uploads/packages/fe543c2c-3cd7-481b-80fc-26467065b2e0/gallery-2.png",
+        "alt": ""
+      },
+      {
+        "src": "/uploads/packages/fe543c2c-3cd7-481b-80fc-26467065b2e0/gallery-3.png",
+        "alt": ""
+      }
+    ],
+    "priceImage": {
+      "src": "/uploads/packages/fe543c2c-3cd7-481b-80fc-26467065b2e0/price-image.png",
+      "alt": "price image"
+    },
+    "advertisement": {
+      "headline": "Flat 20% Off",
+      "subtext": "on Your First Tour Package!",
+      "callbackType": "Call",
+      "image": {
+        "src": "/uploads/packages/fe543c2c-3cd7-481b-80fc-26467065b2e0/ad-image.webp",
+        "alt": ""
+      }
+    },
+    "aboutImages": [
+      {
+        "src": "/uploads/packages/fe543c2c-3cd7-481b-80fc-26467065b2e0/about-0.png",
+        "alt": ""
+      },
+      {
+        "src": "/uploads/packages/fe543c2c-3cd7-481b-80fc-26467065b2e0/about-1.png",
+        "alt": ""
+      }
+    ],
+    "bucketImages": [
+      {
+        "src": "/uploads/packages/fe543c2c-3cd7-481b-80fc-26467065b2e0/bucket-0.png",
+        "alt": ""
+      },
+      {
+        "src": "/uploads/packages/fe543c2c-3cd7-481b-80fc-26467065b2e0/bucket-1.png",
+        "alt": ""
+      }
+    ],
+    "days": [
+      {
+        "day": 1,
+        "title": "Arrival at Dubai & Creek Dhow Cruise ",
+        "icon": "/uploads/packages/fe543c2c-3cd7-481b-80fc-26467065b2e0/day-1-icon.svg",
+        "description": "\nArrival at Airport and Airport Pickup\n\nHotel Check-in and Rest\n\nVisit Dhow Cruise with Buffet Dinner\n\nHotel Return & Overnight stay"
+      },
+      {
+        "day": 2,
+        "title": "Half Day City Tour, Burj Khalifa  & Dubai Mall",
+        "icon": "/uploads/packages/fe543c2c-3cd7-481b-80fc-26467065b2e0/day-2-icon.svg",
+        "description": "Breakfast in the morning at Hotel\n\nExplore Dubai City Tour - Burj Al Arab Hotel, the Palm Islands, Dubai Creek and many more\n\nDrop at Dubai Mall for shopping and indoor activities\n\nEvening Visit at Burj Khalifa's observation deck on the 124th and 125th floors (Non- Prime hrs)\n\nHotel Return & Overnight stay"
+      },
+      {
+        "day": 3,
+        "title": "Desert Safari Experience with BBQ Dinner",
+        "icon": "/uploads/packages/fe543c2c-3cd7-481b-80fc-26467065b2e0/day-3-icon.svg",
+        "description": "Breakfast in the morning at Hotel\n\nGet - Set - Go for afternoon Desert Safari by 4*4 vechicle\n\nEnjoy evening Tanuara and fire Show followed by BBQ Dinner\n\nHotel Return & Overnight stay"
+      },
+      {
+        "day": 4,
+        "title": "Depart from Dubai",
+        "icon": "/uploads/packages/fe543c2c-3cd7-481b-80fc-26467065b2e0/day-4-icon.svg",
+        "description": "Morning after breakfast, you will be transferred to airport for your flight back home"
+      }
+    ],
+    "id": "fe543c2c-3cd7-481b-80fc-26467065b2e0",
+    "createdAt": "2026-04-20T10:37:56.514Z"
+  },
+  {
+    "destination": "Dubai",
+    "packageType": "Family",
+    "packageSubtype": "Deluxe",
+    "packageName": "Dubai Deluxe",
+    "duration": "4N 5D",
+    "itineraryTitle": "Deluxe Dubai Exploration",
+    "destinationHighlights": "• Zabeel Palace • Dubai Frame • Palm Jumeirah • Palm Atlantis • Future of Museum • Dubai Creek • Dubai Mall.",
+    "amenities": [
+      {
+        "name": "Meals",
+        "icon": "/assets/images/icons/itinerary/icon1.svg"
+      },
+      {
+        "name": "Hotel",
+        "icon": "/assets/images/icons/itinerary/icon2.svg"
+      },
+      {
+        "name": "Sightseeing",
+        "icon": "/assets/images/icons/itinerary/icon3.svg"
+      },
+      {
+        "name": "WiFi",
+        "icon": "/assets/images/icons/itinerary/icon4.svg"
+      },
+      {
+        "name": "Transport",
+        "icon": "/assets/images/icons/itinerary/icon5.svg"
+      },
+      {
+        "name": "Safe to Travel",
+        "icon": "/assets/images/icons/itinerary/icon7.svg"
+      },
+      {
+        "name": "Wifi",
+        "icon": "/uploads/amenities/wifi.svg"
+      }
+    ],
+    "basePrice": "75000",
+    "finalPrice": "95000",
+    "priceType": "per person on quad sharing",
+    "inclusions": "on Your First Tour Package!\n\n",
+    "exclusions": "on Your First Tour Package!\n\n",
+    "aboutText": "on Your First Tour Package!\n\n",
+    "bucketListText": "on Your First Tour Package!\n\n",
+    "bookingPolicy": "on Your First Tour Package!\n\n",
+    "cancellationPolicy": "on Your First Tour Package!\n\n",
+    "termsConditions": "on Your First Tour Package!\n\n",
+    "metaTitle": "on Your First Tour Package!",
+    "metaDescription": "on Your First Tour Package!\n\n",
+    "metaKeywords": "on Your First Tour Package!",
+    "status": "Active",
+    "webBanner": {
+      "src": "/uploads/packages/cb15f379-a483-4840-b641-661298210bf5/web-banner.png",
+      "alt": ""
+    },
+    "mobileBanner": {
+      "src": "/uploads/packages/cb15f379-a483-4840-b641-661298210bf5/mobile-banner.png",
+      "alt": ""
+    },
+    "gallery": [
+      {
+        "src": "/uploads/packages/cb15f379-a483-4840-b641-661298210bf5/gallery-0.png",
+        "alt": ""
+      },
+      {
+        "src": "/uploads/packages/cb15f379-a483-4840-b641-661298210bf5/gallery-1.png",
+        "alt": ""
+      },
+      {
+        "src": "/uploads/packages/cb15f379-a483-4840-b641-661298210bf5/gallery-2.png",
+        "alt": ""
+      },
+      {
+        "src": "/uploads/packages/cb15f379-a483-4840-b641-661298210bf5/gallery-3.png",
+        "alt": ""
+      }
+    ],
+    "priceImage": {
+      "src": "/uploads/packages/cb15f379-a483-4840-b641-661298210bf5/price-image.png",
+      "alt": ""
+    },
+    "advertisement": {
+      "headline": "Flat 10% Off",
+      "subtext": "on Your 2nd Tour Package!",
+      "callbackType": "Call",
+      "image": {
+        "src": "/uploads/packages/cb15f379-a483-4840-b641-661298210bf5/ad-image.webp",
+        "alt": ""
+      }
+    },
+    "aboutImages": [],
+    "bucketImages": [],
+    "days": [
+      {
+        "day": 1,
+        "title": "Arrival at Airport and Pickup",
+        "icon": "/uploads/packages/cb15f379-a483-4840-b641-661298210bf5/day-1-icon.svg",
+        "description": "Arrival at Airport and Pickup\n\nCheck-in at Hotel\n\nVisit Evening Dhow Cruise with Buffet Dinner\n\nHotel Return & Overnight stay"
+      },
+      {
+        "day": 2,
+        "title": "Hotel Return & Overnight stay",
+        "icon": "",
+        "description": "Arrival at Airport and Pickup\n\nCheck-in at Hotel\n\nVisit Evening Dhow Cruise with Buffet Dinner\n\nHotel Return & Overnight stay"
+      }
+    ],
+    "id": "cb15f379-a483-4840-b641-661298210bf5",
+    "createdAt": "2026-04-20T10:41:51.735Z"
+  },
+  {
+    "destination": "Dubai",
+    "packageType": "Family",
+    "packageSubtype": "Premium",
+    "packageName": "Dubai Family Premium",
+    "duration": "6N 7D",
+    "itineraryTitle": "Premium Dubai Luxury Tour",
+    "destinationHighlights": "• Zabeel Palace • Dubai Frame • Palm Jumeirah • Palm Atlantis • Future of Museum • Dubai Creek • Dubai Mall.\n",
+    "amenities": [
+      {
+        "name": "Meals",
+        "icon": "/assets/images/icons/itinerary/icon1.svg"
+      },
+      {
+        "name": "Hotel",
+        "icon": "/assets/images/icons/itinerary/icon2.svg"
+      },
+      {
+        "name": "Sightseeing",
+        "icon": "/assets/images/icons/itinerary/icon3.svg"
+      },
+      {
+        "name": "WiFi",
+        "icon": "/assets/images/icons/itinerary/icon4.svg"
+      },
+      {
+        "name": "Transport",
+        "icon": "/assets/images/icons/itinerary/icon5.svg"
+      },
+      {
+        "name": "Local Guide",
+        "icon": "/assets/images/icons/itinerary/icon6.svg"
+      },
+      {
+        "name": "Safe to Travel",
+        "icon": "/assets/images/icons/itinerary/icon7.svg"
+      },
+      {
+        "name": "Wifi",
+        "icon": "/uploads/amenities/wifi.svg"
+      }
+    ],
+    "basePrice": "120000",
+    "finalPrice": "150000",
+    "priceType": "per person on triple sharing",
+    "inclusions": "Dubai: A Modern Marvel in the Heart of the Desert\nRising from the golden sands of the Arabian Peninsula, Dubai is a city where futuristic innovation meets rich heritage. Known for its iconic skyline, luxury lifestyle, and vibrant culture, Dubai has rapidly transformed into one of the world’s most sought-after travel destinations.\n\nArchitectural Wonders\nDubai’s skyline is a testament to human ambition and creativity. The Burj Khalifa, the tallest building in the world, offers breathtaking panoramic views.\n\nDesert Adventures",
+    "exclusions": "Dubai: A Modern Marvel in the Heart of the Desert\nRising from the golden sands of the Arabian Peninsula, Dubai is a city where futuristic innovation meets rich heritage. Known for its iconic skyline, luxury lifestyle, and vibrant culture, Dubai has rapidly transformed into one of the world’s most sought-after travel destinations.\n\nArchitectural Wonders\nDubai’s skyline is a testament to human ambition and creativity. The Burj Khalifa, the tallest building in the world, offers breathtaking panoramic views.\n\nDesert Adventures",
+    "aboutText": "Dubai: A Modern Marvel in the Heart of the Desert\nRising from the golden sands of the Arabian Peninsula, Dubai is a city where futuristic innovation meets rich heritage. Known for its iconic skyline, luxury lifestyle, and vibrant culture, Dubai has rapidly transformed into one of the world’s most sought-after travel destinations.\n\nArchitectural Wonders\nDubai’s skyline is a testament to human ambition and creativity. The Burj Khalifa, the tallest building in the world, offers breathtaking panoramic views.\n\nDesert Adventures",
+    "bucketListText": "Dubai: A Modern Marvel in the Heart of the Desert\nRising from the golden sands of the Arabian Peninsula, Dubai is a city where futuristic innovation meets rich heritage. Known for its iconic skyline, luxury lifestyle, and vibrant culture, Dubai has rapidly transformed into one of the world’s most sought-after travel destinations.\n\nArchitectural Wonders\nDubai’s skyline is a testament to human ambition and creativity. The Burj Khalifa, the tallest building in the world, offers breathtaking panoramic views.\n\nDesert Adventures",
+    "bookingPolicy": "Dubai: A Modern Marvel in the Heart of the Desert\nRising from the golden sands of the Arabian Peninsula, Dubai is a city where futuristic innovation meets rich heritage. Known for its iconic skyline, luxury lifestyle, and vibrant culture, Dubai has rapidly transformed into one of the world’s most sought-after travel destinations.\n\nArchitectural Wonders\nDubai’s skyline is a testament to human ambition and creativity. The Burj Khalifa, the tallest building in the world, offers breathtaking panoramic views.\n\nDesert Adventures",
+    "cancellationPolicy": "Dubai: A Modern Marvel in the Heart of the Desert\nRising from the golden sands of the Arabian Peninsula, Dubai is a city where futuristic innovation meets rich heritage. Known for its iconic skyline, luxury lifestyle, and vibrant culture, Dubai has rapidly transformed into one of the world’s most sought-after travel destinations.\n\nArchitectural Wonders\nDubai’s skyline is a testament to human ambition and creativity. The Burj Khalifa, the tallest building in the world, offers breathtaking panoramic views.\n\nDesert Adventures",
+    "termsConditions": "Dubai: A Modern Marvel in the Heart of the Desert\nRising from the golden sands of the Arabian Peninsula, Dubai is a city where futuristic innovation meets rich heritage. Known for its iconic skyline, luxury lifestyle, and vibrant culture, Dubai has rapidly transformed into one of the world’s most sought-after travel destinations.\n\nArchitectural Wonders\nDubai’s skyline is a testament to human ambition and creativity. The Burj Khalifa, the tallest building in the world, offers breathtaking panoramic views.\n\nDesert Adventures",
+    "metaTitle": "rwrew",
+    "metaDescription": "rwerewrwr",
+    "metaKeywords": "werwr wrwr",
+    "status": "Active",
+    "webBanner": {
+      "src": "/uploads/packages/3fafce34-8f76-40cc-abde-3f24ffe1c9fe/web-banner.png",
+      "alt": ""
+    },
+    "mobileBanner": {
+      "src": "/uploads/packages/3fafce34-8f76-40cc-abde-3f24ffe1c9fe/mobile-banner.png",
+      "alt": ""
+    },
+    "gallery": [
+      {
+        "src": "/uploads/packages/3fafce34-8f76-40cc-abde-3f24ffe1c9fe/gallery-0.png",
+        "alt": ""
+      },
+      {
+        "src": "/uploads/packages/3fafce34-8f76-40cc-abde-3f24ffe1c9fe/gallery-1.png",
+        "alt": ""
+      },
+      {
+        "src": "/uploads/packages/3fafce34-8f76-40cc-abde-3f24ffe1c9fe/gallery-2.png",
+        "alt": ""
+      },
+      {
+        "src": "/uploads/packages/3fafce34-8f76-40cc-abde-3f24ffe1c9fe/gallery-3.webp",
+        "alt": ""
+      }
+    ],
+    "priceImage": {
+      "src": "/uploads/packages/3fafce34-8f76-40cc-abde-3f24ffe1c9fe/price-image.png",
+      "alt": ""
+    },
+    "advertisement": {
+      "headline": "Flat 50% Off",
+      "subtext": "on Your First Tour Package!",
+      "callbackType": "Call",
+      "image": {
+        "src": "/uploads/packages/3fafce34-8f76-40cc-abde-3f24ffe1c9fe/ad-image.webp",
+        "alt": ""
+      }
+    },
+    "aboutImages": [
+      {
+        "src": "/uploads/packages/3fafce34-8f76-40cc-abde-3f24ffe1c9fe/about-0.png",
+        "alt": ""
+      },
+      {
+        "src": "/uploads/packages/3fafce34-8f76-40cc-abde-3f24ffe1c9fe/about-1.webp",
+        "alt": ""
+      }
+    ],
+    "bucketImages": [
+      {
+        "src": "/uploads/packages/3fafce34-8f76-40cc-abde-3f24ffe1c9fe/bucket-0.png",
+        "alt": ""
+      },
+      {
+        "src": "/uploads/packages/3fafce34-8f76-40cc-abde-3f24ffe1c9fe/bucket-1.png",
+        "alt": ""
+      }
+    ],
+    "days": [
+      {
+        "day": 1,
+        "title": "Arrival at Airport and Pickup",
+        "icon": "",
+        "description": "Arrival at Airport and Pickup\n\nCheck-in at Hotel\n\nVisit Evening Dhow Cruise with Buffet Dinner\n\nHotel Return & Overnight stay"
+      },
+      {
+        "day": 2,
+        "title": "Arrival at Airport and Pickup",
+        "icon": "",
+        "description": "Arrival at Airport and Pickup\nArrival at Airport and Pickup\nArrival at Airport and Pickup\n"
+      }
+    ],
+    "id": "3fafce34-8f76-40cc-abde-3f24ffe1c9fe",
+    "createdAt": "2026-04-20T10:44:43.723Z"
+  }
+]

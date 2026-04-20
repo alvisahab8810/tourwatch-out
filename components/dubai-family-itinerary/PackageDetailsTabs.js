@@ -1,4 +1,3 @@
-// import React, { useState } from "react";
 import PromoSection1 from "../dubai-package/PromoSection1";
 import DubaiFamilyNotes from "../dubai-package/DubaiFamilyNotes";
 import WhyTourwatchout from "./WhyTourwatchout";
@@ -10,935 +9,272 @@ import NewFooter from "../footer/NewFooter";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
+const SUBTYPE_ORDER = ["Economy", "Deluxe", "Premium"];
 
-const TABS = [
-  {
-    id: "economy",
-    label: "Economy",
-    price: "₹50,000",
-    oldPrice: "₹80,000",
-    icon: "/assets/images/dubai/itinerary/star.svg"
-  },
-  {
-    id: "deluxe",
-    label: "Deluxe",
-    price: "₹75,000",
-    oldPrice: "₹95,000",
-    best: true,
-       icon: "/assets/images/dubai/itinerary/stars.svg"
+const TAB_ICONS = {
+  Economy: "/assets/images/dubai/itinerary/star.svg",
+  Deluxe:  "/assets/images/dubai/itinerary/stars.svg",
+  Premium: "/assets/images/dubai/itinerary/starss.svg",
+};
 
-  },
-  {
-    id: "premium",
-    label: "Premium",
-    price: "₹1,20,000",
-    oldPrice: "₹1,50,000",
-        icon: "/assets/images/dubai/itinerary/starss.svg"
+const AMENITY_ICONS = {
+  Meals:           "/assets/images/icons/itinerary/icon1.svg",
+  Hotel:           "/assets/images/icons/itinerary/icon2.svg",
+  Sightseeing:     "/assets/images/icons/itinerary/icon3.svg",
+  WiFi:            "/assets/images/icons/itinerary/icon4.svg",
+  Transport:       "/assets/images/icons/itinerary/icon5.svg",
+  "Local Guide":   "/assets/images/icons/itinerary/icon6.svg",
+  "Safe to Travel":"/assets/images/icons/itinerary/icon7.svg",
+  "DJ Night":      "/assets/images/icons/itinerary/icon8.svg",
+};
 
+function fmtPrice(val) {
+  const n = Number(val);
+  if (!n) return null;
+  return `₹${n.toLocaleString("en-IN")}`;
+}
+
+function PriceCard({ pkg, className }) {
+  const price    = fmtPrice(pkg?.finalPrice || pkg?.basePrice);
+  const imgSrc   = pkg?.priceImage?.src || "/assets/images/dubai/itinerary/it-banner.png";
+  const imgAlt   = pkg?.priceImage?.alt || "package banner";
+  const priceType = pkg?.priceType || "per person on twin sharing";
+
+  return (
+    <div className={`price-card ${className || ""}`}>
+      <div className="prices-row">
+        <div>
+          <div className="pc-top">
+            <div className="pc-from">Starting from</div>
+          </div>
+          <div className="pc-price">
+            <div className="pc-amount">{price || "—"}</div>
+            <div className="pc-note">{priceType}</div>
+          </div>
+        </div>
+        <div>
+          <img src={imgSrc} alt={imgAlt} />
+        </div>
+      </div>
+      <button className="pc-cta">Request A Callback</button>
+    </div>
+  );
+}
+
+function TabContent({ pkg, openDay, setOpenDay }) {
+  if (!pkg) {
+    return <p style={{ padding: "2rem" }}>No package data available.</p>;
   }
-];
 
+  const bannerSrc = pkg.webBanner?.src || "/assets/images/dubai/itinerary/banner.png";
+  const bannerAlt = pkg.webBanner?.alt || "Package banner";
+  const rawAmenities = Array.isArray(pkg.amenities) ? pkg.amenities : [];
+  const amenities = rawAmenities.map(a => typeof a === "string" ? { name: a, icon: AMENITY_ICONS[a] || null } : a);
+  const days      = Array.isArray(pkg.days)      ? pkg.days      : [];
+  const highlights = pkg.destinationHighlights   || "";
 
-export default function PackageDetailsTabs() {
-  // const [activeTab, setActiveTab] = useState("economy");
+  return (
+    <>
+      <div className="pdt-header">
+        <h1 className="pdt-title">{pkg.packageName || `${pkg.packageSubtype} Package`}</h1>
+        {pkg.duration && <div className="pdt-tag">{pkg.duration}</div>}
+      </div>
 
+      {highlights && (
+        <div className="location">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM12 11.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z" />
+          </svg>
+          <span>{highlights}</span>
+        </div>
+      )}
+
+      {/* Mobile price card */}
+      <PriceCard pkg={pkg} className="desktop-none" />
+
+      <div className="pdt-banner">
+        <img src={bannerSrc} alt={bannerAlt} />
+        <div className="pdt-banner-chips">
+          <span className="chip left">
+            <img src="/assets/images/icons/itinerary/flight.svg" /> Flight Excluded
+          </span>
+          <span className="chip right">
+            Rating: 4.2 <img src="/assets/images/icons/itinerary/stars.svg" />
+          </span>
+        </div>
+      </div>
+
+      {amenities.length > 0 && (
+        <div className="pdt-amenities">
+          {amenities.map(a => (
+            <div key={a.name} className="amenity">
+              {a.icon && <img src={a.icon} alt={a.name} />}
+              {a.name}
+            </div>
+          ))}
+        </div>
+      )}
+
+      <hr className="pdt-sep" />
+      <h3 className="pdt-section-title">Itinerary</h3>
+
+      <div className="pdt-itinerary">
+        {days.map((d, idx) => {
+          const dayNum = d.day || idx + 1;
+          const isOpen = openDay === dayNum;
+          return (
+            <div key={dayNum} className={`it-day ${isOpen ? "open" : ""}`}>
+              <button
+                className="it-day-header"
+                onClick={() => setOpenDay(isOpen ? null : dayNum)}
+              >
+                <div className="it-day-pill">Day {dayNum}</div>
+                <div className="it-day-title">{d.title}</div>
+                <div className="it-day-arrow">{isOpen ? "˄" : "˅"}</div>
+              </button>
+              {isOpen && (
+                <div className="it-day-body">
+                  {d.description
+                    ? d.description.split("\n").filter(Boolean).map((line, i) => (
+                        <p key={i}><span className="it-icon">▸</span> {line.replace(/^[•\-]\s*/, "")}</p>
+                      ))
+                    : null}
+                  {Array.isArray(d.activities) && d.activities.map((a, i) => (
+                    <p key={i}><span className="it-icon">▸</span> {a}</p>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </>
+  );
+}
+
+export default function PackageDetailsTabs({ packages = [] }) {
   const router = useRouter();
-const { tab } = router.query;
+  const { tab } = router.query;
 
-const [activeTab, setActiveTab] = useState("economy");
+  const sorted = [...packages].sort(
+    (a, b) => SUBTYPE_ORDER.indexOf(a.packageSubtype) - SUBTYPE_ORDER.indexOf(b.packageSubtype)
+  );
 
+  const firstId = sorted[0]?.packageSubtype?.toLowerCase() || "economy";
+  const [activeTab, setActiveTab] = useState(firstId);
+  const [openDay, setOpenDay]     = useState(1);
 
-useEffect(() => {
-  if (tab && ["economy", "deluxe", "premium"].includes(tab)) {
-    setActiveTab(tab);
-    setOpenDay(1);
+  useEffect(() => {
+    if (tab) {
+      const match = sorted.find(p => p.packageSubtype?.toLowerCase() === tab.toLowerCase());
+      if (match) {
+        setActiveTab(match.packageSubtype.toLowerCase());
+        setOpenDay(1);
+      }
+    }
+  }, [tab]);
+
+  const activePkg = sorted.find(p => p.packageSubtype?.toLowerCase() === activeTab) || sorted[0];
+
+  if (sorted.length === 0) {
+    return (
+      <div className="package-details-page">
+        <div className="container">
+          <p style={{ padding: "3rem", textAlign: "center" }}>No active packages available.</p>
+        </div>
+        <NewFooter />
+      </div>
+    );
   }
-}, [tab]);
-
-
-  const [openDay, setOpenDay] = useState(1);
-
-  const active = TABS.find((t) => t.id === activeTab);
 
   return (
     <div className="package-details-page">
       <div className="container">
-      <section className="package-details-tabs">
-        {/* ---------------- TAB BUTTONS ---------------- */}
-       <div className="pdt-tabs-row">
-          {TABS.map((t) => (
-            <button
-              key={t.id}
-              className={`pdt-tab ${activeTab === t.id ? "is-active" : ""}`}
-              onClick={() => {
-                setActiveTab(t.id);
-                setOpenDay(1);
-              }}
-            >
-              <img src={t.icon} alt={t.label} className="pdt-tab-icon" />
-              <span className="pdt-tab-label">{t.label}</span>
-
-              {t.best && <span className="pdt-best">BEST VALUE</span>}
-            </button>
-          ))}
-       </div>
-
-
-        <div className="pdt-content">
-          {/* ---------------- LEFT SIDE CONTENT ---------------- */}
-          {/* ---------------- LEFT SIDE CONTENT ---------------- */}
-          <div className="pdt-left">
-            {/* ===================== ECONOMY TAB ===================== */}
-            {activeTab === "economy" && (
-              <>
-                <div className="pdt-header">
-                  <h1 className="pdt-title">Economy Dubai Exploration</h1>
-                  <div className="pdt-tag">3N / 4D</div>
-                </div>
-
-                <div className="location">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="currentColor"
-                    stroke="none"
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                    focusable="false"
-                  >
-                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM12 11.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"></path>
-                  </svg>
-                  <span>
-                    • Zabeel Palace • Dubai Frame • Palm Jumeirah • Palm
-                    Atlantis • Future of Museum • Dubai Creek • Dubai Mall.
-                  </span>
-                </div>
-
-
-                   <div className="price-card desktop-none">
-              <div className="prices-row">
-                <div>
-                  <div className="pc-top">
-                <div className="pc-from">
-                  Starting from{" "}
-                  <span className="pc-old">{active.oldPrice}</span>
-                </div>
-              </div>
-
-              <div className="pc-price">
-                <div className="pc-amount">{active.price}</div>
-                <div className="pc-note">per person on twin sharing</div>
-              </div>
-                </div>
-
-                <div>
-                    <img src="/assets/images/dubai/itinerary/it-banner.png" alt="dubai image"></img>
-                </div>
-              </div>
-               <div className="price-card-cta">
-                 <a href="#" className="pc-cta1">*Cancellation Policy</a>
-
-              <button className="pc-cta">Request A Callback</button>
-               </div>
-
-            </div>
-
-
-                <div className="pdt-banner">
-                  <img
-                    src="/assets/images/dubai/itinerary/banner.png"
-                    alt="Economy Banner"
-                  />
-                  <div className="pdt-banner-chips">
-                    <span className="chip left">
-                      <img src="/assets/images/icons/itinerary/flight.svg" />{" "}
-                      Flight Excluded
-                    </span>
-                    <span className="chip right">
-                      Rating: 4.2{" "}
-                      <img src="/assets/images/icons/itinerary/stars.svg" />
-                    </span>
-                  </div>
-                </div>
-
-                <div className="pdt-amenities">
-                  <div className="amenity">
-                    <img src="/assets/images/icons/itinerary/icon1.svg" />
-                    Meals
-                  </div>
-                  <div className="amenity">
-                    <img src="/assets/images/icons/itinerary/icon2.svg" />
-                    Hotel
-                  </div>
-                  <div className="amenity">
-                    <img src="/assets/images/icons/itinerary/icon3.svg" />
-                    Sightseeing
-                  </div>
-                  <div className="amenity">
-                    <img src="/assets/images/icons/itinerary/icon4.svg" />
-                    WiFi
-                  </div>
-                  <div className="amenity">
-                    <img src="/assets/images/icons/itinerary/icon5.svg" />
-                    Transport
-                  </div>
-                  <div className="amenity">
-                    <img src="/assets/images/icons/itinerary/icon6.svg" />
-                    Local Guide
-                  </div>
-                  <div className="amenity">
-                    <img src="/assets/images/icons/itinerary/icon7.svg" />
-                    Safe to Travel
-                  </div>
-                </div>
-
-                <hr className="pdt-sep" />
-                <h3 className="pdt-section-title">Itinerary</h3>
-
-                {/* ---- ECONOMY ITINERARY (FULL) ---- */}
-                <div className="pdt-itinerary">
-                  {/* DAY 1 */}
-                  <div className={`it-day ${openDay === 1 ? "open" : ""}`}>
-                    <button
-                      className="it-day-header"
-                      onClick={() => setOpenDay(openDay === 1 ? null : 1)}
-                    >
-                      <div className="it-day-pill">Day 1</div>
-                      <div className="it-day-title">Arrival at Dubai & Creek Dhow Cruise </div>
-                      <div className="it-day-arrow">
-                        {openDay === 1 ? "˄" : "˅"}
-                      </div>
-                    </button>
-
-                    {openDay === 1 && (
-                      <div className="it-day-body">
-                        <ul>
-                          <li>
-                            <span className="it-icon">▸</span> Arrival  at Airport and Airport Pickup
-                          </li>
-                          <li>
-                            <span className="it-icon">▸</span> Hotel Check-in and Rest
-                          </li>
-                          <li>
-                            <span className="it-icon">▸</span> Visit Dhow Cruise with Buffet Dinner 
-                          
-                          </li>
-                          <li>
-                            <span className="it-icon">▸</span> Hotel Return & Overnight stay 
-                          </li>
-                        </ul>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* DAY 2 */}
-                  <div className={`it-day ${openDay === 2 ? "open" : ""}`}>
-                    <button
-                      className="it-day-header"
-                      onClick={() => setOpenDay(openDay === 2 ? null : 2)}
-                    >
-                      <div className="it-day-pill">Day 2</div>
-                      <div className="it-day-title">Half Day City Tour, Burj Khalifa  & Dubai Mall</div>
-                      <div className="it-day-arrow">
-                        {openDay === 2 ? "˄" : "˅"}
-                      </div>
-                    </button>
-
-                    {openDay === 2 && (
-                      <div className="it-day-body">
-                        <ul>
-                          <li>
-                            <span className="it-icon">▸</span> Breakfast in the morning at Hotel
-                          </li>
-                          <li>
-                            <span className="it-icon">▸</span> Explore Dubai City Tour - Burj Al Arab Hotel, the Palm Islands, Dubai Creek and many more
-                          </li>
-                          <li>
-                            <span className="it-icon">▸</span> Drop at Dubai Mall for shopping and indoor activities
-                          </li>
-
-                            <li>
-                            <span className="it-icon">▸</span> Evening Visit at Burj Khalifa's observation deck on the 124th and 125th floors (Non- Prime hrs)
-                          </li>
-
-                            <li>
-                            <span className="it-icon">▸</span> Hotel Return & Overnight stay 
-                          </li>
-                        </ul>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* DAY 3 */}
-                  <div className={`it-day ${openDay === 3 ? "open" : ""}`}>
-                    <button
-                      className="it-day-header"
-                      onClick={() => setOpenDay(openDay === 3 ? null : 3)}
-                    >
-                      <div className="it-day-pill">Day 3</div>
-                      <div className="it-day-title">Desert Safari Experience with BBQ Dinner</div>
-                      <div className="it-day-arrow">
-                        {openDay === 3 ? "˄" : "˅"}
-                      </div>
-                    </button>
-
-                    {openDay === 3 && (
-                      <div className="it-day-body">
-                        <ul>
-                          <li>
-                            <span className="it-icon">▸</span> Breakfast in the morning at Hotel
-                          </li>
-                          <li>
-                            <span className="it-icon">▸</span> Get - Set - Go for afternoon Desert Safari by 4*4 vechicle
-                          </li>
-                          <li>
-                            <span className="it-icon">▸</span> Enjoy evening Tanuara and fire Show followed by BBQ Dinner
-                            
-                          </li>
-
-                           <li>
-                            <span className="it-icon">▸</span> Hotel Return & Overnight stay 
-                            
-                          </li>
-                        </ul>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* DAY 4 */}
-                  <div className={`it-day ${openDay === 4 ? "open" : ""}`}>
-                    <button
-                      className="it-day-header"
-                      onClick={() => setOpenDay(openDay === 4 ? null : 4)}
-                    >
-                      <div className="it-day-pill">Day 4</div>
-                      <div className="it-day-title">Depart from Dubai</div>
-                      <div className="it-day-arrow">
-                        {openDay === 4 ? "˄" : "˅"}
-                      </div>
-                    </button>
-
-                    {openDay === 4 && (
-                      <div className="it-day-body">
-                        <ul>
-                          <li>
-                            <span className="it-icon">▸</span> Morning after breakfast,  you will be transferred to airport for your flight back home
-                          </li>
-                       
-                        </ul>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </>
-            )}
-
-            {/* ===================== DELUXE TAB ===================== */}
-            {activeTab === "deluxe" && (
-              <>
-                <div className="pdt-header">
-                  <h1 className="pdt-title">Deluxe Dubai Exploration</h1>
-                  <div className="pdt-tag">4N / 5D</div>
-                </div>
-
-                <div className="location">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="currentColor"
-                    stroke="none"
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                    focusable="false"
-                  >
-                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM12 11.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"></path>
-                  </svg>
-                  <span>
-                    • Zabeel Palace • Dubai Frame • Palm Jumeirah • Palm
-                    Atlantis • Future of Museum • Dubai Creek • Dubai Mall.
-                  </span>
-                </div>
-
-                <div className="pdt-banner">
-                  <img
-                    src="/assets/images/dubai/itinerary/banner.png"
-                    alt="Economy Banner"
-                  />
-                  <div className="pdt-banner-chips">
-                    <span className="chip left">
-                      <img src="/assets/images/icons/itinerary/flight.svg" />{" "}
-                      Flight Excluded
-                    </span>
-                    <span className="chip right">
-                      Rating: 4.2{" "}
-                      <img src="/assets/images/icons/itinerary/stars.svg" />
-                    </span>
-                  </div>
-                </div>
-
-                <div className="pdt-amenities">
-                  <div className="amenity">
-                    <img src="/assets/images/icons/itinerary/icon1.svg" />
-                    Meals
-                  </div>
-                  <div className="amenity">
-                    <img src="/assets/images/icons/itinerary/icon2.svg" />
-                    Hotel
-                  </div>
-                  <div className="amenity">
-                    <img src="/assets/images/icons/itinerary/icon3.svg" />
-                    Sightseeing
-                  </div>
-                  <div className="amenity">
-                    <img src="/assets/images/icons/itinerary/icon4.svg" />
-                    WiFi
-                  </div>
-                  <div className="amenity">
-                    <img src="/assets/images/icons/itinerary/icon5.svg" />
-                    Transport
-                  </div>
-                  <div className="amenity">
-                    <img src="/assets/images/icons/itinerary/icon6.svg" />
-                    Local Guide
-                  </div>
-                  <div className="amenity">
-                    <img src="/assets/images/icons/itinerary/icon7.svg" />
-                    Safe to Travel
-                  </div>
-
-
-                   
-
-                {/* ---- ECONOMY ITINERARY (FULL) ---- */}
-               
-                </div>
-
-
-
-                 <div className="pdt-itinerary">
-                      <hr className="pdt-sep" />
-                <h3 className="pdt-section-title">Itinerary</h3>
-                  {/* DAY 1 */}
-                  <div className={`it-day ${openDay === 1 ? "open" : ""}`}>
-                    <button
-                      className="it-day-header"
-                      onClick={() => setOpenDay(openDay === 1 ? null : 1)}
-                    >
-                      <div className="it-day-pill">Day 1</div>
-                      <div className="it-day-title">Arrival at Dubai & Creek Dhow Cruise </div>
-                      <div className="it-day-arrow">
-                        {openDay === 1 ? "˄" : "˅"}
-                      </div>
-                    </button>
-
-                    {openDay === 1 && (
-                      <div className="it-day-body">
-                        <ul>
-                          <li>
-                            <span className="it-icon">▸</span> Arrival  at Airport and Pickup
-                          </li>
-                          <li>
-                            <span className="it-icon">▸</span> Check-in at Hotel
-                          </li>
-                          <li>
-                            <span className="it-icon">▸</span> Visit Evening Dhow Cruise with Buffet Dinner 
-                          
-                          </li>
-                          <li>
-                            <span className="it-icon">▸</span> Hotel Return & Overnight stay 
-                          </li>
-                        </ul>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* DAY 2 */}
-                  <div className={`it-day ${openDay === 2 ? "open" : ""}`}>
-                    <button
-                      className="it-day-header"
-                      onClick={() => setOpenDay(openDay === 2 ? null : 2)}
-                    >
-                      <div className="it-day-pill">Day 2</div>
-                      <div className="it-day-title">Half Day City Tour, Burj Khalifa  & Dubai Mall</div>
-                      <div className="it-day-arrow">
-                        {openDay === 2 ? "˄" : "˅"}
-                      </div>
-                    </button>
-
-                    {openDay === 2 && (
-                      <div className="it-day-body">
-                        <ul>
-                          <li>
-                            <span className="it-icon">▸</span> Breakfast at Hotel
-                          </li>
-                          <li>
-                            <span className="it-icon">▸</span> Explore Dubai City Tour like Future Museum , The Palm Islands, Dubai Creek and many more
-                          </li>
-                          <li>
-                            <span className="it-icon">▸</span> Drop at Dubai Mall for shopping and indoor activities at own
-                          </li>
-
-                            <li>
-                            <span className="it-icon">▸</span> Evening Visit at Burj Khalifa's 124th and 125th floor
-                          </li>
-
-                          
-                            <li>
-                            <span className="it-icon">▸</span> Hotel Return & Overnight stay 
-                          </li>
-
-                        </ul>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* DAY 3 */}
-                  <div className={`it-day ${openDay === 3 ? "open" : ""}`}>
-                    <button
-                      className="it-day-header"
-                      onClick={() => setOpenDay(openDay === 3 ? null : 3)}
-                    >
-                      <div className="it-day-pill">Day 3</div>
-                      <div className="it-day-title">Desert Safari Experience with BBQ Dinner</div>
-                      <div className="it-day-arrow">
-                        {openDay === 3 ? "˄" : "˅"}
-                      </div>
-                    </button>
-
-                    {openDay === 3 && (
-                      <div className="it-day-body">
-                        <ul>
-                          <li>
-                            <span className="it-icon">▸</span> Breakfast  at Hotel
-                          </li>
-                          <li>
-                            <span className="it-icon">▸</span> Get - Set - Go for afternoon Desert Safari by 4*4 vechicle
-                          </li>
-                          <li>
-                            <span className="it-icon">▸</span> Enjoy evening Tanuara and fire Show followed by BBQ Dinner
-                            
-                          </li>
-
-                           <li>
-                            <span className="it-icon">▸</span> Hotel Return & Overnight stay  
-                            
-                          </li>
-                        </ul>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* DAY 4 */}
-                  <div className={`it-day ${openDay === 4 ? "open" : ""}`}>
-                    <button
-                      className="it-day-header"
-                      onClick={() => setOpenDay(openDay === 4 ? null : 4)}
-                    >
-                      <div className="it-day-pill">Day 4</div>
-                      <div className="it-day-title">Day at Leisure</div>
-                      <div className="it-day-arrow">
-                        {openDay === 4 ? "˄" : "˅"}
-                      </div>
-                    </button>
-
-                    {openDay === 4 && (
-                      <div className="it-day-body">
-                        <ul>
-                          <li>
-                            <span className="it-icon">▸</span> Breakfast at Hotel
-                          </li>
-
-                              <li>
-                            <span className="it-icon">▸</span> Leisure day free for shopping or optional activities on your own
-                          </li>
-                       
-                             <li>
-                            <span className="it-icon">▸</span> Overnight stay.
-                          </li>
-                        </ul>
-                      </div>
-                    )}
-
-
-
-                    
-                  </div>
-
-
-                    {/* DAY 5 */}
-                  <div className={`it-day ${openDay === 5 ? "open" : ""}`}>
-                    <button
-                      className="it-day-header"
-                      onClick={() => setOpenDay(openDay === 5 ? null : 5)}
-                    >
-                      <div className="it-day-pill">Day 5</div>
-                      <div className="it-day-title">Depart from Dubai</div>
-                      <div className="it-day-arrow">
-                        {openDay === 5 ? "˄" : "˅"}
-                      </div>
-                    </button>
-
-                 
-
-
-                     {openDay === 5 && (
-                      <div className="it-day-body">
-                        <ul>
-                          <li>
-                            <span className="it-icon">▸</span> Morning after breakfast,  you will be transferred to the airport for your flight back home
-                          </li>
-
-                          
-                        </ul>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </>
-            )}
-
-            {/* ===================== PREMIUM TAB ===================== */}
-            {activeTab === "premium" && (
-              <>
-                <div className="pdt-header">
-                  <h1 className="pdt-title">Premium Dubai Luxury Tour</h1>
-                  <div className="pdt-tag">4N / 5D</div>
-                </div>
-
-                  <div className="location">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="currentColor"
-                    stroke="none"
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                    focusable="false"
-                  >
-                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM12 11.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"></path>
-                  </svg>
-                  <span>
-                    • Zabeel Palace • Dubai Frame • Palm Jumeirah • Palm
-                    Atlantis • Future of Museum • Dubai Creek • Dubai Mall.
-                  </span>
-                </div>
-
-                <div className="pdt-banner">
-                  <img
-                    src="/assets/images/dubai/itinerary/banner.png"
-                    alt="Economy Banner"
-                  />
-                  <div className="pdt-banner-chips">
-                    <span className="chip left">
-                      <img src="/assets/images/icons/itinerary/flight.svg" />{" "}
-                      Flight Excluded
-                    </span>
-                    <span className="chip right">
-                      Rating: 4.2{" "}
-                      <img src="/assets/images/icons/itinerary/stars.svg" />
-                    </span>
-                  </div>
-                </div>
-
-                <div className="pdt-amenities">
-                  <div className="amenity">
-                    <img src="/assets/images/icons/itinerary/icon1.svg" />
-                    Meals
-                  </div>
-                  <div className="amenity">
-                    <img src="/assets/images/icons/itinerary/icon2.svg" />
-                    Hotel
-                  </div>
-                  <div className="amenity">
-                    <img src="/assets/images/icons/itinerary/icon3.svg" />
-                    Sightseeing
-                  </div>
-                  <div className="amenity">
-                    <img src="/assets/images/icons/itinerary/icon4.svg" />
-                    WiFi
-                  </div>
-                  <div className="amenity">
-                    <img src="/assets/images/icons/itinerary/icon5.svg" />
-                    Transport
-                  </div>
-                  <div className="amenity">
-                    <img src="/assets/images/icons/itinerary/icon6.svg" />
-                    Local Guide
-                  </div>
-                  <div className="amenity">
-                    <img src="/assets/images/icons/itinerary/icon7.svg" />
-                    Safe to Travel
-                  </div>
-
-
-                   
-
-                {/* ---- ECONOMY ITINERARY (FULL) ---- */}
-               
-                </div>
-
-
-
-                 <div className="pdt-itinerary">
-                      <hr className="pdt-sep" />
-                <h3 className="pdt-section-title">Itinerary</h3>
-                  {/* DAY 1 */}
-                  <div className={`it-day ${openDay === 1 ? "open" : ""}`}>
-                    <button
-                      className="it-day-header"
-                      onClick={() => setOpenDay(openDay === 1 ? null : 1)}
-                    >
-                      <div className="it-day-pill">Day 1</div>
-                      <div className="it-day-title">Arrival at Dubai & Creek Dhow Cruise  </div>
-                      <div className="it-day-arrow">
-                        {openDay === 1 ? "˄" : "˅"}
-                      </div>
-                    </button>
-
-                    {openDay === 1 && (
-                      <div className="it-day-body">
-                        <ul>
-                          <li>
-                            <span className="it-icon">▸</span> Arrival  at Airport and Pickup
-                          </li>
-                          <li>
-                            <span className="it-icon">▸</span> Check-in at Hotel
-                          </li>
-                          <li>
-                            <span className="it-icon">▸</span> Visit Evening Dhow Cruise with Buffet Dinner 
-                          
-                          </li>
-                          <li>
-                            <span className="it-icon">▸</span> Hotel Return & Overnight stay  
-                          </li>
-                        </ul>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* DAY 2 */}
-                  <div className={`it-day ${openDay === 2 ? "open" : ""}`}>
-                    <button
-                      className="it-day-header"
-                      onClick={() => setOpenDay(openDay === 2 ? null : 2)}
-                    >
-                      <div className="it-day-pill">Day 2</div>
-                      <div className="it-day-title">Half Day City Tour, Burj Khalifa  & Dubai Mall</div>
-                      <div className="it-day-arrow">
-                        {openDay === 2 ? "˄" : "˅"}
-                      </div>
-                    </button>
-
-                    {openDay === 2 && (
-                      <div className="it-day-body">
-                        <ul>
-                          <li>
-                            <span className="it-icon">▸</span> Breakfast at Hotel
-                          </li>
-                          <li>
-                            <span className="it-icon">▸</span> Explore Dubai City Tour like Future Museum , The Palm Islands, Dubai Creek and many more
-                          </li>
-                          <li>
-                            <span className="it-icon">▸</span> Drop at Dubai Mall for shopping and indoor activities at own
-                          </li>
-
-                            <li>
-                            <span className="it-icon">▸</span> Evening Visit at Burj Khalifa's 124th and 125th floor
-                          </li>
-
-                          
-                            <li>
-                            <span className="it-icon">▸</span> Hotel Return & Overnight stay 
-                          </li>
-
-                        </ul>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* DAY 3 */}
-                  <div className={`it-day ${openDay === 3 ? "open" : ""}`}>
-                    <button
-                      className="it-day-header"
-                      onClick={() => setOpenDay(openDay === 3 ? null : 3)}
-                    >
-                      <div className="it-day-pill">Day 3</div>
-                      <div className="it-day-title">Desert Safari Experience with BBQ Dinner</div>
-                      <div className="it-day-arrow">
-                        {openDay === 3 ? "˄" : "˅"}
-                      </div>
-                    </button>
-
-                    {openDay === 3 && (
-                      <div className="it-day-body">
-                        <ul>
-                          <li>
-                            <span className="it-icon">▸</span> Breakfast at Hotel
-                          </li>
-                          <li>
-                            <span className="it-icon">▸</span> Get - Set - Go for afternoon Desert Safari by 4*4 vechicle
-                          </li>
-                          <li>
-                            <span className="it-icon">▸</span> Enjoy evening Tanuara and fire Show followed by BBQ Dinner
-                            
-                          </li>
-
-                           <li>
-                            <span className="it-icon">▸</span> Hotel Return & Overnight stay 
-                            
-                          </li>
-                        </ul>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* DAY 4 */}
-                  <div className={`it-day ${openDay === 4 ? "open" : ""}`}>
-                    <button
-                      className="it-day-header"
-                      onClick={() => setOpenDay(openDay === 4 ? null : 4)}
-                    >
-                      <div className="it-day-pill">Day 4</div>
-                      <div className="it-day-title">Abu Dhabi and Ferrari World </div>
-                      <div className="it-day-arrow">
-                        {openDay === 4 ? "˄" : "˅"}
-                      </div>
-                    </button>
-
-                    {openDay === 4 && (
-                      <div className="it-day-body">
-                        <ul>
-                          <li>
-                            <span className="it-icon">▸</span> Breakfast at Hotel
-                          </li>
-
-                              <li>
-                            <span className="it-icon">▸</span> Excursion Abu Dhabi like Sheikh Zayed Grand Mosque, Emirates place soundings, Heritage Village and many more.
-                          </li>
-                       
-                             <li>
-                            <span className="it-icon">▸</span> Ferrari World 
-                          </li>
-
-                          
-                             <li>
-                            <span className="it-icon">▸</span> Overnight stay.
-                          </li>
-
-                          
-                        </ul>
-                      </div>
-                    )}
-
-
-
-                    
-                  </div>
-
-
-                    {/* DAY 5 */}
-                  <div className={`it-day ${openDay === 5 ? "open" : ""}`}>
-                    <button
-                      className="it-day-header"
-                      onClick={() => setOpenDay(openDay === 5 ? null : 5)}
-                    >
-                      <div className="it-day-pill">Day 5</div>
-                      <div className="it-day-title">Depart from Dubai</div>
-                      <div className="it-day-arrow">
-                        {openDay === 5 ? "˄" : "˅"}
-                      </div>
-                    </button>
-
-                 
-
-
-                     {openDay === 5 && (
-                      <div className="it-day-body">
-                        <ul>
-                          <li>
-                            <span className="it-icon">▸</span> After breakfast,  you will be transferred to the airport for your flight back home</li>
-
-                        </ul>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </>
-            )}
+        <section className="package-details-tabs">
+
+          {/* Tab buttons */}
+          <div className="pdt-tabs-row">
+            {sorted.map((pkg, idx) => {
+              const id    = pkg.packageSubtype?.toLowerCase();
+              const label = pkg.packageSubtype || "Package";
+              const icon  = TAB_ICONS[pkg.packageSubtype] || TAB_ICONS.Economy;
+              const best  = idx === 1; // Deluxe = best value
+              return (
+                <button
+                  key={pkg.id}
+                  className={`pdt-tab ${activeTab === id ? "is-active" : ""}`}
+                  onClick={() => { setActiveTab(id); setOpenDay(1); }}
+                >
+                  <img src={icon} alt={label} className="pdt-tab-icon" />
+                  <span className="pdt-tab-label">{label}</span>
+                  {best && <span className="pdt-best">BEST VALUE</span>}
+                </button>
+              );
+            })}
           </div>
 
-          {/* ------------------- RIGHT COLUMN ------------------- */}
-          <aside className="pdt-right">
-            <div className="price-card mobile-none">
-              <div className="prices-row">
-                <div>
-                  <div className="pc-top">
-                <div className="pc-from">
-                  Starting from{" "}
-                  <span className="pc-old">{active.oldPrice}</span>
-                </div>
-              </div>
-
-              <div className="pc-price">
-                <div className="pc-amount">{active.price}</div>
-                <div className="pc-note">per person on twin sharing</div>
-              </div>
-                </div>
-
-                <div>
-                    <img src="/assets/images/dubai/itinerary/it-banner.png" alt="dubai image"></img>
-                </div>
-              </div>
-
-              <button className="pc-cta">Request A Callback</button>
+          <div className="pdt-content">
+            <div className="pdt-left">
+              <TabContent pkg={activePkg} openDay={openDay} setOpenDay={setOpenDay} />
             </div>
 
-            <div className="enquiry-card  mobile-none">
-              <div className="enq-badge">
-                <span className="offer">Flat 20% </span>Off On Your First Tour
-                Package!
-              </div>
+            {/* Right sidebar */}
+            <aside className="pdt-right">
+              <PriceCard pkg={activePkg} className="mobile-none" />
 
-              <p className="query-form-heading">
-                Your Dream Destination Just One Click away
-              </p>
-              <form className="enq-form" onSubmit={(e) => e.preventDefault()}>
-                <input type="text" placeholder="Full Name" />
-                <input type="text" placeholder="Destination" />
-                <div className="enq-phone">
-                  <select>
-                    <option value="+91">+91</option>
-                  </select>
-                  <input type="tel" placeholder="0000 0000 00" />
+              <div className="enquiry-card mobile-none">
+                {activePkg.advertisement?.image?.src && (
+                  <img
+                    src={activePkg.advertisement.image.src}
+                    alt={activePkg.advertisement.image.alt || "offer"}
+                    className="enq-ad-img"
+                  />
+                )}
+                <div className="enq-badge">
+                  {activePkg.advertisement?.headline
+                    ? <span className="offer">{activePkg.advertisement.headline}</span>
+                    : <><span className="offer">Flat 20% </span>Off On Your First Tour Package!</>}
                 </div>
-                <input type="email" placeholder="Email" />
-                <button className="enq-submit">Request A Callback</button>
-              </form>
+                <p className="query-form-heading">
+                  {activePkg.advertisement?.subtext || "Your Dream Destination Just One Click away"}
+                </p>
+                <form className="enq-form" onSubmit={e => e.preventDefault()}>
+                  <input type="text" placeholder="Full Name" />
+                  <input type="text" placeholder="Destination" defaultValue={activePkg.destination || ""} />
+                  <div className="enq-phone">
+                    <select><option value="+91">+91</option></select>
+                    <input type="tel" placeholder="0000 0000 00" />
+                  </div>
+                  <input type="email" placeholder="Email" />
+                  <button className="enq-submit">Get a Callback</button>
+                </form>
+              </div>
+            </aside>
+          </div>
+
+          {/* Dynamic advertisement banner */}
+          {activePkg.advertisement?.image?.src ? (
+            <div className="pdt-promo-banner">
+              <img
+                src={activePkg.advertisement.image.src}
+                alt={activePkg.advertisement.image.alt || "advertisement"}
+              />
             </div>
-          </aside>
-        </div>
+          ) : (
+            <PromoSection1 />
+          )}
 
-      <PromoSection1/>
+          <DubaiFamilyNotes pkg={activePkg} />
+          <WhyTourwatchout />
+          <SimiliarPackage />
+          <BottomReviews />
+          <PromoSection1 />
+          <FAQs />
+          <Blogs />
 
-      <DubaiFamilyNotes activeTab={activeTab} />
-
-
-      <WhyTourwatchout/>
-
-      <SimiliarPackage/>
-
-      <BottomReviews/>
-
-      <PromoSection1/>
-
-      <FAQs/>
-
-      <Blogs/>
-
-
-      
-      </section>
+        </section>
+      </div>
+      <NewFooter />
     </div>
-
-      <NewFooter/>
-    </div>
-
   );
 }

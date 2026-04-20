@@ -1,0 +1,497 @@
+[
+  {
+    "id": "seed-1",
+    "type": "national",
+    "name": "Kashmir",
+    "title": "Kashmir",
+    "country": "India",
+    "state": "Jammu & Kashmir",
+    "slug": "kashmir",
+    "status": "Active",
+    "mainImage": {
+      "src": "/assets/images/n-destination/kashmir.webp",
+      "alt": "Kashmir"
+    },
+    "images": {
+      "Family": {
+        "Economy": {
+          "src": "/assets/images/n-destination/kashmir.webp",
+          "alt": "Kashmir Family Economy"
+        },
+        "Deluxe": {
+          "src": "/assets/images/n-destination/leh.webp",
+          "alt": "Kashmir Family Deluxe"
+        },
+        "Premium": {
+          "src": null,
+          "alt": ""
+        }
+      },
+      "Couple": {
+        "Economy": {
+          "src": null,
+          "alt": ""
+        },
+        "Deluxe": {
+          "src": null,
+          "alt": ""
+        },
+        "Premium": {
+          "src": null,
+          "alt": ""
+        }
+      }
+    },
+    "createdAt": "2026-04-01T00:00:00.000Z"
+  },
+  {
+    "id": "seed-2",
+    "type": "national",
+    "name": "Leh Ladakh",
+    "title": "Leh Ladakh",
+    "country": "India",
+    "state": "Ladakh",
+    "slug": "leh-laddakh",
+    "status": "Active",
+    "mainImage": {
+      "src": "/assets/images/n-destination/leh.webp",
+      "alt": "Leh Ladakh"
+    },
+    "images": {
+      "Family": {
+        "Economy": {
+          "src": "/assets/images/n-destination/leh.webp",
+          "alt": "Leh Family Economy"
+        },
+        "Deluxe": {
+          "src": "/assets/images/n-destination/kashmir.webp",
+          "alt": "Leh Family Deluxe"
+        },
+        "Premium": {
+          "src": null,
+          "alt": ""
+        }
+      },
+      "Couple": {
+        "Economy": {
+          "src": null,
+          "alt": ""
+        },
+        "Deluxe": {
+          "src": null,
+          "alt": ""
+        },
+        "Premium": {
+          "src": null,
+          "alt": ""
+        }
+      }
+    },
+    "createdAt": "2026-04-01T00:00:00.000Z"
+  },
+  {
+    "id": "seed-3",
+    "type": "national",
+    "name": "Manali",
+    "title": "Manali",
+    "country": "India",
+    "state": "Himachal Pradesh",
+    "slug": "manali",
+    "status": "Active",
+    "mainImage": {
+      "src": "/assets/images/n-destination/manali.webp",
+      "alt": "Manali"
+    },
+    "images": {
+      "Family": {
+        "Economy": {
+          "src": "/assets/images/n-destination/manali.webp",
+          "alt": "Manali Economy"
+        },
+        "Deluxe": {
+          "src": null,
+          "alt": ""
+        },
+        "Premium": {
+          "src": null,
+          "alt": ""
+        }
+      },
+      "Couple": {
+        "Economy": {
+          "src": null,
+          "alt": ""
+        },
+        "Deluxe": {
+          "src": null,
+          "alt": ""
+        },
+        "Premium": {
+          "src": null,
+          "alt": ""
+        }
+      }
+    },
+    "createdAt": "2026-04-01T00:00:00.000Z"
+  },
+  {
+    "id": "seed-4",
+    "type": "national",
+    "name": "Shimla",
+    "title": "Shimla",
+    "country": "India",
+    "state": "Himachal Pradesh",
+    "slug": "shimla",
+    "status": "Active",
+    "mainImage": {
+      "src": "/assets/images/n-destination/shimla.webp",
+      "alt": "Shimla"
+    },
+    "images": {
+      "Family": {
+        "Economy": {
+          "src": "/assets/images/n-destination/shimla.webp",
+          "alt": "Shimla Economy"
+        },
+        "Deluxe": {
+          "src": null,
+          "alt": ""
+        },
+        "Premium": {
+          "src": null,
+          "alt": ""
+        }
+      },
+      "Couple": {
+        "Economy": {
+          "src": null,
+          "alt": ""
+        },
+        "Deluxe": {
+          "src": null,
+          "alt": ""
+        },
+        "Premium": {
+          "src": null,
+          "alt": ""
+        }
+      }
+    },
+    "createdAt": "2026-04-01T00:00:00.000Z"
+  },
+  {
+    "id": "seed-5",
+    "type": "national",
+    "name": "Dharamshala",
+    "title": "Dharamshala",
+    "country": "India",
+    "state": "Himachal Pradesh",
+    "slug": "dharamshala",
+    "status": "Active",
+    "mainImage": {
+      "src": "/assets/images/n-destination/dharamshala.webp",
+      "alt": "Dharamshala"
+    },
+    "images": {
+      "Family": {
+        "Economy": {
+          "src": "/assets/images/n-destination/dharamshala.webp",
+          "alt": "Dharamshala Economy"
+        },
+        "Deluxe": {
+          "src": null,
+          "alt": ""
+        },
+        "Premium": {
+          "src": null,
+          "alt": ""
+        }
+      },
+      "Couple": {
+        "Economy": {
+          "src": null,
+          "alt": ""
+        },
+        "Deluxe": {
+          "src": null,
+          "alt": ""
+        },
+        "Premium": {
+          "src": null,
+          "alt": ""
+        }
+      }
+    },
+    "createdAt": "2026-04-01T00:00:00.000Z"
+  },
+  {
+    "id": "seed-6",
+    "type": "national",
+    "name": "Goa",
+    "title": "Goa",
+    "country": "India",
+    "state": "Goa",
+    "slug": "goa",
+    "status": "Active",
+    "mainImage": {
+      "src": "/assets/images/n-destination/img3.webp",
+      "alt": "Goa"
+    },
+    "images": {
+      "Family": {
+        "Economy": {
+          "src": "/assets/images/n-destination/img3.webp",
+          "alt": "Goa Economy"
+        },
+        "Deluxe": {
+          "src": null,
+          "alt": ""
+        },
+        "Premium": {
+          "src": null,
+          "alt": ""
+        }
+      },
+      "Couple": {
+        "Economy": {
+          "src": null,
+          "alt": ""
+        },
+        "Deluxe": {
+          "src": null,
+          "alt": ""
+        },
+        "Premium": {
+          "src": null,
+          "alt": ""
+        }
+      }
+    },
+    "createdAt": "2026-04-01T00:00:00.000Z"
+  },
+  {
+    "id": "seed-8",
+    "type": "international",
+    "name": "Bali",
+    "title": "Bali",
+    "country": "Indonesia",
+    "state": "",
+    "slug": "bali",
+    "status": "Active",
+    "mainImage": {
+      "src": "/assets/images/i-destination/bali.webp",
+      "alt": "Bali"
+    },
+    "images": {
+      "Family": {
+        "Economy": {
+          "src": "/assets/images/i-destination/bali.webp",
+          "alt": "Bali Economy"
+        },
+        "Deluxe": {
+          "src": null,
+          "alt": ""
+        },
+        "Premium": {
+          "src": null,
+          "alt": ""
+        }
+      },
+      "Couple": {
+        "Economy": {
+          "src": null,
+          "alt": ""
+        },
+        "Deluxe": {
+          "src": null,
+          "alt": ""
+        },
+        "Premium": {
+          "src": null,
+          "alt": ""
+        }
+      }
+    },
+    "createdAt": "2026-04-01T00:00:00.000Z"
+  },
+  {
+    "id": "seed-9",
+    "type": "international",
+    "name": "Singapore",
+    "title": "Singapore",
+    "country": "Singapore",
+    "state": "",
+    "slug": "singapore",
+    "status": "Active",
+    "mainImage": {
+      "src": "/assets/images/i-destination/singapore.webp",
+      "alt": "Singapore"
+    },
+    "images": {
+      "Family": {
+        "Economy": {
+          "src": "/assets/images/i-destination/singapore.webp",
+          "alt": "Singapore Economy"
+        },
+        "Deluxe": {
+          "src": null,
+          "alt": ""
+        },
+        "Premium": {
+          "src": null,
+          "alt": ""
+        }
+      },
+      "Couple": {
+        "Economy": {
+          "src": null,
+          "alt": ""
+        },
+        "Deluxe": {
+          "src": null,
+          "alt": ""
+        },
+        "Premium": {
+          "src": null,
+          "alt": ""
+        }
+      }
+    },
+    "createdAt": "2026-04-01T00:00:00.000Z"
+  },
+  {
+    "id": "seed-10",
+    "type": "international",
+    "name": "Thailand",
+    "title": "Thailand",
+    "country": "Thailand",
+    "state": "",
+    "slug": "thailand",
+    "status": "Active",
+    "mainImage": {
+      "src": "/assets/images/i-destination/thailand.webp",
+      "alt": "Thailand"
+    },
+    "images": {
+      "Family": {
+        "Economy": {
+          "src": "/assets/images/i-destination/thailand.webp",
+          "alt": "Thailand Economy"
+        },
+        "Deluxe": {
+          "src": null,
+          "alt": ""
+        },
+        "Premium": {
+          "src": null,
+          "alt": ""
+        }
+      },
+      "Couple": {
+        "Economy": {
+          "src": null,
+          "alt": ""
+        },
+        "Deluxe": {
+          "src": null,
+          "alt": ""
+        },
+        "Premium": {
+          "src": null,
+          "alt": ""
+        }
+      }
+    },
+    "createdAt": "2026-04-01T00:00:00.000Z"
+  },
+  {
+    "type": "national",
+    "name": "lucknow",
+    "country": "India",
+    "state": "Uttar Pradesh",
+    "title": "Lucknow City of nawab",
+    "slug": "lucknow",
+    "status": "Active",
+    "mainImage": {
+      "src": "/uploads/destinations/b5e86325-a84f-4a19-b91e-0a4b28ba9cec/main.webp",
+      "alt": "lucknow main image"
+    },
+    "images": {
+      "Family": {
+        "Economy": {
+          "src": "/uploads/destinations/b5e86325-a84f-4a19-b91e-0a4b28ba9cec/family-economy.png",
+          "alt": "economy img"
+        },
+        "Deluxe": {
+          "src": "/uploads/destinations/b5e86325-a84f-4a19-b91e-0a4b28ba9cec/family-deluxe.png",
+          "alt": "deluxe img"
+        },
+        "Premium": {
+          "src": "/uploads/destinations/b5e86325-a84f-4a19-b91e-0a4b28ba9cec/family-premium.png",
+          "alt": "premium img"
+        }
+      },
+      "Couple": {
+        "Economy": {
+          "src": "/uploads/destinations/b5e86325-a84f-4a19-b91e-0a4b28ba9cec/couple-economy.png",
+          "alt": "eco img"
+        },
+        "Deluxe": {
+          "src": "/uploads/destinations/b5e86325-a84f-4a19-b91e-0a4b28ba9cec/couple-deluxe.png",
+          "alt": "deluxe img"
+        },
+        "Premium": {
+          "src": "/uploads/destinations/b5e86325-a84f-4a19-b91e-0a4b28ba9cec/couple-premium.png",
+          "alt": "premium img"
+        }
+      }
+    },
+    "id": "b5e86325-a84f-4a19-b91e-0a4b28ba9cec",
+    "createdAt": "2026-04-20T07:43:36.795Z"
+  },
+  {
+    "type": "international",
+    "name": "Dubai",
+    "country": "UAE",
+    "state": "Dubai ",
+    "title": "dubai",
+    "slug": "dubai",
+    "status": "Active",
+    "mainImage": {
+      "src": "/uploads/destinations/4d63d9f1-8fec-4564-bf26-88941b23dc32/main.webp",
+      "alt": "dubai destination img"
+    },
+    "images": {
+      "Family": {
+        "Economy": {
+          "src": "/uploads/destinations/4d63d9f1-8fec-4564-bf26-88941b23dc32/family-economy.png",
+          "alt": "economy image"
+        },
+        "Deluxe": {
+          "src": "/uploads/destinations/4d63d9f1-8fec-4564-bf26-88941b23dc32/family-deluxe.png",
+          "alt": "deluxe image"
+        },
+        "Premium": {
+          "src": "/uploads/destinations/4d63d9f1-8fec-4564-bf26-88941b23dc32/family-premium.png",
+          "alt": "premium image"
+        }
+      },
+      "Couple": {
+        "Economy": {
+          "src": "/uploads/destinations/4d63d9f1-8fec-4564-bf26-88941b23dc32/couple-economy.png",
+          "alt": "economy image"
+        },
+        "Deluxe": {
+          "src": "/uploads/destinations/4d63d9f1-8fec-4564-bf26-88941b23dc32/couple-deluxe.png",
+          "alt": "deluxe image"
+        },
+        "Premium": {
+          "src": "/uploads/destinations/4d63d9f1-8fec-4564-bf26-88941b23dc32/couple-premium.png",
+          "alt": "premium image"
+        }
+      }
+    },
+    "id": "4d63d9f1-8fec-4564-bf26-88941b23dc32",
+    "createdAt": "2026-04-20T10:27:21.299Z"
+  }
+]

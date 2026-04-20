@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -e \"const fs=require\\('fs'\\); const data=JSON.parse\\(fs.readFileSync\\('d:/tourwatch-out/data/destinations.json','utf8'\\)\\); const pkgs=JSON.parse\\(fs.readFileSync\\('d:/tourwatch-out/data/packages.json','utf8'\\)\\); console.log\\('lucknow dest:', JSON.stringify\\(data.find\\(d=>d.slug==='lucknow'\\)?.status\\)\\); console.log\\('pkg:', JSON.stringify\\(pkgs.find\\(p=>p.id==='11ea5ae5-a187-4560-bd74-ce678cf2a129'\\)\\)\\)\")",
+      "Bash(node -e \"const fs=require\\('fs'\\); const d=JSON.parse\\(fs.readFileSync\\('d:/tourwatch-out/data/destinations.json','utf8'\\)\\).find\\(x=>x.slug==='lucknow'\\); console.log\\('name:', d.name, '| title:', d.title\\)\")",
+      "Bash(node -e ' *)",
+      "Bash(node -e \"const fs=require\\('fs'\\); console.log\\(fs.existsSync\\('d:/tourwatch-out/pages/destination/[slug]'\\) ? 'dir exists' : 'no dir'\\)\")",
+      "Bash(node -e \"const fs=require\\('fs'\\); const pkgs=JSON.parse\\(fs.readFileSync\\('d:/tourwatch-out/data/packages.json','utf8'\\)\\); const p=pkgs.find\\(x=>x.id==='a2cff7e4-5e4e-4956-9d89-6fa8a57f9312'\\); console.log\\('webBanner:', p?.webBanner\\); console.log\\('gallery:', JSON.stringify\\(p?.gallery\\)\\); console.log\\('destination:', p?.destination, '| type:', p?.packageType, '| subtype:', p?.packageSubtype\\)\")"
+    ]
+  }
+}
