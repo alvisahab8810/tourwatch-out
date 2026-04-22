@@ -399,7 +399,7 @@ export default function PackageDetailPage({ pkg: initialPkg, dest, siblings, her
           </div>
         </div>
 
-        <BottomReviews />
+        {/* <BottomReviews /> */}
         <FAQs />
         <Blogs />
         <Popup />

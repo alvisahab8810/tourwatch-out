@@ -34,10 +34,12 @@ export default function TopReviews() {
       <section className="reviews-section mobile-none">
         <div className="mini-container1">
           <div className="explore-row">
-            <h2 className="section-title">Reviews</h2>
-            {/* <Link href="#" className="explore-more-btn">
+            <h2 className="section-title">
+              {/* Reviews */}
+              </h2>
+            <Link href="https://share.google/suOm9tt4pxuE5iMSi" className="explore-more-btn">
             View all
-          </Link> */}
+          </Link>
           </div>
         </div>
 
@@ -46,16 +48,17 @@ export default function TopReviews() {
             {/* LEFT SUMMARY BOX — SAME */}
             <div className="reviews-summary">
               <div className="rating-display">
-                <img
+                {/* <img
                   src="/assets/images/hero/icons/reviews.svg"
                   alt="Rating stars"
                   className="rating-stars"
-                />
-                <div className="rating-number">4.9</div>
+                /> */}
+                <div className="rating-number">4.9 Star</div>
+                <img src="/assets/icons/google-customer-review-business 1.svg"></img>
                 {/* <div className="rating-text">675 Google Reviews</div> */}
-                <div className="rating-source">
+                {/* <div className="rating-source">
                   by trips from <span className="highlight">65+ countries</span>
-                </div>
+                </div> */}
               </div>
             </div>
 

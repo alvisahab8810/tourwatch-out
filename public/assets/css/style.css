@@ -13,6 +13,20 @@
 } */
 
 
+@font-face {
+  font-family: 'Erstoria';
+  src: url('../fonts/Erstoria-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'HandstaSignature';
+  src: url('../fonts/HandstaSignature.otf');
+  font-weight: normal;
+  font-style: normal;
+}
+
 
 /* @font-face {
   font-family: HelveticaNeue;
@@ -57,7 +71,7 @@ a {
 
 
 .top-bar {
-    position: absolute;
+    /* position: absolute; */
     width: 100%;
     left: 0;
     right: 0;
@@ -82,9 +96,11 @@ a {
 }
 
 .menus .nav-link{
-    color:white;
     padding: 25px 20px;
     font-size: 14px;
+
+       color: #111;
+    font-size: 16px;
 }
 
 .btn-primary{
@@ -3728,8 +3744,12 @@ ul.amenities-icons li{
   height: 24px;
 }
 
-.stripe-main-container{
-      background: #FFF5EF;
+.stripe-main-container {
+    background: #DCFAFF;
+    height: 95px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .stripe_items {
       display: flex;
@@ -3747,17 +3767,25 @@ ul.amenities-icons li{
       min-width: 180px;
       white-space: nowrap;
     }
-    .stripe_items .feature-text {
-      font-size: 16px;
-      color: #1C1C1B;
-      font-weight: 400;
-      margin: 0;
-    }
+   .stripe_items .feature-text {
+    font-size: 14px;
+    color: #34384C;
+    font-weight: 500;
+    margin: 0;
+    line-height: 25px;
+}
     .stripe_items .feature-icons {
-      width: 38px;
-      height: 38px;
+      width: 44px;
+      height: 44px;
       flex-shrink: 0;
     }
+
+    .feature-item h4 {
+    font-size: 19.2px;
+    line-height: 17.9px;
+    color: #34384C;
+    font-weight: 600;
+}
 
     .explore-row{
             display: flex;
@@ -4023,8 +4051,7 @@ section.blogs-list-section.ptb-80 {
   font-size: 30px;
 }
 @media (max-width: 768px) {
-  .dest-slide-img { height: 210px; }
-  .dest-slide-name { font-size: 17px; }
+  .dest-slide-img { height:442px; }
 }
 
 /* ================================================================
@@ -4213,9 +4240,281 @@ section.blogs-list-section.ptb-80 {
 
 
 
-@font-face {
+
+
+
+#home .top-bar{
+    position: unset;
+}
+
+#home .menus .nav-link {
+    color: #111;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+
+.header-updated{
+    position: sticky;
+    padding: 0px 50px;
+  top: 0;
+  z-index: 1000;
+  background: #fff;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+}
+
+  /* {── Scoped styles ──} */
+        /* ═══════════════════════════════════════════════
+           UNIQUE PARENT: .twc-hero
+        ═══════════════════════════════════════════════ */
+
+        .twc-hero {
+          position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          width: 100%;
+          min-height: 420px;
+          background: #ffffff;
+          padding-top: 60px;
+          padding-bottom:100px;
+          overflow: hidden;
+          /* border-bottom: 1px solid #f0f0f0; */
+        }
+
+        /* ── Image clusters ── */
+        .twc-cluster {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+          flex-shrink: 0;
+        }
+        .twc-cluster--left  { padding-left: 0; }
+        .twc-cluster--right { padding-right: 0; }
+
+        .twc-cluster__row {
+          display: flex;
+          gap: 12px;
+          align-items: center;
+        }
+
+        .twc-img-card {
+          position: relative;
+          border-radius: 16px;
+          overflow: hidden;
+          background: #f5f5f5;
+          flex-shrink: 0;
+          width: 140px;
+          height: 130px;
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .twc-img-card:hover {
+          transform: scale(1.04);
+          box-shadow: 0 8px 28px rgba(0,0,0,0.14);
+        }
+
+        /* Cards that bleed off the screen edge */
+        .twc-img-card--edge {
+          width: 60px;
+          border-radius: 16px 0 0 16px;
+          overflow: hidden;
+        }
+        .twc-img-card--edge-right {
+          border-radius: 0 16px 16px 0;
+        }
+
+        .twc-cluster__row:last-child .twc-img-card {
+          width: 120px;
+          height: 110px;
+        }
+        .twc-cluster__row:last-child .twc-img-card--edge {
+          width: 50px;
+        }
+
+        .twc-img {
+          object-fit: cover;
+        }
+
+        /* ── Centre ── */
+        .twc-center {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+          padding: 0 32px;
+          position: relative;
+          z-index: 1;
+        }
+
+        /* Watermark word "Think…ink" */
+        .twc-wordmark {
+          position: relative;
+          /* display: flex; */
+          align-items: baseline;
+          justify-content: center;
+          line-height: 1;
+          margin-bottom: -20px;
+          pointer-events: none;
+          user-select: none;
+        }
+        .twc-wordmark__bg {
+          font-size:206px;
+          font-weight: 800;
+          letter-spacing: -2px;
+          color: rgba(0,0,0,0.06);
   font-family: 'Erstoria';
-  src: url('../fonts/Erstoria-Regular.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
+         
+        }
+        .twc-wordmark__bg--bot {
+          position: absolute;
+          right: -8px;
+          bottom: 0;
+        }
+.twc-wordmark__script {
+    font-size: 198px;
+    font-weight: 400;
+    color: #F74C4D;
+    font-family: 'HandstaSignature';
+    margin: 0 4px;
+    line-height: 103.3px;
+    z-index: 1;
+    transform: translate(0px, -45px);
+    display: block;
+}
+
+    .twc-brand {
+    font-size: 80px;
+    font-weight: 800;
+    color: #F74C4D;
+    letter-spacing: -1px;
+    margin: 0 0 14px;
+    line-height: 36.2px;
+    font-family: 'Erstoria';
+}
+.twc-tagline {
+    font-size: 15.4px;
+    color: #111;
+    margin: 0 0 10px;
+    line-height: 23.1px;
+    font-family: inter;
+    margin-top: 40px;
+    font-weight: 400;
+}
+
+        .twc-offer {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 22.4px;
+    color: #1a1a1a;
+    margin: 0 0 28px;
+    margin-bottom: 20px;
+    letter-spacing: 0.5%;
+    margin-top: 10px;
+    font-family: Inter;
+}
+        .twc-offer__highlight {
+          color: #F74C4D;
+        }
+
+        /* CTA button */
+       .twc-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #F74C4D;
+    color: #fff;
+    border: none;
+    line-height: 24px;
+    border-radius: 50px;
+    padding: 16px 48px;
+    font-size: 22px;
+    font-weight: 600;
+    width: 346px;
+    cursor: pointer;
+    letter-spacing: 0.5%;
+    height: 64px;
+    transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 20px rgba(224, 62, 56, 0.35);
+}
+        .twc-cta:hover {
+          background: #c42f2a;
+          transform: translateY(-2px);
+          box-shadow: 0 8px 28px rgba(224, 62, 56, 0.45);
+        }
+        .twc-cta:active {
+          transform: translateY(0);
+          box-shadow: 0 4px 16px rgba(224, 62, 56, 0.3);
+        }
+
+        /* ═══════════════════════════════════════════════
+           RESPONSIVE
+        ═══════════════════════════════════════════════ */
+
+        /* Tablet (≤ 900 px) — hide edge bleed cards, shrink cluster */
+        @media (max-width: 900px) {
+          .twc-hero {
+            min-height: 360px;
+          }
+          .twc-img-card {
+            width: 100px;
+            height: 95px;
+          }
+          .twc-img-card--edge {
+            display: none;
+          }
+          .twc-cluster__row:last-child .twc-img-card {
+            width: 90px;
+            height: 85px;
+          }
+        }
+
+        /* Mobile (≤ 640 px) — stack vertically */
+        @media (max-width: 640px) {
+          .twc-hero {
+            flex-direction: column;
+            gap: 28px;
+            padding: 32px 16px;
+            min-height: unset;
+          }
+
+          .twc-cluster {
+            flex-direction: row;
+            width: 100%;
+            overflow-x: auto;
+            gap: 10px;
+            padding: 0 4px;
+          }
+          .twc-cluster__row {
+            flex-direction: column;
+            gap: 10px;
+            flex-shrink: 0;
+          }
+          .twc-img-card {
+            width: 100px;
+            height: 90px;
+          }
+          .twc-img-card--edge {
+            display: none;
+          }
+          .twc-cluster__row:last-child .twc-img-card {
+            width: 90px;
+            height: 80px;
+          }
+
+          .twc-center {
+            padding: 0 8px;
+          }
+
+         
+          
+        }
+
+        .horizontal-devider {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+    .horizontal-devider img {
+    width: 100%;
 }

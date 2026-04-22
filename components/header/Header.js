@@ -4,13 +4,13 @@ import React from "react";
 export default function Topbar() {
   return (
     <>
-      <div className="container p-relative">
+      <div className="header-updated p-relative">
         <header className="d-flex flex-wrap top-bar p-absolute ">
           <Link
             href="/"
             className="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none desk-logo"
           >
-            <img src="/assets/images/logo.svg" alt="Logo Image"  className="light-pages"/>
+            <img src="/assets/images/dark-logo.svg" alt="Logo Image"  className="light-pages"/>
             <img src="/assets/images/dark-logo.svg" alt="Logo Image"  className="dark-pages d-none"/>
 
 

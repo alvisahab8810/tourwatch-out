@@ -7,7 +7,7 @@ export default function BottomReviewsMobile() {
     <div>
          <section className="google-reviews desktop-none">
           <div className="mini-container1">
-            <h2 className="google-reviews-header">Reviews</h2>
+            <h2 className="google-reviews-header verified-reviews-heading">Verified Reviews <span>(675)</span></h2>
 
             <div className="reviews-overview">
               <div className="reviews-summary">

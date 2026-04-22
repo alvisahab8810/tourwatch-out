@@ -7,7 +7,7 @@ export default function BottomReviews() {
     <div>
          <section className="google-reviews mobile-none">
           <div className="mini-container1">
-            <h2 className="google-reviews-header">Reviews</h2>
+            <h2 className="google-reviews-header">Client Reviews</h2>
 
             <div className="reviews-overview">
               <div className="reviews-summary">
@@ -20,7 +20,8 @@ export default function BottomReviews() {
                   <div className="rating-number">4.9</div>
                   {/* <div className="rating-text">675 Google Reviews</div> */}
                   <div className="rating-source">
-                    by trips from <span className="highlight">65+ countries</span>
+                 675  Reviews 
+                 {/* <span className="highlight">65+ countries</span> */}
                   </div>
                 </div>
               </div>

@@ -6,7 +6,7 @@
     .hero {
       padding: 50px 15px 30px;
   
-    background-image: url(../images/hero/home-hero.png);
+    background-image: url(../images/hero/home-hero.webp);
     width: 100%;
     height: 100vh;
     background-position: bottom;
@@ -15,10 +15,39 @@
 
 }
 
+.twc-center {
+   flex:unset;
+    padding: 0 32px !important;
+
+}
+
+.twc-wordmark {
+    /* display: flex; */
+    margin-bottom: -56px;
+}
+
+.twc-wordmark__bg {
+    font-size: 101px;
+    color: #fff;
+    line-height: 101px;
+}
+
+.twc-brand {
+    font-size: 39.24px;
+    letter-spacing: -1px;
+    line-height: 17.7px;
+}
+
 .dubai-family-package .dubai-hero {
     background-image: url(../images/dubai/dubai-banner.png);
 }
 
+
+.twc-wordmark__script {
+    font-size: 97px;
+    line-height: 50px;
+    transform: translate(0px, -66px);
+}
 .hero-content {
     max-width: 100%;
     margin: 0 auto;
@@ -47,15 +76,19 @@
 }
 
 .hero-subtitle {
-    font-size: 14px;
-    line-height: 1px;
-    margin-bottom: 15px;
+    font-size: 12px;
+    line-height: 11.3px;
+    margin-bottom: 11px;
+    text-align: center;
+    margin-top: 25px;
 }
 
 .hero-title {
-    font-size: 24px;
-    line-height: 28px;
+    font-size: 14px;
+    line-height: 12px;
     margin-bottom: 24px;
+    text-align: center;
+    letter-spacing: 0.5%;
 }
 
     .cta-button {
@@ -63,15 +96,22 @@
         color: #ffffff;
         font-size: 14px;
         font-weight: 500;
-        width: 100%;
-        height: 50px;
-        line-height: 16px;
+        width: fit-content;
+        border-radius: 50px!important;
+        height: 43px;
+        line-height: 11.8px;
         /* padding: 15px 35px; */
         border-radius: 12px;
-        display: inline-block;
+        display: flex;
         margin-top: 16px;
+        justify-content: center;
+        align-items: center;
+        margin: auto;
+        margin-top: 0px;
 }
-
+.horizontal-devider {
+    margin-bottom: 10px;
+}
 .stat-content h3 {
     font-size: 20px;
     line-height: 20px;
@@ -104,7 +144,7 @@
         align-items: center;
         gap: 15px;
         color: #434E58;
-        background: #fdbb2130;
+               background: #fdbb2126;
         border-radius: 16px;
         height: auto;
         /* justify-content: space-between; */
@@ -138,7 +178,8 @@
     }
 
     .what-makes-us {
-    padding: 30px 0;
+    padding: 40px 0;
+    padding-bottom: 30px!important;
 }
 
 .section-subtitle {
@@ -156,7 +197,9 @@
     font-size: 20px;
     line-height: 44px;
     font-weight: bold;
-        color: #111527;
+    text-align: center;
+    color: #111527;
+    margin-bottom: 20px;
 }
 
   .features-grid {
@@ -210,7 +253,9 @@
 
 .benefits-grid > div {
     width: calc(50% - 10px);
-    margin-bottom: 15px;
+    margin-bottom: 9px;
+    flex-flow: row;
+    gap: 8px;
 }
 
 .benefit-text {
@@ -482,7 +527,8 @@
     border-right: 1px solid #EFF3FF;
     background: white;
     padding: 30px 20px;
-    border-radius: 5px;
+            box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+        border-radius: 10px;
 }
 .reviews-overview {
     margin-bottom: 30px;
@@ -578,8 +624,8 @@ section.google-reviews.desktop-none {
 }
 
 .benefit-icon img {
-    width: 27px;
-    height: 27px;
+    width: 44px;
+    height: 37px;
     padding: 2px;
 }
 
@@ -883,6 +929,43 @@ section.blogs-list-section.ptb-80 {
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.mobile-g-reviews{
+        margin-top: -30px!important;
+    background: #ffff;
+    border-radius: 25px 25px 0px 0px;
+    padding-top: 30px;
+}
+
+.benefit-item{
+    border:none;
+}
+
+.verified-reviews-heading span{
+    font-size: 14px;
+    color:#6B6E80;
+}
+
+
+.header-updated {
+    padding: 0px 0px;
+}
+
+
+.burger-menu img {
+    filter: brightness(0);
+    width: 25px;
+}
+
+.what-makes-us .section-title{
+    text-align: left!important;
+
+}
+
+.horizontal-devider img {
+    height: 2px;
+    margin-top: 10px;
 }
 }
 

@@ -39,7 +39,7 @@ export default function NationalDestination({ destinations = [] }) {
     <section className="national-dest">
       <div className="mini-container1">
         <div className="explore-row">
-          <h2 className="section-title">National Destinations</h2>
+          <h2 className="section-title">National</h2>
           <Link href="/family/national-destination" className="explore-more-btn">
             View all
           </Link>
@@ -50,7 +50,7 @@ export default function NationalDestination({ destinations = [] }) {
           spaceBetween={28}
           loop={active.length > 3}
           slidesPerView={3.4}
-          autoplay={{ delay: 2500, disableOnInteraction: false }}
+          // autoplay={{ delay: 2500, disableOnInteraction: false }}
           pagination={{ clickable: true, el: ".swiper-pagination" }}
           navigation={{ nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" }}
           breakpoints={{

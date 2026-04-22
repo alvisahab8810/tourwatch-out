@@ -38,7 +38,7 @@ export default function InterNational({ destinations = [] }) {
     <section className="international-dest national-dest">
       <div className="mini-container1">
         <div className="explore-row">
-          <h2 className="section-title">International Destinations</h2>
+          <h2 className="section-title">International</h2>
           <Link href="/family/international-destination" className="explore-more-btn">
             View all
           </Link>
