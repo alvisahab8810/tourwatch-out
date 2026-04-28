@@ -14,13 +14,21 @@ import Blogs from "../components/home/Blogs";
 import BottomReviews from "../components/home/BottomReviews";
 import Popup from "../components/corporate/Popup";
 import NewFooter from "../components/footer/NewFooter";
-import { readAll } from "../utils/packageStore";
 
 export async function getServerSideProps() {
-  const all = readAll();
-  const active = all.filter(p => p.destination === "Dubai" && p.status === "Active");
-  const familyPackages = active.filter(p => p.packageType === "Family");
-  const couplePackages = active.filter(p => p.packageType === "Couple");
+  const connectDB = require("../utils/mongodb").default;
+  const Package   = require("../models/Package").default;
+  await connectDB();
+
+  const raw = await Package.find({
+    destination: { $regex: /^dubai$/i },
+    status:      { $regex: /^active$/i },
+  }).lean();
+
+  const active = raw.map(p => ({ ...p, id: p._id }));
+  const familyPackages = active.filter(p => p.packageType?.toLowerCase() === "family");
+  const couplePackages = active.filter(p => p.packageType?.toLowerCase() === "couple");
+
   return {
     props: {
       familyPackages: JSON.parse(JSON.stringify(familyPackages)),

@@ -37,10 +37,13 @@ import BottomReviewsMobile from "../components/home/BottomReviewsMobile";
 
 export async function getServerSideProps() {
   const { readAll: readDests } = require("../utils/destStore");
-  const { readAll: readPkgs  } = require("../utils/packageStore");
+  const connectDB = require("../utils/mongodb").default;
+  const Package   = require("../models/Package").default;
 
-  const dests = readDests().filter(d => d.status === "Active");
-  const pkgs  = readPkgs().filter(p  => p.status === "Active");
+  await connectDB();
+  const dests   = readDests().filter(d => d.status === "Active");
+  const pkgsRaw = await Package.find({ status: { $regex: /^active$/i } }).lean();
+  const pkgs    = pkgsRaw.map(p => ({ ...p, id: p._id }));
 
   // Build min price map: destination name → lowest finalPrice
   const priceMap = {};
@@ -76,7 +79,7 @@ export default function IndexPage({ destinations = [] }) {
            <div class="stat-item">
             <img src="/assets/images/icons/home/review-mob.svg" alt="Google Reviews" />
             <div class="stat-content">
-              <h3>4.5 Google Reviews</h3>
+              <h3>4.9 Google Reviews</h3>
               <p>675 Google Reviews</p>
             </div>
           </div>

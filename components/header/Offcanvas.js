@@ -36,12 +36,12 @@ export default function Offcanvas() {
                   Home
                 </Link>
               </li>
-              <li className="nav-item">
+              {/* <li className="nav-item">
                 <Link href="/about" className="nav-link ">
                   {" "}
                   Our Story
                 </Link>
-              </li>
+              </li> */}
 
 
               <li className="nav-item">
@@ -50,38 +50,11 @@ export default function Offcanvas() {
                  Dubai
                 </Link>
               </li>
-              {/* <li className="nav-item mob-dropdown">
-              <div className="accordion" id="familyAccordion">
-                  <div className="accordion-item">
-                    <h2 className="accordion-header" id="headingOne">
-                      <button
-                        className="accordion-button"
-                        type="button"
-                        data-bs-toggle="collapse"
-                        data-bs-target="#collapseOne"
-                        aria-expanded="true"
-                        aria-controls="collapseOne"
-                      >
-                        Family
-                      </button>
-                    </h2>
-                    <div
-                      id="collapseOne"
-                      className="accordion-collapse collapse"
-                      aria-labelledby="headingOne"
-                      data-bs-parent="#familyAccordion"
-                    >
-                      <div className="accordion-body">
-                        <ul className="list-unstyled">
-                          <li><Link href="/family/national-destination">- National Destination</Link></li>
-                          <li><Link href="/family/international-destination">- International Destination</Link></li>
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-              </li> */}
+              <li className="nav-item">
+                <Link href="/family" className="nav-link">
+                  Family
+                </Link>
+              </li>
               {/* <li className="nav-item">
                 <Link href="/corporate" className="nav-link">
                   Corporate

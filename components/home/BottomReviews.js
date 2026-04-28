@@ -401,7 +401,7 @@ export default function BottomReviews() {
               className="load-more-button interactive"
               onClick={() => setShowMore(!showMore)}
             >
-              {showMore ? "Show Less Reviews" : "Load More reviews (18439+)"}
+              {showMore ? "Show Less Reviews" : "Load More reviews (2+)"}
             </button>
           </div>
         </section>

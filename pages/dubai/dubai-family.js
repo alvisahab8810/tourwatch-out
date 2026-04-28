@@ -7,16 +7,20 @@ import HeroMobile from '../../components/dubai-family-itinerary/HeroMobile'
 import Popup from '../../components/corporate/Popup'
 
 export async function getServerSideProps() {
-  const { readAll: readPkgs } = require("../../utils/packageStore");
+  const connectDB = require("../../utils/mongodb").default;
+  const Package   = require("../../models/Package").default;
+  await connectDB();
 
   const SUBTYPE_ORDER = ["Economy", "Deluxe", "Premium"];
 
-  const pkgs = readPkgs()
-    .filter(p =>
-      p.destination === "Dubai" &&
-      p.packageType === "Family" &&
-      p.status === "Active"
-    )
+  const raw = await Package.find({
+    destination:  { $regex: /^dubai$/i },
+    packageType:  { $regex: /^family$/i },
+    status:       { $regex: /^active$/i },
+  }).lean();
+
+  const pkgs = raw
+    .map(p => ({ ...p, id: p._id }))
     .sort((a, b) =>
       SUBTYPE_ORDER.indexOf(a.packageSubtype) - SUBTYPE_ORDER.indexOf(b.packageSubtype)
     );

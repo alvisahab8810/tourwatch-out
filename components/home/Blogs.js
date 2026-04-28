@@ -75,7 +75,7 @@ export default function Blogs() {
           </div>
 
           {/* BLOG 4 */}
-          {/* <div className="blog-card">
+          <div className="blog-card">
             <div
               className="blog-image"
               style={{
@@ -92,7 +92,7 @@ export default function Blogs() {
                 </div>
               </div>
             </div>
-          </div> */}
+          </div>
 
       
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Head from "next/head";
 import Topbar from "../../../../components/header/Header";
 import Offcanvas from "../../../../components/header/Offcanvas";
@@ -7,13 +7,10 @@ import NewFooter from "../../../../components/footer/NewFooter";
 import BottomReviews from "../../../../components/home/BottomReviews";
 import FAQs from "../../../../components/home/FAQs";
 import Blogs from "../../../../components/home/Blogs";
+import PromoSection from "../../../../components/home/PromoSection";
+import MostPopular from "../../../../components/home/MostPopular";
+import BenifitSection from "../../../../components/home/BenifitSection";
 
-const SUBTYPE_ORDER = ["Economy", "Deluxe", "Premium"];
-const TAB_ICONS = {
-  Economy: "/assets/images/dubai/itinerary/star.svg",
-  Deluxe:  "/assets/images/dubai/itinerary/stars.svg",
-  Premium: "/assets/images/dubai/itinerary/starss.svg",
-};
 const AMENITY_ICONS = {
   Meals:            "/assets/images/icons/itinerary/icon1.svg",
   Hotel:            "/assets/images/icons/itinerary/icon2.svg",
@@ -26,39 +23,27 @@ const AMENITY_ICONS = {
 };
 
 export async function getServerSideProps({ params }) {
-  const { readAll: readPkgs  } = require("../../../../utils/packageStore");
+  const connectDB = require("../../../../utils/mongodb").default;
+  const Package   = require("../../../../models/Package").default;
   const { readAll: readDests } = require("../../../../utils/destStore");
 
   const { slug, id } = params;
-
-  const allPkgs = readPkgs();
-  const pkg = allPkgs.find(p => p.id === id && p.status === "Active");
-  if (!pkg) return { notFound: true };
+  await connectDB();
 
   const dest = readDests().find(d => d.slug === slug && d.status === "Active");
   if (!dest) return { notFound: true };
 
-  const siblings = allPkgs
-    .filter(p =>
-      (p.destination === dest.name || p.destination === dest.title) &&
-      p.packageType === pkg.packageType &&
-      p.status === "Active"
-    )
-    .sort((a, b) =>
-      SUBTYPE_ORDER.indexOf(a.packageSubtype) - SUBTYPE_ORDER.indexOf(b.packageSubtype)
-    );
-
-  // Hero: use this package's own images if uploaded, else first sibling with images
-  const heroPkg = pkg.webBanner?.src
-    ? pkg
-    : (siblings.find(p => p.webBanner?.src) || siblings[0] || pkg);
+  const pkgDoc = await Package.findOne({
+    _id:    id,
+    status: { $regex: /^active$/i },
+  }).lean();
+  if (!pkgDoc) return { notFound: true };
+  const pkg = { ...pkgDoc, id: pkgDoc._id };
 
   return {
     props: {
-      pkg:      JSON.parse(JSON.stringify(pkg)),
-      dest:     JSON.parse(JSON.stringify(dest)),
-      siblings: JSON.parse(JSON.stringify(siblings)),
-      heroPkg:  JSON.parse(JSON.stringify(heroPkg)),
+      pkg:  JSON.parse(JSON.stringify(pkg)),
+      dest: JSON.parse(JSON.stringify(dest)),
     },
   };
 }
@@ -94,33 +79,29 @@ function AccordionSection({ title, defaultOpen = false, children }) {
   );
 }
 
-export default function PackageDetailPage({ pkg: initialPkg, dest, siblings, heroPkg }) {
-  const [activePkg, setActivePkg] = useState(initialPkg);
+export default function PackageDetailPage({ pkg, dest }) {
   const [openDay, setOpenDay] = useState(1);
 
-  useEffect(() => { setOpenDay(1); }, [activePkg?.id]);
-
   const destName = dest.name || dest.title;
-  const banner   = activePkg.webBanner?.src || dest.mainImage?.src || "/assets/images/dubai/itinerary/banner.png";
-  const price    = fmtPrice(activePkg.finalPrice || activePkg.basePrice);
-  const rawAmenities = Array.isArray(activePkg.amenities) ? activePkg.amenities : [];
+  const banner   = pkg.webBanner?.src || dest.mainImage?.src || "/assets/images/dubai/itinerary/banner.png";
+  const price    = fmtPrice(pkg.finalPrice || pkg.basePrice);
+  const rawAmenities = Array.isArray(pkg.amenities) ? pkg.amenities : [];
   const amenities = rawAmenities.map(a => typeof a === "string" ? { name: a, icon: AMENITY_ICONS[a] || null } : a);
-  const days      = Array.isArray(activePkg.days)      ? activePkg.days      : [];
+  const days      = Array.isArray(pkg.days) ? pkg.days : [];
 
-  // Hero is constant — uses the sibling that has the best images (computed server-side)
-  const heroBig     = heroPkg.webBanner?.src || dest.mainImage?.src || "/assets/images/dubai/itinerary/left.png";
-  const heroBigAlt  = heroPkg.webBanner?.alt || destName;
-  const heroGallery = (heroPkg.gallery || []);
+  const heroBig     = pkg.webBanner?.src || dest.mainImage?.src || "/assets/images/dubai/itinerary/left.png";
+  const heroBigAlt  = pkg.webBanner?.alt || destName;
+  const heroGallery = pkg.gallery || [];
 
   return (
     <>
       <Head>
-        <title>{activePkg.packageName || destName} — TourWatchOut</title>
-        <meta name="description" content={activePkg.metaDescription || `${destName} ${activePkg.packageSubtype} package`} />
+        <title>{pkg.packageName || destName} — TourWatchOut</title>
+        <meta name="description" content={pkg.metaDescription || `${destName} ${pkg.packageSubtype} package`} />
         <link rel="stylesheet" href="/assets/css/style.css" />
       </Head>
 
-      <div className="dubai-family-package">
+      <div className="dubai-family-package family-packages itinerary-page">
         <Topbar />
         <Offcanvas />
 
@@ -155,44 +136,20 @@ export default function PackageDetailPage({ pkg: initialPkg, dest, siblings, her
           <div className="container">
             <section className="package-details-tabs">
 
-              {/* Tab buttons (siblings) */}
-              {siblings.length > 1 && (
-                <div className="pdt-tabs-row">
-                  {siblings.map((sib, idx) => {
-                    const id    = sib.packageSubtype?.toLowerCase();
-                    const label = sib.packageSubtype;
-                    const icon  = TAB_ICONS[sib.packageSubtype] || TAB_ICONS.Economy;
-                    const best  = idx === 1;
-                    const isActive = activePkg.id === sib.id;
-                    return (
-                      <button
-                        key={sib.id}
-                        className={`pdt-tab ${isActive ? "is-active" : ""}`}
-                        onClick={() => setActivePkg(sib)}
-                      >
-                        <img src={icon} alt={label} className="pdt-tab-icon" />
-                        <span className="pdt-tab-label">{label}</span>
-                        {best && <span className="pdt-best">BEST VALUE</span>}
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
-
               <div className="pdt-content">
                 {/* Left content */}
                 <div className="pdt-left">
                   <div className="pdt-header">
-                    <h1 className="pdt-title">{activePkg.packageName || `${activePkg.packageSubtype} ${destName}`}</h1>
-                    {activePkg.duration && <div className="pdt-tag">{activePkg.duration}</div>}
+                    <h1 className="pdt-title">{pkg.packageName || `${pkg.packageSubtype} ${destName}`}</h1>
+                    {pkg.duration && <div className="pdt-tag">{pkg.duration}</div>}
                   </div>
 
-                  {activePkg.destinationHighlights && (
+                  {pkg.destinationHighlights && (
                     <div className="location">
                       <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                         <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM12 11.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z" />
                       </svg>
-                      <span>{activePkg.destinationHighlights}</span>
+                      <span>{pkg.destinationHighlights}</span>
                     </div>
                   )}
 
@@ -203,19 +160,20 @@ export default function PackageDetailPage({ pkg: initialPkg, dest, siblings, her
                         <div className="pc-top"><div className="pc-from">Starting from</div></div>
                         <div className="pc-price">
                           <div className="pc-amount">{price || "—"}</div>
-                          <div className="pc-note">{activePkg.priceType || "per person on twin sharing"}</div>
+                          <div className="pc-note">{pkg.priceType || "per person on twin sharing"}</div>
                         </div>
                       </div>
                       <div>
-                        <img src={activePkg.priceImage?.src || "/assets/images/dubai/itinerary/it-banner.png"} alt="package" />
+                        <img src={pkg.priceImage?.src || "/assets/images/dubai/itinerary/it-banner.png"} alt="package" />
                       </div>
                     </div>
-                    <button className="pc-cta">Request A Callback</button>
+                    <button className="pc-cta" data-bs-toggle="modal"
+                    data-bs-target="#exampleModalCenter">Request A Callback</button>
                   </div>
 
                   {/* Banner */}
                   <div className="pdt-banner">
-                    <img src={banner} alt={activePkg.webBanner?.alt || destName} />
+                    <img src={banner} alt={pkg.webBanner?.alt || destName} />
                     <div className="pdt-banner-chips">
                       <span className="chip left">
                         <img src="/assets/images/icons/itinerary/flight.svg" /> Flight Excluded
@@ -237,6 +195,7 @@ export default function PackageDetailPage({ pkg: initialPkg, dest, siblings, her
                       ))}
                     </div>
                   )}
+
 
                   {/* Itinerary */}
                   <hr className="pdt-sep" />
@@ -268,7 +227,12 @@ export default function PackageDetailPage({ pkg: initialPkg, dest, siblings, her
                       );
                     })}
                   </div>
+
+
+
                 </div>
+
+
 
                 {/* Right sidebar */}
                 <aside className="pdt-right">
@@ -278,31 +242,32 @@ export default function PackageDetailPage({ pkg: initialPkg, dest, siblings, her
                         <div className="pc-top"><div className="pc-from">Starting from</div></div>
                         <div className="pc-price">
                           <div className="pc-amount">{price || "—"}</div>
-                          <div className="pc-note">{activePkg.priceType || "per person on twin sharing"}</div>
+                          <div className="pc-note">{pkg.priceType || "per person on twin sharing"}</div>
                         </div>
                       </div>
                       <div>
-                        <img src={activePkg.priceImage?.src || "/assets/images/dubai/itinerary/it-banner.png"} alt="package" />
+                        <img src={pkg.priceImage?.src || "/assets/images/dubai/itinerary/it-banner.png"} alt="package" />
                       </div>
                     </div>
-                    <button className="pc-cta">Request A Callback</button>
+                    <button className="pc-cta" data-bs-toggle="modal"
+                    data-bs-target="#exampleModalCenter">Request A Callback</button>
                   </div>
 
                   <div className="enquiry-card mobile-none">
-                    {activePkg.advertisement?.image?.src && (
+                    {pkg.advertisement?.image?.src && (
                       <img
-                        src={activePkg.advertisement.image.src}
-                        alt={activePkg.advertisement.image.alt || "offer"}
+                        src={pkg.advertisement.image.src}
+                        alt={pkg.advertisement.image.alt || "offer"}
                         className="enq-ad-img"
                       />
                     )}
                     <div className="enq-badge">
-                      {activePkg.advertisement?.headline
-                        ? <span className="offer">{activePkg.advertisement.headline}</span>
+                      {pkg.advertisement?.headline
+                        ? <span className="offer">{pkg.advertisement.headline}</span>
                         : <><span className="offer">Flat 20% </span>Off On Your First Tour Package!</>}
                     </div>
                     <p className="query-form-heading">
-                      {activePkg.advertisement?.subtext || "Your Dream Destination Just One Click away"}
+                      {pkg.advertisement?.subtext || "Your Dream Destination Just One Click away"}
                     </p>
                     <form className="enq-form" onSubmit={e => e.preventDefault()}>
                       <input type="text" placeholder="Full Name" />
@@ -319,42 +284,48 @@ export default function PackageDetailPage({ pkg: initialPkg, dest, siblings, her
               </div>
 
               {/* Dynamic advertisement banner */}
-              {activePkg.advertisement?.image?.src && (
+              {/* {pkg.advertisement?.image?.src && (
                 <div className="pdt-promo-banner">
                   <img
-                    src={activePkg.advertisement.image.src}
-                    alt={activePkg.advertisement.image.alt || "advertisement"}
+                    src={pkg.advertisement.image.src}
+                    alt={pkg.advertisement.image.alt || "advertisement"}
                   />
                 </div>
-              )}
+              )} */}
+
+
+              <PromoSection/>
+
+
+         
 
               {/* Notes section */}
               <div className="dubai-family-notes">
                 <div className="dfn-accordion">
 
-                  {(activePkg.inclusions || activePkg.exclusions) && (
+                  {(pkg.inclusions || pkg.exclusions) && (
                     <AccordionSection title="Inclusions &amp; Exclusions">
-                      {activePkg.inclusions && (
-                        <><h4 className="dfn-sub-heading">Inclusions</h4><BulletText text={activePkg.inclusions} /></>
+                      {pkg.inclusions && (
+                        <><h4 className="dfn-sub-heading">Inclusions</h4><BulletText text={pkg.inclusions} /></>
                       )}
-                      {activePkg.exclusions && (
-                        <><h4 className="dfn-sub-heading">Exclusions</h4><BulletText text={activePkg.exclusions} /></>
+                      {pkg.exclusions && (
+                        <><h4 className="dfn-sub-heading">Exclusions</h4><BulletText text={pkg.exclusions} /></>
                       )}
                     </AccordionSection>
                   )}
 
-                  {activePkg.aboutText && (
+                  {pkg.aboutText && (
                     <AccordionSection title={`About ${destName}`} defaultOpen>
                       <div className="dfn-about">
                         <div className="dfn-content">
                           <div className="dfn-intro">
                             <img src="/assets/images/dubai/icons/info-circle.svg" alt="info" className="info-icon" />
-                            <p>{activePkg.aboutText}</p>
+                            <p>{pkg.aboutText}</p>
                           </div>
-                          {Array.isArray(activePkg.aboutImages) &&
-                            activePkg.aboutImages.filter(i => i?.src).length > 0 && (
+                          {Array.isArray(pkg.aboutImages) &&
+                            pkg.aboutImages.filter(i => i?.src).length > 0 && (
                               <div className="dfn-highlights">
-                                {activePkg.aboutImages.filter(i => i?.src).map((img, idx) => (
+                                {pkg.aboutImages.filter(i => i?.src).map((img, idx) => (
                                   <img key={idx} src={img.src} alt={img.alt || "about"} />
                                 ))}
                               </div>
@@ -364,13 +335,13 @@ export default function PackageDetailPage({ pkg: initialPkg, dest, siblings, her
                     </AccordionSection>
                   )}
 
-                  {activePkg.bucketListText && (
+                  {pkg.bucketListText && (
                     <AccordionSection title={`${destName} Bucket List`}>
-                      <BulletText text={activePkg.bucketListText} />
-                      {Array.isArray(activePkg.bucketImages) &&
-                        activePkg.bucketImages.filter(i => i?.src).length > 0 && (
+                      <BulletText text={pkg.bucketListText} />
+                      {Array.isArray(pkg.bucketImages) &&
+                        pkg.bucketImages.filter(i => i?.src).length > 0 && (
                           <div className="dfn-highlights">
-                            {activePkg.bucketImages.filter(i => i?.src).map((img, idx) => (
+                            {pkg.bucketImages.filter(i => i?.src).map((img, idx) => (
                               <img key={idx} src={img.src} alt={img.alt || "bucket"} />
                             ))}
                           </div>
@@ -378,16 +349,16 @@ export default function PackageDetailPage({ pkg: initialPkg, dest, siblings, her
                     </AccordionSection>
                   )}
 
-                  {(activePkg.cancellationPolicy || activePkg.bookingPolicy || activePkg.termsConditions) && (
+                  {(pkg.cancellationPolicy || pkg.bookingPolicy || pkg.termsConditions) && (
                     <AccordionSection title="Cancellation &amp; Policies">
-                      {activePkg.cancellationPolicy && (
-                        <><h4 className="dfn-sub-heading">Cancellation Policy</h4><BulletText text={activePkg.cancellationPolicy} /></>
+                      {pkg.cancellationPolicy && (
+                        <><h4 className="dfn-sub-heading">Cancellation Policy</h4><BulletText text={pkg.cancellationPolicy} /></>
                       )}
-                      {activePkg.bookingPolicy && (
-                        <><h4 className="dfn-sub-heading">Booking Policy</h4><p>{activePkg.bookingPolicy}</p></>
+                      {pkg.bookingPolicy && (
+                        <><h4 className="dfn-sub-heading">Booking Policy</h4><p>{pkg.bookingPolicy}</p></>
                       )}
-                      {activePkg.termsConditions && (
-                        <><h4 className="dfn-sub-heading">Terms &amp; Conditions</h4><p>{activePkg.termsConditions}</p></>
+                      {pkg.termsConditions && (
+                        <><h4 className="dfn-sub-heading">Terms &amp; Conditions</h4><p>{pkg.termsConditions}</p></>
                       )}
                     </AccordionSection>
                   )}
@@ -400,6 +371,14 @@ export default function PackageDetailPage({ pkg: initialPkg, dest, siblings, her
         </div>
 
         {/* <BottomReviews /> */}
+
+      <BenifitSection/>
+      <MostPopular/>
+        <BottomReviews />
+
+              <PromoSection/>
+
+
         <FAQs />
         <Blogs />
         <Popup />

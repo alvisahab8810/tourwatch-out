@@ -22,27 +22,24 @@ export default function Topbar() {
                 Home
               </Link>
             </li>
-            <li className="nav-item">
+
+              <li className="nav-item">
+              <Link href="/family" className="nav-link" aria-current="page">
+                Family
+              </Link>
+            </li>
+            {/* <li className="nav-item">
               <Link href="/about" className="nav-link" aria-current="page">
                 Our Story
               </Link>
-            </li>
+            </li> */}
 
               <li className="nav-item">
               <Link href="/dubai-package" className="nav-link" aria-current="page">
                 Dubai
               </Link>
             </li>
-            {/* <li className="nav-item dropdown-main">
-              <Link href="#" className="nav-link">
-                Family <img src="/assets/images/drop.png" alt="Down Arrow"></img>
-              </Link>
-
-              <ul className="dropdown-items">
-                  <li> <Link href="/family/national-destination">National</Link> </li>
-                  <li> <Link href="/family/international-destination">International</Link> </li>
-                </ul>
-            </li> */}
+          
             {/* <li className="nav-item">
               <Link href="/corporate" className="nav-link">
                 Corporate

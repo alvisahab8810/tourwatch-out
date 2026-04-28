@@ -68,7 +68,7 @@ export default function Stripe() {
           />
            <div>
 
-            <h4>4.5 Google Reviews</h4>
+            <h4>4.9 Google Reviews</h4>
             <p className="feature-text">675 Google Reviews</p>
 
           </div>

@@ -1,12 +1,15 @@
-import { readAll } from "../../utils/packageStore";
+import connectDB from "../../utils/mongodb";
+import Package from "../../models/Package";
 
-export default function handler(req, res) {
+export default async function handler(req, res) {
   if (req.method !== "GET") return res.status(405).end();
-  const all = readAll();
-  const active = all.filter(p => p.status === "Active");
+  await connectDB();
   const { destination, packageType } = req.query;
-  let result = active;
-  if (destination) result = result.filter(p => p.destination === destination);
-  if (packageType) result = result.filter(p => p.packageType === packageType);
-  res.status(200).json(result);
+
+  const filter = { status: "Active" };
+  if (destination)  filter.destination  = destination;
+  if (packageType)  filter.packageType  = packageType;
+
+  const packages = await Package.find(filter).lean();
+  return res.status(200).json(packages.map(p => ({ ...p, id: p._id })));
 }

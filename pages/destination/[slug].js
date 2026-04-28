@@ -19,17 +19,20 @@ const SUBTYPE_COLORS = {
 
 export async function getServerSideProps({ params }) {
   const { readAll: readDests } = require("../../utils/destStore");
-  const { readAll: readPkgs  } = require("../../utils/packageStore");
+  const connectDB = require("../../utils/mongodb").default;
+  const Package   = require("../../models/Package").default;
 
   const { slug } = params;
-  const all = readDests();
-  const dest = all.find(d => d.slug === slug && d.status === "Active");
-
+  const dest = readDests().find(d => d.slug === slug && d.status === "Active");
   if (!dest) return { notFound: true };
 
-  const pkgs = readPkgs().filter(
-    p => (p.destination === dest.name || p.destination === dest.title) && p.status === "Active"
-  );
+  await connectDB();
+  const raw = await Package.find({
+    destination: { $in: [dest.name, dest.title] },
+    status:      { $regex: /^active$/i },
+  }).lean();
+
+  const pkgs = raw.map(p => ({ ...p, id: p._id }));
 
   return {
     props: {

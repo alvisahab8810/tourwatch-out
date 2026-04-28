@@ -198,7 +198,7 @@ export default function PackageDetailsTabs({ packages = [] }) {
               const id    = pkg.packageSubtype?.toLowerCase();
               const label = pkg.packageSubtype || "Package";
               const icon  = TAB_ICONS[pkg.packageSubtype] || TAB_ICONS.Economy;
-              const best  = idx === 1; // Deluxe = best value
+              const best  = pkg.packageSubtype === "Deluxe";
               return (
                 <button
                   key={pkg.id}

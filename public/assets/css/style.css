@@ -3572,11 +3572,11 @@ li.nav-item.dropdown-main {
 
 
 .new-desti-card {
-      border-radius: 18px;
-      border: 1px solid #E7E7E7;
-      overflow: hidden;
-      font-feature-settings: 'tnum';
-      background: white;
+     border-radius: 10px;
+    overflow: hidden;
+    font-feature-settings: 'tnum';
+    box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.1);
+    background: white;
     }
     .new-desti-card > img {
       width: 100%;
@@ -3589,7 +3589,7 @@ li.nav-item.dropdown-main {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 15px;
+      margin-bottom: 10px;
     }
     .new-desti-card .header h2 {
       font-weight: 600;
@@ -3599,42 +3599,41 @@ li.nav-item.dropdown-main {
     }
     .new-desti-card .duration-badge {
       font-size: 12px;
-      font-weight: 500;
+      font-weight: 600;
       color: #293347;
       border: 1px solid #293347;
-      border-radius: 0.375rem;
+      border-radius:4px;
       padding: 0.125rem 0.5rem;
       user-select: none;
     }
     .new-desti-card .location {
       display: flex;
-      align-items: center;
       font-size: 0.75rem;
       color: #6b7280; /* gray-500 */
-      margin-bottom: 10px;
+      margin-bottom: 5px;
       gap: 0.25rem;
     }
-    .new-desti-card .location svg {
-      color: #ef4444; /* red-500 */
-      width: 14px;
-      height: 14px;
-      flex-shrink: 0;
-    }
+   .new-desti-card .location svg {
+    color: #ef4444;
+    width: 11px;
+    height: 19.54px;
+    flex-shrink: 0;
+}
     .new-desti-card .icons {
       display: flex;
       justify-content: space-between;
       max-width: 280px;
       color: #9ca3af; /* gray-400 */
       font-size: 1.25rem;
-      margin-bottom: 10px;
+      margin-bottom: 7px;
     }
     .new-desti-card .price-section {
       display: flex;
       justify-content: space-between;
       align-items: center;
       border-top: 1px solid #8B8B8B;
-      padding-top: 15px;
-      padding-bottom: 15px;
+      padding-top: 10px;
+      padding-bottom: 10px;
     }
     .new-desti-card .price-section .price-info p {
       margin: 0;
@@ -3648,10 +3647,14 @@ li.nav-item.dropdown-main {
     .new-desti-card .price-section .price-info .new-price {
       font-size: 30px;
       font-weight: bold;
-      font-family: inter;
+      font-family: dm-sans, sans-serif;
       color: #1C1C1C;
       line-height: 1;
       margin-bottom: 5px;
+    }
+
+    .package-button:hover{
+        color:#fff!important;
     }
     .new-desti-card .price-section .price-info .price-desc {
       font-size: 11px;
@@ -3677,6 +3680,7 @@ li.nav-item.dropdown-main {
 
     .new-desti-card .location span{
     color: #3E3E3E;
+    line-height: 16px;
     font-size: 12px;
 }
 
@@ -3717,7 +3721,7 @@ ul.amenities-icons li{
 
 .amenities-icons li img{
    /* height: 15px; */
-   width:auto;
+   width:18px;
 }
 
 
@@ -4232,7 +4236,13 @@ section.blogs-list-section.ptb-80 {
 .dfn-about .dfn-intro .info-icon{width:22px;height:22px;flex-shrink:0;margin-top:2px;}
 .dfn-about .dfn-intro p{margin:0;line-height:1.6;color:#374151;}
 .dfn-highlights{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px;}
-.dfn-highlights img{flex:1;min-width:200px;max-width:48%;border-radius:10px;object-fit:cover;height:200px;}
+.dfn-highlights img {
+    min-width: 50%;
+    max-width: 50%;
+    border-radius: 10px;
+    object-fit: cover;
+    height: 237px;
+}
 .dfn-bullet-list{margin:8px 0 0 0;padding-left:20px;line-height:1.8;color:#374151;}
 .dfn-sub-heading{font-size:14px;font-weight:600;color:#111827;margin:12px 0 4px;}
 
@@ -4517,4 +4527,26 @@ section.blogs-list-section.ptb-80 {
 
     .horizontal-devider img {
     width: 100%;
+}
+
+
+.packages-hero-area{
+
+    width:100%;
+    height: calc(100vh - 74px);
+    overflow:hidden;
+    line-height:0;  
+}
+
+
+
+.family-packages section.national-dest {
+    /* background: #F5F5F5; */
+    overflow: hidden;
+    padding-top: 50px;
+}
+
+.family-packages .faq-section {
+    padding-top: 100px;
+    padding-bottom: 40px;
 }
