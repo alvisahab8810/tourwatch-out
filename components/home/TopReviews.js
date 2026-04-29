@@ -10,13 +10,13 @@ export default function TopReviews() {
   // Read More Function
   const ReviewText = ({ text }) => {
     const [expanded, setExpanded] = useState(false);
-    const shortText = text.substring(0, 110);
+    const shortText = text.substring(0, 170);
 
     return (
       <p className="review-text">
-        {expanded ? text : shortText + (text.length > 110 ? "..." : "")}
+        {expanded ? text : shortText + (text.length > 170 ? "..." : "")}
 
-        {text.length > 110 && (
+        {text.length > 170 && (
           <span
             className="read-more"
             onClick={() => setExpanded(!expanded)}
@@ -53,9 +53,9 @@ export default function TopReviews() {
                   alt="Rating stars"
                   className="rating-stars"
                 /> */}
-                <div className="rating-number">4.9 Star</div>
+                {/* <div className="rating-number">4.9 Star</div> */}
                 <img src="/assets/icons/google.png"></img>
-                <div className="rating-text">675 Google Reviews</div>
+                <div className="rating-text">4.9 Star</div>
                 {/* <div className="rating-source">
                   by trips from <span className="highlight">65+ countries</span>
                 </div> */}
