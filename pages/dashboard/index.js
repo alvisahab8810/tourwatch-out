@@ -41,12 +41,10 @@ const CONVERSION_COLORS = ["#22c55e", "#eab308", "#ef4444"];
 const REVENUE_COLORS    = ["#2563eb", "#818cf8", "#a78bfa"];
 
 
-const STATS = [
-  { title: "Total Destinations", value: 30,  subNum: 28,  subLabel: "Active",    color: "bk-clr-green" },
-  { title: "Total Packages",     value: 105, subNum: 100, subLabel: "Active",    color: "bk-clr-green" },
-  { title: "Blogs",              value: 145, subNum: 120, subLabel: "Active",    color: "bk-clr-green" },
-  { title: "FAQ's",              value: 56,  subNum: 10,  subLabel: "New Added", color: "bk-clr-gray"  },
-  { title: "Leads",              value: 150, subNum: 18,  subLabel: "Pending",   color: "bk-clr-red"   },
+const STATIC_STATS = [
+  { title: "Blogs",  value: 0, subNum: 0, subLabel: "Active",    color: "bk-clr-green" },
+  { title: "FAQ's",  value: 0,  subNum: 0,  subLabel: "New Added", color: "bk-clr-gray"  },
+  { title: "Leads",  value: 0, subNum: 0,  subLabel: "Pending",   color: "bk-clr-red"   },
 ];
 
 /* ─── Reusable bar chart ─── */
@@ -128,6 +126,8 @@ export default function Dashboard() {
   const router = useRouter();
   const [ready, setReady] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [destStat, setDestStat] = useState({ total: 0, active: 0 });
+  const [pkgStat,  setPkgStat]  = useState({ total: 0, active: 0 });
 
   useEffect(() => {
     if (!isAuthenticated()) {
@@ -135,6 +135,16 @@ export default function Dashboard() {
       return;
     }
     setReady(true);
+    // Fetch real counts for destinations and packages
+    Promise.all([
+      fetch("/api/dashboard/destinations").then(r => r.json()),
+      fetch("/api/dashboard/packages").then(r => r.json()),
+    ]).then(([dests, pkgs]) => {
+      const d = Array.isArray(dests) ? dests : [];
+      const p = Array.isArray(pkgs)  ? pkgs  : [];
+      setDestStat({ total: d.length, active: d.filter(x => x.status === "Active").length });
+      setPkgStat ({ total: p.length, active: p.filter(x => x.status === "Active").length });
+    }).catch(() => {});
   }, []);
 
   if (!ready) return null;
@@ -187,7 +197,32 @@ export default function Dashboard() {
           <div className="bk-content">
             {/* Stats */}
             <div className="bk-stats-grid">
-              {STATS.map((s) => (
+              {/* Dynamic: Total Destinations */}
+              <div className="bk-stat-card">
+                <MdCallMade className="bk-stat-arrow-icon" size={17} />
+                <div className="bk-stat-title">Total Destinations</div>
+                <div className="bk-stat-row">
+                  <div className="bk-stat-number">{destStat.total}</div>
+                  <div className="bk-stat-sub">
+                    <div className="bk-stat-sub-num bk-clr-green">{destStat.active}</div>
+                    <div className="bk-stat-sub-label">Active</div>
+                  </div>
+                </div>
+              </div>
+              {/* Dynamic: Total Packages */}
+              <div className="bk-stat-card">
+                <MdCallMade className="bk-stat-arrow-icon" size={17} />
+                <div className="bk-stat-title">Total Packages</div>
+                <div className="bk-stat-row">
+                  <div className="bk-stat-number">{pkgStat.total}</div>
+                  <div className="bk-stat-sub">
+                    <div className="bk-stat-sub-num bk-clr-green">{pkgStat.active}</div>
+                    <div className="bk-stat-sub-label">Active</div>
+                  </div>
+                </div>
+              </div>
+              {/* Static: remaining stats */}
+              {STATIC_STATS.map((s) => (
                 <div key={s.title} className="bk-stat-card">
                   <MdCallMade className="bk-stat-arrow-icon" size={17} />
                   <div className="bk-stat-title">{s.title}</div>

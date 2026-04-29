@@ -19,8 +19,8 @@ const CRM = [
   { label: "Follow Up",  Icon: MdAutorenew,          href: "#" },
   { label: "Reminder",   Icon: MdNotificationsNone,  href: "#" },
   { label: "Vendors",    Icon: MdStore,              href: "#" },
-  { label: "Voucher",    Icon: MdConfirmationNumber, href: "/dashboard/create-voucher" },
-  { label: "Invoice",    Icon: MdReceipt,            href: "/dashboard/create-invoice" },
+  { label: "Voucher",    Icon: MdConfirmationNumber, href: "/dashboard/vouchers" },
+  { label: "Invoice",    Icon: MdReceipt,            href: "/dashboard/invoices" },
 ];
 
 export default function Sidebar({ active, isOpen, onClose }) {

@@ -31,9 +31,28 @@ export default function Destinations() {
   async function fetchAll() {
     setLoading(true);
     try {
-      const r = await fetch("/api/dashboard/destinations");
-      const data = await r.json();
-      setDests(Array.isArray(data) ? data : []);
+      const [destRes, pkgRes] = await Promise.all([
+        fetch("/api/dashboard/destinations"),
+        fetch("/api/dashboard/packages"),
+      ]);
+      const dests = await destRes.json();
+      const pkgs  = await pkgRes.json();
+
+      const destList = Array.isArray(dests) ? dests : [];
+      const pkgList  = Array.isArray(pkgs)  ? pkgs  : [];
+
+      // Compute package counts per destination (matched by name)
+      const enriched = destList.map((d) => {
+        const name = (d.title || d.name || "").toLowerCase();
+        const matched = pkgList.filter((p) => (p.destination || "").toLowerCase() === name);
+        return {
+          ...d,
+          totalPackages:  matched.length,
+          activePackages: matched.filter((p) => p.status === "Active").length,
+        };
+      });
+
+      setDests(enriched);
     } catch (e) {
       console.error(e);
     } finally {
@@ -131,7 +150,7 @@ export default function Destinations() {
                   <thead>
                     <tr>
                       <th>Package Name</th>
-                      <th>Duration</th>
+                      {/* <th>Duration</th> */}
                       <th>Total Packages</th>
                       <th>Active Packages</th>
                       <th>Status</th>
@@ -140,9 +159,9 @@ export default function Destinations() {
                   </thead>
                   <tbody>
                     {loading ? (
-                      <tr><td colSpan={6} className="bk-table-empty">Loading…</td></tr>
+                      <tr><td colSpan={5} className="bk-table-empty">Loading…</td></tr>
                     ) : rows.length === 0 ? (
-                      <tr><td colSpan={6} className="bk-table-empty">No destinations found. Click "Add New Destination" to create one.</td></tr>
+                      <tr><td colSpan={5} className="bk-table-empty">No destinations found. Click "Add New Destination" to create one.</td></tr>
                     ) : rows.map(d => (
                       <tr key={d.id}>
                         <td>
@@ -166,7 +185,7 @@ export default function Destinations() {
                             </div>
                           </div>
                         </td>
-                        <td style={{ color: "#6b7280", fontSize: 13 }}>{d.duration || "—"}</td>
+                        {/* <td style={{ color: "#6b7280", fontSize: 13 }}>{d.duration || "—"}</td> */}
                         <td className="bk-td-num">{d.totalPackages || 0}</td>
                         <td className="bk-td-num bk-clr-green">{d.activePackages || 0}</td>
                         <td>

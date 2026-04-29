@@ -49,14 +49,14 @@ export default function NationalDestination({ destinations = [] }) {
         <Swiper
           spaceBetween={28}
           loop={active.length > 3}
-          slidesPerView={3.4}
+          slidesPerView={3.7}
           // autoplay={{ delay: 2500, disableOnInteraction: false }}
           pagination={{ clickable: true, el: ".swiper-pagination" }}
           navigation={{ nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" }}
           breakpoints={{
             240: { centeredSlides: true, slidesPerView: 1.2, spaceBetween: 10 },
             768: { slidesPerView: 2.5, spaceBetween: 10 },
-            1024: { slidesPerView: 3.4, spaceBetween: 28 },
+            1024: { slidesPerView: 3.7, spaceBetween: 28 },
           }}
           modules={[Autoplay, Navigation, Pagination]}
           className="swiper mySwiper4 pt-80"

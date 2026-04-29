@@ -5,11 +5,29 @@ import {
   MdHotel, MdFlight, MdDirectionsCar, MdCalendarToday,
   MdPerson, MdLocationOn, MdSave, MdVisibility, MdAdd,
   MdDelete, MdHome, MdClose, MdDownload, MdPrint,
-  MdInfo, MdEmail, MdSend, MdCheckCircle,
+  MdInfo, MdEmail, MdSend, MdCheckCircle, MdMenu,
 } from "react-icons/md";
 import { FaWhatsapp } from "react-icons/fa";
 import { isAuthenticated } from "../../utils/voucherAuth";
 import VoucherPreview from "../../components/voucher/VoucherPreview";
+import Sidebar from "../../components/backend/Sidebar";
+
+// ─── Date helpers ─────────────────────────────────────────────────────────────
+function toISO(displayStr) {
+  if (!displayStr) return "";
+  const d = new Date(displayStr);
+  if (isNaN(d)) return "";
+  return d.toISOString().split("T")[0];
+}
+function fromISO(iso, fmt = "long") {
+  if (!iso) return "";
+  const d = new Date(iso + "T00:00:00");
+  if (isNaN(d)) return iso;
+  if (fmt === "flight") {
+    return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  }
+  return d.toLocaleDateString("en-IN", { weekday: "short", day: "2-digit", month: "short", year: "numeric" });
+}
 
 // ─── Auto ID generation ───────────────────────────────────────────────────────
 function getFinancialYear() {
@@ -46,6 +64,13 @@ const EMPTY_FLIGHT = () => ({
 });
 const EMPTY_TRANSPORT = () => ({ id: uid(), vehicle_type: "", driver_name: "", driver_contact: "" });
 const EMPTY_ITINERARY = () => ({ id: uid(), date: "", tour: "", transfer: "", pickup_time: "", itinerary: "" });
+const EMPTY_HOTEL = () => ({
+  id: uid(),
+  hotelName: "", hotelAddress: "", hotelConfirmNo: "", units: "",
+  roomType: "", mealPlan: "",
+  checkinDate: "", checkinTime: "", checkoutDate: "", checkoutTime: "", nights: "",
+  hotelNote: DEFAULT_HOTEL_NOTE,
+});
 
 const DEFAULT_HOTEL_NOTE = `Kindly note, early check-in is subject to availability of the rooms or hotel may charge directly to the guest.
 • For early check-in, extra bed and airport pickups contact the hotel directly.
@@ -64,10 +89,7 @@ const DEFAULT_FORM = {
   voucherNo: "", tripId: "",
   name: "", pax: "", travelDate: "", destination: "",
   email: "", contactNo: "", address: "",
-  hotelName: "", hotelAddress: "", hotelConfirmNo: "", units: "",
-  roomType: "", mealPlan: "",
-  checkinDate: "", checkinTime: "", checkoutDate: "", checkoutTime: "", nights: "",
-  hotelNote: DEFAULT_HOTEL_NOTE,
+  showHotel: false, hotels: [],
   showFlights: false, flights: [],
   showTransport: false, transports: [],
   showItinerary: false, itineraries: [],
@@ -80,12 +102,12 @@ export default function CreateVoucher() {
   const router = useRouter();
   const { id: editId } = router.query;
   const [ready, setReady] = useState(false);
+  const [sidebar, setSidebar] = useState(false);
   const [form, setForm] = useState(DEFAULT_FORM);
   const [showPreview, setShowPreview] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [pdfLoading, setPdfLoading] = useState(false);
-  const [activeSection, setActiveSection] = useState("voucher");
   // Email modal state
   const [showEmailModal, setShowEmailModal] = useState(false);
   const [emailTo, setEmailTo] = useState("");
@@ -110,6 +132,11 @@ export default function CreateVoucher() {
   }, [editId]);
 
   const set = (key, val) => { setForm((f) => ({ ...f, [key]: val })); setSaved(false); };
+
+  // Hotel
+  const addHotel = () => set("hotels", [...(form.hotels || []), EMPTY_HOTEL()]);
+  const removeHotel = (id) => set("hotels", form.hotels.filter((h) => h.id !== id));
+  const updateHotel = (id, k, v) => set("hotels", form.hotels.map((h) => h.id === id ? { ...h, [k]: v } : h));
 
   // Flight
   const addFlight = () => set("flights", [...form.flights, EMPTY_FLIGHT()]);
@@ -371,74 +398,36 @@ export default function CreateVoucher() {
 
   if (!ready) return null;
 
-  const navItems = [
-    { id: "voucher", icon: <MdPerson size={18} />, label: "Guest Info" },
-    { id: "hotel", icon: <MdHotel size={18} />, label: "Hotel" },
-    { id: "flights", icon: <MdFlight size={18} />, label: "Flights" },
-    { id: "transport", icon: <MdDirectionsCar size={18} />, label: "Transport" },
-    { id: "itinerary", icon: <MdCalendarToday size={18} />, label: "Itinerary" },
-    { id: "notes", icon: <MdInfo size={18} />, label: "Notes" },
-  ];
-
   return (
     <>
-      <Head><title>{editId ? "Edit" : "New"} Voucher — TourWatchOut</title></Head>
-      <div style={s.page}>
+      <Head>
+        <title>{editId ? "Edit" : "New"} Voucher — TourWatchOut</title>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+        <link rel="stylesheet" href="/assets/css/backend.css" />
+      </Head>
+      <div className="bk-page">
 
-        {/* ── Sidebar ── */}
-        <aside style={s.sidebar}>
-          <div style={s.sideTop}>
-            <img src="/assets/images/logo.png" alt="TW" style={s.sideLogo} />
-          </div>
-          <div style={s.sideMenu}>
-            <button style={s.backBtn} onClick={() => router.push("/dashboard")}>
-              <MdHome size={16} /> Dashboard
-            </button>
-            <div style={s.menuLabel}>SECTIONS</div>
-            {navItems.map((item) => (
-              <a
-                key={item.id}
-                href={`#section-${item.id}`}
-                style={{
-                  ...s.menuItem,
-                  ...(activeSection === item.id ? s.menuItemActive : {}),
-                }}
-                onClick={() => setActiveSection(item.id)}
-              >
-                {item.icon}
-                <span>{item.label}</span>
-              </a>
-            ))}
-          </div>
-          <div style={s.sideBottom}>
-            <div style={s.sideActions}>
-              <button onClick={saveVoucher} disabled={saving} style={s.sideBtn}>
-                <MdSave size={16} />
-                {saving ? "Saving…" : "Save"}
-              </button>
-              <button onClick={handlePreview} style={{ ...s.sideBtn, ...s.sideBtnRed }}>
-                <MdVisibility size={16} />
-                Preview
-              </button>
-            </div>
-            {saved && <div style={s.savedPill}>✓ All changes saved</div>}
-          </div>
-        </aside>
+        <Sidebar active="Voucher" isOpen={sidebar} onClose={() => setSidebar(false)} />
 
         {/* ── Main ── */}
-        <main style={s.main}>
-          <div style={s.topBar}>
-            <div>
-              <h1 style={s.pageTitle}>{editId ? "Edit Voucher" : "Create New Voucher"}</h1>
-              <p style={s.pageSubtitle}>Fill in all details to generate a professional travel voucher</p>
+        <main className="bk-main">
+          <header className="bk-header">
+            <div className="bk-header-left">
+              <button className="bk-hamburger" onClick={() => setSidebar(true)}><MdMenu size={22} /></button>
+              <h1 className="bk-page-title">{editId ? "Edit Voucher" : "Create Voucher"}</h1>
             </div>
-            <div style={s.topActions}>
+            <div className="bk-header-right">
               {saved && <span style={s.savedTag}>✓ Saved</span>}
+              <button onClick={saveVoucher} disabled={saving} style={{ ...s.previewBtn, background: "#2563eb", color: "#fff", marginRight: 8 }}>
+                <MdSave size={16} /> {saving ? "Saving…" : "Save"}
+              </button>
               <button onClick={handlePreview} style={s.previewBtn}>
                 <MdVisibility size={16} /> Preview & Export
               </button>
             </div>
-          </div>
+          </header>
+
+        <div style={{ padding: "28px 36px 60px" }}>
 
           {/* ── Voucher Info ── */}
           <FormSection id="section-voucher" title="Voucher Information" icon={<MdPerson />}>
@@ -464,51 +453,70 @@ export default function CreateVoucher() {
           </FormSection>
 
           {/* ── Hotel ── */}
-          <FormSection id="section-hotel" title="Hotel Details" icon={<MdHotel />}>
-            <TwoCol>
-              <Field label="Hotel Name" value={form.hotelName} onChange={(v) => set("hotelName", v)} placeholder="e.g. Wescott Hotel" />
-              <Field label="Hotel Address / Location" value={form.hotelAddress} onChange={(v) => set("hotelAddress", v)} placeholder="Hotel city / full address" />
-            </TwoCol>
-            <TwoCol>
-              <Field label="Confirmation No." value={form.hotelConfirmNo} onChange={(v) => set("hotelConfirmNo", v)} placeholder="e.g. 27685" />
-              <Field label="Units / Rooms" value={form.units} onChange={(v) => set("units", v)} placeholder="e.g. 1" />
-            </TwoCol>
-            <TwoCol>
-              <Field label="Room Type" value={form.roomType} onChange={(v) => set("roomType", v)} placeholder="e.g. Deluxe Room With Bath Tub" />
-              <Field label="Meal Plan" value={form.mealPlan} onChange={(v) => set("mealPlan", v)} placeholder="e.g. Bed and Breakfast" />
-            </TwoCol>
-            <div style={s.divider} />
-            <div style={s.subHeading}>Check-in / Check-out</div>
-            <TwoCol>
-              <Field label="Check-in Date" value={form.checkinDate} onChange={(v) => set("checkinDate", v)} placeholder="e.g. Sun, 25 Mar 2026" />
-              <Field label="Check-in Time" value={form.checkinTime} onChange={(v) => set("checkinTime", v)} placeholder="e.g. after 11:00 PM" />
-            </TwoCol>
-            <TwoCol>
-              <Field label="Check-out Date" value={form.checkoutDate} onChange={(v) => set("checkoutDate", v)} placeholder="e.g. Wed, 28 Mar 2026" />
-              <Field label="Check-out Time" value={form.checkoutTime} onChange={(v) => set("checkoutTime", v)} placeholder="e.g. before 11:00 AM" />
-            </TwoCol>
-            <Field label="No. of Nights" value={form.nights} onChange={(v) => set("nights", v)} placeholder="e.g. 3 Nights Stay" />
-            <div style={s.divider} />
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-              <div style={s.subHeading}>Hotel Note <span style={{ fontSize: 11, fontWeight: 400, color: "#aaa" }}>(shown in voucher)</span></div>
-            </div>
-            <div style={s.notePreviewBox}>
-              <div style={s.notePreviewDashed}>
-                <div style={{ fontSize: 12, fontWeight: 700, color: "#e84949", marginBottom: 4 }}>Preview</div>
-                <div style={{ fontSize: 11.5, color: "#444", lineHeight: 1.6 }}>
-                  {form.hotelNote.split("\n")[0]}
+          <ToggleSection
+            id="section-hotel"
+            title="Hotel Details"
+            icon={<MdHotel />}
+            enabled={form.showHotel !== false}
+            onToggle={() => {
+              const next = form.showHotel === false ? true : false;
+              set("showHotel", next);
+              if (next && (form.hotels || []).length === 0) addHotel();
+            }}
+          >
+            {(form.hotels || []).map((h, idx) => (
+              <div key={h.id} style={s.card}>
+                <div style={s.cardHead}>
+                  <span style={s.cardBadge}>🏨 Hotel {idx + 1}</span>
+                  <button style={s.removeBtn} onClick={() => removeHotel(h.id)}>
+                    <MdDelete size={14} /> Remove
+                  </button>
                 </div>
+                <TwoCol>
+                  <Field label="Hotel Name" value={h.hotelName} onChange={(v) => updateHotel(h.id, "hotelName", v)} placeholder="e.g. Wescott Hotel" />
+                  <Field label="Hotel Address / Location" value={h.hotelAddress} onChange={(v) => updateHotel(h.id, "hotelAddress", v)} placeholder="Hotel city / full address" />
+                </TwoCol>
+                <TwoCol>
+                  <Field label="Confirmation No." value={h.hotelConfirmNo} onChange={(v) => updateHotel(h.id, "hotelConfirmNo", v)} placeholder="e.g. 27685" />
+                  <Field label="Units / Rooms" value={h.units} onChange={(v) => updateHotel(h.id, "units", v)} placeholder="e.g. 1" />
+                </TwoCol>
+                <TwoCol>
+                  <Field label="Room Type" value={h.roomType} onChange={(v) => updateHotel(h.id, "roomType", v)} placeholder="e.g. Deluxe Room With Bath Tub" />
+                  <Field label="Meal Plan" value={h.mealPlan} onChange={(v) => updateHotel(h.id, "mealPlan", v)} placeholder="e.g. Bed and Breakfast" />
+                </TwoCol>
+                <div style={s.divider} />
+                <div style={s.subHeading}>Check-in / Check-out</div>
+                <TwoCol>
+                  <DateField label="Check-in Date" value={h.checkinDate} onChange={(v) => updateHotel(h.id, "checkinDate", v)} />
+                  <Field label="Check-in Time" value={h.checkinTime} onChange={(v) => updateHotel(h.id, "checkinTime", v)} placeholder="e.g. after 11:00 PM" />
+                </TwoCol>
+                <TwoCol>
+                  <DateField label="Check-out Date" value={h.checkoutDate} onChange={(v) => updateHotel(h.id, "checkoutDate", v)} />
+                  <Field label="Check-out Time" value={h.checkoutTime} onChange={(v) => updateHotel(h.id, "checkoutTime", v)} placeholder="e.g. before 11:00 AM" />
+                </TwoCol>
+                <Field label="No. of Nights" value={h.nights} onChange={(v) => updateHotel(h.id, "nights", v)} placeholder="e.g. 3 Nights Stay" />
+                <div style={s.divider} />
+                <div style={s.subHeading}>Hotel Note <span style={{ fontSize: 11, fontWeight: 400, color: "#aaa" }}>(shown in voucher)</span></div>
+                <div style={s.notePreviewBox}>
+                  <div style={s.notePreviewDashed}>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: "#2563eb", marginBottom: 4 }}>Preview</div>
+                    <div style={{ fontSize: 11.5, color: "#444", lineHeight: 1.6 }}>
+                      {(h.hotelNote || "").split("\n")[0]}
+                    </div>
+                  </div>
+                </div>
+                <Field
+                  label=""
+                  value={h.hotelNote}
+                  onChange={(v) => updateHotel(h.id, "hotelNote", v)}
+                  textarea rows={6}
+                  placeholder="Hotel note / check-in instructions…"
+                  full
+                />
               </div>
-            </div>
-            <Field
-              label=""
-              value={form.hotelNote}
-              onChange={(v) => set("hotelNote", v)}
-              textarea rows={6}
-              placeholder="Hotel note / check-in instructions…"
-              full
-            />
-          </FormSection>
+            ))}
+            <AddBtn onClick={addHotel} label="Add Hotel" icon={<MdHotel size={15} />} />
+          </ToggleSection>
 
           {/* ── Flights (toggle) ── */}
           <ToggleSection
@@ -540,7 +548,7 @@ export default function CreateVoucher() {
                     <Field label="City" value={fl.from_city} onChange={(v) => updateFlight(fl.id, "from_city", v)} placeholder="e.g. Pune" />
                     <Field label="IATA Code" value={fl.from_code} onChange={(v) => updateFlight(fl.id, "from_code", v)} placeholder="PNQ" />
                     <TwoCol>
-                      <Field label="Date" value={fl.from_date} onChange={(v) => updateFlight(fl.id, "from_date", v)} placeholder="Apr 17, 2024" />
+                      <DateField label="Date" value={fl.from_date} onChange={(v) => updateFlight(fl.id, "from_date", v)} fmt="flight" />
                       <Field label="Time" value={fl.from_time} onChange={(v) => updateFlight(fl.id, "from_time", v)} placeholder="12:00 hrs" />
                     </TwoCol>
                   </div>
@@ -549,7 +557,7 @@ export default function CreateVoucher() {
                     <Field label="City" value={fl.to_city} onChange={(v) => updateFlight(fl.id, "to_city", v)} placeholder="e.g. Dubai" />
                     <Field label="IATA Code" value={fl.to_code} onChange={(v) => updateFlight(fl.id, "to_code", v)} placeholder="DXB" />
                     <TwoCol>
-                      <Field label="Date" value={fl.to_date} onChange={(v) => updateFlight(fl.id, "to_date", v)} placeholder="Apr 17, 2024" />
+                      <DateField label="Date" value={fl.to_date} onChange={(v) => updateFlight(fl.id, "to_date", v)} fmt="flight" />
                       <Field label="Time" value={fl.to_time} onChange={(v) => updateFlight(fl.id, "to_time", v)} placeholder="22:55 hrs" />
                     </TwoCol>
                   </div>
@@ -610,7 +618,7 @@ export default function CreateVoucher() {
                   </button>
                 </div>
                 <TwoCol>
-                  <Field label="Date" value={item.date} onChange={(v) => updateItinerary(item.id, "date", v)} placeholder="e.g. 23rd Mar" />
+                  <DateField label="Date" value={item.date} onChange={(v) => updateItinerary(item.id, "date", v)} />
                   <Field label="Tour / Activity" value={item.tour} onChange={(v) => updateItinerary(item.id, "tour", v)} placeholder="e.g. Airport Pick-up DX" />
                 </TwoCol>
                 <TwoCol>
@@ -641,6 +649,7 @@ export default function CreateVoucher() {
               <MdVisibility size={17} /> Preview & Export
             </button>
           </div>
+        </div>
         </main>
       </div>
 
@@ -780,7 +789,7 @@ export default function CreateVoucher() {
 
 function FormSection({ id, title, icon, children }) {
   return (
-    <div id={id} style={s.section}>
+    <div id={id} data-pdf-section="true" style={s.section}>
       <div style={s.sectionHead}>
         <span style={s.sectionIcon}>{icon}</span>
         <span style={s.sectionTitle}>{title}</span>
@@ -792,7 +801,7 @@ function FormSection({ id, title, icon, children }) {
 
 function ToggleSection({ id, title, icon, enabled, onToggle, children }) {
   return (
-    <div id={id} style={s.section}>
+    <div id={id} data-pdf-section="true" style={s.section}>
       <div style={s.sectionHead}>
         <span style={s.sectionIcon}>{icon}</span>
         <span style={s.sectionTitle}>{title}</span>
@@ -800,7 +809,7 @@ function ToggleSection({ id, title, icon, enabled, onToggle, children }) {
           onClick={onToggle}
           style={{
             ...s.toggleBtn,
-            background: enabled ? "#e84949" : "rgba(255,255,255,0.15)",
+            background: enabled ? "rgba(255,255,255,0.18)" : "rgba(255,255,255,0.1)",
             color: "#fff",
           }}
         >
@@ -845,6 +854,20 @@ function Field({ label, value, onChange, placeholder, type = "text", textarea, f
           />
         </div>
       )}
+    </div>
+  );
+}
+
+function DateField({ label, value, onChange, fmt = "long" }) {
+  return (
+    <div style={{ flex: "1 1 0", minWidth: 0 }}>
+      {label && <label style={s.label}>{label}</label>}
+      <input
+        type="date"
+        value={toISO(value)}
+        onChange={(e) => onChange(fromISO(e.target.value, fmt))}
+        style={{ ...s.input, colorScheme: "light" }}
+      />
     </div>
   );
 }
@@ -926,7 +949,7 @@ const s = {
   topActions: { display: "flex", alignItems: "center", gap: 10 },
   savedTag: { background: "#dcfce7", color: "#15803d", borderRadius: 20, padding: "5px 12px", fontSize: 12, fontWeight: 600 },
   previewBtn: {
-    background: "#e84949", color: "#fff", border: "none", borderRadius: 8,
+    background: "rgb(37 99 235 / 12%)", color: "rgb(37 99 235)", border: "none", borderRadius: 8,
     padding: "11px 20px", fontSize: 14, fontWeight: 600, cursor: "pointer",
     display: "flex", alignItems: "center", gap: 6,
   },
@@ -938,7 +961,7 @@ const s = {
     border: "1px solid #e8eaf0",
   },
   sectionHead: {
-    background: "#e84949", display: "flex", alignItems: "center", gap: 10,
+    background: "#2563eb", display: "flex", alignItems: "center", gap: 10,
     padding: "13px 20px",
   },
   sectionIcon: { color: "#fff", display: "flex", alignItems: "center", fontSize: 18 },
@@ -946,7 +969,7 @@ const s = {
   sectionBody: { padding: "20px 22px", display: "flex", flexDirection: "column", gap: 14 },
   disabledHint: { padding: "14px 22px", fontSize: 13, color: "#9ca3af", fontStyle: "italic" },
   toggleBtn: {
-    border: "none", borderRadius: 6, padding: "5px 14px",
+    border: "1.5px solid rgba(255,255,255,0.4)", borderRadius: 6, padding: "5px 14px",
     fontSize: 12, fontWeight: 700, cursor: "pointer",
   },
 
@@ -1002,12 +1025,12 @@ const s = {
   // Bottom bar
   bottomBar: { display: "flex", gap: 12, paddingTop: 10, paddingBottom: 20 },
   btnDark: {
-    background: "#1a1a2e", color: "#fff", border: "none", borderRadius: 8,
+    background: "#2563eb", color: "#fff", border: "none", borderRadius: 8,
     padding: "13px 24px", fontSize: 14, fontWeight: 600, cursor: "pointer",
     display: "flex", alignItems: "center", gap: 7,
   },
   btnRed: {
-    background: "#e84949", color: "#fff", border: "none", borderRadius: 8,
+    background: "rgb(37 99 235 / 12%)", color: "rgb(37 99 235)", border: "none", borderRadius: 8,
     padding: "13px 24px", fontSize: 14, fontWeight: 600, cursor: "pointer",
     display: "flex", alignItems: "center", gap: 7,
   },

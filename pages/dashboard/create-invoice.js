@@ -4,11 +4,26 @@ import Head from "next/head";
 import {
   MdReceipt, MdPerson, MdSave, MdVisibility, MdAdd,
   MdDelete, MdHome, MdClose, MdDownload, MdPrint,
-  MdEmail, MdSend, MdCheckCircle, MdAttachMoney,
+  MdEmail, MdSend, MdCheckCircle, MdAttachMoney, MdMenu,
 } from "react-icons/md";
 import { FaWhatsapp } from "react-icons/fa";
 import { isAuthenticated } from "../../utils/voucherAuth";
 import InvoicePreview from "../../components/invoice/InvoicePreview";
+import Sidebar from "../../components/backend/Sidebar";
+
+// ─── Date helpers ─────────────────────────────────────────────────────────────
+function parseToISO(displayStr) {
+  if (!displayStr) return "";
+  const d = new Date(displayStr);
+  if (isNaN(d)) return "";
+  return d.toISOString().split("T")[0];
+}
+function isoToDisplay(iso) {
+  if (!iso) return "";
+  const d = new Date(iso + "T00:00:00");
+  if (isNaN(d)) return iso;
+  return d.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
+}
 
 // ─── Invoice No auto-generation ───────────────────────────────────────────────
 function getInvoiceFY() {
@@ -37,13 +52,14 @@ const DEFAULT_FORM = {
   paymentMode: "Online",
   clientName: "", clientAddress: "", clientState: "", clientGstin: "", destination: "",
   items: [EMPTY_ITEM()],
-  cgstPct: "5", sgstPct: "5", igstPct: "",
+  cgstPct: "5", sgstPct: "5", igstPct: "", tcsPct: "",
 };
 
 export default function CreateInvoice() {
   const router = useRouter();
   const { id: editId } = router.query;
   const [ready, setReady] = useState(false);
+  const [sidebar, setSidebar] = useState(false);
   const [form, setForm] = useState(DEFAULT_FORM);
   const [showPreview, setShowPreview] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -228,7 +244,9 @@ export default function CreateInvoice() {
       const cgstAmt = form.cgstPct ? (subTotal * parseFloat(form.cgstPct)) / 100 : 0;
       const sgstAmt = form.sgstPct ? (subTotal * parseFloat(form.sgstPct)) / 100 : 0;
       const igstAmt = form.igstPct ? (subTotal * parseFloat(form.igstPct)) / 100 : 0;
-      const grandTotal = subTotal + cgstAmt + sgstAmt + igstAmt;
+      const afterGstEmail = subTotal + cgstAmt + sgstAmt + igstAmt;
+      const tcsAmt = form.tcsPct ? (afterGstEmail * parseFloat(form.tcsPct)) / 100 : 0;
+      const grandTotal = afterGstEmail + tcsAmt;
       const fmt = (n) => Number(n).toLocaleString("en-IN", { minimumFractionDigits: 2 });
 
       const emailBody = `
@@ -274,71 +292,60 @@ export default function CreateInvoice() {
   if (!ready) return null;
 
   // Derived totals for the form display
-  const subTotal = form.items.reduce((s, i) => s + (parseFloat(i.amount) || 0), 0);
-  const cgstAmt  = form.cgstPct ? (subTotal * parseFloat(form.cgstPct)) / 100 : 0;
-  const sgstAmt  = form.sgstPct ? (subTotal * parseFloat(form.sgstPct)) / 100 : 0;
-  const igstAmt  = form.igstPct ? (subTotal * parseFloat(form.igstPct)) / 100 : 0;
-  const grandTotal = subTotal + cgstAmt + sgstAmt + igstAmt;
+  const subTotal    = form.items.reduce((s, i) => s + (parseFloat(i.amount) || 0), 0);
+  const cgstAmt     = form.cgstPct ? (subTotal * parseFloat(form.cgstPct)) / 100 : 0;
+  const sgstAmt     = form.sgstPct ? (subTotal * parseFloat(form.sgstPct)) / 100 : 0;
+  const igstAmt     = form.igstPct ? (subTotal * parseFloat(form.igstPct)) / 100 : 0;
+  const gstTotal    = cgstAmt + sgstAmt + igstAmt;
+  const afterGst    = subTotal + gstTotal;
+  const tcsAmt      = form.tcsPct ? (afterGst * parseFloat(form.tcsPct)) / 100 : 0;
+  const grandTotal  = afterGst + tcsAmt;
   const fmt = (n) => Number(n || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 });
 
   return (
     <>
-      <Head><title>{editId ? "Edit" : "New"} Invoice — TourWatchOut</title></Head>
-      <div style={s.page}>
+      <Head>
+        <title>{editId ? "Edit" : "New"} Invoice — TourWatchOut</title>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+        <link rel="stylesheet" href="/assets/css/backend.css" />
+      </Head>
+      <div className="bk-page">
 
-        {/* ── Sidebar ── */}
-        <aside style={s.sidebar}>
-          <div style={s.sideTop}>
-            <img src="/assets/images/logo.png" alt="TW" style={s.sideLogo} />
-          </div>
-          <div style={s.sideMenu}>
-            <button style={s.backBtn} onClick={() => router.push("/dashboard")}>
-              <MdHome size={16} /> Dashboard
-            </button>
-            <div style={s.menuLabel}>INVOICE SECTIONS</div>
-            {[
-              { href: "#sec-meta",   label: "Invoice Info",   icon: <MdReceipt size={16} /> },
-              { href: "#sec-client", label: "Client Details", icon: <MdPerson size={16} /> },
-              { href: "#sec-items",  label: "Line Items",     icon: <MdAttachMoney size={16} /> },
-            ].map((n) => (
-              <a key={n.href} href={n.href} style={s.menuItem}>
-                {n.icon} <span>{n.label}</span>
-              </a>
-            ))}
-          </div>
-          <div style={s.sideBottom}>
-            <div style={s.sideActions}>
-              <button onClick={saveInvoice} disabled={saving} style={s.sideBtn}>
-                <MdSave size={15} /> {saving ? "…" : "Save"}
-              </button>
-              <button onClick={() => { saveInvoice(); setShowPreview(true); }} style={{ ...s.sideBtn, ...s.sideBtnRed }}>
-                <MdVisibility size={15} /> Preview
-              </button>
-            </div>
-            {saved && <div style={s.savedPill}>✓ Saved</div>}
-          </div>
-        </aside>
+        <Sidebar active="Invoice" isOpen={sidebar} onClose={() => setSidebar(false)} />
 
         {/* ── Main form ── */}
-        <main style={s.main}>
-          <div style={s.topBar}>
-            <div>
-              <h1 style={s.pageTitle}>{editId ? "Edit Invoice" : "New Tax Invoice"}</h1>
-              <p style={s.pageSubtitle}>Fill in details and generate a professional GST invoice</p>
+        <main className="bk-main">
+          <header className="bk-header">
+            <div className="bk-header-left">
+              <button className="bk-hamburger" onClick={() => setSidebar(true)}><MdMenu size={22} /></button>
+              <h1 className="bk-page-title">{editId ? "Edit Invoice" : "New Tax Invoice"}</h1>
             </div>
-            <div style={s.topActions}>
+            <div className="bk-header-right">
               {saved && <span style={s.savedTag}>✓ Saved</span>}
+              <button onClick={saveInvoice} disabled={saving} style={{ ...s.previewBtn, background: "#2563eb", color: "#fff", marginRight: 8 }}>
+                <MdSave size={15} /> {saving ? "Saving…" : "Save"}
+              </button>
               <button onClick={() => { saveInvoice(); setShowPreview(true); }} style={s.previewBtn}>
                 <MdVisibility size={15} /> Preview & Export
               </button>
             </div>
-          </div>
+          </header>
+
+          <div style={{ padding: "28px 36px 60px" }}>
 
           {/* ── Invoice Info ── */}
           <FormSection id="sec-meta" title="Invoice Information" icon={<MdReceipt />}>
             <TwoCol>
               <Field label="Invoice Number" value={form.invoiceNo} onChange={(v) => set("invoiceNo", v)} placeholder="e.g. RCSPL/2026-27/001" />
-              <Field label="Invoice Date" value={form.invoiceDate} onChange={(v) => set("invoiceDate", v)} placeholder="e.g. 05 Apr 2026" />
+              <div style={{ flex: "1 1 0", minWidth: 0 }}>
+                <label style={s.label}>Invoice Date</label>
+                <input
+                  type="date"
+                  value={parseToISO(form.invoiceDate)}
+                  onChange={(e) => set("invoiceDate", isoToDisplay(e.target.value))}
+                  style={{ ...s.input, colorScheme: "light" }}
+                />
+              </div>
             </TwoCol>
             <Field label="Mode / Terms of Payment" value={form.paymentMode} onChange={(v) => set("paymentMode", v)} placeholder="e.g. Online / Bank Transfer / Cash" />
           </FormSection>
@@ -405,21 +412,29 @@ export default function CreateInvoice() {
             </button>
 
             <div style={s.divider} />
-            <div style={s.subHeading}>Tax Configuration</div>
+            <div style={s.subHeading}>Tax Configuration (GST)</div>
+            <div style={s.taxNote}>For domestic packages use CGST + SGST. For interstate use IGST. Leave unused fields blank.</div>
 
             <TwoCol>
               <Field label="CGST %" value={form.cgstPct} onChange={(v) => set("cgstPct", v)} placeholder="e.g. 5" type="number" />
               <Field label="SGST %" value={form.sgstPct} onChange={(v) => set("sgstPct", v)} placeholder="e.g. 5" type="number" />
             </TwoCol>
-            <Field label="IGST % (for interstate — leave blank if CGST/SGST applies)" value={form.igstPct} onChange={(v) => set("igstPct", v)} placeholder="e.g. 18 (or leave blank)" type="number" />
+            <Field label="IGST % (interstate / inter-state — leave blank if CGST+SGST applies)" value={form.igstPct} onChange={(v) => set("igstPct", v)} placeholder="e.g. 18 (or leave blank)" type="number" />
+
+            <div style={s.divider} />
+            <div style={s.subHeading}>TCS — Tax Collected at Source</div>
+            <div style={s.taxNote}>Applicable for international tour packages u/s 206C(1G). TCS is calculated on (Subtotal + GST). Enter 5% for packages up to ₹7L, 20% above.</div>
+            <Field label="TCS % (leave blank if not applicable)" value={form.tcsPct} onChange={(v) => set("tcsPct", v)} placeholder="e.g. 5 (international) or leave blank" type="number" />
 
             {/* Summary box */}
             <div style={s.summaryBox}>
               <div style={s.summaryTitle}>Invoice Summary</div>
-              <div style={s.summaryRow}><span>Sub-total</span><span>₹{fmt(subTotal)}</span></div>
-              {cgstAmt > 0  && <div style={s.summaryRow}><span>CGST ({form.cgstPct}%)</span><span>₹{fmt(cgstAmt)}</span></div>}
-              {sgstAmt > 0  && <div style={s.summaryRow}><span>SGST ({form.sgstPct}%)</span><span>₹{fmt(sgstAmt)}</span></div>}
-              {igstAmt > 0  && <div style={s.summaryRow}><span>IGST ({form.igstPct}%)</span><span>₹{fmt(igstAmt)}</span></div>}
+              <div style={s.summaryRow}><span>Sub-total (before tax)</span><span>₹{fmt(subTotal)}</span></div>
+              {cgstAmt > 0 && <div style={s.summaryRow}><span>CGST @ {form.cgstPct}%</span><span>₹{fmt(cgstAmt)}</span></div>}
+              {sgstAmt > 0 && <div style={s.summaryRow}><span>SGST @ {form.sgstPct}%</span><span>₹{fmt(sgstAmt)}</span></div>}
+              {igstAmt > 0 && <div style={s.summaryRow}><span>IGST @ {form.igstPct}%</span><span>₹{fmt(igstAmt)}</span></div>}
+              {gstTotal > 0 && <div style={{ ...s.summaryRow, borderTop: "1px dashed #e5e7eb", paddingTop: 6, marginTop: 2, fontWeight: 600 }}><span>Sub-total (after GST)</span><span>₹{fmt(afterGst)}</span></div>}
+              {tcsAmt > 0 && <div style={{ ...s.summaryRow, color: "#b45309" }}><span>TCS @ {form.tcsPct}% u/s 206C(1G)</span><span>₹{fmt(tcsAmt)}</span></div>}
               <div style={s.summaryTotal}><span>Grand Total</span><span>₹{fmt(grandTotal)}</span></div>
             </div>
           </FormSection>
@@ -431,6 +446,7 @@ export default function CreateInvoice() {
             <button onClick={() => { saveInvoice(); setShowPreview(true); }} style={s.btnRed}>
               <MdVisibility size={17} /> Preview & Export
             </button>
+          </div>
           </div>
         </main>
       </div>
@@ -570,9 +586,9 @@ const s = {
   pageSubtitle: { fontSize: 13, color: "#9ca3af", margin: "5px 0 0" },
   topActions: { display: "flex", alignItems: "center", gap: 10 },
   savedTag: { background: "#dcfce7", color: "#15803d", borderRadius: 20, padding: "5px 12px", fontSize: 12, fontWeight: 600 },
-  previewBtn: { background: "#e84949", color: "#fff", border: "none", borderRadius: 8, padding: "11px 20px", fontSize: 14, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 },
+  previewBtn: { background: "rgb(37 99 235 / 12%)", color: "rgb(37 99 235)", border: "none", borderRadius: 8, padding: "11px 20px", fontSize: 14, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 },
   section: { background: "#fff", borderRadius: 12, overflow: "hidden", boxShadow: "0 1px 8px rgba(0,0,0,0.06)", marginBottom: 20, border: "1px solid #e8eaf0" },
-  sectionHead: { background: "#e84949", display: "flex", alignItems: "center", gap: 10, padding: "13px 20px" },
+  sectionHead: { background: "#2563eb", display: "flex", alignItems: "center", gap: 10, padding: "13px 20px" },
   sectionIcon: { color: "#fff", display: "flex", alignItems: "center", fontSize: 18 },
   sectionTitle: { color: "#fff", fontWeight: 700, fontSize: 14.5, flex: 1 },
   sectionBody: { padding: "20px 22px", display: "flex", flexDirection: "column", gap: 14 },
@@ -587,13 +603,14 @@ const s = {
   itemInput: { width: "100%", border: "1.5px solid #e5e7eb", borderRadius: 7, padding: "9px 10px", fontSize: 13, outline: "none", boxSizing: "border-box", background: "#fff", fontFamily: "inherit" },
   delItemBtn: { background: "#fff2f2", border: "none", borderRadius: 6, padding: "8px", cursor: "pointer", color: "#e84949", display: "flex", alignItems: "center" },
   addItemBtn: { display: "flex", alignItems: "center", gap: 6, background: "#eff6ff", color: "#2563eb", border: "1.5px dashed #93c5fd", borderRadius: 8, padding: "10px", fontSize: 13, fontWeight: 600, cursor: "pointer", width: "100%", justifyContent: "center" },
+  taxNote: { fontSize: 11.5, color: "#6b7280", fontStyle: "italic", marginTop: -8, marginBottom: 4 },
   summaryBox: { background: "#f9fafb", border: "1.5px solid #e5e7eb", borderRadius: 10, padding: "16px 20px" },
   summaryTitle: { fontSize: 12, fontWeight: 700, color: "#555", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 12 },
   summaryRow: { display: "flex", justifyContent: "space-between", fontSize: 13, color: "#555", marginBottom: 6 },
   summaryTotal: { display: "flex", justifyContent: "space-between", fontSize: 15, fontWeight: 800, color: "#1a1a2e", borderTop: "1.5px solid #e5e7eb", paddingTop: 10, marginTop: 6 },
   bottomBar: { display: "flex", gap: 12, paddingTop: 10, paddingBottom: 20 },
-  btnDark: { background: "#1a1a2e", color: "#fff", border: "none", borderRadius: 8, padding: "13px 24px", fontSize: 14, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 7 },
-  btnRed: { background: "#e84949", color: "#fff", border: "none", borderRadius: 8, padding: "13px 24px", fontSize: 14, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 7 },
+  btnDark: { background: "#2563eb", color: "#fff", border: "none", borderRadius: 8, padding: "13px 24px", fontSize: 14, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 7 },
+  btnRed: { background: "rgb(37 99 235 / 12%)", color: "rgb(37 99 235)", border: "none", borderRadius: 8, padding: "13px 24px", fontSize: 14, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 7 },
   overlay: { position: "fixed", inset: 0, background: "rgba(0,0,0,0.65)", zIndex: 1000, display: "flex", alignItems: "flex-start", justifyContent: "center", overflowY: "auto", padding: "20px" },
   modal: { background: "#f0f2f7", borderRadius: 16, width: "100%", maxWidth: 780, margin: "auto", boxShadow: "0 24px 80px rgba(0,0,0,0.4)", overflow: "hidden" },
   modalHead: { background: "#1a1a2e", padding: "16px 22px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 10 },

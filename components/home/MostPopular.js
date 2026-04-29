@@ -31,11 +31,11 @@ export default function MostPopular() {
             </div>
           </div> */}
           <Swiper
-            spaceBetween={10}
+            spaceBetween={20}
             // centeredSlides={true}
             // grabCursor={true}
             loop={true}
-            slidesPerView={3.2}
+            slidesPerView={3.7}
             autoplay={{
               delay: 2500,
               disableOnInteraction: false,
@@ -60,8 +60,8 @@ export default function MostPopular() {
                 spaceBetween: 10,
               },
               1024: {
-                slidesPerView: 3.2,
-                spaceBetween: 10,
+                slidesPerView: 3.7,
+                spaceBetween: 20,
               },
             }}
             modules={[Autoplay, Navigation, Pagination]}

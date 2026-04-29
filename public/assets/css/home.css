@@ -80,13 +80,13 @@
     }
     
  .cta-button {
-    background-color: #f74c4d;
+       background-color: #f74c4d;
     color: #ffffff;
-    font-size: 22px;
+    font-size: 17px;
     font-weight: 700;
-    width: 466px;
-    height: 66px;
-    line-height: 29px;
+    width: 360px;
+    height: 50px;
+    line-height: 20px;
     padding: 15px 35px;
     border-radius: 32px;
     display: inline-block;
@@ -188,7 +188,7 @@
     
     .section-header {
       text-align: left;
-      margin-bottom: 40px;
+      margin-bottom: 30px;
     }
     
     .section-subtitle {
@@ -567,7 +567,7 @@
     }
     
     .rating-number {
-      font-size: 40px;
+      font-size: 33px;
       font-weight: 700;
       line-height: 74px;
       color: #656565;
@@ -576,7 +576,7 @@
     
     @media (min-width: 768px) {
       .rating-number {
-        font-size: 41px;
+        font-size: 33px;
         margin-top: -28px;
       }
     }
@@ -630,7 +630,7 @@
       background-color: #ffffff;
       border: 1px solid #eff3ff;
       border-radius: 16px;
-      padding: 24px;
+      padding: 35px 25px;
       /* min-width: 280px; */
       flex-shrink: 0;
     }
@@ -1031,7 +1031,7 @@
     .blogs-grid {
       display: grid;
       grid-template-columns: 1fr;
-      gap: 20px;
+      gap: 25px;
     }
     
     @media (min-width: 640px) {
@@ -1063,7 +1063,7 @@
     
     .blog-image {
       width: 100%;
-      height: 355px;
+      height: 382px;
       background-size: cover;
       background-position: center;
       position: relative;
@@ -1071,7 +1071,7 @@
     
     @media (min-width: 768px) {
       .blog-image {
-        height: 355px;
+        height: 382px;
       }
     }
     
@@ -1384,11 +1384,12 @@
 
 .family-dubai-row{
   display: flex;
-  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
 }
 
 .family-dubai-row > div{
-  width: calc(33.33% - 10px);
+  width: calc(33.33% - 14px);
   height: 501px;
 }
 
@@ -1603,7 +1604,7 @@
 .dubai-family-notes .dfn-about {
   position: relative;
   display: block;
-  padding-left: 36px; /* space for left dotted line */
+  /* padding-left: 36px;  */
   padding-right: 24px;
   box-sizing: border-box;
 }
@@ -1936,6 +1937,7 @@ img.top-bottom-img {
     font-weight: 600;
     font-size: 16px;
     margin-top: 10px;
+    white-space: nowrap;
 }
 
 /* location list */
@@ -2335,7 +2337,7 @@ button.pdt-tab img {
 }
 
 .rating-display img{
-  width:245px;
+  width:215px;
 }
 
 .itinerary-page .faq-section {
@@ -2345,4 +2347,28 @@ button.pdt-tab img {
 
 .national-pages .package-details-tabs {
     padding-top: 50px!important;
+}
+
+.familypage  .package-details-tabs {
+    padding-top: 60px!important;
+}
+
+.dyna-destination-pages .section-subtitle{
+   margin-bottom: 0!important;
+}
+
+.dyna-destination-pages .family-dubai-packages{
+  padding-top: 50px;
+  padding-bottom: 100px;
+}
+
+.dyna-destination-pages .blogs-section{
+  padding-top: 20px;;
+}
+.dyna-destination-pages .dubai-hero {
+    background-image: url(../images/dubai/dubai-hero.webp)!important;
+}
+
+.desk-logo img{
+  width: 230px;
 }

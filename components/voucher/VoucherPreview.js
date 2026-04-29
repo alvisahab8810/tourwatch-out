@@ -63,60 +63,70 @@ export default function VoucherPreview({ data }) {
       </div>
 
       {/* ══════════ HOTEL DETAILS ══════════ */}
-      <RedSection title="Hotel Details">
-        <div style={v.hotelBlock}>
-          {/* Left */}
-          <div style={v.hotelLeft}>
-            <div style={v.hotelNameRow}>
-              <span style={v.hotelIcon}>🏨</span>
-              <span style={v.hotelName}>{d.hotelName || "—"}</span>
-            </div>
-            {d.hotelAddress && (
-              <div style={v.hotelAddr}>📍 {d.hotelAddress}</div>
-            )}
-            <div style={{ height: 10 }} />
-            <HotelRow label="Hotel Confirmation no." value={d.hotelConfirmNo} />
-            <HotelRow label="Units"                  value={d.units} />
-            <HotelRow label="Room Type"              value={d.roomType} />
-            <HotelRow label="Meal Plan"              value={d.mealPlan} />
-          </div>
-
-          {/* Right: dates */}
-          <div style={v.hotelRight}>
-            <div style={v.dateCard}>
-              <div style={v.dateCardTitle}>Check in &amp; Check out Date</div>
-              <div style={v.dateRow}>
-                <div style={v.dateBox}>
-                  <div style={v.dateDay}>{d.checkinDate  || "—"}</div>
-                  <div style={v.dateTime}>{d.checkinTime  || ""}</div>
+      {d.showHotel !== false && (() => {
+        // Support both new hotels[] array and old flat-field vouchers
+        const hotels = d.hotels && d.hotels.length > 0
+          ? d.hotels
+          : d.hotelName
+            ? [{ id: 0, hotelName: d.hotelName, hotelAddress: d.hotelAddress, hotelConfirmNo: d.hotelConfirmNo, units: d.units, roomType: d.roomType, mealPlan: d.mealPlan, checkinDate: d.checkinDate, checkinTime: d.checkinTime, checkoutDate: d.checkoutDate, checkoutTime: d.checkoutTime, nights: d.nights, hotelNote: d.hotelNote }]
+            : [];
+        if (hotels.length === 0) return null;
+        return (
+          <RedSection title="Hotel Details">
+            {hotels.map((h, idx) => (
+              <div key={h.id ?? idx} style={idx > 0 ? { marginTop: 18, borderTop: "1px dashed #e0e0e0", paddingTop: 14 } : {}}>
+                <div style={v.hotelBlock}>
+                  <div style={v.hotelLeft}>
+                    <div style={v.hotelNameRow}>
+                      <span style={v.hotelIcon}>🏨</span>
+                      <span style={v.hotelName}>{h.hotelName || "—"}</span>
+                    </div>
+                    {h.hotelAddress && (
+                      <div style={v.hotelAddr}>📍 {h.hotelAddress}</div>
+                    )}
+                    <div style={{ height: 10 }} />
+                    <HotelRow label="Hotel Confirmation no." value={h.hotelConfirmNo} />
+                    <HotelRow label="Units"                  value={h.units} />
+                    <HotelRow label="Room Type"              value={h.roomType} />
+                    <HotelRow label="Meal Plan"              value={h.mealPlan} />
+                  </div>
+                  <div style={v.hotelRight}>
+                    <div style={v.dateCard}>
+                      <div style={v.dateCardTitle}>Check in &amp; Check out Date</div>
+                      <div style={v.dateRow}>
+                        <div style={v.dateBox}>
+                          <div style={v.dateDay}>{h.checkinDate  || "—"}</div>
+                          <div style={v.dateTime}>{h.checkinTime  || ""}</div>
+                        </div>
+                        <div style={v.dateArrow}>→</div>
+                        <div style={v.dateBox}>
+                          <div style={v.dateDay}>{h.checkoutDate || "—"}</div>
+                          <div style={v.dateTime}>{h.checkoutTime || ""}</div>
+                        </div>
+                      </div>
+                      {h.nights && <div style={v.nightsPill}>{h.nights}</div>}
+                    </div>
+                  </div>
                 </div>
-                <div style={v.dateArrow}>→</div>
-                <div style={v.dateBox}>
-                  <div style={v.dateDay}>{d.checkoutDate || "—"}</div>
-                  <div style={v.dateTime}>{d.checkoutTime || ""}</div>
-                </div>
+                {h.hotelNote && (
+                  <div style={v.noteBox}>
+                    <div style={v.noteBoxTitle}>{h.hotelNote.split("\n")[0]}</div>
+                    <ul style={v.noteList}>
+                      {h.hotelNote.split("\n").slice(1)
+                        .filter((l) => l.trim())
+                        .map((line, i) => (
+                          <li key={i} style={v.noteItem}>
+                            {line.replace(/^[•\-\*]\s*/, "")}
+                          </li>
+                        ))}
+                    </ul>
+                  </div>
+                )}
               </div>
-              {d.nights && <div style={v.nightsPill}>{d.nights}</div>}
-            </div>
-          </div>
-        </div>
-
-        {/* Hotel note */}
-        {d.hotelNote && (
-          <div style={v.noteBox}>
-            <div style={v.noteBoxTitle}>{d.hotelNote.split("\n")[0]}</div>
-            <ul style={v.noteList}>
-              {d.hotelNote.split("\n").slice(1)
-                .filter((l) => l.trim())
-                .map((line, i) => (
-                  <li key={i} style={v.noteItem}>
-                    {line.replace(/^[•\-\*]\s*/, "")}
-                  </li>
-                ))}
-            </ul>
-          </div>
-        )}
-      </RedSection>
+            ))}
+          </RedSection>
+        );
+      })()}
 
       {/* ══════════ FLIGHT DETAILS ══════════ */}
       {d.showFlights && d.flights && d.flights.length > 0 && (

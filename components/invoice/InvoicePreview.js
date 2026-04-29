@@ -8,12 +8,15 @@ export default function InvoicePreview({ data }) {
   const d = data || {};
 
   // ── Computed amounts ─────────────────────────────────────────────────────
-  const items = d.items || [];
+  const items     = d.items || [];
   const subTotal  = items.reduce((s, i) => s + (parseFloat(i.amount) || 0), 0);
   const cgstAmt   = d.cgstPct  ? (subTotal * parseFloat(d.cgstPct))  / 100 : 0;
   const sgstAmt   = d.sgstPct  ? (subTotal * parseFloat(d.sgstPct))  / 100 : 0;
   const igstAmt   = d.igstPct  ? (subTotal * parseFloat(d.igstPct))  / 100 : 0;
-  const grandTotal = subTotal + cgstAmt + sgstAmt + igstAmt;
+  const gstTotal  = cgstAmt + sgstAmt + igstAmt;
+  const afterGst  = subTotal + gstTotal;
+  const tcsAmt    = d.tcsPct   ? (afterGst  * parseFloat(d.tcsPct))   / 100 : 0;
+  const grandTotal = afterGst + tcsAmt;
   const amtWords  = numberToWords(grandTotal);
 
   const fmt = (n) =>
@@ -127,7 +130,13 @@ export default function InvoicePreview({ data }) {
             </tr>
           )}
 
-          {/* Tax rows */}
+          {/* Sub-total row */}
+          <tr style={iv.subTotalRow}>
+            <td style={{ ...iv.td, ...iv.subTotalCell, textAlign: "left" }} colSpan={4}>Sub-Total</td>
+            <td style={{ ...iv.td, ...iv.subTotalCell, textAlign: "right" }}>{fmt(subTotal)}</td>
+          </tr>
+
+          {/* GST rows */}
           {(d.cgstPct && cgstAmt > 0) && (
             <tr style={iv.taxRow}>
               <td style={{ ...iv.td, textAlign: "left" }} colSpan={3}>CGST</td>
@@ -150,7 +159,26 @@ export default function InvoicePreview({ data }) {
             </tr>
           )}
 
-          {/* Total */}
+          {/* Sub-total after GST — only shown when GST exists */}
+          {gstTotal > 0 && (
+            <tr style={iv.subTotalRow}>
+              <td style={{ ...iv.td, ...iv.subTotalCell, textAlign: "left" }} colSpan={4}>Sub-Total (after GST)</td>
+              <td style={{ ...iv.td, ...iv.subTotalCell, textAlign: "right" }}>{fmt(afterGst)}</td>
+            </tr>
+          )}
+
+          {/* TCS row */}
+          {(d.tcsPct && tcsAmt > 0) && (
+            <tr style={iv.tcsRow}>
+              <td style={{ ...iv.td, textAlign: "left", color: "#92400e" }} colSpan={3}>
+                TCS u/s 206C(1G) (International Tour)
+              </td>
+              <td style={{ ...iv.td, textAlign: "right", color: "#92400e" }}>{d.tcsPct}%</td>
+              <td style={{ ...iv.td, textAlign: "right", color: "#92400e" }}>{fmt(tcsAmt)}</td>
+            </tr>
+          )}
+
+          {/* Grand Total */}
           <tr style={iv.totalRow}>
             <td style={{ ...iv.td, ...iv.totalCell, textAlign: "left" }} colSpan={4}>Total</td>
             <td style={{ ...iv.td, ...iv.totalCell, textAlign: "right" }}>{fmt(grandTotal)}</td>
@@ -281,6 +309,9 @@ const iv = {
     verticalAlign: "top",
   },
   taxRow: { background: "#fafafa" },
+  subTotalRow: { background: "#f0f6ff" },
+  subTotalCell: { fontWeight: 700, fontSize: 12, color: "#1e40af", borderTop: "1px solid #e0e0e0" },
+  tcsRow: { background: "#fffbeb" },
   totalRow: { background: "#fff0f0" },
   totalCell: {
     fontWeight: 800, fontSize: 13, color: DARK,

@@ -58,7 +58,7 @@ function PackageCard({ pkg }) {
           loading="lazy"
           width="400"
           height="284"
-          style={{ width: "100%", height: 284, objectFit: "cover" }}
+          style={{ width: "100%", height: 254, objectFit: "cover" }}
         />
       </Link>
 
@@ -135,7 +135,7 @@ export default function FamilyPackages({ packages = [] }) {
   const activeLabel = subtypes.find(s => s.toLowerCase() === activeTab) || "";
 
   return (
-    <div className="dubai-family-package family-packages">
+    <div className="dubai-family-package family-packages familypage">
       <Topbar />
       <Offcanvas />
 

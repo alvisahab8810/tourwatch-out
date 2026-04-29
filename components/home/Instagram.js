@@ -62,7 +62,7 @@ export default function Instagram() {
             spaceBetween={10}
             loop={true}
             grabCursor={true}
-            slidesPerView={3.2}
+            slidesPerView={3.7}
             // autoplay={{
             //   delay: 2500,
             //   disableOnInteraction: false,
@@ -70,11 +70,11 @@ export default function Instagram() {
             breakpoints={{
               240: {
                 slidesPerView: 1.4,
-                spaceBetween: 10,
+                spaceBetween: 20,
                 centeredSlides: true,
               },
               768: { slidesPerView: 2.5, spaceBetween: 10 },
-              1024: { slidesPerView: 3.2, spaceBetween: 10 },
+              1024: { slidesPerView: 3.7, spaceBetween: 20 },
             }}
             navigation={{
               nextEl: ".swiper-button-next-1",

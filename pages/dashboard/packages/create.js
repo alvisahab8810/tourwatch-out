@@ -655,7 +655,7 @@ export default function CreatePackage() {
             </div>
 
             {/* ── Section 8: Advertisement ── */}
-            <div className="bk-form-section">
+            {/* <div className="bk-form-section">
               <h2 className="bk-section-title">Advertisement Banner</h2>
               <div className="bk-form-row bk-form-row-2">
                 <div className="bk-form-group">
@@ -678,7 +678,7 @@ export default function CreatePackage() {
                   value={form.advertisement.image?.alt||""}
                   onChange={e => setForm(p=>({...p,advertisement:{...p.advertisement,image:{...p.advertisement.image,alt:e.target.value}}}))} />
               </div>
-            </div>
+            </div> */}
 
             {/* ── Section 9: Inclusions / Exclusions ── */}
             <div className="bk-form-section">

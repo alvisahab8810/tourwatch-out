@@ -110,13 +110,13 @@ function PackageCard({ pkg }) {
 
 export default function InternationalDestinationPage({ packages = [] }) {
   return (
-    <div className="dubai-family-package family-packages">
+    <div className="dubai-family-package  national-pages">
       <Topbar />
       <Offcanvas />
 
       <div className="packages-hero-area">
         <img
-          src="/assets/images/family/hero-banner.webp"
+          src="/assets/images/family/inter-national-hero.webp"
           alt="International Packages"
           style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
         />

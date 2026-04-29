@@ -1,17 +1,36 @@
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
-import Topbar from "../../components/header/Header";
-import Offcanvas from "../../components/header/Offcanvas";
-import BottomReviews from "../../components/home/BottomReviews";
-import FAQs from "../../components/home/FAQs";
-import Blogs from "../../components/home/Blogs";
-import Popup from "../../components/corporate/Popup";
-import NewFooter from "../../components/footer/NewFooter";
-import PromoSection from "../../components/home/PromoSection";
-import BenifitSection from "../../components/home/BenifitSection";
-import MostPopular from "../../components/home/MostPopular";
-import TopReviews from "../../components/home/TopReviews";
-import Instagram from "../../components/home/Instagram";
+import Topbar from "../components/header/Header";
+import Offcanvas from "../components/header/Offcanvas";
+import BottomReviews from "../components/home/BottomReviews";
+import FAQs from "../components/home/FAQs";
+import Blogs from "../components/home/Blogs";
+import Popup from "../components/corporate/Popup";
+import NewFooter from "../components/footer/NewFooter";
+import PromoSection from "../components/home/PromoSection";
+import BenifitSection from "../components/home/BenifitSection";
+import MostPopular from "../components/home/MostPopular";
+import TopReviews from "../components/home/TopReviews";
+import Instagram from "../components/home/Instagram";
+
+const SUBTYPE_ORDER = ["Economy", "Deluxe", "Premium"];
+
+const TAB_ICONS = {
+  Economy: "/assets/images/dubai/itinerary/star.svg",
+  Deluxe:  "/assets/images/dubai/itinerary/stars.svg",
+  Premium: "/assets/images/dubai/itinerary/starss.svg",
+};
+
+function fmt(n) {
+  return `₹${Number(n).toLocaleString("en-IN")}`;
+}
+
+function getPackageHref(pkg) {
+  if (pkg.destination?.toLowerCase() === "dubai") {
+    return `/dubai/dubai-couple?tab=${pkg.packageSubtype?.toLowerCase()}`;
+  }
+  return `/destination/${pkg.destSlug}/package/${pkg.id}`;
+}
 
 const AMENITY_ICONS = {
   Meals:            "/assets/images/icons/itinerary/icon1.svg",
@@ -24,18 +43,9 @@ const AMENITY_ICONS = {
   "DJ Night":       "/assets/images/icons/itinerary/icon8.svg",
 };
 
-function fmt(n) {
-  return `₹${Number(n).toLocaleString("en-IN")}`;
-}
-
-function truncate(name) {
-  const words = (name || "").split(" ");
-  return words.length > 2 ? words.slice(0, 2).join(" ") + "..." : words.join(" ");
-}
-
 function PackageCard({ pkg }) {
-  const href        = `/destination/${pkg.destSlug}/package/${pkg.id}`;
-  const image       = pkg.webBanner?.src || "/assets/images/n-destination/kashmir.webp";
+  const href        = getPackageHref(pkg);
+  const image       = pkg.webBanner?.src || "/assets/images/i-destination/dubai.webp";
   const hasDiscount = pkg.basePrice && pkg.finalPrice && pkg.basePrice !== pkg.finalPrice;
   const highlights  = pkg.destinationHighlights || "";
 
@@ -48,13 +58,13 @@ function PackageCard({ pkg }) {
           loading="lazy"
           width="400"
           height="284"
-          style={{ width: "100%", height: 284, objectFit: "cover" }}
+          style={{ width: "100%", height: 254, objectFit: "cover" }}
         />
       </Link>
 
       <div className="p-4">
         <div className="header">
-          <h2>{truncate(pkg.packageName || pkg.destination)}</h2>
+          <h2>{(() => { const words = (pkg.packageName || pkg.destination || "").split(" "); return words.length > 2 ? words.slice(0, 2).join(" ") + "..." : words.join(" "); })()}</h2>
           <div className="share-area">
             <span className="duration-badge">{pkg.duration}</span>
             <Link href={href}>
@@ -89,7 +99,9 @@ function PackageCard({ pkg }) {
         <div className="price-section">
           <div className="price-info">
             {hasDiscount && (
-              <p className="old-price">Starting from <span className="oldcut">{fmt(pkg.basePrice)}</span></p>
+              <p className="old-price">
+                Starting from <span className="oldcut">{fmt(pkg.basePrice)}</span>
+              </p>
             )}
             <p className="new-price">{fmt(pkg.finalPrice || pkg.basePrice)}</p>
             <p className="price-desc">{pkg.priceType || "per person on twin sharing"}</p>
@@ -111,16 +123,23 @@ function PackageCard({ pkg }) {
   );
 }
 
-export default function NationalDestinationPage({ packages = [] }) {
+export default function CouplePackages({ packages = [] }) {
+  const subtypes   = SUBTYPE_ORDER.filter(s => packages.some(p => p.packageSubtype === s));
+  const [activeTab, setActiveTab] = useState(() => subtypes[0]?.toLowerCase() || "economy");
+
+  const visiblePkgs = packages.filter(p => p.packageSubtype?.toLowerCase() === activeTab);
+  const activeLabel = subtypes.find(s => s.toLowerCase() === activeTab) || "";
+
   return (
-    <div className="dubai-family-package  national-pages">
+    <div className="dubai-family-package family-packages familypage">
       <Topbar />
       <Offcanvas />
 
+      {/* Hero banner */}
       <div className="packages-hero-area">
         <img
-          src="/assets/images/family/national-hero.webp"
-          alt="National Packages"
+          src="/assets/images/family/inter-national-hero.webp"
+          alt="Couple Packages"
           style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
         />
       </div>
@@ -129,21 +148,44 @@ export default function NationalDestinationPage({ packages = [] }) {
         <div className="container">
           <section className="package-details-tabs">
 
-            <div className="section-header" style={{ marginBottom: "22px" }}>
-              <h2 className="section-title">Find Your perfect <span className="highlight">National </span> Destinations
-              </h2>
-              <p className="section-subtitle">Plan your truly heartwarming or family getaways with TourWatchOut!</p>
+            {/* Tabs */}
+            <div className="pdt-tabs-row">
+              {subtypes.map(sub => {
+                const id   = sub.toLowerCase();
+                const icon = TAB_ICONS[sub] || TAB_ICONS.Economy;
+                const best = sub === "Deluxe";
+                return (
+                  <button
+                    key={sub}
+                    className={`pdt-tab ${activeTab === id ? "is-active" : ""}`}
+                    onClick={() => setActiveTab(id)}
+                  >
+                    <img src={icon} alt={sub} className="pdt-tab-icon" />
+                    <span className="pdt-tab-label">{sub}</span>
+                    {best && <span className="pdt-best">BEST VALUE</span>}
+                  </button>
+                );
+              })}
             </div>
 
-            {packages.length > 0 ? (
+            {/* Section heading */}
+            <div className="section-header" style={{ marginBottom: "2rem" }}>
+              <h2 className="section-title">
+                <span className="highlight">{activeLabel} Couple </span> Packages
+              </h2>
+              <p className="section-subtitle">Let's find out what suits you the best</p>
+            </div>
+
+            {/* Cards */}
+            {visiblePkgs.length > 0 ? (
               <div className="national-list-bx">
-                {packages.map(pkg => (
+                {visiblePkgs.map(pkg => (
                   <PackageCard key={pkg.id} pkg={pkg} />
                 ))}
               </div>
             ) : (
               <p style={{ textAlign: "center", padding: "3rem", color: "#888" }}>
-                No packages available yet.
+                No packages available in this category yet.
               </p>
             )}
 
@@ -151,17 +193,12 @@ export default function NationalDestinationPage({ packages = [] }) {
         </div>
       </div>
 
-      
-     <PromoSection/>
-
-      <BenifitSection/>
-           <MostPopular/>
+      <PromoSection />
+      <BenifitSection />
+      <MostPopular />
       <TopReviews />
-      <Instagram/>
-      
+      <Instagram />
       <FAQs />
-     <PromoSection/>
-
       <Blogs />
       <Popup />
       <NewFooter />
@@ -170,33 +207,37 @@ export default function NationalDestinationPage({ packages = [] }) {
 }
 
 export async function getServerSideProps() {
-  const connectDB  = require("../../utils/mongodb").default;
-  const Package    = require("../../models/Package").default;
-  const { readAll: readDests } = require("../../utils/destStore");
+  const connectDB = require("../utils/mongodb").default;
+  const Package   = require("../models/Package").default;
+  const { readAll: readDests } = require("../utils/destStore");
 
   await connectDB();
 
   const allDests = readDests();
-  const nationalNames = allDests
-    .filter(d => d.type === "national" && d.status === "Active")
-    .map(d => d.name || d.title)
-    .filter(Boolean);
-
-  const slugMap = {};
+  const slugMap  = {};
   allDests.forEach(d => {
     slugMap[(d.name || d.title || "").toLowerCase()] = d.slug;
   });
 
   const raw = await Package.find({
-    destination: { $in: nationalNames },
+    packageType: { $regex: /^couple$/i },
     status:      { $regex: /^active$/i },
-  }).sort({ createdAt: 1 }).lean();
+  })
+    .sort({ createdAt: 1 })
+    .lean();
 
-  const packages = raw.map(p => ({
-    ...p,
-    id:       p._id,
-    destSlug: slugMap[p.destination?.toLowerCase()] || p.destination?.toLowerCase().replace(/\s+/g, "-") || "",
-  }));
+  const packages = raw
+    .map(p => ({
+      ...p,
+      id:       p._id,
+      destSlug:
+        slugMap[p.destination?.toLowerCase()] ||
+        p.destination?.toLowerCase().replace(/\s+/g, "-") ||
+        "",
+    }))
+    .sort((a, b) =>
+      SUBTYPE_ORDER.indexOf(a.packageSubtype) - SUBTYPE_ORDER.indexOf(b.packageSubtype)
+    );
 
   return { props: { packages: JSON.parse(JSON.stringify(packages)) } };
 }

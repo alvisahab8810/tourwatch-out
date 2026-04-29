@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import Head from "next/head";
 import {
   MdMenu, MdKeyboardArrowDown, MdPeople, MdSearch,
-  MdAdd, MdEdit, MdDelete,
+  MdAdd, MdEdit, MdDelete, MdChevronLeft, MdChevronRight,
 } from "react-icons/md";
 import { isAuthenticated } from "../../utils/voucherAuth";
 import Sidebar from "../../components/backend/Sidebar";
@@ -122,6 +122,7 @@ export default function PackagesList() {
 
             {/* Table */}
             <div className="bk-table-card">
+              <div className="bk-table-wrap">
               <table className="bk-table">
                 <thead>
                   <tr>
@@ -179,20 +180,32 @@ export default function PackagesList() {
                   ))}
                 </tbody>
               </table>
+              </div>
 
               {/* Pagination */}
               <div className="bk-pagination">
-                <div className="bk-per-page">
-                  Show&nbsp;
-                  <select value={perPage} onChange={e => { setPerPage(Number(e.target.value)); setPage(1); }}>
+                <div className="bk-pagination-left">
+                  <span className="bk-pag-label">Showing</span>
+                  <select className="bk-pag-size" value={perPage}
+                    onChange={e => { setPerPage(Number(e.target.value)); setPage(1); }}>
                     {PER_PAGE_OPTS.map(n => <option key={n}>{n}</option>)}
                   </select>
-                  &nbsp;per page
+                  <span className="bk-pag-label">of {filtered.length}</span>
                 </div>
-                <div className="bk-page-btns">
-                  <button disabled={page === 1} onClick={() => setPage(p => p - 1)}>‹</button>
-                  <span>{page} / {Math.max(totalPages, 1)}</span>
-                  <button disabled={page >= totalPages} onClick={() => setPage(p => p + 1)}>›</button>
+                <div className="bk-pagination-right">
+                  <button className="bk-pag-btn bk-pag-arrow"
+                    onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}>
+                    <MdChevronLeft size={18} />
+                  </button>
+                  {Array.from({ length: Math.min(Math.max(totalPages, 1), 5) }, (_, i) => i + 1).map(n => (
+                    <button key={n} className={`bk-pag-btn ${page === n ? "active" : ""}`}
+                      onClick={() => setPage(n)}>{n}</button>
+                  ))}
+                  {totalPages > 5 && <span style={{ padding: "0 4px", color: "#9ca3af" }}>…</span>}
+                  <button className="bk-pag-btn bk-pag-arrow"
+                    onClick={() => setPage(p => Math.min(Math.max(totalPages, 1), p + 1))} disabled={page >= Math.max(totalPages, 1)}>
+                    <MdChevronRight size={18} />
+                  </button>
                 </div>
               </div>
             </div>

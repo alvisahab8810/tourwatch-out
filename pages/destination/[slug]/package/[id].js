@@ -229,6 +229,74 @@ export default function PackageDetailPage({ pkg, dest }) {
                   </div>
 
 
+                    {/* Notes section */}
+              <div className="dubai-family-notes">
+                <div className="dfn-accordion">
+
+                  {(pkg.inclusions || pkg.exclusions) && (
+                    <AccordionSection title="Inclusions &amp; Exclusions">
+                      {pkg.inclusions && (
+                        <><h4 className="dfn-sub-heading">Inclusions</h4><BulletText text={pkg.inclusions} /></>
+                      )}
+                      {pkg.exclusions && (
+                        <><h4 className="dfn-sub-heading">Exclusions</h4><BulletText text={pkg.exclusions} /></>
+                      )}
+                    </AccordionSection>
+                  )}
+
+                  {pkg.aboutText && (
+                    <AccordionSection title={`About ${destName}`} defaultOpen>
+                      <div className="dfn-about">
+                        <div className="dfn-content">
+                          <div className="dfn-intro">
+                            {/* <img src="/assets/images/dubai/icons/info-circle.svg" alt="info" className="info-icon" /> */}
+                            <p>{pkg.aboutText}</p>
+                          </div>
+                          {Array.isArray(pkg.aboutImages) &&
+                            pkg.aboutImages.filter(i => i?.src).length > 0 && (
+                              <div className="dfn-highlights">
+                                {pkg.aboutImages.filter(i => i?.src).map((img, idx) => (
+                                  <img key={idx} src={img.src} alt={img.alt || "about"} />
+                                ))}
+                              </div>
+                          )}
+                        </div>
+                      </div>
+                    </AccordionSection>
+                  )}
+
+                  {pkg.bucketListText && (
+                    <AccordionSection title={`${destName} Bucket List`}>
+                      <BulletText text={pkg.bucketListText} />
+                      {Array.isArray(pkg.bucketImages) &&
+                        pkg.bucketImages.filter(i => i?.src).length > 0 && (
+                          <div className="dfn-highlights">
+                            {pkg.bucketImages.filter(i => i?.src).map((img, idx) => (
+                              <img key={idx} src={img.src} alt={img.alt || "bucket"} />
+                            ))}
+                          </div>
+                      )}
+                    </AccordionSection>
+                  )}
+
+                  {(pkg.cancellationPolicy || pkg.bookingPolicy || pkg.termsConditions) && (
+                    <AccordionSection title="Cancellation &amp; Policies">
+                      {pkg.cancellationPolicy && (
+                        <><h4 className="dfn-sub-heading">Cancellation Policy</h4><BulletText text={pkg.cancellationPolicy} /></>
+                      )}
+                      {pkg.bookingPolicy && (
+                        <><h4 className="dfn-sub-heading">Booking Policy</h4><p>{pkg.bookingPolicy}</p></>
+                      )}
+                      {pkg.termsConditions && (
+                        <><h4 className="dfn-sub-heading">Terms &amp; Conditions</h4><p>{pkg.termsConditions}</p></>
+                      )}
+                    </AccordionSection>
+                  )}
+
+                </div>
+              </div>
+
+
 
                 </div>
 
@@ -294,77 +362,12 @@ export default function PackageDetailPage({ pkg, dest }) {
               )} */}
 
 
-              <PromoSection/>
+              {/* <PromoSection/> */}
 
 
          
 
-              {/* Notes section */}
-              <div className="dubai-family-notes">
-                <div className="dfn-accordion">
-
-                  {(pkg.inclusions || pkg.exclusions) && (
-                    <AccordionSection title="Inclusions &amp; Exclusions">
-                      {pkg.inclusions && (
-                        <><h4 className="dfn-sub-heading">Inclusions</h4><BulletText text={pkg.inclusions} /></>
-                      )}
-                      {pkg.exclusions && (
-                        <><h4 className="dfn-sub-heading">Exclusions</h4><BulletText text={pkg.exclusions} /></>
-                      )}
-                    </AccordionSection>
-                  )}
-
-                  {pkg.aboutText && (
-                    <AccordionSection title={`About ${destName}`} defaultOpen>
-                      <div className="dfn-about">
-                        <div className="dfn-content">
-                          <div className="dfn-intro">
-                            <img src="/assets/images/dubai/icons/info-circle.svg" alt="info" className="info-icon" />
-                            <p>{pkg.aboutText}</p>
-                          </div>
-                          {Array.isArray(pkg.aboutImages) &&
-                            pkg.aboutImages.filter(i => i?.src).length > 0 && (
-                              <div className="dfn-highlights">
-                                {pkg.aboutImages.filter(i => i?.src).map((img, idx) => (
-                                  <img key={idx} src={img.src} alt={img.alt || "about"} />
-                                ))}
-                              </div>
-                          )}
-                        </div>
-                      </div>
-                    </AccordionSection>
-                  )}
-
-                  {pkg.bucketListText && (
-                    <AccordionSection title={`${destName} Bucket List`}>
-                      <BulletText text={pkg.bucketListText} />
-                      {Array.isArray(pkg.bucketImages) &&
-                        pkg.bucketImages.filter(i => i?.src).length > 0 && (
-                          <div className="dfn-highlights">
-                            {pkg.bucketImages.filter(i => i?.src).map((img, idx) => (
-                              <img key={idx} src={img.src} alt={img.alt || "bucket"} />
-                            ))}
-                          </div>
-                      )}
-                    </AccordionSection>
-                  )}
-
-                  {(pkg.cancellationPolicy || pkg.bookingPolicy || pkg.termsConditions) && (
-                    <AccordionSection title="Cancellation &amp; Policies">
-                      {pkg.cancellationPolicy && (
-                        <><h4 className="dfn-sub-heading">Cancellation Policy</h4><BulletText text={pkg.cancellationPolicy} /></>
-                      )}
-                      {pkg.bookingPolicy && (
-                        <><h4 className="dfn-sub-heading">Booking Policy</h4><p>{pkg.bookingPolicy}</p></>
-                      )}
-                      {pkg.termsConditions && (
-                        <><h4 className="dfn-sub-heading">Terms &amp; Conditions</h4><p>{pkg.termsConditions}</p></>
-                      )}
-                    </AccordionSection>
-                  )}
-
-                </div>
-              </div>
+            
 
             </section>
           </div>
