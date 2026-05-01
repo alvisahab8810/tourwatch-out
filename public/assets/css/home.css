@@ -1593,11 +1593,12 @@
 
 /* Panel area */
 .dubai-family-notes .dfn-panel {
-  padding: 18px 24px 26px;
-  color: #33323a;
-  font-size: 14px;
-  line-height: 1.6;
+  padding: 0px 24px 26px;
   background: transparent;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 19px;
+  color: #111;
 }
 
 /* About panel special layout */
@@ -1663,6 +1664,8 @@
   font-size: 14px;
   color: #2b2a3a;
   font-weight: 700;
+  margin-bottom: 10px!important;
+  padding-top: 10px;
 }
 
 /* sections paragraphs */
@@ -1735,7 +1738,9 @@
 }
 .dubai-family-notes li {
   margin: 6px 0;
-  font-size: 14px;
+  font-size: 15px;
+  font-weight: 400;
+  color: #111;
 }
 .dfn-content section{
   padding-left: 45px;;
@@ -1922,9 +1927,9 @@ img.top-bottom-img {
   align-items: flex-start;
 }
 .package-details-tabs .pdt-title {
-    font-size: 40px;
+    font-size: 31px;
     color: #111;
-    line-height: 39px;
+    line-height: 35px;
     padding-right: 20px;
     font-weight: 800;
 }
@@ -2063,7 +2068,7 @@ img.top-bottom-img {
 .package-details-tabs .it-day-title {
   color: #373B51;
   font-weight: 600;
-  font-size: 14px;
+  font-size: 16px;
   flex: 1;
 }
 .package-details-tabs .it-day-arrow {
@@ -2137,7 +2142,7 @@ img.top-bottom-img {
   line-height: normal;
 }
 .package-details-tabs .pc-note {
-  font-size: 12px;
+    font-size: 10px;
   color: #495560;
 }
 .package-details-tabs .pc-cta {
@@ -2371,4 +2376,10 @@ button.pdt-tab img {
 
 .desk-logo img{
   width: 230px;
+}
+
+.dfn-panel p {
+    font-size: 15px !important;
+    font-weight: 400;
+    line-height: 19px;
 }

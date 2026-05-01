@@ -160,7 +160,7 @@ export default function PackageDetailPage({ pkg, dest }) {
                         <div className="pc-top"><div className="pc-from">Starting from</div></div>
                         <div className="pc-price">
                           <div className="pc-amount">{price || "—"}</div>
-                          <div className="pc-note">{pkg.priceType || "per person on twin sharing"}</div>
+                          <div className="pc-note">{pkg.priceType || "02 Couples"}</div>
                         </div>
                       </div>
                       <div>
@@ -310,7 +310,7 @@ export default function PackageDetailPage({ pkg, dest }) {
                         <div className="pc-top"><div className="pc-from">Starting from</div></div>
                         <div className="pc-price">
                           <div className="pc-amount">{price || "—"}</div>
-                          <div className="pc-note">{pkg.priceType || "per person on twin sharing"}</div>
+                          <div className="pc-note">{pkg.priceType || "02 Couples"}</div>
                         </div>
                       </div>
                       <div>

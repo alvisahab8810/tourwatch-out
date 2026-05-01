@@ -70,9 +70,9 @@ export default function Topbar() {
               </ul>
             </li>
 
-            <li className="nav-item">
+            {/* <li className="nav-item">
               <Link href="/dubai-package" className="nav-link" aria-current="page">Dubai</Link>
-            </li>
+            </li> */}
 
             <li className="nav-item">
               <Link href="/blogs" className="nav-link">Blogs</Link>

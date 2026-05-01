@@ -76,9 +76,9 @@ export default function Offcanvas() {
                 </div>
               </li>
 
-              <li className="nav-item">
+              {/* <li className="nav-item">
                 <Link href="/dubai-package" className="nav-link">Dubai</Link>
-              </li>
+              </li> */}
               <li className="nav-item">
                 <Link href="/blogs" className="nav-link">Blogs</Link>
               </li>

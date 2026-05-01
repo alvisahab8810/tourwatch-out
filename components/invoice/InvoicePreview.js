@@ -41,11 +41,11 @@ export default function InvoicePreview({ data }) {
           <table style={iv.infoTable}>
             <tbody>
               <CRow label="Trade Name"    value="Tourwatchout" />
-              <CRow label="Email"         value="sales@tourwatchout.com" />
+              <CRow label="Email"         value="sales1@tourwatchout.com" />
               <CRow label="GSTIN"         value="09AANA63481P2ZK" />
               <CRow label="Company's PAN" value="AACR4934P" />
               <CRow label="State Name"    value="Uttar Pradesh, Code: 09" />
-              <CRow label="Address"       value="Regency Rd, Vibhuti Khand, Gomti Nagar, Lucknow, Uttar Pradesh 226010" />
+              <CRow label="Address"       value="Ground Floor, Unit no. -01, Tower 2, Parsvnath Planet, Gomti Nagar, Lucknow-226010" />
             </tbody>
           </table>
         </div>
@@ -119,7 +119,7 @@ export default function InvoicePreview({ data }) {
               <td style={{ ...iv.td, textAlign: "left", fontWeight: 600 }}>{item.particulars || "—"}</td>
               <td style={{ ...iv.td, textAlign: "center" }}>{item.hsn || ""}</td>
               <td style={{ ...iv.td, textAlign: "center" }}>{item.qty || ""}</td>
-              <td style={{ ...iv.td, textAlign: "right" }}>{item.rate ? fmt(item.rate) : ""}</td>
+              <td style={{ ...iv.td, textAlign: "right" }}>{item.rate ? fmt(item.rate) : "—"}</td>
               <td style={{ ...iv.td, textAlign: "right", fontWeight: 600 }}>
                 {item.amount ? fmt(item.amount) : ""}
               </td>
@@ -159,14 +159,6 @@ export default function InvoicePreview({ data }) {
             </tr>
           )}
 
-          {/* Sub-total after GST — only shown when GST exists */}
-          {gstTotal > 0 && (
-            <tr style={iv.subTotalRow}>
-              <td style={{ ...iv.td, ...iv.subTotalCell, textAlign: "left" }} colSpan={4}>Sub-Total (after GST)</td>
-              <td style={{ ...iv.td, ...iv.subTotalCell, textAlign: "right" }}>{fmt(afterGst)}</td>
-            </tr>
-          )}
-
           {/* TCS row */}
           {(d.tcsPct && tcsAmt > 0) && (
             <tr style={iv.tcsRow}>
@@ -196,8 +188,6 @@ export default function InvoicePreview({ data }) {
         </div>
 
         <div style={iv.signatureBox}>
-          <div style={iv.signFor}>For Realization Customer Services Private Limited</div>
-          <div style={iv.companyNameBlue}>Realization Customer Services Pvt. Ltd.</div>
           <div style={iv.signImgWrap}>
             <img
               src="/assets/voucher/signature.svg"
@@ -206,7 +196,6 @@ export default function InvoicePreview({ data }) {
               crossOrigin="anonymous"
             />
           </div>
-          <div style={iv.directorLabel}>Director</div>
         </div>
       </div>
 
@@ -252,7 +241,9 @@ function BillRow({ label, value }) {
 // ─── Styles ───────────────────────────────────────────────────────────────────
 const iv = {
   wrap: {
-    fontFamily: "'DM Sans', Arial, sans-serif",
+    fontFamily: "Arial, Helvetica, sans-serif",
+    letterSpacing: "0.01px",
+    wordSpacing: "0.1px",
     background: "#fff",
     maxWidth: 720,
     margin: "0 auto",
@@ -265,7 +256,7 @@ const iv = {
 
   // Title
   titleRow: { padding: "16px 24px 6px", textAlign: "center" },
-  title: { fontSize: 22, fontWeight: 800, color: DARK, margin: 0, letterSpacing: 0.5 },
+  title: { fontSize: 22, fontWeight: 700, color: DARK, margin: 0, letterSpacing: "normal" },
 
   // Company header
   companyHeader: {
@@ -273,10 +264,10 @@ const iv = {
     padding: "12px 24px 14px", gap: 16,
   },
   companyLeft: { flex: 1, minWidth: 0 },
-  companyName: { fontSize: 12.5, fontWeight: 800, color: DARK, marginBottom: 8, lineHeight: 1.4 },
+  companyName: { fontSize: 12.5, fontWeight: 700, color: DARK, marginBottom: 8, lineHeight: 1.4, letterSpacing: "normal" },
   infoTable: { borderCollapse: "collapse", width: "100%" },
   companyRight: { flexShrink: 0, display: "flex", alignItems: "flex-start", justifyContent: "flex-end" },
-  logoImg: { maxWidth: 90, maxHeight: 90, width: "auto", height: "auto", display: "block" },
+  logoImg: { maxWidth: 130, maxHeight: 120, width: "auto", height: "auto", display: "block" },
 
   divider: { height: 1, background: "#e0e0e0", margin: "0 24px" },
 
@@ -290,7 +281,7 @@ const iv = {
   billToSection: { padding: "12px 24px" },
   billToHead: { display: "flex", alignItems: "center", gap: 6, marginBottom: 10 },
   billToIcon: { fontSize: 14 },
-  billToLabel: { fontSize: 13, fontWeight: 800, color: DARK },
+  billToLabel: { fontSize: 13, fontWeight: 700, color: DARK, letterSpacing: "normal" },
   billToGrid: { display: "flex", gap: 24 },
   billToLeft: { flex: 1 },
   billToRight: { flex: 1 },
@@ -308,14 +299,15 @@ const iv = {
     borderBottom: "1px solid #ececec", textAlign: "center",
     verticalAlign: "top",
   },
-  taxRow: { background: "#fafafa" },
-  subTotalRow: { background: "#f0f6ff" },
-  subTotalCell: { fontWeight: 700, fontSize: 12, color: "#1e40af", borderTop: "1px solid #e0e0e0" },
-  tcsRow: { background: "#fffbeb" },
-  totalRow: { background: "#fff0f0" },
+  taxRow: {},
+  subTotalRow: {},
+  subTotalCell: { fontWeight: 700, fontSize: 12, color: DARK, borderTop: "1px solid #e0e0e0" },
+  tcsRow: {},
+  totalRow: {},
   totalCell: {
-    fontWeight: 800, fontSize: 13, color: DARK,
+    fontWeight: 700, fontSize: 13, color: DARK,
     borderTop: "2px solid #e0e0e0",
+    letterSpacing: "normal",
   },
 
   // Bottom: amount words + signature
@@ -327,10 +319,8 @@ const iv = {
   amtWords: { fontSize: 12.5, fontWeight: 700, color: DARK, lineHeight: 1.5 },
 
   signatureBox: { minWidth: 200, textAlign: "right" },
-  signFor: { fontSize: 10.5, color: "#555", marginBottom: 4 },
-  companyNameBlue: { fontSize: 11.5, fontWeight: 700, color: BLUE, marginBottom: 4 },
   signImgWrap: { display: "flex", justifyContent: "flex-end", marginBottom: 4 },
-  signImg: { maxHeight: 52, maxWidth: 140, width: "auto", height: "auto" },
+  signImg: { maxHeight: 90, maxWidth: 220, width: "auto", height: "auto" },
   directorLabel: { fontSize: 11, fontWeight: 700, color: "#444" },
 
   // Footer

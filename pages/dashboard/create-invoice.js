@@ -39,7 +39,7 @@ function buildInvoiceNo(allInvoices) {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 const uid = () => Date.now() + Math.random();
-const EMPTY_ITEM = () => ({ id: uid(), particulars: "", hsn: "", qty: "1", rate: "", amount: "" });
+const EMPTY_ITEM = () => ({ id: uid(), particulars: "", hsn: "9985", qty: "1", rate: "", amount: "" });
 
 function todayStr() {
   const d = new Date();
@@ -90,11 +90,11 @@ export default function CreateInvoice() {
       const updated = f.items.map((item) => {
         if (item.id !== id) return item;
         const next = { ...item, [key]: val };
-        // Auto-calculate amount from qty × rate
+        // Auto-calc amount from qty × rate only when rate is explicitly changed
         if (key === "qty" || key === "rate") {
           const q = parseFloat(key === "qty" ? val : next.qty) || 0;
           const r = parseFloat(key === "rate" ? val : next.rate) || 0;
-          next.amount = q && r ? String((q * r).toFixed(2)) : "";
+          if (q && r) next.amount = String((q * r).toFixed(2));
         }
         return next;
       });
@@ -138,11 +138,17 @@ export default function CreateInvoice() {
       const pageW = pdf.internal.pageSize.getWidth();
       const pageH = pdf.internal.pageSize.getHeight();
 
+      const patchClone = (clonedDoc) => {
+        const st = clonedDoc.createElement("style");
+        st.textContent = "* { font-family: Arial, Helvetica, sans-serif !important; letter-spacing: 0.01px !important; word-spacing: 0.1px !important; }";
+        clonedDoc.head.appendChild(st);
+      };
+
       // Capture footer separately if it exists
       let footerCanvas = null;
       if (footerEl) {
         footerCanvas = await html2canvas(footerEl, {
-          scale: SCALE, useCORS: true, backgroundColor: null, logging: false,
+          scale: SCALE, useCORS: true, backgroundColor: "#fff", logging: false, onclone: patchClone,
         });
         footerEl.style.display = "none";
       }
@@ -157,6 +163,7 @@ export default function CreateInvoice() {
       const mainCanvas = await html2canvas(wrapEl, {
         scale: SCALE, useCORS: true, backgroundColor: "#fff", logging: false,
         height: wrapEl.scrollHeight, windowHeight: wrapEl.scrollHeight,
+        onclone: patchClone,
       });
       if (footerEl) footerEl.style.display = "";
 
@@ -193,16 +200,17 @@ export default function CreateInvoice() {
         pdf.addImage(sc.toDataURL("image/png"), "PNG", 0, 0, pageW, sliceTallPx / pxPerMm);
       }
 
-      // Pin footer
+      // Place footer right after last content (not pinned to absolute page bottom)
       if (footerCanvas) {
         const lastSlicePx = cuts[cuts.length - 1] - cuts[cuts.length - 2];
-        const lastH = lastSlicePx / pxPerMm;
-        const rem = pageH - lastH;
-        if (rem >= footerImgH) {
-          pdf.addImage(footerCanvas.toDataURL("image/png"), "PNG", 0, pageH - footerImgH, pageW, footerImgH);
+        const contentEndMm = lastSlicePx / pxPerMm;
+        const remainMm = pageH - contentEndMm;
+        const GAP_MM = 5;
+        if (remainMm >= footerImgH + GAP_MM) {
+          pdf.addImage(footerCanvas.toDataURL("image/png"), "PNG", 0, contentEndMm + GAP_MM, pageW, footerImgH);
         } else {
           pdf.addPage();
-          pdf.addImage(footerCanvas.toDataURL("image/png"), "PNG", 0, pageH - footerImgH, pageW, footerImgH);
+          pdf.addImage(footerCanvas.toDataURL("image/png"), "PNG", 0, GAP_MM, pageW, footerImgH);
         }
       }
       return pdf;
@@ -370,7 +378,7 @@ export default function CreateInvoice() {
               <div style={{ flex: 3 }}>Particulars</div>
               <div style={{ flex: 1, textAlign: "center" }}>HSN/SAC</div>
               <div style={{ flex: 1, textAlign: "center" }}>Qty</div>
-              <div style={{ flex: 1.5, textAlign: "right" }}>Rate (₹)</div>
+              <div style={{ flex: 1.5, textAlign: "right" }}>Rate (%)</div>
               <div style={{ flex: 1.5, textAlign: "right" }}>Amount (₹)</div>
               <div style={{ width: 32 }} />
             </div>
@@ -392,10 +400,10 @@ export default function CreateInvoice() {
                   <input type="number" value={item.qty} onChange={(e) => updateItem(item.id, "qty", e.target.value)} placeholder="1" style={{ ...s.itemInput, textAlign: "center" }} />
                 </div>
                 <div style={{ flex: 1.5 }}>
-                  <input type="number" value={item.rate} onChange={(e) => updateItem(item.id, "rate", e.target.value)} placeholder="50000" style={{ ...s.itemInput, textAlign: "right" }} />
+                  <input type="number" value={item.rate} onChange={(e) => updateItem(item.id, "rate", e.target.value)} placeholder="0%" style={{ ...s.itemInput, textAlign: "right" }} />
                 </div>
                 <div style={{ flex: 1.5 }}>
-                  <input readOnly value={item.amount ? fmt(parseFloat(item.amount)) : ""} placeholder="0.00" style={{ ...s.itemInput, textAlign: "right", background: "#f5f5f5", color: "#333", fontWeight: 600 }} />
+                  <input type="number" value={item.amount} onChange={(e) => updateItem(item.id, "amount", e.target.value)} placeholder="0.00" style={{ ...s.itemInput, textAlign: "right", fontWeight: 600 }} />
                 </div>
                 <div style={{ width: 32 }}>
                   {form.items.length > 1 && (
@@ -433,7 +441,6 @@ export default function CreateInvoice() {
               {cgstAmt > 0 && <div style={s.summaryRow}><span>CGST @ {form.cgstPct}%</span><span>₹{fmt(cgstAmt)}</span></div>}
               {sgstAmt > 0 && <div style={s.summaryRow}><span>SGST @ {form.sgstPct}%</span><span>₹{fmt(sgstAmt)}</span></div>}
               {igstAmt > 0 && <div style={s.summaryRow}><span>IGST @ {form.igstPct}%</span><span>₹{fmt(igstAmt)}</span></div>}
-              {gstTotal > 0 && <div style={{ ...s.summaryRow, borderTop: "1px dashed #e5e7eb", paddingTop: 6, marginTop: 2, fontWeight: 600 }}><span>Sub-total (after GST)</span><span>₹{fmt(afterGst)}</span></div>}
               {tcsAmt > 0 && <div style={{ ...s.summaryRow, color: "#b45309" }}><span>TCS @ {form.tcsPct}% u/s 206C(1G)</span><span>₹{fmt(tcsAmt)}</span></div>}
               <div style={s.summaryTotal}><span>Grand Total</span><span>₹{fmt(grandTotal)}</span></div>
             </div>

@@ -1,5 +1,5 @@
 /**
- * VoucherPreview — matches Figma design.
+ * VoucherPreview — Voucher PDF layout.
  * id="voucher-pdf-footer" is used by the PDF generator to pin footer to page bottom.
  */
 
@@ -7,8 +7,52 @@ const RED = "#e84949";
 const DARK = "#1a1a2e";
 const LIGHT_PINK = "#fff5f5";
 
+// Convert <ol>/<ul> to div-based layout so html2canvas doesn't need CSS counters/::marker
+function flattenLists(html) {
+  let out = html;
+  // ordered lists
+  out = out.replace(/<ol[^>]*>([\s\S]*?)<\/ol>/gi, (_, inner) => {
+    let n = 0;
+    return inner.replace(/<li[^>]*>([\s\S]*?)<\/li>/gi, (__, content) => {
+      n++;
+      return `<div style="display:flex;align-items:flex-start;gap:5px;margin-bottom:3px"><span style="min-width:18px;font-weight:bold;flex-shrink:0">${n}.</span><span>${content.trim()}</span></div>`;
+    });
+  });
+  // unordered lists
+  out = out.replace(/<ul[^>]*>([\s\S]*?)<\/ul>/gi, (_, inner) =>
+    inner.replace(/<li[^>]*>([\s\S]*?)<\/li>/gi, (__, content) =>
+      `<div style="display:flex;align-items:flex-start;gap:5px;margin-bottom:3px"><span style="min-width:18px;flex-shrink:0">•</span><span>${content.trim()}</span></div>`
+    )
+  );
+  return out;
+}
+
+// Renders HTML from rich-text editor, or plain text with newlines as <p>
+function RichContent({ html, style }) {
+  if (!html) return null;
+  const hasHtml = /<[^>]+>/.test(html);
+  const base = { fontSize: 11.5, color: "#444", lineHeight: 1.8, margin: 0, ...(style || {}) };
+  if (hasHtml) {
+    return <div dangerouslySetInnerHTML={{ __html: flattenLists(html) }} style={base} />;
+  }
+  return (
+    <div style={base}>
+      {html.split("\n").filter((l) => l.trim()).map((line, i) => (
+        <p key={i} style={{ margin: "0 0 5px" }}>{line}</p>
+      ))}
+    </div>
+  );
+}
+
 export default function VoucherPreview({ data }) {
   const d = data || {};
+
+  // Build travel date from new or old format
+  const travelDate =
+    d.travelDate ||
+    (d.travelDateFrom && d.travelDateTo
+      ? `${d.travelDateFrom} – ${d.travelDateTo}`
+      : d.travelDateFrom || d.travelDateTo || "");
 
   return (
     <div style={v.wrap}>
@@ -17,15 +61,15 @@ export default function VoucherPreview({ data }) {
       <div style={v.header}>
         {/* Left: company info */}
         <div style={v.headerLeft}>
-          <div style={v.voucherTitle}>Tourwatchout Voucher</div>
+          <div style={v.voucherTitle}>Travel Voucher</div>
           <div style={v.realization}>Realization Customer Services Private Limited</div>
           <table style={v.infoTable}>
             <tbody>
               <HRow label="Trade Name"  value="Tourwatchout" />
-              <HRow label="Email"       value="sales@tourwatchout.com" />
+              <HRow label="Email"       value="sales1@tourwatchout.com" />
               <HRow label="GSTIN"       value="09AANA63481P2ZK" />
               <HRow label="State Name"  value="Uttar Pradesh, Code: 09" />
-              <HRow label="Address"     value="Uni no 01, Ground Floor, Tower 02, Parsvnath Planet, Vibhuti Khand, Gomti Nagar, Lucknow 226010" />
+              <HRow label="Address"     value="Ground Floor, Unit no. -01, Tower 2, Parsvnath Planet, Gomti Nagar, Lucknow-226010" />
             </tbody>
           </table>
         </div>
@@ -41,7 +85,6 @@ export default function VoucherPreview({ data }) {
         </div>
       </div>
 
-      {/* Red divider */}
       <div style={v.redBar} />
 
       {/* ══════════ VOUCHER META ══════════ */}
@@ -51,7 +94,7 @@ export default function VoucherPreview({ data }) {
           <InfoPair label="Trip ID"     value={d.tripId} />
           <InfoPair label="Name"        value={d.name} />
           <InfoPair label="Pax"         value={d.pax} />
-          <InfoPair label="Date"        value={d.travelDate} />
+          <InfoPair label="Date"        value={travelDate} />
         </div>
         <div style={v.metaDivider} />
         <div style={v.metaRight}>
@@ -64,42 +107,47 @@ export default function VoucherPreview({ data }) {
 
       {/* ══════════ HOTEL DETAILS ══════════ */}
       {d.showHotel !== false && (() => {
-        // Support both new hotels[] array and old flat-field vouchers
-        const hotels = d.hotels && d.hotels.length > 0
-          ? d.hotels
-          : d.hotelName
-            ? [{ id: 0, hotelName: d.hotelName, hotelAddress: d.hotelAddress, hotelConfirmNo: d.hotelConfirmNo, units: d.units, roomType: d.roomType, mealPlan: d.mealPlan, checkinDate: d.checkinDate, checkinTime: d.checkinTime, checkoutDate: d.checkoutDate, checkoutTime: d.checkoutTime, nights: d.nights, hotelNote: d.hotelNote }]
+        const hotels =
+          d.hotels && d.hotels.length > 0
+            ? d.hotels
+            : d.hotelName
+            ? [{ id: 0, hotelName: d.hotelName, hotelAddress: d.hotelAddress, place: d.place, hotelConfirmNo: d.hotelConfirmNo, units: d.units, roomType: d.roomType, mealPlan: d.mealPlan, checkinDate: d.checkinDate, checkinTime: d.checkinTime, checkoutDate: d.checkoutDate, checkoutTime: d.checkoutTime, nights: d.nights }]
             : [];
         if (hotels.length === 0) return null;
+        const hotelNote = d.hotelNote || hotels[0]?.hotelNote || "";
         return (
           <RedSection title="Hotel Details">
             {hotels.map((h, idx) => (
-              <div key={h.id ?? idx} style={idx > 0 ? { marginTop: 18, borderTop: "1px dashed #e0e0e0", paddingTop: 14 } : {}}>
+              <div
+                key={h.id ?? idx}
+                style={idx > 0 ? { marginTop: 18, borderTop: "1px dashed #e0e0e0", paddingTop: 14 } : {}}
+              >
                 <div style={v.hotelBlock}>
                   <div style={v.hotelLeft}>
                     <div style={v.hotelNameRow}>
                       <span style={v.hotelIcon}>🏨</span>
                       <span style={v.hotelName}>{h.hotelName || "—"}</span>
+                      {h.place && <span style={v.hotelPlace}>&nbsp;— {h.place}</span>}
                     </div>
-                    {h.hotelAddress && (
-                      <div style={v.hotelAddr}>📍 {h.hotelAddress}</div>
-                    )}
+                    {h.hotelAddress && <div style={v.hotelAddr}>📍 {h.hotelAddress}</div>}
                     <div style={{ height: 10 }} />
-                    <HotelRow label="Hotel Confirmation no." value={h.hotelConfirmNo} />
+                    <HotelRow label="Hotel Confirmation No." value={h.hotelConfirmNo} />
                     <HotelRow label="Units"                  value={h.units} />
                     <HotelRow label="Room Type"              value={h.roomType} />
                     <HotelRow label="Meal Plan"              value={h.mealPlan} />
                   </div>
                   <div style={v.hotelRight}>
                     <div style={v.dateCard}>
-                      <div style={v.dateCardTitle}>Check in &amp; Check out Date</div>
+                      <div style={v.dateCardTitle}>Check-in &amp; Check-out</div>
                       <div style={v.dateRow}>
                         <div style={v.dateBox}>
+                          <div style={v.dateLabel}>Check-in</div>
                           <div style={v.dateDay}>{h.checkinDate  || "—"}</div>
                           <div style={v.dateTime}>{h.checkinTime  || ""}</div>
                         </div>
                         <div style={v.dateArrow}>→</div>
                         <div style={v.dateBox}>
+                          <div style={v.dateLabel}>Check-out</div>
                           <div style={v.dateDay}>{h.checkoutDate || "—"}</div>
                           <div style={v.dateTime}>{h.checkoutTime || ""}</div>
                         </div>
@@ -108,22 +156,24 @@ export default function VoucherPreview({ data }) {
                     </div>
                   </div>
                 </div>
-                {h.hotelNote && (
-                  <div style={v.noteBox}>
-                    <div style={v.noteBoxTitle}>{h.hotelNote.split("\n")[0]}</div>
-                    <ul style={v.noteList}>
-                      {h.hotelNote.split("\n").slice(1)
-                        .filter((l) => l.trim())
-                        .map((line, i) => (
-                          <li key={i} style={v.noteItem}>
-                            {line.replace(/^[•\-\*]\s*/, "")}
-                          </li>
-                        ))}
-                    </ul>
-                  </div>
-                )}
               </div>
             ))}
+            {hotelNote && (
+              <div style={v.noteBox}>
+                <div style={v.noteBoxTitle}>{hotelNote.split("\n")[0]}</div>
+                <ul style={v.noteList}>
+                  {hotelNote
+                    .split("\n")
+                    .slice(1)
+                    .filter((l) => l.trim())
+                    .map((line, i) => (
+                      <li key={i} style={v.noteItem}>
+                        {line.replace(/^[•\-\*]\s*/, "")}
+                      </li>
+                    ))}
+                </ul>
+              </div>
+            )}
           </RedSection>
         );
       })()}
@@ -184,65 +234,86 @@ export default function VoucherPreview({ data }) {
         </RedSection>
       )}
 
-      {/* ══════════ ITINERARY ══════════ */}
+      {/* ══════════ DAY-WISE ITINERARY — vertical cards ══════════ */}
       {d.showItinerary && d.itineraries && d.itineraries.length > 0 && (
         <RedSection title="Day-wise Itinerary">
-          <table style={v.table}>
-            <thead>
-              <tr>
-                <Th w={58}>Date</Th>
-                <Th>Tour</Th>
-                <Th w={54}>Transfer</Th>
-                <Th w={68}>Pick-up Time</Th>
-                <Th>Itinerary</Th>
-              </tr>
-            </thead>
-            <tbody>
-              {d.itineraries.map((item, i) => (
-                <tr key={i} style={{ background: i % 2 === 0 ? "#fff" : "#fafafa" }}>
-                  <Td bold>{item.date}</Td>
-                  <Td>{item.tour}</Td>
-                  <Td center>{item.transfer || "NA"}</Td>
-                  <Td center>{item.pickup_time || "NA"}</Td>
-                  <Td>{item.itinerary}</Td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          {d.itineraries.map((item, i) => (
+            <div
+              key={i}
+              style={{
+                marginBottom: i < d.itineraries.length - 1 ? 18 : 0,
+                paddingBottom: i < d.itineraries.length - 1 ? 16 : 0,
+                borderBottom: i < d.itineraries.length - 1 ? "1px dashed #e0e0e0" : "none",
+              }}
+            >
+              {/* Day badge + date + title */}
+              <div style={v.dayHeader}>
+                <div style={v.dayBadge}>Day {i + 1}</div>
+                {item.date  && <span style={v.dayDate}>{item.date}</span>}
+                {item.title && <span style={v.dayTitle}> — {item.title}</span>}
+              </div>
+
+              {/* Tour meta row */}
+              {(item.tour || item.transfer || item.pickup_time) && (
+                <div style={v.dayMetaRow}>
+                  {item.tour        && <span style={v.dayMeta}><strong>Tour:</strong> {item.tour}</span>}
+                  {item.transfer    && <span style={v.dayMeta}><strong>Transfer:</strong> {item.transfer}</span>}
+                  {item.pickup_time && <span style={v.dayMeta}><strong>Pick-up:</strong> {item.pickup_time}</span>}
+                </div>
+              )}
+
+              {/* Rich itinerary details */}
+              {item.itinerary && (
+                <div style={{ marginTop: 6 }}>
+                  <RichContent html={item.itinerary} />
+                </div>
+              )}
+            </div>
+          ))}
         </RedSection>
       )}
 
-      {/* ══════════ EXTRAS ══════════ */}
-      {d.extras && (
+      {/* ══════════ INCLUSIONS ══════════ */}
+      {d.inclusions && (
+        <RedSection title="Inclusions">
+          <RichContent html={d.inclusions} />
+        </RedSection>
+      )}
+
+      {/* ══════════ EXCLUSIONS ══════════ */}
+      {d.exclusions && (
+        <RedSection title="Exclusions">
+          <RichContent html={d.exclusions} />
+        </RedSection>
+      )}
+
+      {/* ══════════ VALUE ADDITION ══════════ */}
+      {(d.valueAddition || d.extras) && (
         <div style={v.extrasBar}>
-          <strong>Extras:</strong>
-          <span style={{ marginLeft: 8, color: "#555" }}>{d.extras}</span>
+          <strong>Value Addition:</strong>
+          <span style={{ marginLeft: 8, color: "#555" }}>{d.valueAddition || d.extras}</span>
         </div>
       )}
 
       {/* ══════════ SPECIAL INSTRUCTIONS ══════════ */}
       {d.specialInstructions && (
         <RedSection title="Special Instructions">
-          <p style={v.noteText}>{d.specialInstructions}</p>
+          <RichContent html={d.specialInstructions} />
         </RedSection>
       )}
 
-      {/* ══════════ IMPORTANT NOTES ══════════ */}
-      {d.importantNotes && (
-        <RedSection title="Important Notes: (Please read before Travel)">
-          <div style={v.noteText}>
-            {d.importantNotes.split("\n").map((line, i) => (
-              <p key={i} style={{ margin: "0 0 5px" }}>{line}</p>
-            ))}
-          </div>
+      {/* ══════════ T&C ══════════ */}
+      {(d.termsConditions || d.importantNotes) && (
+        <RedSection title="T&amp;C">
+          <RichContent html={d.termsConditions || d.importantNotes} />
         </RedSection>
       )}
 
       {/* ══════════ FOOTER — pinned to page bottom in PDF ══════════ */}
       <div id="voucher-pdf-footer" style={v.footer}>
         <div style={v.footerItem}>
-          <img src="/assets/voucher/email.svg"    alt="" style={v.fIcon} crossOrigin="anonymous" />
-          <span style={v.fEmail}>sales@tourwatchout.com</span>
+          <img src="/assets/voucher/email.svg"     alt="" style={v.fIcon} crossOrigin="anonymous" />
+          <span style={v.fEmail}>sales1@tourwatchout.com</span>
           <span style={v.fMuted}>&nbsp;(for any query)</span>
         </div>
         <div style={v.footerItem}>
@@ -258,15 +329,15 @@ export default function VoucherPreview({ data }) {
   );
 }
 
-// ─── Sub-components ──────────────────────────────────────────────────────────
+// ─── Sub-components ───────────────────────────────────────────────────────────
 
 function HRow({ label, value }) {
   return (
     <tr>
-      <td style={{ fontSize: 10.5, fontWeight: 700, color: "#555", paddingRight: 10, paddingBottom: 3, whiteSpace: "nowrap", verticalAlign: "top" }}>
+      <td style={{ fontSize: 11, fontWeight: 700, color: "#555", paddingRight: 10, paddingBottom: 3, whiteSpace: "nowrap", verticalAlign: "top" }}>
         {label}
       </td>
-      <td style={{ fontSize: 10.5, color: "#333", paddingBottom: 3, lineHeight: 1.5 }}>
+      <td style={{ fontSize: 11, color: "#333", paddingBottom: 3, lineHeight: 1.5 }}>
         : {value}
       </td>
     </tr>
@@ -284,16 +355,13 @@ function InfoPair({ label, value, right }) {
 
 function RedSection({ title, children }) {
   return (
-    // data-pdf-section is read by the PDF generator to find safe page-break points
     <div data-pdf-section="true" style={{ borderTop: "1px solid #e8e8e8" }}>
       <div style={{
         background: RED, color: "#fff",
         padding: "9px 18px",
-        display: "flex", justifyContent: "space-between", alignItems: "center",
         fontSize: 13, fontWeight: 700,
       }}>
         {title}
-        <span style={{ opacity: 0.7, fontWeight: 400, fontSize: 16, lineHeight: 1 }}>—</span>
       </div>
       <div style={{ padding: "14px 18px", background: "#fff" }}>{children}</div>
     </div>
@@ -303,7 +371,7 @@ function RedSection({ title, children }) {
 function HotelRow({ label, value }) {
   return (
     <div style={{ display: "flex", gap: 6, marginBottom: 4, fontSize: 12 }}>
-      <span style={{ fontWeight: 700, color: "#555", minWidth: 170, flexShrink: 0 }}>{label}:</span>
+      <span style={{ fontWeight: 700, color: "#555", minWidth: 180, flexShrink: 0 }}>{label}:</span>
       <span style={{ color: "#333" }}>{value || "—"}</span>
     </div>
   );
@@ -339,7 +407,9 @@ function Td({ children, bold, center }) {
 // ─── Styles ───────────────────────────────────────────────────────────────────
 const v = {
   wrap: {
-    fontFamily: "'DM Sans', Arial, sans-serif",
+    fontFamily: "Arial, Helvetica, sans-serif",
+    letterSpacing: "0.01px",
+    wordSpacing: "0.1px",
     background: "#fff",
     width: "100%",
     maxWidth: 780,
@@ -357,23 +427,26 @@ const v = {
     alignItems: "flex-start",
     padding: "20px 22px 16px",
     background: "#fff",
-    gap: 16,
+    gap: 20,
   },
   headerLeft: {
     flex: 1,
-    minWidth: 0,        // prevent flex child from overflowing
+    minWidth: 0,
   },
   voucherTitle: {
-    fontSize: 17,
-    fontWeight: 800,
+    fontSize: 22,
+    fontWeight: 700,
     color: DARK,
-    marginBottom: 2,
-    lineHeight: 1.3,
+    marginBottom: 3,
+    lineHeight: 1.2,
+    letterSpacing: "normal",
   },
   realization: {
-    fontSize: 10,
-    color: "#888",
-    marginBottom: 10,
+    fontSize: 12,
+    fontWeight: 600,
+    color: "#555",
+    marginBottom: 12,
+    lineHeight: 1.4,
   },
   infoTable: {
     borderCollapse: "collapse",
@@ -386,14 +459,12 @@ const v = {
     justifyContent: "center",
     paddingLeft: 12,
   },
-  // NO objectFit — html2canvas ignores it and stretches the image.
-  // Let the img scale naturally within maxWidth/maxHeight.
   logoImg: {
-    maxWidth: 88,
-    maxHeight: 88,
-    width: "auto",
+    width: 140,
     height: "auto",
+    maxHeight: 120,
     display: "block",
+    objectFit: "contain",
   },
   redBar: { height: 3, background: RED },
 
@@ -412,21 +483,23 @@ const v = {
   // Hotel
   hotelBlock: { display: "flex", gap: 18, alignItems: "flex-start" },
   hotelLeft: { flex: 1, minWidth: 0 },
-  hotelNameRow: { display: "flex", alignItems: "center", gap: 6, marginBottom: 3 },
+  hotelNameRow: { display: "flex", alignItems: "center", gap: 6, marginBottom: 3, flexWrap: "wrap" },
   hotelIcon: { fontSize: 14, flexShrink: 0 },
-  hotelName: { fontSize: 15, fontWeight: 800, color: "#2563eb", lineHeight: 1.3 },
+  hotelName: { fontSize: 15, fontWeight: 700, color: DARK, lineHeight: 1.3, letterSpacing: "normal" },
+  hotelPlace: { fontSize: 13, fontWeight: 600, color: "#6b7280" },
   hotelAddr: { fontSize: 11, color: "#888", marginBottom: 8, paddingLeft: 2, lineHeight: 1.5 },
-  hotelRight: { width: 200, flexShrink: 0 },
+  hotelRight: { width: 310, flexShrink: 0 },
   dateCard: {
     border: "1px solid #e8e8e8", borderRadius: 8,
     padding: 12, background: "#f9f9f9", textAlign: "center",
   },
-  dateCardTitle: { fontSize: 10.5, fontWeight: 700, color: "#666", marginBottom: 10 },
+  dateCardTitle: { fontSize: 11, fontWeight: 700, color: RED, marginBottom: 10, letterSpacing: 0.3 },
   dateRow: { display: "flex", alignItems: "center", justifyContent: "space-between" },
   dateBox: { flex: 1 },
-  dateDay: { fontSize: 12, fontWeight: 700, color: "#1a1a2e", lineHeight: 1.4 },
+  dateLabel: { fontSize: 9.5, fontWeight: 600, color: "#9ca3af", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 2 },
+  dateDay: { fontSize: 11.5, fontWeight: 700, color: "#1a1a2e", lineHeight: 1.4 },
   dateTime: { fontSize: 10, color: "#888", marginTop: 3 },
-  dateArrow: { fontSize: 16, color: RED, padding: "0 4px" },
+  dateArrow: { fontSize: 18, color: RED, padding: "0 6px" },
   nightsPill: {
     marginTop: 9, background: "#fff2f2",
     color: RED, fontSize: 11, fontWeight: 700,
@@ -464,14 +537,34 @@ const v = {
   // Table
   table: { width: "100%", borderCollapse: "collapse" },
 
-  // Extras
-  extrasBar: {
-    padding: "10px 18px", background: "#f9f9f9",
-    borderTop: "1px solid #ececec", fontSize: 12,
+  // Day-wise Itinerary vertical layout
+  dayHeader: {
+    display: "flex", alignItems: "center", gap: 8,
+    marginBottom: 8, flexWrap: "wrap",
   },
+  dayBadge: {
+    background: RED, color: "#fff",
+    fontSize: 11, fontWeight: 700,
+    borderRadius: 4, padding: "3px 10px",
+    flexShrink: 0,
+  },
+  dayDate: { fontSize: 12, fontWeight: 700, color: "#374151" },
+  dayTitle: { fontSize: 13, fontWeight: 700, color: DARK, letterSpacing: "normal" },
+  dayMetaRow: {
+    display: "flex", gap: 18, flexWrap: "wrap",
+    fontSize: 11.5, color: "#555", marginBottom: 4,
+  },
+  dayMeta: { display: "inline-flex", gap: 4 },
 
-  // Notes text
-  noteText: { fontSize: 11.5, color: "#444", lineHeight: 1.75, margin: 0 },
+  // Extras / Value Addition
+  extrasBar: {
+    padding: "11px 18px 11px 22px",
+    background: "#f3f4f6",
+    borderTop: "1px solid #e0e0e0",
+    borderBottom: "1px solid #e0e0e0",
+    borderLeft: `4px solid ${DARK}`,
+    fontSize: 12.5,
+  },
 
   // Footer
   footer: {

@@ -455,6 +455,29 @@ right: 0;
 
 @media(max-width:760px){
 
+    .package-details-tabs .section-title{
+        margin-bottom: 0;
+    }
+
+  
+
+    button.pdt-tab img {
+    margin-right: 4px;
+    height: 10px;
+}
+
+    .packages-hero-area {
+    height: 416px;
+}
+
+    .mob-menus .mob-pkg-toggle {
+
+    text-align: left;
+    color: #373737!important;
+    font-weight: bold!important;
+    font-size: 13px!important;
+}
+
     .explore-row h2 {
     font-size: 20px;
     margin-bottom: 0;
@@ -1933,7 +1956,8 @@ section.national-dest {
     font-size: 14px;
 }
 .footer ul li a {
-    font-size: 14px;
+    font-size: 12px;
+    line-height: 20px;
 }
 .form-pop p {
     font-size: 12px;

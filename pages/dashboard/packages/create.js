@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import {
@@ -16,8 +17,14 @@ const DURATION_OPTS = [
   "11N 12D","12N 13D","13N 14D","14N 15D",
 ];
 const PRICE_TYPES = [
-  "per person on twin sharing","per person on triple sharing",
-  "per person on quad sharing","per couple","per group",
+  "Per Person",
+  "Per Group",
+  "Per Couple",
+  "02 Couples",
+  "01 Couple + 01 Child (below 5 years)",
+  "01 Couple + 01 Child (below 4 years) + 01 Child (below 10 years)",
+  "01 Couple + 01 Child (below 5 years) + 01 Child (above 15 years)",
+  "01 Couple + 01 Child (above 12 years) + 01 Child (above 15 years)",
 ];
 const CALLBACK_TYPES = ["Call", "WhatsApp", "Email"];
 
@@ -120,6 +127,12 @@ function AmenityPicker({ selected, onChange, allAmenities, onSaveCustom }) {
     setDraft(selected.map(a => a.name));
     setSearch("");
     setOpen(true);
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeModal() {
+    setOpen(false);
+    document.body.style.overflow = "";
   }
 
   function toggleDraft(name) {
@@ -129,7 +142,7 @@ function AmenityPicker({ selected, onChange, allAmenities, onSaveCustom }) {
   function handleSelect() {
     const chosen = allAmenities.filter(a => draft.includes(a.name));
     onChange(chosen);
-    setOpen(false);
+    closeModal();
   }
 
   async function handleAddCustom() {
@@ -168,13 +181,13 @@ function AmenityPicker({ selected, onChange, allAmenities, onSaveCustom }) {
         </button>
       </div>
 
-      {/* Modal */}
-      {open && (
-        <div className="bk-modal-overlay" onClick={() => setOpen(false)}>
+      {/* Modal — rendered via portal at body level so position:fixed always works */}
+      {open && typeof document !== "undefined" && createPortal(
+        <div className="bk-modal-overlay" onClick={closeModal}>
           <div className="bk-modal" onClick={e => e.stopPropagation()}>
             <div className="bk-modal-header">
               <span className="bk-modal-title">icon set</span>
-              <button className="bk-modal-close" onClick={() => setOpen(false)}><MdClose size={18} /></button>
+              <button className="bk-modal-close" onClick={closeModal}><MdClose size={18} /></button>
             </div>
 
             {/* Search */}
@@ -245,10 +258,11 @@ function AmenityPicker({ selected, onChange, allAmenities, onSaveCustom }) {
 
             <div className="bk-modal-footer">
               <button className="bk-modal-select" onClick={handleSelect}>Select</button>
-              <button className="bk-modal-cancel" onClick={() => setOpen(false)}>Cancel</button>
+              <button className="bk-modal-cancel" onClick={closeModal}>Cancel</button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );

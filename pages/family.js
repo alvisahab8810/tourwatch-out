@@ -107,8 +107,11 @@ function PackageCard({ pkg }) {
                 Starting from <span className="oldcut">{fmt(pkg.basePrice)}</span>
               </p>
             )}
-            <p className="new-price">{fmt(pkg.finalPrice || pkg.basePrice)}</p>
-            <p className="price-desc">{pkg.priceType || "per person on twin sharing"}</p>
+            <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+              <p className="new-price" style={{ margin: 0 }}>{fmt(pkg.finalPrice || pkg.basePrice)}</p>
+              <span style={{ fontSize: 9, fontWeight: 700, background: "#e84949", color: "#fff", borderRadius: 4, padding: "2px 6px", letterSpacing: 0.3, whiteSpace: "nowrap" }}>Incl. taxes</span>
+            </div>
+            <p className="price-desc">{pkg.priceType || "02 Couples"}</p>
           </div>
           <div className="contact-icons">
             <Link href="tel:+918882701800">

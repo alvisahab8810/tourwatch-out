@@ -15,9 +15,13 @@ import Sidebar from "../../components/backend/Sidebar";
 // ─── Date helpers ─────────────────────────────────────────────────────────────
 function toISO(displayStr) {
   if (!displayStr) return "";
+  if (/^\d{4}-\d{2}-\d{2}$/.test(displayStr)) return displayStr;
   const d = new Date(displayStr);
   if (isNaN(d)) return "";
-  return d.toISOString().split("T")[0];
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${dd}`;
 }
 function fromISO(iso, fmt = "long") {
   if (!iso) return "";
@@ -26,7 +30,19 @@ function fromISO(iso, fmt = "long") {
   if (fmt === "flight") {
     return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
   }
+  if (fmt === "short") {
+    return d.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
+  }
   return d.toLocaleDateString("en-IN", { weekday: "short", day: "2-digit", month: "short", year: "numeric" });
+}
+function buildTravelDate(from, to) {
+  if (from && to) return `${from} – ${to}`;
+  return from || to || "";
+}
+function toRichText(text) {
+  if (!text) return "";
+  if (/<[^>]+>/.test(text)) return text;
+  return text.replace(/\n/g, "<br>");
 }
 
 // ─── Auto ID generation ───────────────────────────────────────────────────────
@@ -42,20 +58,30 @@ function getMonthPad() {
 function buildVoucherNo(allVouchers) {
   const fy = getFinancialYear(), mm = getMonthPad();
   const prefix = `TWO/${fy}/${mm}/`;
-  // count vouchers created this month that already have a number with this prefix
   const count = allVouchers.filter((v) => v.voucherNo?.startsWith(prefix)).length;
   return `${prefix}${String(count + 1).padStart(3, "0")}`;
 }
 function buildTripId(allVouchers) {
   const fy = getFinancialYear(), mm = getMonthPad();
   const prefix = `TWO/${fy}/${mm}/`;
-  // Trip IDs are cumulative for the financial year; the series starts at 27
-  // (26 pre-existing trips outside this system)
   const yearCount = allVouchers.filter((v) => v.tripId?.startsWith(`TWO/${fy}/`)).length;
   return `${prefix}${String(26 + yearCount + 1).padStart(3, "0")}`;
 }
 
-// ─── Factories ──────────────────────────────────────────────────────────────
+// ─── Options ──────────────────────────────────────────────────────────────────
+const MEAL_PLAN_OPTIONS = [
+  "EPAI - Room Only",
+  "CPAI - Room & Breakfast",
+  "MAPAI - Breakfast & Lunch",
+  "MAPAI - Breakfast & Dinner",
+  "APAI - Breakfast, Lunch & Dinner",
+];
+const NIGHTS_OPTIONS = [
+  "1N/2D","2N/3D","3N/4D","4N/5D","5N/6D",
+  "6N/7D","7N/8D","8N/9D","9N/10D","10N/11D","11N/12D",
+];
+
+// ─── Factories ────────────────────────────────────────────────────────────────
 const uid = () => Date.now() + Math.random();
 const EMPTY_FLIGHT = () => ({
   id: uid(), pnr: "", flight_no: "",
@@ -63,13 +89,13 @@ const EMPTY_FLIGHT = () => ({
   to_city: "", to_code: "", to_date: "", to_time: "",
 });
 const EMPTY_TRANSPORT = () => ({ id: uid(), vehicle_type: "", driver_name: "", driver_contact: "" });
-const EMPTY_ITINERARY = () => ({ id: uid(), date: "", tour: "", transfer: "", pickup_time: "", itinerary: "" });
+const EMPTY_ITINERARY = () => ({ id: uid(), date: "", title: "", tour: "", transfer: "", pickup_time: "", itinerary: "" });
 const EMPTY_HOTEL = () => ({
   id: uid(),
+  place: "",
   hotelName: "", hotelAddress: "", hotelConfirmNo: "", units: "",
   roomType: "", mealPlan: "",
-  checkinDate: "", checkinTime: "", checkoutDate: "", checkoutTime: "", nights: "",
-  hotelNote: DEFAULT_HOTEL_NOTE,
+  checkinDate: "", checkinTime: "2:00 PM", checkoutDate: "", checkoutTime: "10:00 AM", nights: "",
 });
 
 const DEFAULT_HOTEL_NOTE = `Kindly note, early check-in is subject to availability of the rooms or hotel may charge directly to the guest.
@@ -77,9 +103,9 @@ const DEFAULT_HOTEL_NOTE = `Kindly note, early check-in is subject to availabili
 • Passport, Driving License and Aadhaar are accepted as ID proof(s). Local ids are allowed.
 • Please ask the property for the GST invoice at the time of check-in and collect it at the time of check-out (valid only for properties in India).`;
 
-const DEFAULT_IMPORTANT_NOTES = `As per the Dubai Executive Council Resolution No. (2) of 2014, a "Tourism Dirham(TD)" charge of AED 10 to AED 20 per room per night (depending on the Hotel Classification category) will apply for hotel rooms and Suites. For Apartment rooms, charges are AED 10 or AED 20 per bedroom per apartment per night.
+const DEFAULT_TC = `As per the Dubai Executive Council Resolution No. (2) of 2014, a "Tourism Dirham(TD)" charge of AED 10 to AED 20 per room per night (depending on the Hotel Classification category) will apply for hotel rooms and Suites. For Apartment rooms, charges are AED 10 or AED 20 per bedroom per apartment per night.
 
-We request to the guest that at the time of arrival in UAE, kindly purchase a local SIM, so we can communicate easily. Pick-up & drop timings are only indicative & might change, exact timings will be informed by the operations team when the customer is here.
+We request to the guest that at the time of arrival in UAE, kindly purchase a local SIM, so we can communicate easily. Pick-up &amp; drop timings are only indicative &amp; might change, exact timings will be informed by the operations team when the customer is here.
 
 It is advisable for customers to contact our local Dubai office and inform their hotel room numbers/local contact number once they check-in.
 
@@ -87,28 +113,31 @@ In case any tour is cancelled, due to bad weather or any unavoidable circumstanc
 
 const DEFAULT_FORM = {
   voucherNo: "", tripId: "",
-  name: "", pax: "", travelDate: "", destination: "",
+  name: "", pax: "", travelDateFrom: "", travelDateTo: "", travelDate: "", destination: "",
   email: "", contactNo: "", address: "",
   showHotel: false, hotels: [],
   showFlights: false, flights: [],
   showTransport: false, transports: [],
   showItinerary: false, itineraries: [],
-  extras: "Water, Cake, GTB - N/A",
+  hotelNote: DEFAULT_HOTEL_NOTE,
+  inclusions: "",
+  exclusions: "",
+  valueAddition: "Water, Cake, GTB - N/A",
   specialInstructions: "",
-  importantNotes: DEFAULT_IMPORTANT_NOTES,
+  termsConditions: DEFAULT_TC,
 };
 
 export default function CreateVoucher() {
   const router = useRouter();
   const { id: editId } = router.query;
   const [ready, setReady] = useState(false);
+  const [formKey, setFormKey] = useState(0);
   const [sidebar, setSidebar] = useState(false);
   const [form, setForm] = useState(DEFAULT_FORM);
   const [showPreview, setShowPreview] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [pdfLoading, setPdfLoading] = useState(false);
-  // Email modal state
   const [showEmailModal, setShowEmailModal] = useState(false);
   const [emailTo, setEmailTo] = useState("");
   const [emailSending, setEmailSending] = useState(false);
@@ -120,23 +149,40 @@ export default function CreateVoucher() {
     const vouchers = JSON.parse(localStorage.getItem("tw_vouchers") || "[]");
     if (editId) {
       const found = vouchers.find((v) => v.id === editId);
-      if (found) { setForm(found); setReady(true); return; }
+      if (found) {
+        setForm(found);
+        setFormKey((k) => k + 1);
+        setReady(true);
+        return;
+      }
     }
-    // New voucher — auto-generate IDs
     setForm((f) => ({
       ...f,
       voucherNo: buildVoucherNo(vouchers),
       tripId: buildTripId(vouchers),
     }));
+    setFormKey((k) => k + 1);
     setReady(true);
   }, [editId]);
 
   const set = (key, val) => { setForm((f) => ({ ...f, [key]: val })); setSaved(false); };
+  const setMulti = (updates) => { setForm((f) => ({ ...f, ...updates })); setSaved(false); };
 
   // Hotel
   const addHotel = () => set("hotels", [...(form.hotels || []), EMPTY_HOTEL()]);
   const removeHotel = (id) => set("hotels", form.hotels.filter((h) => h.id !== id));
-  const updateHotel = (id, k, v) => set("hotels", form.hotels.map((h) => h.id === id ? { ...h, [k]: v } : h));
+  const updateHotel = (id, k, v) => {
+    setForm((f) => ({
+      ...f,
+      hotels: f.hotels.map((h) => {
+        if (h.id !== id) return h;
+        const updated = { ...h, [k]: v };
+        if (k === "checkinDate") updated.checkoutDate = v;
+        return updated;
+      }),
+    }));
+    setSaved(false);
+  };
 
   // Flight
   const addFlight = () => set("flights", [...form.flights, EMPTY_FLIGHT()]);
@@ -168,142 +214,123 @@ export default function CreateVoucher() {
     return payload;
   };
 
-  // PDF generation — smart page breaks (never cuts through a section header)
+  // PDF generation
   async function generatePDF() {
     setPdfLoading(true);
     try {
       const { default: html2canvas } = await import("html2canvas");
       const { jsPDF } = await import("jspdf");
-
       const wrapEl   = document.getElementById("voucher-pdf-target");
       const footerEl = document.getElementById("voucher-pdf-footer");
       if (!wrapEl || !footerEl) return null;
-
       const SCALE = 2;
-
-      // ── 1. Measure section boundaries BEFORE hiding anything ─────────────
-      // Each [data-pdf-section] marks a red header + body block.
-      // We use these to avoid cutting through them during page breaks.
       const wrapRect    = wrapEl.getBoundingClientRect();
       const sectionEls  = wrapEl.querySelectorAll("[data-pdf-section]");
       const sectionBounds = Array.from(sectionEls).map((el) => {
         const r = el.getBoundingClientRect();
-        return {
-          top: r.top - wrapRect.top,       // px from top of wrap
-          bottom: r.bottom - wrapRect.top,
-        };
+        return { top: r.top - wrapRect.top, bottom: r.bottom - wrapRect.top };
       });
-
-      // ── 2. Capture footer separately ──────────────────────────────────────
+      const patchClone = (clonedDoc) => {
+        const s = clonedDoc.createElement("style");
+        s.textContent = "* { font-family: Arial, Helvetica, sans-serif !important; letter-spacing: 0.01px !important; word-spacing: 0.1px !important; }";
+        clonedDoc.head.appendChild(s);
+      };
       const footerCanvas = await html2canvas(footerEl, {
-        scale: SCALE, useCORS: true, backgroundColor: "#fff5f5", logging: false,
+        scale: SCALE, useCORS: true, backgroundColor: "#fff5f5",
+        logging: false, onclone: patchClone,
       });
-
-      // ── 3. Hide footer, capture main content ──────────────────────────────
-      const prevDisplay  = footerEl.style.display;
+      const prevDisplay = footerEl.style.display;
       footerEl.style.display = "none";
-
       const mainCanvas = await html2canvas(wrapEl, {
         scale: SCALE, useCORS: true, backgroundColor: "#fff", logging: false,
-        // Ensure full height is captured
-        height: wrapEl.scrollHeight,
-        windowHeight: wrapEl.scrollHeight,
+        height: wrapEl.scrollHeight, windowHeight: wrapEl.scrollHeight,
+        onclone: patchClone,
       });
-
       footerEl.style.display = prevDisplay;
-
-      // ── 4. Coordinate system ──────────────────────────────────────────────
       const pdf   = new jsPDF("p", "mm", "a4");
-      const pageW = pdf.internal.pageSize.getWidth();   // 210 mm
-      const pageH = pdf.internal.pageSize.getHeight();  // 297 mm
-
-      // Pixels-per-mm on the canvas (so we can express pageH in canvas-px)
+      const pageW = pdf.internal.pageSize.getWidth();
+      const pageH = pdf.internal.pageSize.getHeight();
       const pxPerMm   = mainCanvas.width / pageW;
-      const pagePx    = pageH * pxPerMm;       // page height in canvas pixels
+      const pagePx    = pageH * pxPerMm;
       const totalPx   = mainCanvas.height;
+      const domToCvs  = mainCanvas.width / wrapEl.offsetWidth;
+      // Sort sections smallest-first so tightly-contained sections are checked before
+      // their parents, preventing a large outer section from masking a small inner one.
+      const sectionBoundsCvs = sectionBounds
+        .map((s) => ({ top: s.top * domToCvs, bottom: s.bottom * domToCvs }))
+        .sort((a, b) => (a.bottom - a.top) - (b.bottom - b.top));
 
-      // DOM-px → canvas-px conversion factor
-      const domToCvs = mainCanvas.width / wrapEl.offsetWidth;
+      // Don't move a cut up if it would make the page shorter than this.
+      const MIN_PAGE_PX = pagePx * 0.35;
 
-      // Pre-compute section boundaries in canvas pixels
-      const sectionBoundsCvs = sectionBounds.map((s) => ({
-        top: s.top * domToCvs,
-        bottom: s.bottom * domToCvs,
-      }));
-
-      // ── 5. Compute smart page-cut positions ───────────────────────────────
-      // Rule: a cut must NOT fall inside a section's first 60 canvas-px (header row).
-      // If it would, move the cut BEFORE the section starts instead.
-      const pageCuts = [0]; // start positions of each page (in canvas px)
-
+      const pageCuts = [0];
       while (true) {
         const lastCut = pageCuts[pageCuts.length - 1];
         let nextCut   = lastCut + pagePx;
+        if (nextCut >= totalPx) break;
 
-        if (nextCut >= totalPx) break; // last page — no more cuts needed
-
-        // Check whether nextCut falls inside any section's header zone
-        for (const s of sectionBoundsCvs) {
-          const headerZoneEnd = s.top + 60; // 60 canvas-px = ~1 line of the red bar
-          if (nextCut > s.top && nextCut < headerZoneEnd) {
-            // Cut would slice through the section header — move to just before it
-            nextCut = s.top;
-            break;
+        let changed = true, guard = 0;
+        while (changed && guard++ < 20) {
+          changed = false;
+          for (const s of sectionBoundsCvs) {
+            if (s.bottom <= lastCut) continue;
+            if (s.top >= nextCut)    continue;
+            if (nextCut > s.top && nextCut < s.bottom) {
+              const sectionHeight = s.bottom - s.top;
+              const wouldBePageH  = s.top - lastCut;
+              // Only move the cut up if the resulting page is tall enough
+              if (wouldBePageH >= MIN_PAGE_PX && sectionHeight < pagePx * 0.92) {
+                nextCut = s.top;
+                changed = true; break;
+              } else if (nextCut < s.top + 80 && wouldBePageH >= MIN_PAGE_PX * 0.5) {
+                // Very near top of section — always safe to nudge up a little
+                nextCut = s.top;
+                changed = true; break;
+              }
+              // else: section too big or page would be too short — allow cut inside
+            }
           }
         }
 
-        // Safety: never cut at the exact same position (infinite loop guard)
         if (nextCut <= lastCut) nextCut = lastCut + pagePx;
-
         pageCuts.push(nextCut);
       }
-      pageCuts.push(totalPx); // sentinel: end of content
+      pageCuts.push(totalPx);
 
-      // ── 6. Render each page slice onto the PDF ────────────────────────────
+      // If the last slice is very thin, merge it into the previous page
+      // (prevents a near-blank final page caused by section-avoidance pushback)
+      while (pageCuts.length > 2) {
+        const lastSlice = pageCuts[pageCuts.length - 1] - pageCuts[pageCuts.length - 2];
+        if (lastSlice >= pagePx * 0.15) break;
+        const prevSlice = pageCuts[pageCuts.length - 2] - pageCuts[pageCuts.length - 3];
+        if (prevSlice + lastSlice > pagePx * 1.15) break; // merged page would be too tall
+        pageCuts.splice(pageCuts.length - 2, 1);
+      }
+
       const footerImgH = (footerCanvas.height / footerCanvas.width) * pageW;
-
       for (let i = 0; i < pageCuts.length - 1; i++) {
         if (i > 0) pdf.addPage();
-
         const sliceTopPx  = pageCuts[i];
         const sliceTallPx = pageCuts[i + 1] - sliceTopPx;
-
-        // Draw just this slice of the main canvas
         const sliceCanvas = document.createElement("canvas");
         sliceCanvas.width  = mainCanvas.width;
         sliceCanvas.height = sliceTallPx;
-        sliceCanvas.getContext("2d").drawImage(
-          mainCanvas,
-          0, sliceTopPx,              // source x, y
-          mainCanvas.width, sliceTallPx, // source w, h
-          0, 0,                       // dest x, y
-          mainCanvas.width, sliceTallPx  // dest w, h
-        );
-
-        const sliceMmH = (sliceTallPx / pxPerMm);
-        pdf.addImage(sliceCanvas.toDataURL("image/png"), "PNG", 0, 0, pageW, sliceMmH);
+        sliceCanvas.getContext("2d").drawImage(mainCanvas, 0, sliceTopPx, mainCanvas.width, sliceTallPx, 0, 0, mainCanvas.width, sliceTallPx);
+        pdf.addImage(sliceCanvas.toDataURL("image/png"), "PNG", 0, 0, pageW, sliceTallPx / pxPerMm);
       }
 
-      // ── 7. Pin footer to absolute bottom of last page ─────────────────────
-      const lastSlicePx  = pageCuts[pageCuts.length - 1] - pageCuts[pageCuts.length - 2];
-      const lastSliceMmH = lastSlicePx / pxPerMm;
-      const remaining    = pageH - lastSliceMmH;
-
-      if (remaining >= footerImgH) {
-        // Footer fits — pin it to the absolute bottom
-        pdf.addImage(
-          footerCanvas.toDataURL("image/png"), "PNG",
-          0, pageH - footerImgH, pageW, footerImgH
-        );
+      // Place footer right after the last content — not pinned to absolute page bottom.
+      // This prevents a large blank gap when the last page is only partly filled.
+      const lastSlicePx = pageCuts[pageCuts.length - 1] - pageCuts[pageCuts.length - 2];
+      const contentEndMm = lastSlicePx / pxPerMm;
+      const remainMm     = pageH - contentEndMm;
+      const GAP_MM = 5;
+      if (remainMm >= footerImgH + GAP_MM) {
+        pdf.addImage(footerCanvas.toDataURL("image/png"), "PNG", 0, contentEndMm + GAP_MM, pageW, footerImgH);
       } else {
-        // Footer won't fit — new page, pin to its bottom
         pdf.addPage();
-        pdf.addImage(
-          footerCanvas.toDataURL("image/png"), "PNG",
-          0, pageH - footerImgH, pageW, footerImgH
-        );
+        pdf.addImage(footerCanvas.toDataURL("image/png"), "PNG", 0, GAP_MM, pageW, footerImgH);
       }
-
       return pdf;
     } finally {
       setPdfLoading(false);
@@ -314,87 +341,44 @@ export default function CreateVoucher() {
     const pdf = await generatePDF();
     if (pdf) pdf.save(`voucher-${form.voucherNo || form.tripId || Date.now()}.pdf`);
   }
-
   async function handlePrint() {
     const pdf = await generatePDF();
     if (!pdf) return;
-    const blob = pdf.output("blob");
-    const url = URL.createObjectURL(blob);
+    const url = URL.createObjectURL(pdf.output("blob"));
     const win = window.open(url);
     if (win) win.onload = () => win.print();
   }
-
   async function handleWhatsApp() {
-    // 1. Download PDF so admin has it ready to attach
     await handleDownload();
-    // 2. Open WhatsApp Web — logged-in user can pick any contact
     const msg = encodeURIComponent(
-      `Hello ${form.name || ""},\n\nYour travel voucher is ready! ✈️\n\nVoucher No: ${form.voucherNo || "—"}\nTrip ID: ${form.tripId || "—"}\nDestination: ${form.destination || "—"}\nTravel Date: ${form.travelDate || "—"}\n\nPlease find the attached PDF voucher.\nContact us at sales@tourwatchout.com for any query.\n\n— Team TourWatchOut`
+      `Hello ${form.name || ""},\n\nYour travel voucher is ready! ✈️\n\nVoucher No: ${form.voucherNo || "—"}\nTrip ID: ${form.tripId || "—"}\nDestination: ${form.destination || "—"}\nTravel Date: ${form.travelDate || "—"}\n\nPlease find the attached PDF voucher.\nContact us at sales1@tourwatchout.com for any query.\n\n— Team TourWatchOut`
     );
     window.open(`https://web.whatsapp.com/send?text=${msg}`, "_blank");
   }
-
   async function handleSendEmail() {
     if (!emailTo.trim()) return;
-    setEmailSending(true);
-    setEmailError("");
+    setEmailSending(true); setEmailError("");
     try {
-      // Generate PDF as base64
       const pdf = await generatePDF();
       if (!pdf) throw new Error("PDF generation failed");
       const pdfBase64 = pdf.output("datauristring").split(",")[1];
       const fileName = `voucher-${form.voucherNo || form.tripId || "tw"}.pdf`;
-
-      const emailBody = `
-<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto">
-  <div style="background:#e84949;padding:20px;text-align:center">
-    <h2 style="color:#fff;margin:0">TourWatchOut — Travel Voucher</h2>
-  </div>
-  <div style="padding:24px;background:#fff;border:1px solid #eee">
-    <p>Dear <strong>${form.name || "Guest"}</strong>,</p>
-    <p>Your travel voucher is ready. Please find the PDF attached to this email.</p>
-    <table style="width:100%;border-collapse:collapse;margin:16px 0">
-      <tr><td style="padding:8px;font-weight:bold;color:#555;width:140px">Voucher No.</td><td style="padding:8px;color:#222">${form.voucherNo || "—"}</td></tr>
-      <tr style="background:#f9f9f9"><td style="padding:8px;font-weight:bold;color:#555">Trip ID</td><td style="padding:8px;color:#222">${form.tripId || "—"}</td></tr>
-      <tr><td style="padding:8px;font-weight:bold;color:#555">Destination</td><td style="padding:8px;color:#222">${form.destination || "—"}</td></tr>
-      <tr style="background:#f9f9f9"><td style="padding:8px;font-weight:bold;color:#555">Travel Date</td><td style="padding:8px;color:#222">${form.travelDate || "—"}</td></tr>
-      <tr><td style="padding:8px;font-weight:bold;color:#555">Pax</td><td style="padding:8px;color:#222">${form.pax || "—"}</td></tr>
-    </table>
-    <p style="font-size:13px;color:#888">For any queries, contact us at <a href="mailto:sales@tourwatchout.com">sales@tourwatchout.com</a></p>
-  </div>
-  <div style="background:#fff5f5;padding:12px;text-align:center;font-size:12px;color:#888;border-top:2px solid #e84949">
-    Team TourWatchOut &nbsp;|&nbsp; sales@tourwatchout.com &nbsp;|&nbsp; /Tourwatchout
-  </div>
-</div>`;
-
+      const emailBody = `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto"><div style="background:#e84949;padding:20px;text-align:center"><h2 style="color:#fff;margin:0">TourWatchOut — Travel Voucher</h2></div><div style="padding:24px;background:#fff;border:1px solid #eee"><p>Dear <strong>${form.name || "Guest"}</strong>,</p><p>Your travel voucher is ready. Please find the PDF attached to this email.</p><table style="width:100%;border-collapse:collapse;margin:16px 0"><tr><td style="padding:8px;font-weight:bold;color:#555;width:140px">Voucher No.</td><td style="padding:8px;color:#222">${form.voucherNo || "—"}</td></tr><tr style="background:#f9f9f9"><td style="padding:8px;font-weight:bold;color:#555">Trip ID</td><td style="padding:8px;color:#222">${form.tripId || "—"}</td></tr><tr><td style="padding:8px;font-weight:bold;color:#555">Destination</td><td style="padding:8px;color:#222">${form.destination || "—"}</td></tr><tr style="background:#f9f9f9"><td style="padding:8px;font-weight:bold;color:#555">Travel Date</td><td style="padding:8px;color:#222">${form.travelDate || "—"}</td></tr><tr><td style="padding:8px;font-weight:bold;color:#555">Pax</td><td style="padding:8px;color:#222">${form.pax || "—"}</td></tr></table><p style="font-size:13px;color:#888">For any queries, contact us at <a href="mailto:sales1@tourwatchout.com">sales1@tourwatchout.com</a></p></div><div style="background:#fff5f5;padding:12px;text-align:center;font-size:12px;color:#888;border-top:2px solid #e84949">Team TourWatchOut &nbsp;|&nbsp; sales1@tourwatchout.com</div></div>`;
       const res = await fetch("/api/dashboard/send-voucher", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          to: emailTo,
-          subject: `Travel Voucher — ${form.destination || "TourWatchOut"} (${form.voucherNo || form.tripId})`,
-          html: emailBody,
-          pdfBase64,
-          fileName,
-        }),
+        body: JSON.stringify({ to: emailTo, subject: `Travel Voucher — ${form.destination || "TourWatchOut"} (${form.voucherNo || form.tripId})`, html: emailBody, pdfBase64, fileName }),
       });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.message || "Email sending failed");
-      }
+      if (!res.ok) { const err = await res.json().catch(() => ({})); throw new Error(err.message || "Email sending failed"); }
       setEmailDone(true);
       setTimeout(() => { setShowEmailModal(false); setEmailDone(false); setEmailTo(""); }, 2500);
     } catch (e) {
-      setEmailError(e.message || "Something went wrong. Check SMTP settings.");
+      setEmailError(e.message || "Something went wrong.");
     } finally {
       setEmailSending(false);
     }
   }
-
-  function handlePreview() {
-    saveVoucher();
-    setShowPreview(true);
-  }
+  function handlePreview() { saveVoucher(); setShowPreview(true); }
 
   if (!ready) return null;
 
@@ -406,10 +390,8 @@ export default function CreateVoucher() {
         <link rel="stylesheet" href="/assets/css/backend.css" />
       </Head>
       <div className="bk-page">
-
         <Sidebar active="Voucher" isOpen={sidebar} onClose={() => setSidebar(false)} />
 
-        {/* ── Main ── */}
         <main className="bk-main">
           <header className="bk-header">
             <div className="bk-header-left">
@@ -427,229 +409,302 @@ export default function CreateVoucher() {
             </div>
           </header>
 
-        <div style={{ padding: "28px 36px 60px" }}>
+          <div style={{ padding: "28px 36px 60px" }}>
 
-          {/* ── Voucher Info ── */}
-          <FormSection id="section-voucher" title="Voucher Information" icon={<MdPerson />}>
-            <TwoCol>
-              <Field label="Voucher No." value={form.voucherNo} onChange={(v) => set("voucherNo", v)} placeholder="e.g. RCSPL/2024-25/001" />
-              <Field label="Trip ID" value={form.tripId} onChange={(v) => set("tripId", v)} placeholder="e.g. TRIP/2024-25/Dy001" />
-            </TwoCol>
-            <div style={s.divider} />
-            <div style={s.subHeading}>Guest Details</div>
-            <TwoCol>
-              <Field label="Guest Name" value={form.name} onChange={(v) => set("name", v)} placeholder="e.g. Shilpa Singh" />
-              <Field label="Pax (Adults + Kids)" value={form.pax} onChange={(v) => set("pax", v)} placeholder="e.g. 2 Adults, 1 kid" />
-            </TwoCol>
-            <TwoCol>
-              <Field label="Travel Date / Period" value={form.travelDate} onChange={(v) => set("travelDate", v)} placeholder="e.g. 25 Mar – 28 Mar 2026" />
-              <Field label="Destination" value={form.destination} onChange={(v) => set("destination", v)} placeholder="e.g. Dubai" icon={<MdLocationOn />} />
-            </TwoCol>
-            <TwoCol>
-              <Field label="Guest Email" value={form.email} onChange={(v) => set("email", v)} placeholder="guest@email.com" type="email" />
-              <Field label="Contact No." value={form.contactNo} onChange={(v) => set("contactNo", v)} placeholder="e.g. +91 98765 43210" />
-            </TwoCol>
-            <Field label="Guest Address" value={form.address} onChange={(v) => set("address", v)} placeholder="Full guest address" full />
-          </FormSection>
+            {/* ── Voucher Info ── */}
+            <FormSection id="section-voucher" title="Voucher Information" icon={<MdPerson />}>
+              <TwoCol>
+                <Field label="Voucher No." value={form.voucherNo} onChange={(v) => set("voucherNo", v)} placeholder="e.g. RCSPL/2024-25/001" />
+                <Field label="Trip ID" value={form.tripId} onChange={(v) => set("tripId", v)} placeholder="e.g. TRIP/2024-25/Dy001" />
+              </TwoCol>
+              <div style={s.divider} />
+              <div style={s.subHeading}>Guest Details</div>
+              <TwoCol>
+                <Field label="Guest Name" value={form.name} onChange={(v) => set("name", v)} placeholder="e.g. Shilpa Singh" />
+                <Field label="Pax (Adults + Kids)" value={form.pax} onChange={(v) => set("pax", v)} placeholder="e.g. 2 Adults, 1 kid" />
+              </TwoCol>
 
-          {/* ── Hotel ── */}
-          <ToggleSection
-            id="section-hotel"
-            title="Hotel Details"
-            icon={<MdHotel />}
-            enabled={form.showHotel !== false}
-            onToggle={() => {
-              const next = form.showHotel === false ? true : false;
-              set("showHotel", next);
-              if (next && (form.hotels || []).length === 0) addHotel();
-            }}
-          >
-            {(form.hotels || []).map((h, idx) => (
-              <div key={h.id} style={s.card}>
-                <div style={s.cardHead}>
-                  <span style={s.cardBadge}>🏨 Hotel {idx + 1}</span>
-                  <button style={s.removeBtn} onClick={() => removeHotel(h.id)}>
-                    <MdDelete size={14} /> Remove
-                  </button>
+              {/* Travel Date — two date pickers */}
+              <TwoCol>
+                <DateField
+                  label="Travel From"
+                  value={form.travelDateFrom}
+                  onChange={(v) => setMulti({ travelDateFrom: v, travelDate: buildTravelDate(v, form.travelDateTo) })}
+                  fmt="short"
+                />
+                <DateField
+                  label="Travel To"
+                  value={form.travelDateTo}
+                  onChange={(v) => setMulti({ travelDateTo: v, travelDate: buildTravelDate(form.travelDateFrom, v) })}
+                  fmt="short"
+                />
+              </TwoCol>
+              {form.travelDate && (
+                <div style={{ fontSize: 12.5, color: "#4b5563", marginTop: -6, padding: "6px 12px", background: "#f0f9ff", borderRadius: 6, border: "1px solid #bae6fd" }}>
+                  Travel Period: <strong>{form.travelDate}</strong>
                 </div>
-                <TwoCol>
-                  <Field label="Hotel Name" value={h.hotelName} onChange={(v) => updateHotel(h.id, "hotelName", v)} placeholder="e.g. Wescott Hotel" />
-                  <Field label="Hotel Address / Location" value={h.hotelAddress} onChange={(v) => updateHotel(h.id, "hotelAddress", v)} placeholder="Hotel city / full address" />
-                </TwoCol>
-                <TwoCol>
-                  <Field label="Confirmation No." value={h.hotelConfirmNo} onChange={(v) => updateHotel(h.id, "hotelConfirmNo", v)} placeholder="e.g. 27685" />
-                  <Field label="Units / Rooms" value={h.units} onChange={(v) => updateHotel(h.id, "units", v)} placeholder="e.g. 1" />
-                </TwoCol>
-                <TwoCol>
-                  <Field label="Room Type" value={h.roomType} onChange={(v) => updateHotel(h.id, "roomType", v)} placeholder="e.g. Deluxe Room With Bath Tub" />
-                  <Field label="Meal Plan" value={h.mealPlan} onChange={(v) => updateHotel(h.id, "mealPlan", v)} placeholder="e.g. Bed and Breakfast" />
-                </TwoCol>
-                <div style={s.divider} />
-                <div style={s.subHeading}>Check-in / Check-out</div>
-                <TwoCol>
-                  <DateField label="Check-in Date" value={h.checkinDate} onChange={(v) => updateHotel(h.id, "checkinDate", v)} />
-                  <Field label="Check-in Time" value={h.checkinTime} onChange={(v) => updateHotel(h.id, "checkinTime", v)} placeholder="e.g. after 11:00 PM" />
-                </TwoCol>
-                <TwoCol>
-                  <DateField label="Check-out Date" value={h.checkoutDate} onChange={(v) => updateHotel(h.id, "checkoutDate", v)} />
-                  <Field label="Check-out Time" value={h.checkoutTime} onChange={(v) => updateHotel(h.id, "checkoutTime", v)} placeholder="e.g. before 11:00 AM" />
-                </TwoCol>
-                <Field label="No. of Nights" value={h.nights} onChange={(v) => updateHotel(h.id, "nights", v)} placeholder="e.g. 3 Nights Stay" />
-                <div style={s.divider} />
-                <div style={s.subHeading}>Hotel Note <span style={{ fontSize: 11, fontWeight: 400, color: "#aaa" }}>(shown in voucher)</span></div>
-                <div style={s.notePreviewBox}>
-                  <div style={s.notePreviewDashed}>
-                    <div style={{ fontSize: 12, fontWeight: 700, color: "#2563eb", marginBottom: 4 }}>Preview</div>
-                    <div style={{ fontSize: 11.5, color: "#444", lineHeight: 1.6 }}>
-                      {(h.hotelNote || "").split("\n")[0]}
+              )}
+
+              <TwoCol>
+                <Field label="Destination" value={form.destination} onChange={(v) => set("destination", v)} placeholder="e.g. Dubai" icon={<MdLocationOn />} />
+                <Field label="Guest Email" value={form.email} onChange={(v) => set("email", v)} placeholder="guest@email.com" type="email" />
+              </TwoCol>
+              <TwoCol>
+                <Field label="Contact No." value={form.contactNo} onChange={(v) => set("contactNo", v)} placeholder="e.g. +91 98765 43210" />
+                <Field label="Guest Address" value={form.address} onChange={(v) => set("address", v)} placeholder="Full guest address" />
+              </TwoCol>
+            </FormSection>
+
+            {/* ── Hotel ── */}
+            <ToggleSection
+              id="section-hotel"
+              title="Hotel Details"
+              icon={<MdHotel />}
+              enabled={form.showHotel !== false}
+              onToggle={() => {
+                const next = form.showHotel === false ? true : false;
+                set("showHotel", next);
+                if (next && (form.hotels || []).length === 0) addHotel();
+              }}
+            >
+              {(form.hotels || []).map((h, idx) => (
+                <div key={h.id} style={s.card}>
+                  <div style={s.cardHead}>
+                    <span style={s.cardBadge}>🏨 Hotel {idx + 1}</span>
+                    <button style={s.removeBtn} onClick={() => removeHotel(h.id)}>
+                      <MdDelete size={14} /> Remove
+                    </button>
+                  </div>
+                  <TwoCol>
+                    <Field label="Hotel Name" value={h.hotelName} onChange={(v) => updateHotel(h.id, "hotelName", v)} placeholder="e.g. Wescott Hotel" />
+                    <Field label="Place" value={h.place || ""} onChange={(v) => updateHotel(h.id, "place", v)} placeholder="e.g. Dubai Marina" />
+                  </TwoCol>
+                  <TwoCol>
+                    <Field label="Hotel Address / Location" value={h.hotelAddress} onChange={(v) => updateHotel(h.id, "hotelAddress", v)} placeholder="Hotel city / full address" />
+                    <Field label="Confirmation No." value={h.hotelConfirmNo} onChange={(v) => updateHotel(h.id, "hotelConfirmNo", v)} placeholder="e.g. 27685" />
+                  </TwoCol>
+                  <TwoCol>
+                    <Field label="Units / Rooms" value={h.units} onChange={(v) => updateHotel(h.id, "units", v)} placeholder="e.g. 1" />
+                    <Field label="Room Type" value={h.roomType} onChange={(v) => updateHotel(h.id, "roomType", v)} placeholder="e.g. Deluxe Room With Bath Tub" />
+                  </TwoCol>
+                  <SelectField label="Meal Plan" value={h.mealPlan} onChange={(v) => updateHotel(h.id, "mealPlan", v)} options={MEAL_PLAN_OPTIONS} allowEmpty />
+                  <div style={s.divider} />
+                  <div style={s.subHeading}>Check-in / Check-out</div>
+                  <TwoCol>
+                    <DateField label="Check-in Date" value={h.checkinDate} onChange={(v) => updateHotel(h.id, "checkinDate", v)} />
+                    <Field label="Check-in Time" value={h.checkinTime} onChange={(v) => updateHotel(h.id, "checkinTime", v)} placeholder="2:00 PM" />
+                  </TwoCol>
+                  <TwoCol>
+                    <DateField label="Check-out Date" value={h.checkoutDate} onChange={(v) => updateHotel(h.id, "checkoutDate", v)} />
+                    <Field label="Check-out Time" value={h.checkoutTime} onChange={(v) => updateHotel(h.id, "checkoutTime", v)} placeholder="10:00 AM" />
+                  </TwoCol>
+                  <SelectField label="No. of Nights" value={h.nights} onChange={(v) => updateHotel(h.id, "nights", v)} options={NIGHTS_OPTIONS} allowEmpty />
+                </div>
+              ))}
+
+              {/* Single global Hotel Note */}
+              <div style={s.divider} />
+              <div style={s.subHeading}>Hotel Note <span style={{ fontSize: 11, fontWeight: 400, color: "#aaa" }}>(shown once in voucher)</span></div>
+              <div style={s.notePreviewBox}>
+                <div style={s.notePreviewDashed}>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: "#2563eb", marginBottom: 4 }}>Preview</div>
+                  <div style={{ fontSize: 11.5, color: "#444", lineHeight: 1.6 }}>
+                    {(form.hotelNote || "").split("\n")[0]}
+                  </div>
+                </div>
+              </div>
+              <Field
+                label=""
+                value={form.hotelNote || ""}
+                onChange={(v) => set("hotelNote", v)}
+                textarea rows={6}
+                placeholder="Hotel note / check-in instructions…"
+                full
+              />
+
+              <AddBtn onClick={addHotel} label="Add Hotel" icon={<MdHotel size={15} />} />
+            </ToggleSection>
+
+            {/* ── Flights ── */}
+            <ToggleSection
+              id="section-flights"
+              title="Flight Details"
+              icon={<MdFlight />}
+              enabled={form.showFlights}
+              onToggle={() => {
+                const next = !form.showFlights;
+                set("showFlights", next);
+                if (next && form.flights.length === 0) addFlight();
+              }}
+            >
+              {form.flights.map((fl, idx) => (
+                <div key={fl.id} style={s.card}>
+                  <div style={s.cardHead}>
+                    <span style={s.cardBadge}>✈ Flight {idx + 1}</span>
+                    <button style={s.removeBtn} onClick={() => removeFlight(fl.id)}>
+                      <MdDelete size={14} /> Remove
+                    </button>
+                  </div>
+                  <TwoCol>
+                    <Field label="PNR" value={fl.pnr} onChange={(v) => updateFlight(fl.id, "pnr", v)} placeholder="e.g. B8F6Y1 V30" />
+                    <Field label="Flight No." value={fl.flight_no} onChange={(v) => updateFlight(fl.id, "flight_no", v)} placeholder="e.g. SG 51" />
+                  </TwoCol>
+                  <div style={s.flightGrid}>
+                    <div style={s.flightHalf}>
+                      <div style={s.flightHalfTitle}>🛫 DEPARTURE</div>
+                      <Field label="City" value={fl.from_city} onChange={(v) => updateFlight(fl.id, "from_city", v)} placeholder="e.g. Pune" />
+                      <Field label="IATA Code" value={fl.from_code} onChange={(v) => updateFlight(fl.id, "from_code", v)} placeholder="PNQ" />
+                      <TwoCol>
+                        <DateField label="Date" value={fl.from_date} onChange={(v) => updateFlight(fl.id, "from_date", v)} fmt="flight" />
+                        <Field label="Time" value={fl.from_time} onChange={(v) => updateFlight(fl.id, "from_time", v)} placeholder="12:00 hrs" />
+                      </TwoCol>
+                    </div>
+                    <div style={s.flightHalf}>
+                      <div style={s.flightHalfTitle}>🛬 ARRIVAL</div>
+                      <Field label="City" value={fl.to_city} onChange={(v) => updateFlight(fl.id, "to_city", v)} placeholder="e.g. Dubai" />
+                      <Field label="IATA Code" value={fl.to_code} onChange={(v) => updateFlight(fl.id, "to_code", v)} placeholder="DXB" />
+                      <TwoCol>
+                        <DateField label="Date" value={fl.to_date} onChange={(v) => updateFlight(fl.id, "to_date", v)} fmt="flight" />
+                        <Field label="Time" value={fl.to_time} onChange={(v) => updateFlight(fl.id, "to_time", v)} placeholder="22:55 hrs" />
+                      </TwoCol>
                     </div>
                   </div>
                 </div>
-                <Field
-                  label=""
-                  value={h.hotelNote}
-                  onChange={(v) => updateHotel(h.id, "hotelNote", v)}
-                  textarea rows={6}
-                  placeholder="Hotel note / check-in instructions…"
-                  full
+              ))}
+              <AddBtn onClick={addFlight} label="Add Flight Leg" icon={<MdFlight size={15} />} />
+            </ToggleSection>
+
+            {/* ── Transport ── */}
+            <ToggleSection
+              id="section-transport"
+              title="Transportation Details"
+              icon={<MdDirectionsCar />}
+              enabled={form.showTransport}
+              onToggle={() => {
+                const next = !form.showTransport;
+                set("showTransport", next);
+                if (next && form.transports.length === 0) addTransport();
+              }}
+            >
+              {form.transports.map((t, idx) => (
+                <div key={t.id} style={s.card}>
+                  <div style={s.cardHead}>
+                    <span style={s.cardBadge}>🚗 Vehicle {idx + 1}</span>
+                    <button style={s.removeBtn} onClick={() => removeTransport(t.id)}>
+                      <MdDelete size={14} /> Remove
+                    </button>
+                  </div>
+                  <TwoCol>
+                    <Field label="Vehicle Type" value={t.vehicle_type} onChange={(v) => updateTransport(t.id, "vehicle_type", v)} placeholder="e.g. Sedan" />
+                    <Field label="Driver Name" value={t.driver_name} onChange={(v) => updateTransport(t.id, "driver_name", v)} placeholder="e.g. Shivam Singh" />
+                  </TwoCol>
+                  <Field label="Driver Contact" value={t.driver_contact} onChange={(v) => updateTransport(t.id, "driver_contact", v)} placeholder="e.g. +971 4 329 3200" />
+                </div>
+              ))}
+              <AddBtn onClick={addTransport} label="Add Vehicle" icon={<MdDirectionsCar size={15} />} />
+            </ToggleSection>
+
+            {/* ── Day-wise Itinerary ── */}
+            <ToggleSection
+              id="section-itinerary"
+              title="Day-wise Itinerary"
+              icon={<MdCalendarToday />}
+              enabled={form.showItinerary}
+              onToggle={() => {
+                const next = !form.showItinerary;
+                set("showItinerary", next);
+                if (next && form.itineraries.length === 0) addItinerary();
+              }}
+            >
+              {form.itineraries.map((item, idx) => (
+                <div key={`${item.id}-${formKey}`} style={s.card}>
+                  <div style={s.cardHead}>
+                    <span style={s.cardBadge}>📅 Day {idx + 1}</span>
+                    <button style={s.removeBtn} onClick={() => removeItinerary(item.id)}>
+                      <MdDelete size={14} /> Remove
+                    </button>
+                  </div>
+                  <TwoCol>
+                    <DateField label="Date" value={item.date} onChange={(v) => updateItinerary(item.id, "date", v)} />
+                    <Field label="Itinerary Title" value={item.title || ""} onChange={(v) => updateItinerary(item.id, "title", v)} placeholder="e.g. Arrival & City Tour" />
+                  </TwoCol>
+                  <TwoCol>
+                    <Field label="Tour / Activity" value={item.tour} onChange={(v) => updateItinerary(item.id, "tour", v)} placeholder="e.g. Airport Pick-up DX" />
+                    <Field label="Transfer Type" value={item.transfer} onChange={(v) => updateItinerary(item.id, "transfer", v)} placeholder="e.g. PVT / NA" />
+                  </TwoCol>
+                  <Field label="Pick-up Time" value={item.pickup_time} onChange={(v) => updateItinerary(item.id, "pickup_time", v)} placeholder="e.g. 1:30 AM" />
+                  <div>
+                    <label style={s.label}>Itinerary Details</label>
+                    <RichTextEditor
+                      value={toRichText(item.itinerary)}
+                      onChange={(v) => updateItinerary(item.id, "itinerary", v)}
+                      placeholder="Describe what happens this day…"
+                    />
+                  </div>
+                </div>
+              ))}
+              <AddBtn onClick={addItinerary} label="Add Day" icon={<MdCalendarToday size={15} />} />
+            </ToggleSection>
+
+            {/* ── Inclusions ── */}
+            <FormSection id="section-inclusions" title="Inclusions" icon={<MdCheckCircle />}>
+              <RichTextEditor
+                key={`inc-${formKey}`}
+                value={toRichText(form.inclusions || "")}
+                onChange={(v) => set("inclusions", v)}
+                placeholder="List what's included in the package…"
+              />
+            </FormSection>
+
+            {/* ── Exclusions ── */}
+            <FormSection id="section-exclusions" title="Exclusions" icon={<MdClose />}>
+              <RichTextEditor
+                key={`exc-${formKey}`}
+                value={toRichText(form.exclusions || "")}
+                onChange={(v) => set("exclusions", v)}
+                placeholder="List what's not included in the package…"
+              />
+            </FormSection>
+
+            {/* ── Extras & Notes ── */}
+            <FormSection id="section-notes" title="Extras & Notes" icon={<MdInfo />}>
+              <Field
+                label="Value Addition"
+                value={form.valueAddition || form.extras || ""}
+                onChange={(v) => set("valueAddition", v)}
+                placeholder="e.g. Water, Cake, GTB - N/A"
+                full
+              />
+              <div style={s.divider} />
+              <Field
+                label="Special Instructions"
+                value={form.specialInstructions}
+                onChange={(v) => set("specialInstructions", v)}
+                placeholder="Any special instructions for the guest…"
+                textarea rows={4} full
+              />
+              <div style={s.divider} />
+              <div>
+                <label style={s.label}>T&amp;C</label>
+                <RichTextEditor
+                  key={`tc-${formKey}`}
+                  value={toRichText(form.termsConditions || form.importantNotes || "")}
+                  onChange={(v) => set("termsConditions", v)}
+                  placeholder="Terms and conditions…"
                 />
               </div>
-            ))}
-            <AddBtn onClick={addHotel} label="Add Hotel" icon={<MdHotel size={15} />} />
-          </ToggleSection>
+            </FormSection>
 
-          {/* ── Flights (toggle) ── */}
-          <ToggleSection
-            id="section-flights"
-            title="Flight Details"
-            icon={<MdFlight />}
-            enabled={form.showFlights}
-            onToggle={() => {
-              const next = !form.showFlights;
-              set("showFlights", next);
-              if (next && form.flights.length === 0) addFlight();
-            }}
-          >
-            {form.flights.map((fl, idx) => (
-              <div key={fl.id} style={s.card}>
-                <div style={s.cardHead}>
-                  <span style={s.cardBadge}>✈ Flight {idx + 1}</span>
-                  <button style={s.removeBtn} onClick={() => removeFlight(fl.id)}>
-                    <MdDelete size={14} /> Remove
-                  </button>
-                </div>
-                <TwoCol>
-                  <Field label="PNR" value={fl.pnr} onChange={(v) => updateFlight(fl.id, "pnr", v)} placeholder="e.g. B8F6Y1 V30" />
-                  <Field label="Flight No." value={fl.flight_no} onChange={(v) => updateFlight(fl.id, "flight_no", v)} placeholder="e.g. SG 51" />
-                </TwoCol>
-                <div style={s.flightGrid}>
-                  <div style={s.flightHalf}>
-                    <div style={s.flightHalfTitle}>🛫 DEPARTURE</div>
-                    <Field label="City" value={fl.from_city} onChange={(v) => updateFlight(fl.id, "from_city", v)} placeholder="e.g. Pune" />
-                    <Field label="IATA Code" value={fl.from_code} onChange={(v) => updateFlight(fl.id, "from_code", v)} placeholder="PNQ" />
-                    <TwoCol>
-                      <DateField label="Date" value={fl.from_date} onChange={(v) => updateFlight(fl.id, "from_date", v)} fmt="flight" />
-                      <Field label="Time" value={fl.from_time} onChange={(v) => updateFlight(fl.id, "from_time", v)} placeholder="12:00 hrs" />
-                    </TwoCol>
-                  </div>
-                  <div style={s.flightHalf}>
-                    <div style={s.flightHalfTitle}>🛬 ARRIVAL</div>
-                    <Field label="City" value={fl.to_city} onChange={(v) => updateFlight(fl.id, "to_city", v)} placeholder="e.g. Dubai" />
-                    <Field label="IATA Code" value={fl.to_code} onChange={(v) => updateFlight(fl.id, "to_code", v)} placeholder="DXB" />
-                    <TwoCol>
-                      <DateField label="Date" value={fl.to_date} onChange={(v) => updateFlight(fl.id, "to_date", v)} fmt="flight" />
-                      <Field label="Time" value={fl.to_time} onChange={(v) => updateFlight(fl.id, "to_time", v)} placeholder="22:55 hrs" />
-                    </TwoCol>
-                  </div>
-                </div>
-              </div>
-            ))}
-            <AddBtn onClick={addFlight} label="Add Flight Leg" icon={<MdFlight size={15} />} />
-          </ToggleSection>
-
-          {/* ── Transport (toggle) ── */}
-          <ToggleSection
-            id="section-transport"
-            title="Transportation Details"
-            icon={<MdDirectionsCar />}
-            enabled={form.showTransport}
-            onToggle={() => {
-              const next = !form.showTransport;
-              set("showTransport", next);
-              if (next && form.transports.length === 0) addTransport();
-            }}
-          >
-            {form.transports.map((t, idx) => (
-              <div key={t.id} style={s.card}>
-                <div style={s.cardHead}>
-                  <span style={s.cardBadge}>🚗 Vehicle {idx + 1}</span>
-                  <button style={s.removeBtn} onClick={() => removeTransport(t.id)}>
-                    <MdDelete size={14} /> Remove
-                  </button>
-                </div>
-                <TwoCol>
-                  <Field label="Vehicle Type" value={t.vehicle_type} onChange={(v) => updateTransport(t.id, "vehicle_type", v)} placeholder="e.g. Sedan" />
-                  <Field label="Driver Name" value={t.driver_name} onChange={(v) => updateTransport(t.id, "driver_name", v)} placeholder="e.g. Shivam Singh" />
-                </TwoCol>
-                <Field label="Driver Contact" value={t.driver_contact} onChange={(v) => updateTransport(t.id, "driver_contact", v)} placeholder="e.g. +971 4 329 3200" />
-              </div>
-            ))}
-            <AddBtn onClick={addTransport} label="Add Vehicle" icon={<MdDirectionsCar size={15} />} />
-          </ToggleSection>
-
-          {/* ── Itinerary (toggle) ── */}
-          <ToggleSection
-            id="section-itinerary"
-            title="Day-wise Itinerary"
-            icon={<MdCalendarToday />}
-            enabled={form.showItinerary}
-            onToggle={() => {
-              const next = !form.showItinerary;
-              set("showItinerary", next);
-              if (next && form.itineraries.length === 0) addItinerary();
-            }}
-          >
-            {form.itineraries.map((item, idx) => (
-              <div key={item.id} style={s.card}>
-                <div style={s.cardHead}>
-                  <span style={s.cardBadge}>📅 Day {idx + 1}</span>
-                  <button style={s.removeBtn} onClick={() => removeItinerary(item.id)}>
-                    <MdDelete size={14} /> Remove
-                  </button>
-                </div>
-                <TwoCol>
-                  <DateField label="Date" value={item.date} onChange={(v) => updateItinerary(item.id, "date", v)} />
-                  <Field label="Tour / Activity" value={item.tour} onChange={(v) => updateItinerary(item.id, "tour", v)} placeholder="e.g. Airport Pick-up DX" />
-                </TwoCol>
-                <TwoCol>
-                  <Field label="Transfer Type" value={item.transfer} onChange={(v) => updateItinerary(item.id, "transfer", v)} placeholder="e.g. PVT / NA" />
-                  <Field label="Pick-up Time" value={item.pickup_time} onChange={(v) => updateItinerary(item.id, "pickup_time", v)} placeholder="e.g. 1:30 AM" />
-                </TwoCol>
-                <Field label="Itinerary Details" value={item.itinerary} onChange={(v) => updateItinerary(item.id, "itinerary", v)} placeholder="Describe what happens this day…" textarea rows={3} full />
-              </div>
-            ))}
-            <AddBtn onClick={addItinerary} label="Add Day" icon={<MdCalendarToday size={15} />} />
-          </ToggleSection>
-
-          {/* ── Notes ── */}
-          <FormSection id="section-notes" title="Extras & Notes" icon={<MdInfo />}>
-            <Field label="Extras / Inclusions" value={form.extras} onChange={(v) => set("extras", v)} placeholder="e.g. Water, Cake, GTB - N/A" full />
-            <div style={s.divider} />
-            <Field label="Special Instructions" value={form.specialInstructions} onChange={(v) => set("specialInstructions", v)} placeholder="Any special instructions for the guest…" textarea rows={4} full />
-            <div style={s.divider} />
-            <Field label="Important Notes (Please read before Travel)" value={form.importantNotes} onChange={(v) => set("importantNotes", v)} placeholder="Important travel notes…" textarea rows={8} full />
-          </FormSection>
-
-          {/* ── Bottom action bar ── */}
-          <div style={s.bottomBar}>
-            <button onClick={saveVoucher} disabled={saving} style={s.btnDark}>
-              <MdSave size={17} /> {saving ? "Saving…" : "Save Voucher"}
-            </button>
-            <button onClick={handlePreview} style={s.btnRed}>
-              <MdVisibility size={17} /> Preview & Export
-            </button>
+            {/* ── Bottom action bar ── */}
+            <div style={s.bottomBar}>
+              <button onClick={saveVoucher} disabled={saving} style={s.btnDark}>
+                <MdSave size={17} /> {saving ? "Saving…" : "Save Voucher"}
+              </button>
+              <button onClick={handlePreview} style={s.btnBlue}>
+                <MdVisibility size={17} /> Preview & Export
+              </button>
+            </div>
           </div>
-        </div>
         </main>
       </div>
 
@@ -657,50 +712,20 @@ export default function CreateVoucher() {
       {showPreview && (
         <div style={s.overlay} onClick={(e) => e.target === e.currentTarget && setShowPreview(false)}>
           <div style={s.modal}>
-            {/* Modal header */}
             <div style={s.modalHead}>
               <span style={s.modalTitle}>Voucher Preview</span>
               <div style={s.modalActions}>
-                <ActionBtn
-                  color="#25d366"
-                  icon={<FaWhatsapp size={15} />}
-                  label={pdfLoading ? "Preparing…" : "WhatsApp"}
-                  onClick={handleWhatsApp}
-                  disabled={pdfLoading}
-                />
-                <ActionBtn
-                  color="#ea4335"
-                  icon={<MdEmail size={15} />}
-                  label="Send Email"
-                  onClick={() => setShowEmailModal(true)}
-                  disabled={pdfLoading}
-                />
-                <ActionBtn
-                  color="#3b82f6"
-                  icon={<MdDownload size={15} />}
-                  label={pdfLoading ? "…" : "Download PDF"}
-                  onClick={handleDownload}
-                  disabled={pdfLoading}
-                />
-                <ActionBtn
-                  color="#7c3aed"
-                  icon={<MdPrint size={15} />}
-                  label="Print"
-                  onClick={handlePrint}
-                  disabled={pdfLoading}
-                />
-                <button onClick={() => setShowPreview(false)} style={s.closeBtn}>
-                  <MdClose size={18} />
-                </button>
+                <ActionBtn color="#25d366" icon={<FaWhatsapp size={15} />} label={pdfLoading ? "Preparing…" : "WhatsApp"} onClick={handleWhatsApp} disabled={pdfLoading} />
+                <ActionBtn color="#ea4335" icon={<MdEmail size={15} />} label="Send Email" onClick={() => setShowEmailModal(true)} disabled={pdfLoading} />
+                <ActionBtn color="#3b82f6" icon={<MdDownload size={15} />} label={pdfLoading ? "…" : "Download PDF"} onClick={handleDownload} disabled={pdfLoading} />
+                <ActionBtn color="#7c3aed" icon={<MdPrint size={15} />} label="Print" onClick={handlePrint} disabled={pdfLoading} />
+                <button onClick={() => setShowPreview(false)} style={s.closeBtn}><MdClose size={18} /></button>
               </div>
             </div>
-            {/* WhatsApp info bar */}
             <div style={s.infoBar}>
               <FaWhatsapp size={13} color="#25d366" />
               <span><strong>WhatsApp:</strong> PDF downloads, then WhatsApp Web opens — select any contact to share.</span>
             </div>
-
-            {/* Voucher */}
             <div style={s.modalBody}>
               <div id="voucher-pdf-target" style={{ background: "#fff" }}>
                 <VoucherPreview data={form} />
@@ -719,9 +744,7 @@ export default function CreateVoucher() {
                 <MdEmail size={20} color="#fff" />
                 <span style={{ color: "#fff", fontWeight: 700, fontSize: 16 }}>Send Voucher via Email</span>
               </div>
-              <button onClick={() => setShowEmailModal(false)} style={s.closeBtn}>
-                <MdClose size={18} />
-              </button>
+              <button onClick={() => setShowEmailModal(false)} style={s.closeBtn}><MdClose size={18} /></button>
             </div>
             <div style={s.emailModalBody}>
               {emailDone ? (
@@ -738,14 +761,7 @@ export default function CreateVoucher() {
                   </div>
                   <div style={{ marginBottom: 16 }}>
                     <label style={s.emailLabel}>To (Recipient Email)</label>
-                    <input
-                      type="email"
-                      value={emailTo}
-                      onChange={(e) => setEmailTo(e.target.value)}
-                      placeholder="guest@example.com"
-                      style={s.emailInput}
-                      onKeyDown={(e) => e.key === "Enter" && handleSendEmail()}
-                    />
+                    <input type="email" value={emailTo} onChange={(e) => setEmailTo(e.target.value)} placeholder="guest@example.com" style={s.emailInput} onKeyDown={(e) => e.key === "Enter" && handleSendEmail()} />
                   </div>
                   <div style={s.emailPreviewBox}>
                     <div style={s.emailPreviewLabel}>Voucher Summary</div>
@@ -755,20 +771,9 @@ export default function CreateVoucher() {
                     <div style={s.emailPreviewRow}><b>Destination:</b> {form.destination || "—"}</div>
                     <div style={s.emailPreviewRow}><b>Travel Date:</b> {form.travelDate || "—"}</div>
                   </div>
-                  <div style={{ fontSize: 12, color: "#888", marginBottom: 16 }}>
-                    📎 The voucher PDF will be auto-generated and attached to this email.
-                  </div>
-                  {emailError && (
-                    <div style={s.emailError}>{emailError}</div>
-                  )}
-                  <button
-                    onClick={handleSendEmail}
-                    disabled={emailSending || !emailTo.trim()}
-                    style={{
-                      ...s.emailSendBtn,
-                      opacity: (emailSending || !emailTo.trim()) ? 0.6 : 1,
-                    }}
-                  >
+                  <div style={{ fontSize: 12, color: "#888", marginBottom: 16 }}>📎 The voucher PDF will be auto-generated and attached to this email.</div>
+                  {emailError && <div style={s.emailError}>{emailError}</div>}
+                  <button onClick={handleSendEmail} disabled={emailSending || !emailTo.trim()} style={{ ...s.emailSendBtn, opacity: (emailSending || !emailTo.trim()) ? 0.6 : 1 }}>
                     <MdSend size={16} />
                     {emailSending ? "Sending…" : "Send Email with PDF"}
                   </button>
@@ -785,7 +790,7 @@ export default function CreateVoucher() {
   );
 }
 
-// ─── Form building blocks ──────────────────────────────────────────────────────
+// ─── Form building blocks ─────────────────────────────────────────────────────
 
 function FormSection({ id, title, icon, children }) {
   return (
@@ -807,21 +812,13 @@ function ToggleSection({ id, title, icon, enabled, onToggle, children }) {
         <span style={s.sectionTitle}>{title}</span>
         <button
           onClick={onToggle}
-          style={{
-            ...s.toggleBtn,
-            background: enabled ? "rgba(255,255,255,0.18)" : "rgba(255,255,255,0.1)",
-            color: "#fff",
-          }}
+          style={{ ...s.toggleBtn, background: enabled ? "rgba(255,255,255,0.18)" : "rgba(255,255,255,0.1)", color: "#fff" }}
         >
           {enabled ? "− Remove Section" : "+ Add Section"}
         </button>
       </div>
       {enabled && <div style={s.sectionBody}>{children}</div>}
-      {!enabled && (
-        <div style={s.disabledHint}>
-          This section is not included in the voucher. Click "+ Add Section" to enable it.
-        </div>
-      )}
+      {!enabled && <div style={s.disabledHint}>This section is not included in the voucher. Click "+ Add Section" to enable it.</div>}
     </div>
   );
 }
@@ -835,25 +832,27 @@ function Field({ label, value, onChange, placeholder, type = "text", textarea, f
     <div style={{ flex: full ? "1 1 100%" : "1 1 0", minWidth: 0 }}>
       {label && <label style={s.label}>{label}</label>}
       {textarea ? (
-        <textarea
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder={placeholder}
-          rows={rows}
-          style={{ ...s.input, resize: "vertical", fontFamily: "inherit", lineHeight: 1.6 }}
-        />
+        <textarea value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} rows={rows}
+          style={{ ...s.input, resize: "vertical", fontFamily: "inherit", lineHeight: 1.6 }} />
       ) : (
         <div style={{ position: "relative" }}>
           {icon && <span style={s.inputIcon}>{icon}</span>}
-          <input
-            type={type}
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-            placeholder={placeholder}
-            style={{ ...s.input, paddingLeft: icon ? 34 : 12 }}
-          />
+          <input type={type} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder}
+            style={{ ...s.input, paddingLeft: icon ? 34 : 12 }} />
         </div>
       )}
+    </div>
+  );
+}
+
+function SelectField({ label, value, onChange, options, allowEmpty = false, full = false }) {
+  return (
+    <div style={{ flex: full ? "1 1 100%" : "1 1 0", minWidth: 0 }}>
+      {label && <label style={s.label}>{label}</label>}
+      <select value={value || ""} onChange={(e) => onChange(e.target.value)} style={{ ...s.input, cursor: "pointer" }}>
+        {(allowEmpty || !value) && <option value="">— Select —</option>}
+        {options.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
+      </select>
     </div>
   );
 }
@@ -872,27 +871,60 @@ function DateField({ label, value, onChange, fmt = "long" }) {
   );
 }
 
+function RichTextEditor({ value, onChange, placeholder }) {
+  const ref = useRef(null);
+
+  useEffect(() => {
+    if (ref.current) {
+      ref.current.innerHTML = value || "";
+    }
+  }, []); // Only on mount — key prop on parent forces remount when needed
+
+  const exec = (cmd) => {
+    document.execCommand(cmd, false, null);
+    if (ref.current) onChange(ref.current.innerHTML);
+    ref.current?.focus();
+  };
+
+  const textContent = value ? value.replace(/<[^>]*>/g, "").trim() : "";
+  const isEmpty = textContent === "";
+
+  return (
+    <div style={s.richEditor}>
+      <div style={s.richToolbar}>
+        <button type="button" onMouseDown={(e) => { e.preventDefault(); exec("bold"); }} style={s.richBtn} title="Bold"><b>B</b></button>
+        <button type="button" onMouseDown={(e) => { e.preventDefault(); exec("italic"); }} style={s.richBtn} title="Italic"><i>I</i></button>
+        <button type="button" onMouseDown={(e) => { e.preventDefault(); exec("insertUnorderedList"); }} style={s.richBtn} title="Bullet List">• List</button>
+        <button type="button" onMouseDown={(e) => { e.preventDefault(); exec("insertOrderedList"); }} style={s.richBtn} title="Numbered List">1. List</button>
+        <button type="button" onMouseDown={(e) => { e.preventDefault(); exec("removeFormat"); }} style={{ ...s.richBtn, color: "#e84949" }} title="Clear formatting">Clear</button>
+      </div>
+      <div style={{ position: "relative" }}>
+        {isEmpty && <div style={s.richPlaceholder}>{placeholder || "Type here…"}</div>}
+        <div
+          ref={ref}
+          contentEditable
+          suppressContentEditableWarning
+          onInput={() => { if (ref.current) onChange(ref.current.innerHTML); }}
+          style={s.richContent}
+        />
+      </div>
+    </div>
+  );
+}
+
 function AddBtn({ onClick, label, icon }) {
   return (
-    <button onClick={onClick} style={s.addBtn}>
-      {icon} {label}
-    </button>
+    <button onClick={onClick} style={s.addBtn}>{icon} {label}</button>
   );
 }
 
 function ActionBtn({ color, icon, label, onClick, disabled }) {
   return (
-    <button
-      onClick={onClick}
-      disabled={disabled}
-      style={{
-        background: disabled ? "#888" : color,
-        color: "#fff", border: "none", borderRadius: 7,
-        padding: "9px 14px", fontSize: 13, fontWeight: 600,
-        cursor: disabled ? "default" : "pointer",
-        display: "flex", alignItems: "center", gap: 5,
-      }}
-    >
+    <button onClick={onClick} disabled={disabled} style={{
+      background: disabled ? "#888" : color, color: "#fff", border: "none", borderRadius: 7,
+      padding: "9px 14px", fontSize: 13, fontWeight: 600,
+      cursor: disabled ? "default" : "pointer", display: "flex", alignItems: "center", gap: 5,
+    }}>
       {icon} {label}
     </button>
   );
@@ -900,94 +932,34 @@ function ActionBtn({ color, icon, label, onClick, disabled }) {
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 const s = {
-  page: { display: "flex", minHeight: "100vh", background: "#f0f2f7", fontFamily: "'DM Sans', sans-serif" },
-
-  // Sidebar
-  sidebar: {
-    width: 230, background: "#1a1a2e", display: "flex", flexDirection: "column",
-    position: "fixed", top: 0, left: 0, height: "100vh", zIndex: 100,
-    boxShadow: "2px 0 16px rgba(0,0,0,0.2)",
-  },
-  sideTop: {
-    padding: "20px 20px 16px",
-    borderBottom: "1px solid rgba(255,255,255,0.07)",
-  },
-  sideLogo: { height: 38, objectFit: "contain", filter: "brightness(0) invert(1)" },
-  sideMenu: { flex: 1, padding: "16px 12px", overflowY: "auto" },
-  backBtn: {
-    display: "flex", alignItems: "center", gap: 8,
-    background: "rgba(255,255,255,0.07)", border: "none",
-    borderRadius: 7, color: "rgba(255,255,255,0.6)",
-    padding: "8px 12px", fontSize: 13, cursor: "pointer",
-    width: "100%", marginBottom: 16, fontFamily: "inherit",
-  },
-  menuLabel: { fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.3)", letterSpacing: 1.5, padding: "0 4px", marginBottom: 6 },
-  menuItem: {
-    display: "flex", alignItems: "center", gap: 9,
-    padding: "9px 12px", borderRadius: 7,
-    color: "rgba(255,255,255,0.55)", fontSize: 13.5, fontWeight: 500,
-    textDecoration: "none", marginBottom: 2,
-    transition: "all 0.15s",
-  },
-  menuItemActive: { background: "rgba(232,73,73,0.18)", color: "#e84949" },
-  sideBottom: { padding: "12px" },
-  sideActions: { display: "flex", gap: 8, marginBottom: 8 },
-  sideBtn: {
-    flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 5,
-    background: "rgba(255,255,255,0.1)", border: "none", borderRadius: 7,
-    color: "#fff", padding: "9px 8px", fontSize: 13, fontWeight: 600,
-    cursor: "pointer", fontFamily: "inherit",
-  },
-  sideBtnRed: { background: "#e84949" },
-  savedPill: { textAlign: "center", fontSize: 11.5, color: "#4ade80", padding: "4px 0" },
-
-  // Main
-  main: { marginLeft: 230, flex: 1, padding: "28px 36px 60px", minHeight: "100vh" },
-  topBar: { display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24 },
-  pageTitle: { fontSize: 22, fontWeight: 800, color: "#1a1a2e", margin: 0 },
-  pageSubtitle: { fontSize: 13, color: "#9ca3af", margin: "5px 0 0" },
-  topActions: { display: "flex", alignItems: "center", gap: 10 },
   savedTag: { background: "#dcfce7", color: "#15803d", borderRadius: 20, padding: "5px 12px", fontSize: 12, fontWeight: 600 },
   previewBtn: {
     background: "rgb(37 99 235 / 12%)", color: "rgb(37 99 235)", border: "none", borderRadius: 8,
     padding: "11px 20px", fontSize: 14, fontWeight: 600, cursor: "pointer",
     display: "flex", alignItems: "center", gap: 6,
   },
-
-  // Sections
   section: {
     background: "#fff", borderRadius: 12, overflow: "hidden",
     boxShadow: "0 1px 8px rgba(0,0,0,0.06)", marginBottom: 20,
     border: "1px solid #e8eaf0",
   },
-  sectionHead: {
-    background: "#2563eb", display: "flex", alignItems: "center", gap: 10,
-    padding: "13px 20px",
-  },
+  sectionHead: { background: "#2563eb", display: "flex", alignItems: "center", gap: 10, padding: "13px 20px" },
   sectionIcon: { color: "#fff", display: "flex", alignItems: "center", fontSize: 18 },
   sectionTitle: { color: "#fff", fontWeight: 700, fontSize: 14.5, flex: 1, letterSpacing: 0.2 },
   sectionBody: { padding: "20px 22px", display: "flex", flexDirection: "column", gap: 14 },
   disabledHint: { padding: "14px 22px", fontSize: 13, color: "#9ca3af", fontStyle: "italic" },
-  toggleBtn: {
-    border: "1.5px solid rgba(255,255,255,0.4)", borderRadius: 6, padding: "5px 14px",
-    fontSize: 12, fontWeight: 700, cursor: "pointer",
-  },
-
-  // Form
+  toggleBtn: { border: "1.5px solid rgba(255,255,255,0.4)", borderRadius: 6, padding: "5px 14px", fontSize: 12, fontWeight: 700, cursor: "pointer" },
   twoCol: { display: "flex", gap: 14 },
   label: { display: "block", fontSize: 11.5, fontWeight: 700, color: "#6b7280", marginBottom: 5, textTransform: "uppercase", letterSpacing: 0.6 },
   input: {
     width: "100%", border: "1.5px solid #e5e7eb", borderRadius: 8,
     padding: "10px 12px", fontSize: 14, outline: "none",
     boxSizing: "border-box", background: "#f9fafb", color: "#111",
-    fontFamily: "'DM Sans', sans-serif",
-    transition: "border-color 0.15s",
+    fontFamily: "'DM Sans', sans-serif", transition: "border-color 0.15s",
   },
   inputIcon: { position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#9ca3af", display: "flex" },
   divider: { height: 1, background: "#f0f0f0", margin: "2px 0" },
   subHeading: { fontSize: 12.5, fontWeight: 700, color: "#374151", textTransform: "uppercase", letterSpacing: 0.8 },
-
-  // Cards
   card: {
     background: "#f8f9fc", border: "1.5px solid #e5e7eb",
     borderRadius: 10, padding: "16px", display: "flex",
@@ -1001,110 +973,57 @@ const s = {
     borderRadius: 6, padding: "5px 10px", fontSize: 12, fontWeight: 600, cursor: "pointer",
   },
   flightGrid: { display: "flex", gap: 12 },
-  flightHalf: {
-    flex: 1, background: "#fff", border: "1.5px solid #e5e7eb",
-    borderRadius: 8, padding: "14px", display: "flex", flexDirection: "column", gap: 10,
-  },
+  flightHalf: { flex: 1, background: "#fff", border: "1.5px solid #e5e7eb", borderRadius: 8, padding: "14px", display: "flex", flexDirection: "column", gap: 10 },
   flightHalfTitle: { fontSize: 11, fontWeight: 800, color: "#e84949", letterSpacing: 1, marginBottom: 4 },
-
-  // Add button
   addBtn: {
     display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
     background: "#eff6ff", color: "#2563eb", border: "1.5px dashed #93c5fd",
     borderRadius: 8, padding: "11px", fontSize: 13, fontWeight: 600,
     cursor: "pointer", width: "100%",
   },
-
-  // Note preview
   notePreviewBox: { marginBottom: 4 },
-  notePreviewDashed: {
-    border: "1.5px dashed #93c5fd", borderRadius: 8,
-    padding: "10px 14px", background: "#f0f9ff",
-  },
-
-  // Bottom bar
+  notePreviewDashed: { border: "1.5px dashed #93c5fd", borderRadius: 8, padding: "10px 14px", background: "#f0f9ff" },
   bottomBar: { display: "flex", gap: 12, paddingTop: 10, paddingBottom: 20 },
   btnDark: {
     background: "#2563eb", color: "#fff", border: "none", borderRadius: 8,
     padding: "13px 24px", fontSize: 14, fontWeight: 600, cursor: "pointer",
     display: "flex", alignItems: "center", gap: 7,
   },
-  btnRed: {
+  btnBlue: {
     background: "rgb(37 99 235 / 12%)", color: "rgb(37 99 235)", border: "none", borderRadius: 8,
     padding: "13px 24px", fontSize: 14, fontWeight: 600, cursor: "pointer",
     display: "flex", alignItems: "center", gap: 7,
   },
-
-  // Modal
   overlay: {
     position: "fixed", inset: 0, background: "rgba(0,0,0,0.65)",
     zIndex: 1000, display: "flex", alignItems: "flex-start",
     justifyContent: "center", overflowY: "auto", padding: "20px",
   },
-  modal: {
-    background: "#f0f2f7", borderRadius: 16, width: "100%",
-    maxWidth: 840, margin: "auto",
-    boxShadow: "0 24px 80px rgba(0,0,0,0.4)", overflow: "hidden",
-  },
-  modalHead: {
-    background: "#1a1a2e", padding: "16px 22px",
-    display: "flex", justifyContent: "space-between",
-    alignItems: "center", flexWrap: "wrap", gap: 10,
-  },
+  modal: { background: "#f0f2f7", borderRadius: 16, width: "100%", maxWidth: 840, margin: "auto", boxShadow: "0 24px 80px rgba(0,0,0,0.4)", overflow: "hidden" },
+  modalHead: { background: "#1a1a2e", padding: "16px 22px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 10 },
   modalTitle: { color: "#fff", fontSize: 16, fontWeight: 700 },
   modalActions: { display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" },
-  closeBtn: {
-    background: "rgba(255,255,255,0.1)", border: "none",
-    borderRadius: 7, color: "#fff", padding: "8px 10px",
-    cursor: "pointer", display: "flex", alignItems: "center",
-  },
-  infoBar: {
-    background: "#f0fdf4", padding: "10px 22px",
-    display: "flex", alignItems: "center", gap: 8,
-    fontSize: 12, color: "#166534", borderBottom: "1px solid #dcfce7",
-  },
+  closeBtn: { background: "rgba(255,255,255,0.1)", border: "none", borderRadius: 7, color: "#fff", padding: "8px 10px", cursor: "pointer", display: "flex", alignItems: "center" },
+  infoBar: { background: "#f0fdf4", padding: "10px 22px", display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: "#166534", borderBottom: "1px solid #dcfce7" },
   modalBody: { padding: "24px", overflowY: "auto", maxHeight: "82vh" },
-
-  // Email modal
-  emailModal: {
-    background: "#fff", borderRadius: 14, width: "100%",
-    maxWidth: 460, margin: "auto",
-    boxShadow: "0 24px 60px rgba(0,0,0,0.35)", overflow: "hidden",
-  },
-  emailModalHead: {
-    background: "#ea4335", padding: "16px 20px",
-    display: "flex", justifyContent: "space-between", alignItems: "center",
-  },
+  emailModal: { background: "#fff", borderRadius: 14, width: "100%", maxWidth: 460, margin: "auto", boxShadow: "0 24px 60px rgba(0,0,0,0.35)", overflow: "hidden" },
+  emailModalHead: { background: "#ea4335", padding: "16px 20px", display: "flex", justifyContent: "space-between", alignItems: "center" },
   emailModalBody: { padding: "24px" },
-  emailSenderRow: {
-    display: "flex", alignItems: "center", gap: 8,
-    background: "#f5f5f5", borderRadius: 7, padding: "9px 12px", marginBottom: 16,
-  },
+  emailSenderRow: { display: "flex", alignItems: "center", gap: 8, background: "#f5f5f5", borderRadius: 7, padding: "9px 12px", marginBottom: 16 },
   emailLabel: { fontSize: 11.5, fontWeight: 700, color: "#555", textTransform: "uppercase", letterSpacing: 0.5, display: "block", marginBottom: 6 },
   emailFrom: { fontSize: 13, color: "#333", fontWeight: 600 },
-  emailInput: {
-    width: "100%", border: "1.5px solid #e0e0e0", borderRadius: 8,
-    padding: "11px 13px", fontSize: 14, outline: "none",
-    boxSizing: "border-box", fontFamily: "inherit",
-  },
-  emailPreviewBox: {
-    background: "#f9f9f9", border: "1px solid #eee",
-    borderRadius: 8, padding: "12px 14px", marginBottom: 16,
-  },
+  emailInput: { width: "100%", border: "1.5px solid #e0e0e0", borderRadius: 8, padding: "11px 13px", fontSize: 14, outline: "none", boxSizing: "border-box", fontFamily: "inherit" },
+  emailPreviewBox: { background: "#f9f9f9", border: "1px solid #eee", borderRadius: 8, padding: "12px 14px", marginBottom: 16 },
   emailPreviewLabel: { fontSize: 11, fontWeight: 700, color: "#888", marginBottom: 8, textTransform: "uppercase", letterSpacing: 0.5 },
   emailPreviewRow: { fontSize: 13, color: "#444", marginBottom: 4 },
-  emailSendBtn: {
-    background: "#ea4335", color: "#fff", border: "none",
-    borderRadius: 8, padding: "13px", fontSize: 14, fontWeight: 700,
-    cursor: "pointer", width: "100%", display: "flex",
-    alignItems: "center", justifyContent: "center", gap: 7,
-  },
-  emailError: {
-    background: "#fff2f2", border: "1px solid #fecaca",
-    color: "#b91c1c", borderRadius: 7, padding: "10px 13px",
-    fontSize: 13, marginBottom: 12,
-  },
-  emailSuccess: {
-    textAlign: "center", padding: "24px 0",
-  },
+  emailSendBtn: { background: "#ea4335", color: "#fff", border: "none", borderRadius: 8, padding: "13px", fontSize: 14, fontWeight: 700, cursor: "pointer", width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 7 },
+  emailError: { background: "#fff2f2", border: "1px solid #fecaca", color: "#b91c1c", borderRadius: 7, padding: "10px 13px", fontSize: 13, marginBottom: 12 },
+  emailSuccess: { textAlign: "center", padding: "24px 0" },
+
+  // Rich text editor
+  richEditor: { border: "1.5px solid #e5e7eb", borderRadius: 8, overflow: "hidden", background: "#f9fafb" },
+  richToolbar: { display: "flex", gap: 4, padding: "6px 10px", background: "#f0f4ff", borderBottom: "1px solid #e5e7eb", flexWrap: "wrap" },
+  richBtn: { background: "#fff", border: "1px solid #d1d5db", borderRadius: 4, padding: "3px 9px", fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", color: "#374151" },
+  richContent: { minHeight: 100, padding: "10px 12px", fontSize: 14, color: "#111", outline: "none", lineHeight: 1.7, fontFamily: "'DM Sans', sans-serif" },
+  richPlaceholder: { position: "absolute", top: 10, left: 12, fontSize: 14, color: "#9ca3af", pointerEvents: "none", userSelect: "none" },
 };

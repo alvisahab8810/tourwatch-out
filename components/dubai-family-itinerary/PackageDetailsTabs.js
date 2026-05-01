@@ -38,7 +38,7 @@ function PriceCard({ pkg, className }) {
   const price    = fmtPrice(pkg?.finalPrice || pkg?.basePrice);
   const imgSrc   = pkg?.priceImage?.src || "/assets/images/dubai/itinerary/it-banner.png";
   const imgAlt   = pkg?.priceImage?.alt || "package banner";
-  const priceType = pkg?.priceType || "per person on twin sharing";
+  const priceType = pkg?.priceType || "02 Couples";
 
   return (
     <div className={`price-card ${className || ""}`}>

@@ -1,5 +1,14 @@
 @media(max-width:760px){
 
+      .new-desti-card .share-area .duration-badge{
+        white-space: nowrap;
+    }
+
+    .national-list-bx > div {
+    width: 100%!important;
+    margin-bottom: 20px!important;
+}
+
     #home{
         overflow: hidden;
     }
@@ -197,7 +206,6 @@
     font-size: 20px;
     line-height: 44px;
     font-weight: bold;
-    text-align: center;
     color: #111527;
     margin-bottom: 20px;
 }
@@ -217,7 +225,7 @@
   }
 
   .feature-card {
-    min-width: 85%; /* show 1 card at a time */
+    min-width: 75%; /* show 1 card at a time */
     flex: 0 0 auto;
     scroll-snap-align: start;
     border-radius: 12px;
@@ -225,7 +233,7 @@
 
   .feature-image {
     position: relative;
-    height: 470px;
+    height: 400px;
  
   }
 
@@ -240,7 +248,7 @@
 
     .what-makes-us .feature-card {
         height: auto;
-        width: 80%;
+        width: 75%;
         padding: 0;
     }
 .benefits-grid {
@@ -266,7 +274,7 @@
 }
 .faq-section {
     padding-bottom: 30px;
-    padding-top: 30px;
+    /* padding-top: 30px; */
 }
 .promo-section{
     margin:30px 0px;
@@ -391,7 +399,7 @@
   }
 
   .blog-card {
-    min-width: 80%;  /* Show 1 card at a time */
+    min-width: 75%;  /* Show 1 card at a time */
     flex: 0 0 auto;
     scroll-snap-align: start;
     border-radius: 14px;
@@ -399,7 +407,7 @@
   }
 
   .blog-image {
-    height: 280px;
+    height: 300px;
     background-size: cover;
     background-position: center;
     border-radius: 14px;
@@ -494,10 +502,15 @@
 
 
 .google-reviews-header {
-    font-size: 20px;
-    line-height: 45px;
-    color: #34384c;
-    margin-bottom: 20px;
+         font-size: 18px;
+        line-height: 45px;
+        color: #000000;
+        margin-bottom: 10px;
+        font-weight: bold;
+}
+
+.reviews-overview  .rating-display img {
+    width: 74px;
 }
 
 .rating-breakdown{
@@ -522,11 +535,17 @@
     /* margin: 0 auto 16px; */
 }
 
+.dest-slide-card {
+    border-radius: 10px;
+}
+.rating-source {
+    font-size: 16px;
+}
 .rating-display {
     margin-bottom: 0;
     border-right: 1px solid #EFF3FF;
     background: white;
-    padding: 30px 20px;
+    padding: 15px 15px;
             box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
         border-radius: 10px;
 }
@@ -664,6 +683,7 @@ section.google-reviews.desktop-none {
     height: auto;
     width: auto;
     display: flex;
+    align-items: center;
     font-size: 12px;
 }
 
