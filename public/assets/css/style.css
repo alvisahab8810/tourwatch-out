@@ -4621,3 +4621,111 @@ section.blogs-list-section.ptb-80 {
 .national-pages .national-list-bx > div {
     margin-bottom: 30px;
 }
+
+/* ─── Destination Category Cards (destination/[slug] page) ────────────── */
+.dest-cat-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.dest-cat-row > a {
+    width: calc(33.33% - 14px);
+    display: block;
+    text-decoration: none;
+}
+
+.dest-cat-card {
+    position: relative;
+    height: 520px;
+    border-radius: 5px;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.dest-cat-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.dest-cat-gradient {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.04) 0%, rgba(0,0,0,0.18) 45%, rgba(0,0,0,0.82) 100%);
+}
+
+.dest-cat-content {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 24px;
+    z-index: 2;
+}
+
+.dest-cat-content h2 {
+    font-size: 30px;
+    font-weight: bold;
+    color: #ffffff;
+    margin-bottom: 5px;
+    line-height: 30px;
+}
+
+.dest-cat-card .price-section {
+    border: none;
+    justify-content: flex-start;
+    margin-bottom: 12px;
+}
+
+.dest-cat-card .price-section .price-info .old-price {
+    font-size: 11px;
+    color: #ffffff;
+    margin-bottom: 5px;
+}
+
+.dest-cat-card .price-section .price-info .new-price {
+    font-size: 30px;
+    font-weight: bold;
+    font-family: dm-sans, sans-serif;
+    color: #ffffff;
+    line-height: 1;
+    margin-bottom: 5px;
+}
+
+.dest-cat-card .oldcut {
+    color: #EE8A88;
+    text-decoration: line-through;
+    margin-left: 5px;
+}
+
+.dest-cat-card .package-button {
+    width: 100%;
+    display: block;
+    text-align: center;
+}
+
+.dest-cat-card .package-button:hover {
+    color: #ffffff;
+}
+
+
+.dyna-destination-pages .benefits-section {
+    padding: 50px 0;
+}
+
+.dyna-destination-pages .benefits-grid {
+    margin-bottom: 0px!important;
+}
+
+.dyna-destination-pages .reviews-section {
+    padding-top: 60px!important;
+}
+
+.dyna-destination-pages .pb-80 {
+    padding-bottom: 100px!important;
+}

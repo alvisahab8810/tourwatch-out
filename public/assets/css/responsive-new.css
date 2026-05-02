@@ -987,7 +987,109 @@ section.blogs-list-section.ptb-80 {
     height: 2px;
     margin-top: 10px;
 }
+
+
+    .dyna-destination-pages .hero-title {
+        font-size: 24px;
+        line-height: 25px;
+        margin-bottom: 15px !important;
+        text-align: left;
+        letter-spacing: 0.5%;
+    }
+
+.dyna-destination-pages .hero-subtitle {
+           font-size: 14px;
+        line-height: 22px;
+        text-align: left;
+        margin-top: 25px;
 }
+
+.dyna-destination-pages .cta-button {
+        width: 100%!important;
+        border-radius: 12px !important;
+        height: 50px!important;
+        border-radius: 12px!important;
+    }
+    .dyna-destination-pages .stats-container {
+        padding-top: 15px!important;
+    }
+
+    .dyna-destination-pages .what-makes-us {
+        padding: 30px 0!important;
+        padding-bottom: 30px !important;
+        border-radius: 27px 27px 0px 0px!important;
+        margin-top: -52px;
+        background: white;
+    }
+
+    .dyna-destination-pages .family-dubai-row {
+        flex-wrap: nowrap!important;
+    }
+ .dyna-destination-pages .dest-cat-row {
+        gap: 16px !important;
+        flex-wrap: nowrap !important;
+    }
+
+    .dyna-destination-pages .dest-cat-content h2 {
+    font-size: 22px!important;
+        margin-bottom: 0px;
+    line-height: normal;
+}
+
+ 
+    .dyna-destination-pages .dest-cat-card .price-section .price-info .new-price {
+    font-size: 18px;
+
+}
+
+   .dyna-destination-pages .dest-cat-content {
+    padding: 15px;
+}
+
+.dyna-destination-pages .package-button {
+        font-size: 14px!important;
+        padding: 12px 35px!important;
+    }
+
+    .dyna-destination-pages .dest-cat-card {
+    height: 400px;
+}
+.dyna-destination-pages .section-title{
+    line-height: normal!important;
+}
+    
+.dyna-destination-pages .section-subtitle {
+    margin-bottom: 7px !important;
+}
+.dyna-destination-pages .benefits-section {
+    padding: 0px 0 !important;
+}
+.dyna-destination-pages .family-dubai-packages {
+    padding-top: 40px!important;
+    padding-bottom: 0px!important;
+}
+
+
+.dyna-destination-pages .national-dest .swiper {
+    padding-top: 20px !important;
+}
+
+.dyna-destination-pages .explore-more-btn {
+        font-size: 14px!important;
+}
+
+.dyna-destination-pages section.national-dest {
+    padding-top: 30px;
+}
+}
+
+
+
+
+
+
+
+
 
 
 

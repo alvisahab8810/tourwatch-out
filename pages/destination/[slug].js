@@ -12,6 +12,7 @@ import MostPopular from "../../components/home/MostPopular";
 import Blogs from "../../components/home/Blogs";
 import BottomReviews from "../../components/home/BottomReviews";
 import BottomReviewsMobile from "../../components/home/BottomReviewsMobile";
+import BenifitSection from "../../components/home/BenifitSection";
 
 const PKG_TYPES = ["Family", "Couple"];
 const SUBTYPES  = ["Economy", "Deluxe", "Premium"];
@@ -51,10 +52,14 @@ function CategoryCard({ dest, pkgType, subtype, packages }) {
     p => p.packageType?.toLowerCase()    === pkgType.toLowerCase() &&
          p.packageSubtype?.toLowerCase() === subtype.toLowerCase()
   );
-  const prices = pkgsForCategory
-    .map(p => Number(p.finalPrice || p.basePrice || 0))
-    .filter(p => p > 0);
-  const minPrice = prices.length > 0 ? Math.min(...prices) : 0;
+  // Find the package with the lowest final price to derive both prices
+  const priced = pkgsForCategory
+    .map(p => ({ base: Number(p.basePrice || 0), final: Number(p.finalPrice || p.basePrice || 0) }))
+    .filter(p => p.final > 0);
+  priced.sort((a, b) => a.final - b.final);
+  const minFinal = priced.length > 0 ? priced[0].final : 0;
+  const minBase  = priced.length > 0 ? priced[0].base  : 0;
+  const hasDiscount = minBase > 0 && minBase !== minFinal;
 
   const image =
     dest.images?.[pkgType]?.[subtype]?.src ||
@@ -65,90 +70,32 @@ function CategoryCard({ dest, pkgType, subtype, packages }) {
   const name = dest.name || dest.title;
 
   return (
-    <Link href={href} style={{ textDecoration: "none", display: "block", flex: "1 1 0", minWidth: 240, maxWidth: 400 }}>
-      <div style={cs.card}>
-        {/* True background image — absolutely fills the card */}
-        <img src={image} alt={`${subtype} ${pkgType} ${name}`} style={cs.bgImg} />
-
-        {/* Dark gradient so text is always legible */}
-        <div style={cs.gradient} />
-
-        {/* Top row: type badge + share icon */}
-        <div style={cs.topRow}>
-          <span className="duration-badge">{pkgType}</span>
-          <img src="/assets/images/hero/icons/share1.svg" alt="share" style={{ width: 22 }} />
-        </div>
-
-        {/* Bottom overlay: title + price + button */}
-        <div style={cs.bottom}>
-          <h2 style={cs.title}>{subtype} {name}</h2>
-          {minPrice > 0 && (
-            <div className="price-section" style={{ marginBottom: 12 }}>
+    <Link href={href} className="dest-cat-link">
+      <div className="dest-cat-card">
+        <img src={image} alt={`${subtype} ${name}`} className="dest-cat-bg" />
+        <div className="dest-cat-gradient" />
+        <div className="dest-cat-content">
+          <h2>{subtype} {name}</h2>
+          {minFinal > 0 && (
+            <div className="price-section">
               <div className="price-info">
-                <p className="old-price" style={{ color: "rgba(255,255,255,0.75)" }}>Starting from</p>
-                <p className="new-price">{fmt(minPrice)}</p>
+                {hasDiscount ? (
+                  <p className="old-price">
+                    Starting from <span className="oldcut">{fmt(minBase)}</span>
+                  </p>
+                ) : (
+                  <p className="old-price">Starting from</p>
+                )}
+                <p className="new-price">{fmt(minFinal)}</p>
               </div>
             </div>
           )}
-          <div className="package-button interactive" style={{ textAlign: "center" }}>
-            View Packages
-          </div>
+          <div className="package-button interactive">View Packages</div>
         </div>
       </div>
     </Link>
   );
 }
-
-const cs = {
-  card: {
-    position: "relative",
-    borderRadius: 10,
-    overflow: "hidden",
-    height: 380,
-    width: "100%",
-    boxShadow: "0 6px 24px rgba(0,0,0,0.18)",
-    cursor: "pointer",
-  },
-  bgImg: {
-    position: "absolute",
-    inset: 0,
-    width: "100%",
-    height: "100%",
-    objectFit: "cover",
-    display: "block",
-  },
-  gradient: {
-    position: "absolute",
-    inset: 0,
-    background: "linear-gradient(to bottom, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.20) 40%, rgba(0,0,0,0.78) 100%)",
-  },
-  topRow: {
-    position: "absolute",
-    top: 14,
-    left: 14,
-    right: 14,
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    zIndex: 2,
-  },
-  bottom: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    padding: "0 16px 16px",
-    zIndex: 2,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 700,
-    color: "#fff",
-    margin: "0 0 8px",
-    lineHeight: 1.3,
-    textShadow: "0 1px 4px rgba(0,0,0,0.4)",
-  },
-};
 
 function CategorySection({ dest, pkgType, packages }) {
   const name = dest.name || dest.title;
@@ -161,7 +108,7 @@ function CategorySection({ dest, pkgType, packages }) {
             <span className="highlight">{pkgType} {name} </span> Packages
           </h2>
         </div>
-        <div className="family-dubai-row">
+        <div className="dest-cat-row">
           {SUBTYPES.map(sub => (
             <CategoryCard
               key={sub}
@@ -267,6 +214,8 @@ export default function DestinationPage({ dest, packages }) {
       </section>
 
       <WhatMakeus />
+
+      <BenifitSection/>
 
       {typesToShow.length === 0 && (
         <section className="family-dubai-packages">

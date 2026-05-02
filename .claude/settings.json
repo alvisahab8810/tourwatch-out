@@ -11,7 +11,13 @@
       "Bash(node -e \"console.log\\('MongoDB packages store working:', 8, 'packages in DB'\\)\")",
       "Bash(Get-ChildItem -Path \"d:\\\\tourwatch-out\\\\pages\" -Recurse -Filter \"*.js\" -File)",
       "Bash(Select-Object -ExpandProperty FullName)",
-      "Bash(Get-ChildItem -Path \"d:\\\\tourwatch-out\\\\data\" -Recurse)"
+      "Bash(Get-ChildItem -Path \"d:\\\\tourwatch-out\\\\data\" -Recurse)",
+      "Bash(dir \"d:\\\\tourwatch-out\\\\public\\\\assets\\\\css\\\\style.css\" \"d:\\\\tourwatch-out\\\\public\\\\assets\\\\css\\\\responsive.css\" \"d:\\\\tourwatch-out\\\\out\\\\assets\\\\css\\\\style.css\" \"d:\\\\tourwatch-out\\\\out\\\\assets\\\\css\\\\responsive.css\")",
+      "Bash(findstr /V \"cannot\")",
+      "Bash(Get-Content \"d:\\\\tourwatch-out\\\\public\\\\assets\\\\css\\\\style.css\")",
+      "Bash(Measure-Object -Line)",
+      "Bash(Select-Object Lines)",
+      "Bash(Get-Content \"d:\\\\tourwatch-out\\\\public\\\\assets\\\\css\\\\responsive.css\")"
     ]
   }
 }

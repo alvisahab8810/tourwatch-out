@@ -113,7 +113,7 @@ function PackageCard({ pkg }) {
 
 export default function NationalDestinationPage({ packages = [] }) {
   return (
-    <div className="dubai-family-package  national-pages">
+    <div className="dubai-family-package  national-pages familypage">
       <Topbar />
       <Offcanvas />
 
