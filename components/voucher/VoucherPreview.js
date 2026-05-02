@@ -88,7 +88,7 @@ export default function VoucherPreview({ data }) {
       <div style={v.redBar} />
 
       {/* ══════════ VOUCHER META ══════════ */}
-      <div style={v.metaSection}>
+      <div data-pdf-section="true" style={v.metaSection}>
         <div style={v.metaLeft}>
           <InfoPair label="Voucher No." value={d.voucherNo} />
           <InfoPair label="Trip ID"     value={d.tripId} />
@@ -120,6 +120,7 @@ export default function VoucherPreview({ data }) {
             {hotels.map((h, idx) => (
               <div
                 key={h.id ?? idx}
+                data-pdf-section="true"
                 style={idx > 0 ? { marginTop: 18, borderTop: "1px dashed #e0e0e0", paddingTop: 14 } : {}}
               >
                 <div style={v.hotelBlock}>
@@ -159,7 +160,7 @@ export default function VoucherPreview({ data }) {
               </div>
             ))}
             {hotelNote && (
-              <div style={v.noteBox}>
+              <div data-pdf-section="true" style={v.noteBox}>
                 <div style={v.noteBoxTitle}>{hotelNote.split("\n")[0]}</div>
                 <ul style={v.noteList}>
                   {hotelNote
@@ -182,7 +183,7 @@ export default function VoucherPreview({ data }) {
       {d.showFlights && d.flights && d.flights.length > 0 && (
         <RedSection title="Flight Details">
           {d.flights.map((fl, i) => (
-            <div key={i} style={{ marginBottom: i < d.flights.length - 1 ? 16 : 0 }}>
+            <div key={i} data-pdf-section="true" style={{ marginBottom: i < d.flights.length - 1 ? 16 : 0 }}>
               <div style={v.pnrRow}>
                 <span style={v.pnrLabel}>PNR:</span>
                 <span style={v.pnrValue}>{fl.pnr || "—"}</span>
@@ -240,6 +241,7 @@ export default function VoucherPreview({ data }) {
           {d.itineraries.map((item, i) => (
             <div
               key={i}
+              data-pdf-section="true"
               style={{
                 marginBottom: i < d.itineraries.length - 1 ? 18 : 0,
                 paddingBottom: i < d.itineraries.length - 1 ? 16 : 0,
@@ -289,7 +291,7 @@ export default function VoucherPreview({ data }) {
 
       {/* ══════════ VALUE ADDITION ══════════ */}
       {(d.valueAddition || d.extras) && (
-        <div style={v.extrasBar}>
+        <div data-pdf-section="true" style={v.extrasBar}>
           <strong>Value Addition:</strong>
           <span style={{ marginLeft: 8, color: "#555" }}>{d.valueAddition || d.extras}</span>
         </div>

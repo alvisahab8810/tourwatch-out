@@ -224,12 +224,6 @@ export default function CreateVoucher() {
       const footerEl = document.getElementById("voucher-pdf-footer");
       if (!wrapEl || !footerEl) return null;
       const SCALE = 2;
-      const wrapRect    = wrapEl.getBoundingClientRect();
-      const sectionEls  = wrapEl.querySelectorAll("[data-pdf-section]");
-      const sectionBounds = Array.from(sectionEls).map((el) => {
-        const r = el.getBoundingClientRect();
-        return { top: r.top - wrapRect.top, bottom: r.bottom - wrapRect.top };
-      });
       const patchClone = (clonedDoc) => {
         const s = clonedDoc.createElement("style");
         s.textContent = "* { font-family: Arial, Helvetica, sans-serif !important; letter-spacing: 0.01px !important; word-spacing: 0.1px !important; }";
@@ -250,60 +244,53 @@ export default function CreateVoucher() {
       const pdf   = new jsPDF("p", "mm", "a4");
       const pageW = pdf.internal.pageSize.getWidth();
       const pageH = pdf.internal.pageSize.getHeight();
-      const pxPerMm   = mainCanvas.width / pageW;
-      const pagePx    = pageH * pxPerMm;
-      const totalPx   = mainCanvas.height;
-      const domToCvs  = mainCanvas.width / wrapEl.offsetWidth;
-      // Sort sections smallest-first so tightly-contained sections are checked before
-      // their parents, preventing a large outer section from masking a small inner one.
-      const sectionBoundsCvs = sectionBounds
-        .map((s) => ({ top: s.top * domToCvs, bottom: s.bottom * domToCvs }))
-        .sort((a, b) => (a.bottom - a.top) - (b.bottom - b.top));
+      const pxPerMm  = mainCanvas.width / pageW;
+      const pagePx   = pageH * pxPerMm;
+      const totalPx  = mainCanvas.height;
+      const domToCvs = mainCanvas.width / wrapEl.offsetWidth;
 
-      // Don't move a cut up if it would make the page shorter than this.
-      const MIN_PAGE_PX = pagePx * 0.35;
+      // Collect every safe cut position: the top AND bottom of each marked section.
+      // We snap page breaks to the nearest safe boundary just before the ideal cut —
+      // this avoids cutting inside cards without creating large blank spaces.
+      const wrapRect = wrapEl.getBoundingClientRect();
+      const boundarySet = new Set([0]);
+      for (const el of wrapEl.querySelectorAll("[data-pdf-section]")) {
+        const r = el.getBoundingClientRect();
+        const top    = Math.round((r.top    - wrapRect.top) * domToCvs);
+        const bottom = Math.round((r.bottom - wrapRect.top) * domToCvs);
+        if (top    > 0 && top    < totalPx) boundarySet.add(top);
+        if (bottom > 0 && bottom < totalPx) boundarySet.add(bottom);
+      }
+      const boundaries = Array.from(boundarySet).sort((a, b) => a - b);
+
+      // A page must contain at least MIN_FILL pixels of content.
+      const MIN_FILL = pagePx * 0.20;
 
       const pageCuts = [0];
       while (true) {
-        const lastCut = pageCuts[pageCuts.length - 1];
-        let nextCut   = lastCut + pagePx;
-        if (nextCut >= totalPx) break;
+        const lastCut  = pageCuts[pageCuts.length - 1];
+        const idealCut = lastCut + pagePx;
+        if (idealCut >= totalPx) break;
 
-        let changed = true, guard = 0;
-        while (changed && guard++ < 20) {
-          changed = false;
-          for (const s of sectionBoundsCvs) {
-            if (s.bottom <= lastCut) continue;
-            if (s.top >= nextCut)    continue;
-            if (nextCut > s.top && nextCut < s.bottom) {
-              const sectionHeight = s.bottom - s.top;
-              const wouldBePageH  = s.top - lastCut;
-              // Only move the cut up if the resulting page is tall enough
-              if (wouldBePageH >= MIN_PAGE_PX && sectionHeight < pagePx * 0.92) {
-                nextCut = s.top;
-                changed = true; break;
-              } else if (nextCut < s.top + 80 && wouldBePageH >= MIN_PAGE_PX * 0.5) {
-                // Very near top of section — always safe to nudge up a little
-                nextCut = s.top;
-                changed = true; break;
-              }
-              // else: section too big or page would be too short — allow cut inside
-            }
-          }
+        // Walk boundaries from largest to smallest, pick the first one that is
+        // ≤ idealCut and leaves at least MIN_FILL content on the current page.
+        let chosenCut = idealCut; // fallback: cut at ideal position (may bisect content)
+        for (let i = boundaries.length - 1; i >= 0; i--) {
+          const b = boundaries[i];
+          if (b <= lastCut + MIN_FILL) break; // page would be too short — give up
+          if (b <= idealCut) { chosenCut = b; break; }
         }
 
-        if (nextCut <= lastCut) nextCut = lastCut + pagePx;
-        pageCuts.push(nextCut);
+        pageCuts.push(chosenCut);
       }
       pageCuts.push(totalPx);
 
-      // If the last slice is very thin, merge it into the previous page
-      // (prevents a near-blank final page caused by section-avoidance pushback)
+      // Merge a very thin last slice into the previous page.
       while (pageCuts.length > 2) {
         const lastSlice = pageCuts[pageCuts.length - 1] - pageCuts[pageCuts.length - 2];
         if (lastSlice >= pagePx * 0.15) break;
         const prevSlice = pageCuts[pageCuts.length - 2] - pageCuts[pageCuts.length - 3];
-        if (prevSlice + lastSlice > pagePx * 1.15) break; // merged page would be too tall
+        if (prevSlice + lastSlice > pagePx * 1.1) break;
         pageCuts.splice(pageCuts.length - 2, 1);
       }
 
@@ -319,18 +306,12 @@ export default function CreateVoucher() {
         pdf.addImage(sliceCanvas.toDataURL("image/png"), "PNG", 0, 0, pageW, sliceTallPx / pxPerMm);
       }
 
-      // Place footer right after the last content — not pinned to absolute page bottom.
-      // This prevents a large blank gap when the last page is only partly filled.
-      const lastSlicePx = pageCuts[pageCuts.length - 1] - pageCuts[pageCuts.length - 2];
+      // Footer pinned to absolute bottom of the last page.
+      const lastSlicePx  = pageCuts[pageCuts.length - 1] - pageCuts[pageCuts.length - 2];
       const contentEndMm = lastSlicePx / pxPerMm;
       const remainMm     = pageH - contentEndMm;
-      const GAP_MM = 5;
-      if (remainMm >= footerImgH + GAP_MM) {
-        pdf.addImage(footerCanvas.toDataURL("image/png"), "PNG", 0, contentEndMm + GAP_MM, pageW, footerImgH);
-      } else {
-        pdf.addPage();
-        pdf.addImage(footerCanvas.toDataURL("image/png"), "PNG", 0, GAP_MM, pageW, footerImgH);
-      }
+      if (remainMm < footerImgH + 5) pdf.addPage();
+      pdf.addImage(footerCanvas.toDataURL("image/png"), "PNG", 0, pageH - footerImgH, pageW, footerImgH);
       return pdf;
     } finally {
       setPdfLoading(false);
@@ -338,10 +319,12 @@ export default function CreateVoucher() {
   }
 
   async function handleDownload() {
+    saveVoucher();
     const pdf = await generatePDF();
     if (pdf) pdf.save(`voucher-${form.voucherNo || form.tripId || Date.now()}.pdf`);
   }
   async function handlePrint() {
+    saveVoucher();
     const pdf = await generatePDF();
     if (!pdf) return;
     const url = URL.createObjectURL(pdf.output("blob"));
@@ -349,7 +332,7 @@ export default function CreateVoucher() {
     if (win) win.onload = () => win.print();
   }
   async function handleWhatsApp() {
-    await handleDownload();
+    await handleDownload(); // handleDownload already calls saveVoucher
     const msg = encodeURIComponent(
       `Hello ${form.name || ""},\n\nYour travel voucher is ready! ✈️\n\nVoucher No: ${form.voucherNo || "—"}\nTrip ID: ${form.tripId || "—"}\nDestination: ${form.destination || "—"}\nTravel Date: ${form.travelDate || "—"}\n\nPlease find the attached PDF voucher.\nContact us at sales1@tourwatchout.com for any query.\n\n— Team TourWatchOut`
     );
@@ -357,6 +340,7 @@ export default function CreateVoucher() {
   }
   async function handleSendEmail() {
     if (!emailTo.trim()) return;
+    saveVoucher();
     setEmailSending(true); setEmailError("");
     try {
       const pdf = await generatePDF();
