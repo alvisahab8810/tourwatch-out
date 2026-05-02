@@ -126,9 +126,13 @@ function PackageCard({ pkg }) {
   );
 }
 
-export default function CouplePackages({ packages = [] }) {
+export default function CouplePackages({ packages = [], initialTab = "", destName = "" }) {
   const subtypes   = SUBTYPE_ORDER.filter(s => packages.some(p => p.packageSubtype === s));
-  const [activeTab, setActiveTab] = useState(() => subtypes[0]?.toLowerCase() || "economy");
+  const [activeTab, setActiveTab] = useState(() => {
+    const valid = SUBTYPE_ORDER.map(s => s.toLowerCase());
+    if (initialTab && valid.includes(initialTab)) return initialTab;
+    return subtypes[0]?.toLowerCase() || "economy";
+  });
 
   const visiblePkgs = packages.filter(p => p.packageSubtype?.toLowerCase() === activeTab);
   const activeLabel = subtypes.find(s => s.toLowerCase() === activeTab) || "";
@@ -174,7 +178,7 @@ export default function CouplePackages({ packages = [] }) {
             {/* Section heading */}
             <div className="section-header" style={{ marginBottom: "2rem" }}>
               <h2 className="section-title">
-                <span className="highlight">{activeLabel} Couple </span> Packages
+                <span className="highlight">{activeLabel} {destName || "Couple"} </span> Packages
               </h2>
               <p className="section-subtitle">Let's find out what suits you the best</p>
             </div>
@@ -209,7 +213,8 @@ export default function CouplePackages({ packages = [] }) {
   );
 }
 
-export async function getServerSideProps() {
+export async function getServerSideProps({ query }) {
+  const { dest: destSlug, tab } = query;
   const connectDB = require("../utils/mongodb").default;
   const Package   = require("../models/Package").default;
   const { readAll: readDests } = require("../utils/destStore");
@@ -222,10 +227,22 @@ export async function getServerSideProps() {
     slugMap[(d.name || d.title || "").toLowerCase()] = d.slug;
   });
 
-  const raw = await Package.find({
+  const filter = {
     packageType: { $regex: /^couple$/i },
     status:      { $regex: /^active$/i },
-  })
+  };
+
+  let destName = "";
+  if (destSlug) {
+    const destObj = allDests.find(d => d.slug === destSlug);
+    if (destObj) {
+      destName = destObj.name || destObj.title || "";
+      const names = [destObj.name, destObj.title].filter(Boolean);
+      filter.destination = { $in: names };
+    }
+  }
+
+  const raw = await Package.find(filter)
     .sort({ createdAt: 1 })
     .lean();
 
@@ -242,5 +259,11 @@ export async function getServerSideProps() {
       SUBTYPE_ORDER.indexOf(a.packageSubtype) - SUBTYPE_ORDER.indexOf(b.packageSubtype)
     );
 
-  return { props: { packages: JSON.parse(JSON.stringify(packages)) } };
+  return {
+    props: {
+      packages:   JSON.parse(JSON.stringify(packages)),
+      initialTab: (tab || "").toLowerCase(),
+      destName,
+    },
+  };
 }

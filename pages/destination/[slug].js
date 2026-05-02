@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import Head from "next/head";
 import Link from "next/link";
 import Topbar from "../../components/header/Header";
@@ -8,25 +8,14 @@ import Popup from "../../components/corporate/Popup";
 import TopReviews from "../../components/home/TopReviews";
 import FAQs from "../../components/home/FAQs";
 import WhatMakeus from "../../components/home/WhatMakeus";
-import BenifitSection from "../../components/home/BenifitSection";
 import MostPopular from "../../components/home/MostPopular";
 import Blogs from "../../components/home/Blogs";
 import BottomReviews from "../../components/home/BottomReviews";
 import BottomReviewsMobile from "../../components/home/BottomReviewsMobile";
 
-const PKG_TYPES   = ["Family", "Couple"];
-const PER_PAGE    = 9;
+const PKG_TYPES = ["Family", "Couple"];
+const SUBTYPES  = ["Economy", "Deluxe", "Premium"];
 
-const AMENITY_ICONS = {
-  Meals:            "/assets/images/icons/itinerary/icon1.svg",
-  Hotel:            "/assets/images/icons/itinerary/icon2.svg",
-  Sightseeing:      "/assets/images/icons/itinerary/icon3.svg",
-  WiFi:             "/assets/images/icons/itinerary/icon4.svg",
-  Transport:        "/assets/images/icons/itinerary/icon5.svg",
-  "Local Guide":    "/assets/images/icons/itinerary/icon6.svg",
-  "Safe to Travel": "/assets/images/icons/itinerary/icon7.svg",
-  "DJ Night":       "/assets/images/icons/itinerary/icon8.svg",
-};
 
 function fmt(n) {
   return `₹${Number(n).toLocaleString("en-IN")}`;
@@ -53,195 +42,136 @@ export async function getServerSideProps({ params }) {
     props: {
       dest:     JSON.parse(JSON.stringify(dest)),
       packages: JSON.parse(JSON.stringify(pkgs)),
-    }
+    },
   };
 }
 
-function PackageCard({ dest, pkg, pkgType }) {
+function CategoryCard({ dest, pkgType, subtype, packages }) {
+  const pkgsForCategory = packages.filter(
+    p => p.packageType?.toLowerCase()    === pkgType.toLowerCase() &&
+         p.packageSubtype?.toLowerCase() === subtype.toLowerCase()
+  );
+  const prices = pkgsForCategory
+    .map(p => Number(p.finalPrice || p.basePrice || 0))
+    .filter(p => p > 0);
+  const minPrice = prices.length > 0 ? Math.min(...prices) : 0;
+
   const image =
-    pkg.webBanner?.src ||
-    pkg.mobileBanner?.src ||
-    pkg.gallery?.[0]?.src ||
-    dest.images?.[pkgType]?.[pkg.packageSubtype]?.src ||
+    dest.images?.[pkgType]?.[subtype]?.src ||
     dest.mainImage?.src ||
     "/assets/images/i-destination/dubai.webp";
 
-  const href        = `/destination/${dest.slug}/package/${pkg.id}`;
-  const basePrice   = Number(pkg.basePrice  || 0);
-  const finalPrice  = Number(pkg.finalPrice || pkg.basePrice || 0);
-  const hasDiscount = basePrice > 0 && finalPrice > 0 && basePrice !== finalPrice;
-  const highlights  = pkg.destinationHighlights || "";
-
-  const pkgWords  = (pkg.packageName || "").split(" ");
-  const shortName = pkgWords.length > 2 ? pkgWords.slice(0, 2).join(" ") + "..." : pkg.packageName || "";
+  const href = `/${pkgType.toLowerCase()}?dest=${dest.slug}&tab=${subtype.toLowerCase()}`;
+  const name = dest.name || dest.title;
 
   return (
-    <div className="new-desti-card">
-      <Link href={href}>
-        <img
-          src={image}
-          alt={pkg.webBanner?.alt || pkg.packageName}
-          loading="lazy"
-          width="400"
-          height="254"
-          style={{ width: "100%", height: 254, objectFit: "cover" }}
-        />
-      </Link>
+    <Link href={href} style={{ textDecoration: "none", display: "block", flex: "1 1 0", minWidth: 240, maxWidth: 400 }}>
+      <div style={cs.card}>
+        {/* True background image — absolutely fills the card */}
+        <img src={image} alt={`${subtype} ${pkgType} ${name}`} style={cs.bgImg} />
 
-      <div className="p-4">
-        <div className="header">
-          <h2>{shortName}</h2>
-          <div className="share-area">
-            <span className="duration-badge">{pkg.duration}</span>
-            <Link href={href}>
-              <img src="/assets/images/icons/share.svg" alt="share" />
-            </Link>
-          </div>
+        {/* Dark gradient so text is always legible */}
+        <div style={cs.gradient} />
+
+        {/* Top row: type badge + share icon */}
+        <div style={cs.topRow}>
+          <span className="duration-badge">{pkgType}</span>
+          <img src="/assets/images/hero/icons/share1.svg" alt="share" style={{ width: 22 }} />
         </div>
 
-        {highlights && (
-          <div className="location">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM12 11.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z" />
-            </svg>
-            <span>{highlights.slice(0, 100)}{highlights.length > 100 ? "…" : ""}</span>
-          </div>
-        )}
-
-        {Array.isArray(pkg.amenities) && pkg.amenities.length > 0 && (
-          <div className="icons" aria-label="Travel amenities">
-            <ul className="amenities-icons">
-              {pkg.amenities.map((a, i) => {
-                const aname = typeof a === "string" ? a : a?.name;
-                const icon  = (typeof a === "object" && a?.icon) || AMENITY_ICONS[aname];
-                return icon ? (
-                  <li key={i}>
-                    <img src={icon} alt={aname} title={aname} />
-                  </li>
-                ) : null;
-              })}
-            </ul>
-          </div>
-        )}
-
-        <div className="price-section">
-          <div className="price-info">
-            {hasDiscount && (
-              <p className="old-price">
-                Starting from <span className="oldcut">{fmt(basePrice)}</span>
-              </p>
-            )}
-            <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-              <p className="new-price" style={{ margin: 0 }}>{fmt(finalPrice)}</p>
-              <span style={{ fontSize: 9, fontWeight: 700, background: "#e84949", color: "#fff", borderRadius: 4, padding: "2px 6px", letterSpacing: 0.3, whiteSpace: "nowrap" }}>Incl. taxes</span>
+        {/* Bottom overlay: title + price + button */}
+        <div style={cs.bottom}>
+          <h2 style={cs.title}>{subtype} {name}</h2>
+          {minPrice > 0 && (
+            <div className="price-section" style={{ marginBottom: 12 }}>
+              <div className="price-info">
+                <p className="old-price" style={{ color: "rgba(255,255,255,0.75)" }}>Starting from</p>
+                <p className="new-price">{fmt(minPrice)}</p>
+              </div>
             </div>
-            <p className="price-desc">{pkg.priceType || "02 Couples"}</p>
-          </div>
-          <div className="contact-icons">
-            <Link href="tel:+918882701800">
-              <img src="/assets/images/hero/icons/call.svg" alt="Call" className="contact-icon" />
-            </Link>
-            <Link href="https://wa.link/pshqg5">
-              <img src="/assets/images/hero/icons/whatsapp.svg" alt="WhatsApp" className="contact-icon" />
-            </Link>
+          )}
+          <div className="package-button interactive" style={{ textAlign: "center" }}>
+            View Packages
           </div>
         </div>
-
-        <Link href={href} className="package-button" style={{ display: "block", textAlign: "center", textDecoration: "none" }}>
-          View Package
-        </Link>
       </div>
-    </div>
+    </Link>
   );
 }
 
-function Pagination({ current, total, onChange }) {
-  if (total <= 1) return null;
+const cs = {
+  card: {
+    position: "relative",
+    borderRadius: 10,
+    overflow: "hidden",
+    height: 380,
+    width: "100%",
+    boxShadow: "0 6px 24px rgba(0,0,0,0.18)",
+    cursor: "pointer",
+  },
+  bgImg: {
+    position: "absolute",
+    inset: 0,
+    width: "100%",
+    height: "100%",
+    objectFit: "cover",
+    display: "block",
+  },
+  gradient: {
+    position: "absolute",
+    inset: 0,
+    background: "linear-gradient(to bottom, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.20) 40%, rgba(0,0,0,0.78) 100%)",
+  },
+  topRow: {
+    position: "absolute",
+    top: 14,
+    left: 14,
+    right: 14,
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    zIndex: 2,
+  },
+  bottom: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: "0 16px 16px",
+    zIndex: 2,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: 700,
+    color: "#fff",
+    margin: "0 0 8px",
+    lineHeight: 1.3,
+    textShadow: "0 1px 4px rgba(0,0,0,0.4)",
+  },
+};
 
-  // Build page numbers — show at most 5, with ellipsis if needed
-  const pages = [];
-  if (total <= 5) {
-    for (let i = 1; i <= total; i++) pages.push(i);
-  } else {
-    pages.push(1);
-    if (current > 3) pages.push("…");
-    for (let i = Math.max(2, current - 1); i <= Math.min(total - 1, current + 1); i++) pages.push(i);
-    if (current < total - 2) pages.push("…");
-    pages.push(total);
-  }
-
+function CategorySection({ dest, pkgType, packages }) {
+  const name = dest.name || dest.title;
   return (
-    <div className="dp-pagination">
-      <button
-        className="dp-pg-btn dp-pg-arrow"
-        onClick={() => onChange(current - 1)}
-        disabled={current === 1}
-        aria-label="Previous page"
-      >
-        &#8249;
-      </button>
-
-      {pages.map((p, i) =>
-        p === "…" ? (
-          <span key={`ellipsis-${i}`} className="dp-pg-ellipsis">…</span>
-        ) : (
-          <button
-            key={p}
-            className={`dp-pg-btn${current === p ? " dp-pg-active" : ""}`}
-            onClick={() => onChange(p)}
-            aria-current={current === p ? "page" : undefined}
-          >
-            {p}
-          </button>
-        )
-      )}
-
-      <button
-        className="dp-pg-btn dp-pg-arrow"
-        onClick={() => onChange(current + 1)}
-        disabled={current === total}
-        aria-label="Next page"
-      >
-        &#8250;
-      </button>
-    </div>
-  );
-}
-
-function PackageSection({ dest, pkgType, pkgs }) {
-  const [page, setPage] = useState(1);
-  const totalPages = Math.ceil(pkgs.length / PER_PAGE);
-  const visible    = pkgs.slice((page - 1) * PER_PAGE, page * PER_PAGE);
-  const name       = dest.name || dest.title;
-
-  const handlePage = (p) => {
-    setPage(p);
-    // Scroll to section top smoothly
-    document.getElementById(`section-${pkgType}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
-
-  return (
-    <section id={`section-${pkgType}`} className="family-dubai-packages">
+    <section className="family-dubai-packages">
       <div className="mini-container1">
         <div className="section-header">
           <p className="section-subtitle">Recommended</p>
           <h2 className="section-title">
             <span className="highlight">{pkgType} {name} </span> Packages
           </h2>
-          {totalPages > 1 && (
-            <p className="dp-pg-count">
-              Showing {(page - 1) * PER_PAGE + 1}–{Math.min(page * PER_PAGE, pkgs.length)} of {pkgs.length} packages
-            </p>
-          )}
         </div>
-
-        <div className="national-list-bx">
-          {visible.map(pkg => (
-            <PackageCard key={pkg.id} dest={dest} pkg={pkg} pkgType={pkgType} />
+        <div className="family-dubai-row">
+          {SUBTYPES.map(sub => (
+            <CategoryCard
+              key={sub}
+              dest={dest}
+              pkgType={pkgType}
+              subtype={sub}
+              packages={packages}
+            />
           ))}
         </div>
-
-        <Pagination current={page} total={totalPages} onChange={handlePage} />
       </div>
     </section>
   );
@@ -251,13 +181,11 @@ export default function DestinationPage({ dest, packages }) {
   const banner = dest.mainImage?.src || dest.images?.Family?.Economy?.src;
   const name   = dest.name || dest.title;
 
-  const byType = {};
-  PKG_TYPES.forEach(t => { byType[t] = []; });
-  packages.forEach(p => {
-    const t = PKG_TYPES.find(x => x.toLowerCase() === (p.packageType || "").toLowerCase());
-    if (t) byType[t].push(p);
-  });
-  const typesWithPackages = PKG_TYPES.filter(t => byType[t].length > 0);
+  // Show a section for a type if it has packages OR has any category image configured
+  const typesToShow = PKG_TYPES.filter(t =>
+    packages.some(p => p.packageType?.toLowerCase() === t.toLowerCase()) ||
+    SUBTYPES.some(s => dest.images?.[t]?.[s]?.src)
+  );
 
   return (
     <div className="dyna-destination-pages">
@@ -339,9 +267,8 @@ export default function DestinationPage({ dest, packages }) {
       </section>
 
       <WhatMakeus />
-      {/* <BenifitSection /> */}
 
-      {typesWithPackages.length === 0 && (
+      {typesToShow.length === 0 && (
         <section className="family-dubai-packages">
           <div className="mini-container1">
             <p style={{ textAlign: "center", padding: "2rem 0", color: "#888" }}>
@@ -351,8 +278,8 @@ export default function DestinationPage({ dest, packages }) {
         </section>
       )}
 
-      {typesWithPackages.map(pkgType => (
-        <PackageSection key={pkgType} dest={dest} pkgType={pkgType} pkgs={byType[pkgType]} />
+      {typesToShow.map(pkgType => (
+        <CategorySection key={pkgType} dest={dest} pkgType={pkgType} packages={packages} />
       ))}
 
       <TopReviews />

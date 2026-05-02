@@ -8,7 +8,10 @@
       "Bash(node -e \"const fs=require\\('fs'\\); const pkgs=JSON.parse\\(fs.readFileSync\\('d:/tourwatch-out/data/packages.json','utf8'\\)\\); const p=pkgs.find\\(x=>x.id==='a2cff7e4-5e4e-4956-9d89-6fa8a57f9312'\\); console.log\\('webBanner:', p?.webBanner\\); console.log\\('gallery:', JSON.stringify\\(p?.gallery\\)\\); console.log\\('destination:', p?.destination, '| type:', p?.packageType, '| subtype:', p?.packageSubtype\\)\")",
       "Read(//d/sscoaching/components//**)",
       "Bash(node -e \"const d=require\\('./data/packages.json'\\); d.forEach\\(p => console.log\\(JSON.stringify\\({id:p.id,destination:p.destination,packageType:p.packageType,packageSubtype:p.packageSubtype,status:p.status,packageName:p.packageName}\\)\\)\\)\")",
-      "Bash(node -e \"console.log\\('MongoDB packages store working:', 8, 'packages in DB'\\)\")"
+      "Bash(node -e \"console.log\\('MongoDB packages store working:', 8, 'packages in DB'\\)\")",
+      "Bash(Get-ChildItem -Path \"d:\\\\tourwatch-out\\\\pages\" -Recurse -Filter \"*.js\" -File)",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(Get-ChildItem -Path \"d:\\\\tourwatch-out\\\\data\" -Recurse)"
     ]
   }
 }

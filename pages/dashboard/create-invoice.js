@@ -14,9 +14,15 @@ import Sidebar from "../../components/backend/Sidebar";
 // ─── Date helpers ─────────────────────────────────────────────────────────────
 function parseToISO(displayStr) {
   if (!displayStr) return "";
+  // If already YYYY-MM-DD, return as-is
+  if (/^\d{4}-\d{2}-\d{2}$/.test(displayStr)) return displayStr;
   const d = new Date(displayStr);
   if (isNaN(d)) return "";
-  return d.toISOString().split("T")[0];
+  // Use local date parts — toISOString() shifts to UTC and causes off-by-one in IST
+  const y  = d.getFullYear();
+  const m  = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${dd}`;
 }
 function isoToDisplay(iso) {
   if (!iso) return "";
