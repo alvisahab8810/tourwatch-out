@@ -105,6 +105,14 @@ export default function PackageDetailPage({ pkg, dest }) {
         <Topbar />
         <Offcanvas />
 
+        {/* ── Mobile Hero Image ── */}
+        <div className="pdt-mob-hero desktop-none">
+          <img
+            src={pkg.mobileBanner?.src || pkg.webBanner?.src || dest.mainImage?.src || "/assets/images/dubai/itinerary/banner.png"}
+            alt={pkg.mobileBanner?.alt || pkg.webBanner?.alt || destName}
+          />
+        </div>
+
         {/* ── Hero Gallery — constant across all tabs ── */}
         <div className="container mobile-none">
           <div className="dubai-gallery-section">
@@ -155,20 +163,28 @@ export default function PackageDetailPage({ pkg, dest }) {
 
                   {/* Mobile price card */}
                   <div className="price-card desktop-none">
-                    <div className="prices-row">
-                      <div>
-                        <div className="pc-top"><div className="pc-from">Starting from</div></div>
-                        <div className="pc-price">
-                          <div className="pc-amount">{price || "—"}</div>
-                          <div className="pc-note">{pkg.priceType || "02 Couples"}</div>
+                    <div className="mob-pc-top-row">
+                      <div className="mob-pc-left">
+                        <div className="pc-top">
+                          From
+                          {pkg.basePrice && pkg.finalPrice && String(pkg.basePrice) !== String(pkg.finalPrice) && (
+                            <span className="pc-old"> {fmtPrice(pkg.basePrice)}</span>
+                          )}
                         </div>
+                        <div className="pc-amount">{price || "—"}</div>
+                        <div className="pc-note">{pkg.priceType || "02 Couples"}</div>
                       </div>
-                      <div>
-                        <img src={pkg.priceImage?.src || "/assets/images/dubai/itinerary/it-banner.png"} alt="package" />
+                      <div className="mob-pc-rating">
+                        <span>Rating: {pkg.rating || "4.5"}</span>
+                        <img src="/assets/images/icons/itinerary/iti.svg" alt="Rating" />
                       </div>
                     </div>
-                    <button className="pc-cta" data-bs-toggle="modal"
-                    data-bs-target="#exampleModalCenter">Request A Callback</button>
+                    <div className="mob-pc-actions">
+                      <a href="#cancellation-policy" className="mob-cancel-link">*Cancellation Policy</a>
+                      <button className="pc-cta mob-pc-cta" data-bs-toggle="modal" data-bs-target="#exampleModalCenter">
+                        Request A Call Back
+                      </button>
+                    </div>
                   </div>
 
                   {/* Banner */}
@@ -280,6 +296,7 @@ export default function PackageDetailPage({ pkg, dest }) {
                   )}
 
                   {(pkg.cancellationPolicy || pkg.bookingPolicy || pkg.termsConditions) && (
+                    <div id="cancellation-policy">
                     <AccordionSection title="Cancellation &amp; Policies">
                       {pkg.cancellationPolicy && (
                         <><h4 className="dfn-sub-heading">Cancellation Policy</h4><BulletText text={pkg.cancellationPolicy} /></>
@@ -291,6 +308,7 @@ export default function PackageDetailPage({ pkg, dest }) {
                         <><h4 className="dfn-sub-heading">Terms &amp; Conditions</h4><p>{pkg.termsConditions}</p></>
                       )}
                     </AccordionSection>
+                    </div>
                   )}
 
                 </div>
@@ -307,7 +325,14 @@ export default function PackageDetailPage({ pkg, dest }) {
                   <div className="price-card mobile-none">
                     <div className="prices-row">
                       <div>
-                        <div className="pc-top"><div className="pc-from">Starting from</div></div>
+                        <div className="pc-top">
+                          <div className="pc-from">
+                            Starting from
+                            {pkg.basePrice && pkg.finalPrice && pkg.basePrice !== pkg.finalPrice && (
+                              <span className="pc-old">{fmtPrice(pkg.basePrice)}</span>
+                            )}
+                          </div>
+                        </div>
                         <div className="pc-price">
                           <div className="pc-amount">{price || "—"}</div>
                           <div className="pc-note">{pkg.priceType || "02 Couples"}</div>

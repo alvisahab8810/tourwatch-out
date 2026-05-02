@@ -321,7 +321,7 @@
         display: none;
     }
     .desktop-none{
-        display: block;
+        display: block!important;
     }
     .burger-menu{
         display: flex!important;

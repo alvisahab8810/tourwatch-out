@@ -4729,3 +4729,73 @@ section.blogs-list-section.ptb-80 {
 .dyna-destination-pages .pb-80 {
     padding-bottom: 100px!important;
 }
+
+/* ─── Package detail mobile price card ────────────────────────── */
+.mob-pc-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.mob-pc-left {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.mob-pc-rating {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    border: 1px solid #E0E0E0;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 11px;
+    color: #495560;
+    white-space: nowrap;
+}
+
+.mob-pc-rating img {
+    width: 65px;
+}
+
+.mob-pc-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 12px;
+    gap: 10px;
+}
+
+.mob-cancel-link {
+    font-size: 12px;
+    color: #26AAFD;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.mob-cancel-link:hover {
+    text-decoration: underline;
+}
+
+.package-details-tabs .mob-pc-cta {
+    margin-top: 0;
+    width: auto;
+    padding: 10px 18px;
+    font-size: 13px;
+}
+
+/* ─── Package detail mobile hero ─────────────────────────────── */
+.pdt-mob-hero {
+    width: 100%;
+    overflow: hidden;
+}
+
+.pdt-mob-hero img {
+    width: 100%;
+    display: block;
+    object-fit: cover;
+    max-height: 260px;
+}

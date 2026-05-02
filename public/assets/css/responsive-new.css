@@ -1081,6 +1081,49 @@ section.blogs-list-section.ptb-80 {
 .dyna-destination-pages section.national-dest {
     padding-top: 30px;
 }
+
+
+   .itinerary-page .package-details-page .package-details-tabs {
+        padding-top: 15px !important;
+    }
+
+   .itinerary-page .package-details-tabs .pdt-title {
+        font-size: 22px;
+    }
+
+    
+   .itinerary-page .package-details-tabs .pdt-header {
+        gap: 0px!important;
+    }
+
+    .itinerary-page .package-details-tabs .pdt-tag{
+        margin-top: 0px!important;
+    }
+
+    .itinerary-page .package-details-tabs .price-card {
+    background: transparent;
+    padding: 0px;
+    box-shadow: unset;
+}
+
+    .itinerary-page .package-details-tabs .pc-amount {
+        font-size: 25px;
+    }
+
+    .itinerary-page .mob-pc-rating {
+            flex-direction: row;
+    background: #F2F4FC;
+    border: none;
+    border-radius: 50px;
+    font-weight: bold;
+}
+
+.itinerary-page .mob-pc-top-row {
+    align-items: center!important;
+}
+.itinerary-page .package-details-tabs .pc-cta {
+    border-radius: 50px;
+}
 }
 
 
