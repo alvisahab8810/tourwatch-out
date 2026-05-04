@@ -13,6 +13,7 @@ export default async function handler(req, res) {
     if (!existing) return res.status(404).json({ error: "Not found" });
 
     const raw = { ...existing, ...req.body, _id: id };
+    raw.featureImage = mergeImg(existing.featureImage, req.body.featureImage);
     raw.webBanner    = mergeImg(existing.webBanner,    req.body.webBanner);
     raw.mobileBanner = mergeImg(existing.mobileBanner, req.body.mobileBanner);
     raw.priceImage   = mergeImg(existing.priceImage,   req.body.priceImage);

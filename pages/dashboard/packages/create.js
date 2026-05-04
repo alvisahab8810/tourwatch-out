@@ -42,6 +42,10 @@ const DEFAULT_AMENITIES = [
 /* ── Image Uploader ── */
 function ImageUploader({ label, value, onChange, hint, accept }) {
   const fileRef = useRef(null);
+  const [broken, setBroken] = useState(false);
+
+  useEffect(() => { setBroken(false); }, [value]);
+
   function handleFile(e) {
     const file = e.target.files[0];
     if (!file) return;
@@ -54,19 +58,24 @@ function ImageUploader({ label, value, onChange, hint, accept }) {
     <div className="bk-img-col">
       <div className="bk-img-col-header">
         <span className="bk-img-col-title">{label}</span>
-        <span className={`bk-img-status-icon ${value ? "uploaded" : ""}`}>
-          {value ? <MdCheckCircle size={22} /> : <MdMoreHoriz size={22} />}
+        <span className={`bk-img-status-icon ${value && !broken ? "uploaded" : ""}`}>
+          {value && !broken ? <MdCheckCircle size={22} /> : <MdMoreHoriz size={22} />}
         </span>
       </div>
       {hint && <p className="bk-img-note"><strong>Note:</strong> {hint}</p>}
-      <div className={`bk-upload-area ${value ? "has-image" : ""}`} onClick={() => fileRef.current?.click()}>
-        {value ? (
+      <div className={`bk-upload-area ${value && !broken ? "has-image" : ""}`} onClick={() => fileRef.current?.click()}>
+        {value && !broken ? (
           <>
-            <img src={value} alt={label} className="bk-upload-preview" />
+            <img src={value} alt={label} className="bk-upload-preview" onError={() => setBroken(true)} />
             <button className="bk-upload-remove" onClick={e => { e.stopPropagation(); onChange(null); }}>
               <MdClose size={14} />
             </button>
           </>
+        ) : value && broken ? (
+          <div className="bk-upload-placeholder">
+            <MdImage size={32} style={{ color: "#e84949" }} />
+            <span style={{ color: "#e84949", fontSize: 12 }}>Image missing — click to re-upload</span>
+          </div>
         ) : (
           <div className="bk-upload-placeholder"><MdImage size={32} /><span>Click to upload</span></div>
         )}
@@ -302,6 +311,7 @@ const BLANK = {
   bookingPolicy: "", cancellationPolicy: "", termsConditions: "",
   metaTitle: "", metaDescription: "", metaKeywords: "",
   status: "Inactive",
+  featureImage: { src: null, alt: "" },
   webBanner:    { src: null, alt: "" },
   mobileBanner: { src: null, alt: "" },
   gallery:      [{ src: null, alt: "" }, { src: null, alt: "" }, { src: null, alt: "" }, { src: null, alt: "" }],
@@ -543,7 +553,17 @@ export default function CreatePackage() {
               </div>
             </div>
 
-            {/* ── Section 2: Banners ── */}
+            {/* ── Section 2: Feature Image (Package Card) ── */}
+            <div className="bk-form-section">
+              <h2 className="bk-section-title">Package Card Image</h2>
+              <p style={{color:"#6b7280",fontSize:13,marginBottom:12}}>This image appears on the package listing cards (e.g. /family, /couple pages). Recommended: 400×300px.</p>
+              <div style={{maxWidth:320}}>
+                <ImageUploader label="Card / Feature Image" value={form.featureImage?.src} onChange={v => setNested("featureImage","src",v)} hint="Recommended: 400×300px" />
+                <input className="bk-form-input" style={{marginTop:8}} placeholder="Alt text" value={form.featureImage?.alt || ""} onChange={e => setNested("featureImage","alt",e.target.value)} />
+              </div>
+            </div>
+
+            {/* ── Section 3: Banners ── */}
             <div className="bk-form-section">
               <h2 className="bk-section-title">Main Banner Images</h2>
               <div className="bk-banner-grid">

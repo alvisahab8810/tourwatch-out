@@ -110,6 +110,7 @@ export default function PackageDetailPage({ pkg, dest }) {
           <img
             src={pkg.mobileBanner?.src || pkg.webBanner?.src || dest.mainImage?.src || "/assets/images/dubai/itinerary/banner.png"}
             alt={pkg.mobileBanner?.alt || pkg.webBanner?.alt || destName}
+            onError={e => { e.target.src = "/assets/images/dubai/itinerary/banner.png"; }}
           />
         </div>
 
@@ -118,19 +119,21 @@ export default function PackageDetailPage({ pkg, dest }) {
           <div className="dubai-gallery-section">
             <div className="dgs-grid">
               <div className="dgs-big">
-                <img src={heroBig} alt={heroBigAlt} />
+                <img src={heroBig} alt={heroBigAlt} onError={e => { e.target.src = "/assets/images/dubai/itinerary/left.png"; }} />
               </div>
               <div className="dgs-small-grid">
                 {[0, 1, 2, 3].map((i, idx) => {
-                  const g   = heroGallery[i];
-                  const src = g?.src || `/assets/images/dubai/itinerary/img${i === 0 ? "" : i + 1}.png`;
-                  const alt = g?.alt || `${destName} ${i + 1}`;
+                  const g        = heroGallery[i];
+                  const fallback = `/assets/images/dubai/itinerary/img${i === 0 ? "" : i + 1}.png`;
+                  const src      = g?.src || fallback;
+                  const alt      = g?.alt || `${destName} ${i + 1}`;
                   return (
                     <img
                       key={i}
                       className={idx === 1 ? "top-right-img" : idx === 3 ? "top-bottom-img" : ""}
                       src={src}
                       alt={alt}
+                      onError={e => { e.target.src = fallback; }}
                     />
                   );
                 })}
@@ -189,7 +192,7 @@ export default function PackageDetailPage({ pkg, dest }) {
 
                   {/* Banner */}
                   <div className="pdt-banner">
-                    <img src={banner} alt={pkg.webBanner?.alt || destName} />
+                    <img src={banner} alt={pkg.webBanner?.alt || destName} onError={e => { e.target.src = "/assets/images/dubai/itinerary/banner.png"; }} />
                     <div className="pdt-banner-chips">
                       <span className="chip left">
                         <img src="/assets/images/icons/itinerary/flight.svg" /> Flight Excluded

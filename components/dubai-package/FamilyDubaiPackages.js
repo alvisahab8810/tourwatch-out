@@ -15,7 +15,7 @@ function fmt(n) {
 function PackageCard({ pkg }) {
   const tab = SUBTYPE_TAB[pkg.packageSubtype] || pkg.packageSubtype?.toLowerCase() || "economy";
   const href = `/dubai/dubai-family?tab=${tab}`;
-  const image = pkg.webBanner?.src || "/assets/images/i-destination/dubai.webp";
+  const image = pkg.featureImage?.src || pkg.webBanner?.src || "/assets/images/i-destination/dubai.webp";
 
   return (
     <div className="new-desti-card f-dubai-card">

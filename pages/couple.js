@@ -45,7 +45,7 @@ const AMENITY_ICONS = {
 
 function PackageCard({ pkg }) {
   const href        = getPackageHref(pkg);
-  const image       = pkg.webBanner?.src || "/assets/images/i-destination/dubai.webp";
+  const image       = pkg.featureImage?.src || pkg.webBanner?.src || "/assets/images/i-destination/dubai.webp";
   const hasDiscount = pkg.basePrice && pkg.finalPrice && pkg.basePrice !== pkg.finalPrice;
   const highlights  = pkg.destinationHighlights || "";
 

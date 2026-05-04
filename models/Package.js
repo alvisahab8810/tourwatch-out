@@ -35,6 +35,7 @@ const PackageSchema = new mongoose.Schema(
     metaTitle:            String,
     metaDescription:      String,
     metaKeywords:         String,
+    featureImage:         imageSchema,
     webBanner:            imageSchema,
     mobileBanner:         imageSchema,
     gallery:              [imageSchema],

@@ -38,6 +38,7 @@ export function processImages(data, id) {
     return obj;
   }
 
+  d.featureImage = img(d.featureImage, "feature-image");
   d.webBanner    = img(d.webBanner, "web-banner");
   d.mobileBanner = img(d.mobileBanner, "mobile-banner");
   d.priceImage   = img(d.priceImage, "price-image");

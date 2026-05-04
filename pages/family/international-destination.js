@@ -32,7 +32,7 @@ function PackageCard({ pkg }) {
   const href        = pkg.destination?.toLowerCase() === "dubai"
     ? `/dubai/dubai-family?tab=${pkg.packageSubtype?.toLowerCase()}`
     : `/destination/${pkg.destSlug}/package/${pkg.id}`;
-  const image       = pkg.webBanner?.src || "/assets/images/i-destination/dubai.webp";
+  const image       = pkg.featureImage?.src || pkg.webBanner?.src || "/assets/images/i-destination/dubai.webp";
   const hasDiscount = pkg.basePrice && pkg.finalPrice && pkg.basePrice !== pkg.finalPrice;
   const highlights  = pkg.destinationHighlights || "";
 

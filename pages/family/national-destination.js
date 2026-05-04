@@ -35,7 +35,7 @@ function truncate(name) {
 
 function PackageCard({ pkg }) {
   const href        = `/destination/${pkg.destSlug}/package/${pkg.id}`;
-  const image       = pkg.webBanner?.src || "/assets/images/n-destination/kashmir.webp";
+  const image       = pkg.featureImage?.src || pkg.webBanner?.src || "/assets/images/n-destination/kashmir.webp";
   const hasDiscount = pkg.basePrice && pkg.finalPrice && pkg.basePrice !== pkg.finalPrice;
   const highlights  = pkg.destinationHighlights || "";
 
