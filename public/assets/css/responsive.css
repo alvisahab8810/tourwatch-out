@@ -316,7 +316,9 @@
 
 @media(max-width:980px){
 
-
+.pitch-video-mob .package-button {
+        border-radius: 12px!important;
+    }
     .mobile-none{
         display: none;
     }

@@ -4301,7 +4301,7 @@ section.blogs-list-section.ptb-80 {
 .dfn-about .dfn-content{display:flex;flex-direction:column;gap:16px;}
 .dfn-about .dfn-intro{display:flex;gap:10px;align-items:flex-start;}
 .dfn-about .dfn-intro .info-icon{width:22px;height:22px;flex-shrink:0;margin-top:2px;}
-.dfn-about .dfn-intro p{margin:0;line-height:1.6;color:#374151;}
+.dfn-about .dfn-intro p{margin:0;line-height:1.6;color:#374151; text-align: justify;}
 .dfn-highlights{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px;}
 .dfn-highlights img {
     min-width: 50%;

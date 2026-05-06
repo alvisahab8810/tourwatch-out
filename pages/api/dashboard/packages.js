@@ -21,7 +21,7 @@ export default async function handler(req, res) {
   if (req.method === "POST") {
     const id  = uuidv4();
     const raw = { ...req.body, _id: id, id };
-    const data = processImages(raw, id);
+    const data = await processImages(raw, id);
     const pkg  = await Package.create(data);
     const obj  = pkg.toObject();
     return res.status(201).json({ ...obj, id: obj._id });

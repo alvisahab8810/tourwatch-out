@@ -1544,19 +1544,19 @@
 
 /* Container card */
 .dubai-family-notes .dfn-accordion {
-  /* max-width: 1080px; */
   margin: 0 auto;
-  /* background: var(--card-bg); */
-  border-radius: 12px;
-  /* box-shadow: 0 4px 5px rgb(36 30 90 / 4%); */
   border: none;
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-/* Each section */
-.dubai-family-notes .dfn-section + .dfn-section {
-  border-top: 1px solid rgba(80,70,150,0.05);
+/* Each section — same card look as itinerary day cards */
+.dubai-family-notes .dfn-section {
+  background: #fff;
   border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 2px 2px 5px 0px #00000017;
 }
 
 /* Header (pill + chevron) */
@@ -1565,14 +1565,12 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: 18px 20px;
+  padding: 12px 14px;
   padding-left: 0;
-  box-shadow: 2px 2px 5px 0px #00000017;
   background: transparent;
-  border-radius: 8px;
+  border-radius: 0;
   border: none;
   cursor: pointer;
-  /* border: 1px solid rgba(255, 255, 255, 0.03); */
   text-align: left;
 }
 
@@ -1601,11 +1599,10 @@
   padding: 0px 24px 26px;
   background: transparent;
   font-size: 15px;
-  border-radius: 8px;
-  padding-top: 15px;
+  border-radius: 0;
+  padding-top: 0;
   font-weight: 400;
   line-height: 19px;
-  box-shadow: 2px 2px 5px 0px #00000017;
   color: #111;
 }
 
@@ -1735,7 +1732,12 @@
 
   .dubai-family-notes .dfn-panel {
     padding: 14px 16px 18px;
+
   }
+
+  .package-details-tabs .pc-note {
+    font-size: 9px!important;
+}
 }
 
 /* Basic list styles for other panels */
@@ -2390,6 +2392,7 @@ button.pdt-tab img {
 .dfn-panel p {
     font-size: 16px !important;
     /* font-weight: 400; */
+    text-align: justify;
     line-height: 1.6;
     color: #111;
 }

@@ -64,11 +64,10 @@ function BulletText({ text }) {
   );
 }
 
-function AccordionSection({ title, defaultOpen = false, children }) {
-  const [open, setOpen] = useState(defaultOpen);
+function AccordionSection({ title, open, onToggle, children }) {
   return (
     <div className="dfn-section">
-      <button className="dfn-section-header" onClick={() => setOpen(o => !o)} aria-expanded={open}>
+      <button className="dfn-section-header" onClick={onToggle} aria-expanded={open}>
         <span className="dfn-pill">{title}</span>
         <span className="faq-icon" style={{ display:"inline-block", transform: open?"rotate(-90deg)":"rotate(90deg)", transition:"0.3s ease", fontSize:"20px" }}>
           &gt;
@@ -80,7 +79,12 @@ function AccordionSection({ title, defaultOpen = false, children }) {
 }
 
 export default function PackageDetailPage({ pkg, dest }) {
-  const [openDay, setOpenDay] = useState(1);
+  const [openDay, setOpenDay]       = useState(1);
+  const [openSection, setOpenSection] = useState("inclusions");
+
+  function toggleSection(key) {
+    setOpenSection(prev => prev === key ? null : key);
+  }
 
   const destName = dest.name || dest.title;
   const banner   = pkg.webBanner?.src || dest.mainImage?.src || "/assets/images/dubai/itinerary/banner.png";
@@ -253,7 +257,7 @@ export default function PackageDetailPage({ pkg, dest }) {
                 <div className="dfn-accordion">
 
                   {(pkg.inclusions || pkg.exclusions) && (
-                    <AccordionSection title="Inclusions &amp; Exclusions">
+                    <AccordionSection title="Inclusions &amp; Exclusions" open={openSection === "inclusions"} onToggle={() => toggleSection("inclusions")}>
                       {pkg.inclusions && (
                         <><h4 className="dfn-sub-heading">Inclusions</h4><BulletText text={pkg.inclusions} /></>
                       )}
@@ -264,7 +268,7 @@ export default function PackageDetailPage({ pkg, dest }) {
                   )}
 
                   {pkg.aboutText && (
-                    <AccordionSection title={`About ${destName}`} defaultOpen>
+                    <AccordionSection title={`About ${destName}`} open={openSection === "about"} onToggle={() => toggleSection("about")}>
                       <div className="dfn-about">
                         <div className="dfn-content">
                           <div className="dfn-intro">
@@ -285,7 +289,7 @@ export default function PackageDetailPage({ pkg, dest }) {
                   )}
 
                   {pkg.bucketListText && (
-                    <AccordionSection title={`${destName} Bucket List`}>
+                    <AccordionSection title={`${destName} Bucket List`} open={openSection === "bucket"} onToggle={() => toggleSection("bucket")}>
                       <BulletText text={pkg.bucketListText} />
                       {Array.isArray(pkg.bucketImages) &&
                         pkg.bucketImages.filter(i => i?.src).length > 0 && (
@@ -300,7 +304,7 @@ export default function PackageDetailPage({ pkg, dest }) {
 
                   {(pkg.cancellationPolicy || pkg.bookingPolicy || pkg.termsConditions) && (
                     <div id="cancellation-policy">
-                    <AccordionSection title="Cancellation &amp; Policies">
+                    <AccordionSection title="Cancellation &amp; Policies" open={openSection === "policies"} onToggle={() => toggleSection("policies")}>
                       {pkg.cancellationPolicy && (
                         <><h4 className="dfn-sub-heading">Cancellation Policy</h4><BulletText text={pkg.cancellationPolicy} /></>
                       )}

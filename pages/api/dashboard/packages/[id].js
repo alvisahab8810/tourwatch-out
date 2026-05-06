@@ -33,7 +33,7 @@ export default async function handler(req, res) {
     raw.aboutImages  = mergeArr(existing.aboutImages,  req.body.aboutImages);
     raw.bucketImages = mergeArr(existing.bucketImages, req.body.bucketImages);
 
-    const data = processImages(raw, id);
+    const data = await processImages(raw, id);
     const updated = await Package.findByIdAndUpdate(id, data, { new: true, overwrite: true }).lean();
     return res.status(200).json({ ...updated, id: updated._id });
   }

@@ -789,15 +789,32 @@ span.chip.left > img {
 }
 
 .package-details-tabs .it-day-pill {
-    padding: 5px 8px;
-    min-width: 65px;
+    padding: 4px 8px;
+            min-width: 61px;
+                    margin-right: 5px;
     font-size: 14px;
 }
 
+
+.package-details-tabs .dubai-family-notes li {
+    margin: 7px 0;
+    font-size: 13px;
+    line-height: normal;
+}
 .package-details-tabs .pc-amount {
     font-size: 20px;
 }
 
+.package-details-tabs .dubai-family-notes h4 {
+    font-size: 13px;
+    padding-top: 0px;
+}
+
+.package-details-tabs .dfn-about .dfn-intro p {
+    margin: 0;
+    line-height: 20px;
+    font-size: 13px !important;
+}
     .price-card-cta .pc-cta {
         margin-top: 0;
         padding: 8px;
@@ -848,8 +865,14 @@ span.chip.left > img {
     }
 .dubai-family-package .dfn-highlights > img {
     width: 50%;
+    height: 100px;
 }
 
+
+ .dubai-family-package .dfn-panel p {
+    font-size: 13px !important;
+    line-height: 20px;
+}
 .dubai-family-notes .dfn-left-line {
     left: 30px;
     top: 39px;
@@ -1133,8 +1156,14 @@ section.blogs-list-section.ptb-80 {
     .pitch-video-mob .what-makes-us .feature-card {
         width: 100%;
     }
-
-
+.package-details-tabs .it-day-title {
+    font-size: 14px;
+    line-height: normal;
+}
+.package-details-tabs .it-day-body p {
+    margin-bottom: 5px;
+    font-size: 13px;
+}
 }
 
 
