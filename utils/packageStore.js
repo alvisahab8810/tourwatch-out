@@ -28,9 +28,10 @@ export function saveImage(base64, pkgId, name) {
     fs.mkdirSync(dir, { recursive: true });
     fs.writeFileSync(path.join(dir, `${name}.${ext}`), Buffer.from(match[2], "base64"));
     return `/uploads/packages/${pkgId}/${name}.${ext}`;
-  } catch (e) {
-    console.error("[saveImage] filesystem write failed:", e.message);
-    return null;
+  } catch {
+    // Filesystem not writable (serverless / read-only deployment) — keep as data URI
+    // so the image still loads rather than going missing.
+    return base64;
   }
 }
 

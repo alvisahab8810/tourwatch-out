@@ -3,7 +3,7 @@ import Package from "../../../models/Package";
 import { processImages } from "../../../utils/packageStore";
 import { v4 as uuidv4 } from "uuid";
 
-export const config = { api: { bodyParser: { sizeLimit: "25mb" } } };
+export const config = { api: { bodyParser: { sizeLimit: "50mb" } } };
 
 export default async function handler(req, res) {
   await connectDB();
