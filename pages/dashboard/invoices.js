@@ -25,24 +25,23 @@ async function migrateLocalStorage() {
   try {
     const raw = localStorage.getItem("tw_invoices");
     if (!raw) return;
+    localStorage.removeItem("tw_invoices"); // clear immediately to prevent repeat runs
     const local = JSON.parse(raw);
     if (!Array.isArray(local) || local.length === 0) return;
 
-    // Fetch existing DB invoices to avoid duplicates
+    // Only migrate entries that don't already exist in DB (match by invoiceNo)
     const dbRes = await fetch("/api/dashboard/invoices");
     const dbInvoices = dbRes.ok ? await dbRes.json() : [];
-    const dbIds = new Set(dbInvoices.map(i => i.id));
+    const dbNos = new Set(dbInvoices.map(i => i.invoiceNo).filter(Boolean));
 
-    const toMigrate = local.filter(i => i.id && !dbIds.has(i.id));
+    const toMigrate = local.filter(i => !i.invoiceNo || !dbNos.has(i.invoiceNo));
     await Promise.all(toMigrate.map(inv =>
       fetch("/api/dashboard/invoices", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...inv, _id: inv.id }),
+        body: JSON.stringify(inv),
       })
     ));
-
-    localStorage.removeItem("tw_invoices");
   } catch {}
 }
 
@@ -66,8 +65,15 @@ export default function InvoiceList() {
 
   async function deleteInv(id) {
     if (!confirm("Delete this invoice?")) return;
+    const snapshot = invoices;
     setInvoices(prev => prev.filter(i => i.id !== id));
-    await fetch(`/api/dashboard/invoices/${id}`, { method: "DELETE" });
+    try {
+      const r = await fetch(`/api/dashboard/invoices/${id}`, { method: "DELETE" });
+      if (!r.ok) throw new Error("Delete failed");
+    } catch {
+      setInvoices(snapshot); // revert on failure
+      alert("Failed to delete invoice. Please try again.");
+    }
   }
 
   const filtered = invoices.filter(inv => {

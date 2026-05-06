@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import {
   MdDashboard, MdLocationOn, MdApps, MdArticle, MdHelpOutline,
   MdPeople, MdAutorenew, MdNotificationsNone, MdStore,
-  MdConfirmationNumber, MdReceipt, MdLogout,
+  MdConfirmationNumber, MdReceipt, MdLogout, MdSmartButton,
 } from "react-icons/md";
 import { logout } from "../../utils/voucherAuth";
 
@@ -10,7 +10,8 @@ const NAV = [
   { label: "Dashboard",    Icon: MdDashboard,         href: "/dashboard" },
   { label: "Destinations", Icon: MdLocationOn,         href: "/dashboard/destinations" },
   { label: "All Packages", Icon: MdApps,               href: "/dashboard/packages" },
-  { label: "Blogs",        Icon: MdArticle,            href: "#" },
+  { label: "Blogs",        Icon: MdArticle,            href: "/dashboard/blogs" },
+  { label: "Robot.txt",   Icon: MdSmartButton,        href: "/dashboard/robots" },
   { label: "Faq's",        Icon: MdHelpOutline,        href: "#" },
 ];
 

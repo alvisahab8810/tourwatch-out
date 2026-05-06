@@ -1,20 +1,67 @@
 import connectDB from "../../../utils/mongodb";
-import Invoice from "../../../models/Invoice";
+import mongoose from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 
-export default async function handler(req, res) {
+export const config = { api: { bodyParser: { sizeLimit: "2mb" } } };
+
+let indexCleaned = false;
+
+async function col() {
   await connectDB();
+  const c = mongoose.connection.db.collection("invoices");
+  if (!indexCleaned) {
+    try {
+      await c.dropIndex("invoiceNumber_1");
+      console.log("[invoices] Dropped stale invoiceNumber_1 index");
+    } catch (_) {}
+    indexCleaned = true;
+  }
+  return c;
+}
+
+export default async function handler(req, res) {
+  let c;
+  try {
+    c = await col();
+  } catch (e) {
+    console.error("[invoices] DB connect error:", e);
+    return res.status(500).json({ error: "DB connection failed: " + e.message });
+  }
 
   if (req.method === "GET") {
-    const invoices = await Invoice.find({}).sort({ createdAt: -1 }).lean();
-    return res.status(200).json(invoices.map(i => ({ ...i, id: i._id })));
+    try {
+      const docs = await c.find({}).sort({ createdAt: -1 }).toArray();
+      return res.status(200).json(docs.map(d => ({ ...d, id: String(d._id) })));
+    } catch (e) {
+      console.error("[invoices GET] error:", e);
+      return res.status(500).json({ error: e.message });
+    }
   }
 
   if (req.method === "POST") {
-    const id  = uuidv4();
-    const inv = await Invoice.create({ ...req.body, _id: id });
-    const obj = inv.toObject();
-    return res.status(201).json({ ...obj, id: obj._id });
+    try {
+      const raw = req.body || {};
+      // Strip Mongoose/React tracking fields
+      const { _id, id, __v, createdAt, updatedAt, ...body } = raw;
+
+      // Normalise item ids to string (React uses numeric ids locally)
+      if (Array.isArray(body.items)) {
+        body.items = body.items.map(({ id: itemId, ...rest }) => ({
+          ...rest,
+          ...(itemId != null ? { id: String(itemId) } : {}),
+        }));
+      }
+
+      const newId = uuidv4();
+      const now = new Date();
+      const doc = { ...body, _id: newId, createdAt: now, updatedAt: now };
+
+      await c.insertOne(doc);
+      return res.status(201).json({ ...doc, id: newId });
+    } catch (e) {
+      console.error("[invoices POST] error:", e);
+      return res.status(500).json({ error: e.message });
+    }
   }
 
   res.status(405).end();
