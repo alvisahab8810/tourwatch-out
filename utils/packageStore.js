@@ -17,28 +17,20 @@ export function writeAll(data) {
   fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
 }
 
-// Images ≤ 2 MB (base64 string length) are stored as data URIs in MongoDB so they
-// survive server restarts and container redeployments without any filesystem dependency.
-// Larger images fall back to the filesystem with a try-catch safety net.
-const DB_INLINE_LIMIT = 2 * 1024 * 1024; // 2 MB base64 string ≈ 1.5 MB original
-
 export function saveImage(base64, pkgId, name) {
   if (!base64 || !base64.startsWith("data:")) return null;
   const match = base64.match(/^data:([^;]+);base64,(.+)$/s);
   if (!match) return null;
 
-  // Small enough to live in the DB — always reliable
-  if (base64.length <= DB_INLINE_LIMIT) return base64;
-
-  // Large image — try filesystem, fall back to data URI if that fails
   const ext = match[1].split("/")[1]?.replace("jpeg", "jpg").replace("svg+xml", "svg") || "jpg";
   try {
     const dir = path.join(process.cwd(), "public", "uploads", "packages", pkgId);
     fs.mkdirSync(dir, { recursive: true });
     fs.writeFileSync(path.join(dir, `${name}.${ext}`), Buffer.from(match[2], "base64"));
     return `/uploads/packages/${pkgId}/${name}.${ext}`;
-  } catch {
-    return base64;
+  } catch (e) {
+    console.error("[saveImage] filesystem write failed:", e.message);
+    return null;
   }
 }
 
@@ -50,11 +42,6 @@ export function processImages(data, id) {
     if (!obj) return obj;
     if (obj.src?.startsWith("data:")) {
       obj.src = saveImage(obj.src, id, name);
-    } else if (obj.src && obj.src.startsWith("/uploads/")) {
-      // Verify the file still exists on disk; if not, clear the stale path so the
-      // next save with a fresh upload will replace it with a reliable data URI.
-      const absPath = path.join(process.cwd(), "public", obj.src);
-      if (!fs.existsSync(absPath)) obj.src = null;
     }
     return obj;
   }
