@@ -48,4 +48,6 @@ const PackageSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+PackageSchema.index({ createdAt: -1 });
+
 export default mongoose.models.Package || mongoose.model("Package", PackageSchema);

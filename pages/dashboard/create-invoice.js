@@ -79,13 +79,22 @@ export default function CreateInvoice() {
 
   useEffect(() => {
     if (!isAuthenticated()) { router.replace("/dashboard/login"); return; }
-    const invoices = JSON.parse(localStorage.getItem("tw_invoices") || "[]");
     if (editId) {
-      const found = invoices.find((i) => i.id === editId);
-      if (found) { setForm(found); setReady(true); return; }
+      fetch(`/api/dashboard/invoices/${editId}`)
+        .then(r => r.json())
+        .then(found => { if (found && !found.error) setForm(prev => ({ ...prev, ...found })); })
+        .catch(() => {})
+        .finally(() => setReady(true));
+    } else {
+      fetch("/api/dashboard/invoices")
+        .then(r => r.json())
+        .then(data => {
+          const all = Array.isArray(data) ? data : [];
+          setForm(f => ({ ...f, invoiceNo: buildInvoiceNo(all) }));
+        })
+        .catch(() => {})
+        .finally(() => setReady(true));
     }
-    setForm((f) => ({ ...f, invoiceNo: buildInvoiceNo(invoices) }));
-    setReady(true);
   }, [editId]);
 
   const set = (key, val) => { setForm((f) => ({ ...f, [key]: val })); setSaved(false); };
@@ -112,21 +121,30 @@ export default function CreateInvoice() {
   const removeItem = (id) => setForm((f) => ({ ...f, items: f.items.filter((i) => i.id !== id) }));
 
   // ── Save ─────────────────────────────────────────────────────────────────
-  const saveInvoice = () => {
+  const saveInvoice = async () => {
     setSaving(true);
-    const invoices = JSON.parse(localStorage.getItem("tw_invoices") || "[]");
-    const invId  = editId || ("twi_" + Date.now());
-    const payload = {
-      ...form, id: invId,
-      createdAt: editId ? (form.createdAt || new Date().toISOString()) : new Date().toISOString(),
-    };
-    const idx = invoices.findIndex((i) => i.id === invId);
-    if (idx >= 0) invoices[idx] = payload;
-    else invoices.unshift(payload);
-    localStorage.setItem("tw_invoices", JSON.stringify(invoices));
-    setForm(payload);
-    setTimeout(() => { setSaving(false); setSaved(true); }, 400);
-    return payload;
+    try {
+      const currentId = editId || form.id;
+      let result;
+      if (currentId) {
+        const r = await fetch(`/api/dashboard/invoices/${currentId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(form),
+        });
+        result = await r.json();
+      } else {
+        const r = await fetch("/api/dashboard/invoices", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(form),
+        });
+        result = await r.json();
+      }
+      if (result && !result.error) setForm(prev => ({ ...prev, ...result }));
+      setSaved(true);
+    } catch {}
+    setSaving(false);
   };
 
   // ── PDF generation ────────────────────────────────────────────────────────
@@ -339,7 +357,7 @@ export default function CreateInvoice() {
               <button onClick={saveInvoice} disabled={saving} style={{ ...s.previewBtn, background: "#2563eb", color: "#fff", marginRight: 8 }}>
                 <MdSave size={15} /> {saving ? "Saving…" : "Save"}
               </button>
-              <button onClick={() => { saveInvoice(); setShowPreview(true); }} style={s.previewBtn}>
+              <button onClick={async () => { await saveInvoice(); setShowPreview(true); }} style={s.previewBtn}>
                 <MdVisibility size={15} /> Preview & Export
               </button>
             </div>
@@ -456,7 +474,7 @@ export default function CreateInvoice() {
             <button onClick={saveInvoice} disabled={saving} style={s.btnDark}>
               <MdSave size={17} /> {saving ? "Saving…" : "Save Invoice"}
             </button>
-            <button onClick={() => { saveInvoice(); setShowPreview(true); }} style={s.btnRed}>
+            <button onClick={async () => { await saveInvoice(); setShowPreview(true); }} style={s.btnRed}>
               <MdVisibility size={17} /> Preview & Export
             </button>
           </div>

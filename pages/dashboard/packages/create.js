@@ -371,18 +371,17 @@ export default function CreatePackage() {
   useEffect(() => {
     if (!isAuthenticated()) { router.replace("/dashboard/login"); return; }
     if (id) {
-      fetch("/api/dashboard/packages")
+      fetch(`/api/dashboard/packages/${id}`)
         .then(r => r.json())
-        .then(all => {
-          const found = all.find(p => p.id === id);
-          if (found) {
+        .then(found => {
+          if (found && !found.error) {
             setForm({
               ...BLANK, ...found,
               amenities:   found.amenities || [],
-              days:        found.days?.length       ? found.days        : BLANK.days,
-              gallery:     found.gallery?.length    ? found.gallery     : BLANK.gallery,
+              days:        found.days?.length        ? found.days        : BLANK.days,
+              gallery:     found.gallery?.length     ? found.gallery     : BLANK.gallery,
               aboutImages: found.aboutImages?.length ? found.aboutImages : BLANK.aboutImages,
-              bucketImages:found.bucketImages?.length ? found.bucketImages : BLANK.bucketImages,
+              bucketImages:found.bucketImages?.length? found.bucketImages: BLANK.bucketImages,
             });
           }
         });

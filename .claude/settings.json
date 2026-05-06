@@ -17,7 +17,10 @@
       "Bash(Get-Content \"d:\\\\tourwatch-out\\\\public\\\\assets\\\\css\\\\style.css\")",
       "Bash(Measure-Object -Line)",
       "Bash(Select-Object Lines)",
-      "Bash(Get-Content \"d:\\\\tourwatch-out\\\\public\\\\assets\\\\css\\\\responsive.css\")"
+      "Bash(Get-Content \"d:\\\\tourwatch-out\\\\public\\\\assets\\\\css\\\\responsive.css\")",
+      "Bash(New-Item -ItemType Directory -Path \"d:\\\\tourwatch-out\\\\pages\\\\api\\\\dashboard\\\\invoices\" -Force)",
+      "Bash(Out-Null)",
+      "Bash(Write-Host \"done\")"
     ]
   }
 }

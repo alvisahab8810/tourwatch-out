@@ -21,6 +21,31 @@ function calcGrand(inv) {
   return after + tcs;
 }
 
+async function migrateLocalStorage() {
+  try {
+    const raw = localStorage.getItem("tw_invoices");
+    if (!raw) return;
+    const local = JSON.parse(raw);
+    if (!Array.isArray(local) || local.length === 0) return;
+
+    // Fetch existing DB invoices to avoid duplicates
+    const dbRes = await fetch("/api/dashboard/invoices");
+    const dbInvoices = dbRes.ok ? await dbRes.json() : [];
+    const dbIds = new Set(dbInvoices.map(i => i.id));
+
+    const toMigrate = local.filter(i => i.id && !dbIds.has(i.id));
+    await Promise.all(toMigrate.map(inv =>
+      fetch("/api/dashboard/invoices", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...inv, _id: inv.id }),
+      })
+    ));
+
+    localStorage.removeItem("tw_invoices");
+  } catch {}
+}
+
 export default function InvoiceList() {
   const router = useRouter();
   const [invoices, setInvoices] = useState([]);
@@ -31,14 +56,18 @@ export default function InvoiceList() {
 
   useEffect(() => {
     if (!isAuthenticated()) { router.replace("/dashboard/login"); return; }
-    setInvoices(JSON.parse(localStorage.getItem("tw_invoices") || "[]"));
+    migrateLocalStorage().then(() => {
+      fetch("/api/dashboard/invoices")
+        .then(r => r.json())
+        .then(data => setInvoices(Array.isArray(data) ? data : []))
+        .catch(() => {});
+    });
   }, []);
 
-  function deleteInv(id) {
+  async function deleteInv(id) {
     if (!confirm("Delete this invoice?")) return;
-    const updated = invoices.filter(i => i.id !== id);
-    localStorage.setItem("tw_invoices", JSON.stringify(updated));
-    setInvoices(updated);
+    setInvoices(prev => prev.filter(i => i.id !== id));
+    await fetch(`/api/dashboard/invoices/${id}`, { method: "DELETE" });
   }
 
   const filtered = invoices.filter(inv => {

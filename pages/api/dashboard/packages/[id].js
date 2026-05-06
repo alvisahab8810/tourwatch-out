@@ -8,6 +8,12 @@ export default async function handler(req, res) {
   await connectDB();
   const { id } = req.query;
 
+  if (req.method === "GET") {
+    const pkg = await Package.findById(id).lean();
+    if (!pkg) return res.status(404).json({ error: "Not found" });
+    return res.status(200).json({ ...pkg, id: pkg._id });
+  }
+
   if (req.method === "PUT") {
     const existing = await Package.findById(id).lean();
     if (!existing) return res.status(404).json({ error: "Not found" });
