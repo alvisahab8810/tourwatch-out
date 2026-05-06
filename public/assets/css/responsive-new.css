@@ -1124,13 +1124,18 @@ section.blogs-list-section.ptb-80 {
 .itinerary-page .package-details-tabs .pc-cta {
     border-radius: 50px;
 }
+
+.pitch-video-mob .feature-image {
+        height: 305px;
+    }
+
+
+    .pitch-video-mob .what-makes-us .feature-card {
+        width: 100%;
+    }
+
+
 }
-
-
-
-
-
-
 
 
 

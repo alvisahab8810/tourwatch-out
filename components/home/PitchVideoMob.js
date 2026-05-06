@@ -7,7 +7,7 @@ const videoSources = [
   "/assets/images/instagram/video3.mp4",
 ];
 
-export default function WhatMakeus() {
+export default function PitchVideoMob() {
   const videoRefs = useRef([]);
   const [unmutedIndex, setUnmutedIndex] = useState(null);
 
@@ -25,7 +25,8 @@ export default function WhatMakeus() {
   };
 
   return (
-    <section className="what-makes-us ">
+    <section className="pitch-video-mob">
+    <div className="what-makes-us desktop-none">
       <div className="mini-container1">
         <div className="section-header">
           <p className="section-subtitle">What Makes Us</p>
@@ -55,74 +56,17 @@ export default function WhatMakeus() {
                 {unmutedIndex === 0 ? <FaVolumeUp /> : <FaVolumeMute />}
               </button>
 
-              <div className="feature-content">
+              {/* <div className="feature-content">
                 <div className="feature-stat">
                   <img src="/assets/images/hero/icons/experience.svg" alt="Experience" />
                   <h4>10+</h4>
                 </div>
                 <p>Years of Expertise</p>
-              </div>
+              </div> */}
             </div>
           </div>
 
-          {/* CARD 2 */}
-          <div className="feature-card">
-            <div className="feature-image">
-              <video
-                ref={(el) => (videoRefs.current[1] = el)}
-                src={videoSources[1]}
-                autoPlay
-                loop
-                muted
-                playsInline
-                className="wm-video"
-              />
-              <button
-                className="wm-mute-btn"
-                onClick={() => toggleMute(1)}
-              >
-                {unmutedIndex === 1 ? <FaVolumeUp /> : <FaVolumeMute />}
-              </button>
-
-              <div className="feature-content">
-                <div className="feature-stat">
-                  <img src="/assets/images/hero/icons/share.svg" alt="Clients" />
-                  <h4>5000+</h4>
-                </div>
-                <p>Happy Clients</p>
-              </div>
-            </div>
-          </div>
-
-          {/* CARD 3 */}
-          <div className="feature-card">
-            <div className="feature-image">
-              <video
-                ref={(el) => (videoRefs.current[2] = el)}
-                src={videoSources[2]}
-                autoPlay
-                loop
-                muted
-                playsInline
-                className="wm-video"
-              />
-              <button
-                className="wm-mute-btn"
-                onClick={() => toggleMute(2)}
-              >
-                {unmutedIndex === 2 ? <FaVolumeUp /> : <FaVolumeMute />}
-              </button>
-
-              <div className="feature-content">
-                <div className="feature-stat">
-                  <img src="/assets/images/hero/icons/activity.svg" alt="Hotels" />
-                  
-                  <h4>500+</h4>
-                </div>
-                <p>Hotel Collaboration</p>
-              </div>
-            </div>
-          </div>
+         
 
           {/* CARD 4 */}
           {/* <div className="feature-card">
@@ -183,6 +127,7 @@ export default function WhatMakeus() {
           background: rgba(255, 255, 255, 0.25);
         }
       `}</style>
+    </div>
     </section>
   );
 }

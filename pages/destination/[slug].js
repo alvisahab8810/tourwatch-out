@@ -13,6 +13,7 @@ import Blogs from "../../components/home/Blogs";
 import BottomReviews from "../../components/home/BottomReviews";
 import BottomReviewsMobile from "../../components/home/BottomReviewsMobile";
 import BenifitSection from "../../components/home/BenifitSection";
+import PitchVideoMob from "../../components/home/PitchVideoMob";
 
 const PKG_TYPES = ["Family", "Couple"];
 const SUBTYPES  = ["Economy", "Deluxe", "Premium"];
@@ -213,9 +214,11 @@ export default function DestinationPage({ dest, packages }) {
         </div>
       </section>
 
-      <WhatMakeus />
-
-      <BenifitSection/>
+       <div className="mobile-none">
+         <WhatMakeus />
+       </div>
+       <PitchVideoMob />
+       <BenifitSection/>
 
       {typesToShow.length === 0 && (
         <section className="family-dubai-packages">
