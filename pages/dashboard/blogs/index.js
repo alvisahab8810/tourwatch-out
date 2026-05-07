@@ -2,19 +2,17 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import { MdMenu, MdSearch, MdAdd, MdEdit, MdDelete, MdArticle, MdVisibility, MdDrafts } from "react-icons/md";
-import { isAuthenticated } from "../../../utils/voucherAuth";
-import Sidebar from "../../../components/backend/Sidebar";
+import DashboardLayout, { useOpenSidebar } from "../../../components/backend/DashboardLayout";
 
 export default function BlogList() {
   const router = useRouter();
   const [blogs, setBlogs]     = useState([]);
   const [search, setSearch]   = useState("");
   const [filter, setFilter]   = useState("all");
-  const [sidebar, setSidebar] = useState(false);
+  const openSidebar = useOpenSidebar();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!isAuthenticated()) { router.replace("/dashboard/login"); return; }
     fetch("/api/dashboard/blogs")
       .then(r => r.json())
       .then(data => { setBlogs(Array.isArray(data) ? data : []); setLoading(false); })
@@ -40,35 +38,27 @@ export default function BlogList() {
   const views     = blogs.reduce((s, b) => s + (b.views || 0), 0);
 
   const stats = [
-    { label: "Total Blogs",          value: total,     icon: "📄", color: "#f59e0b" },
-    { label: "Active Blogs",         value: published, icon: "✅", color: "#10b981" },
-    { label: "Blogs in Draft",       value: drafts,    icon: "📝", color: "#6366f1" },
-    { label: "Total Views this month", value: views.toLocaleString("en-IN"), icon: "👁", color: "#8b5cf6" },
+    { label: "Total Blogs",            value: total,                          icon: "/assets/images/blogs/icons/icon1.svg" },
+    { label: "Active Blogs",           value: published,                      icon: "/assets/images/blogs/icons/icon2.svg" },
+    { label: "Blogs in Draft",         value: drafts,                         icon: "/assets/images/blogs/icons/icon3.svg" },
+    { label: "Total Views this month", value: views.toLocaleString("en-IN"),  icon: "/assets/images/blogs/icons/icon4.svg" },
   ];
 
   return (
     <>
-      <Head>
-        <title>Blogs — TourWatchOut</title>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-        <link rel="stylesheet" href="/assets/css/backend.css" />
-      </Head>
+      <Head><title>Blogs — TourWatchOut</title></Head>
 
-      <div className="bk-page">
-        <Sidebar active="Blogs" isOpen={sidebar} onClose={() => setSidebar(false)} />
+      <header className="bk-header">
+        <div className="bk-header-left">
+          <button className="bk-hamburger" onClick={openSidebar}><MdMenu size={22} /></button>
+          <div>
+            <h1 className="bk-page-title">Blogs</h1>
+            <p style={{ fontSize: 13, color: "#9ca3af", margin: 0 }}>Welcome back! Here's what's happening with your blog today.</p>
+          </div>
+        </div>
+      </header>
 
-        <main className="bk-main">
-          <header className="bk-header">
-            <div className="bk-header-left">
-              <button className="bk-hamburger" onClick={() => setSidebar(true)}><MdMenu size={22} /></button>
-              <div>
-                <h1 className="bk-page-title">Blogs</h1>
-                <p style={{ fontSize: 13, color: "#9ca3af", margin: 0 }}>Welcome back! Here's what's happening with your blog today.</p>
-              </div>
-            </div>
-          </header>
-
-          <div className="bk-content">
+      <div className="bk-content">
             {/* Stats */}
             <div style={s.statsRow}>
               {stats.map(st => (
@@ -78,7 +68,7 @@ export default function BlogList() {
                       <p style={s.statLabel}>{st.label}</p>
                       <p style={s.statValue}>{st.value}</p>
                     </div>
-                    <span style={{ fontSize: 28 }}>{st.icon}</span>
+                    <img src={st.icon} alt="" style={{ width: 44, height: 44, objectFit: "contain" }} />
                   </div>
                 </div>
               ))}
@@ -168,12 +158,14 @@ export default function BlogList() {
                 ))}
               </div>
             )}
-          </div>
-        </main>
       </div>
     </>
   );
 }
+
+BlogList.getLayout = (page) => (
+  <DashboardLayout active="Blogs">{page}</DashboardLayout>
+);
 
 const s = {
   statsRow:   { display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16, marginBottom: 28 },

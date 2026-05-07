@@ -9,10 +9,10 @@ export default function Hero() {
                 <div className="col-md-12 about-contennt">
                     <h2 className="fs-64 text-white fw-bold ">Travel Tips, Stories & Inspiration</h2>
                     <p>Find Travel Tips, Stories & Inspiration</p>
-                    <div className="blogs-searchbx">
+                    {/* <div className="blogs-searchbx">
                        <input type="search" alt="Search Blog" placeholder="Search Blog"/>
                        <button><img src="./assets/images/blogs/icons/search.png" alt="Search Icon"/>Search</button>
-                    </div>
+                    </div> */}
 
                 </div>
             </div>

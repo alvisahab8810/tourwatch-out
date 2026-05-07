@@ -1,30 +1,46 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
+
+const STATIC = [
+  {
+    id: "s1",
+    question: "How does Tourwatchout ensure my trip is stress-free?",
+    answer: "We provide comprehensive trip planning, 24/7 support, and handle all logistics to ensure a seamless travel experience.",
+  },
+  {
+    id: "s2",
+    question: "What if we need help during the trip?",
+    answer: "Our 24/7 customer support team is always available to assist you during your trip.",
+  },
+  {
+    id: "s3",
+    question: "How do you ensure the safety of my family during the trip?",
+    answer: "Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit. Exercitation veniam consequat sunt nostrud amet.",
+  },
+  {
+    id: "s4",
+    question: "Can Tourwatchout plan trips for corporate groups?",
+    answer: "Yes, we specialize in corporate travel planning and group bookings.",
+  },
+  {
+    id: "s5",
+    question: "Is there a limit to the number of people I can book for?",
+    answer: "No, we can accommodate groups of any size, from individual travelers to large corporate groups.",
+  },
+];
 
 export default function FAQs() {
-  const [activeIndex, setActiveIndex] = useState(2); // 3rd is open by default (as in screenshot)
+  const [activeIndex, setActiveIndex] = useState(2);
+  const [faqs, setFaqs] = useState(STATIC);
 
-  const faqData = [
-    {
-      q: "How does Tourwatchout ensure my trip is stress-free?",
-      a: "We provide comprehensive trip planning, 24/7 support, and handle all logistics to ensure a seamless travel experience.",
-    },
-    {
-      q: "What if we need help during the trip?",
-      a: "Our 24/7 customer support team is always available to assist you during your trip.",
-    },
-    {
-      q: "How do you ensure the safety of my family during the trip?",
-      a: "Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit. Exercitation veniam consequat sunt nostrud amet.",
-    },
-    {
-      q: "Can Tourwatchout plan trips for corporate groups?",
-      a: "Yes, we specialize in corporate travel planning and group bookings.",
-    },
-    {
-      q: "Is there a limit to the number of people I can book for?",
-      a: "No, we can accommodate groups of any size, from individual travelers to large corporate groups.",
-    },
-  ];
+  useEffect(() => {
+    fetch("/api/faqs?limit=15")
+      .then(r => r.json())
+      .then(data => {
+        if (Array.isArray(data) && data.length > 0) setFaqs(data);
+      })
+      .catch(() => {});
+  }, []);
 
   const toggleFAQ = (index) => {
     setActiveIndex(activeIndex === index ? null : index);
@@ -37,19 +53,16 @@ export default function FAQs() {
           <h2 className="faq-title">Frequently Asked Questions</h2>
 
           <div className="faq-list">
-            {faqData.map((item, i) => {
+            {faqs.map((item, i) => {
               const isOpen = activeIndex === i;
 
               return (
-                <div className="faq-item" key={i}>
-                  {/* QUESTION ROW */}
+                <div className="faq-item" key={item.id || i}>
                   <div
                     className={`faq-question ${isOpen ? "active" : ""}`}
                     onClick={() => toggleFAQ(i)}
                   >
-                    <h3>{item.q}</h3>
-
-                    {/* ARROW ICON */}
+                    <h3>{item.question || item.q}</h3>
                     <span
                       className="faq-icon"
                       style={{
@@ -64,9 +77,8 @@ export default function FAQs() {
                     </span>
                   </div>
 
-                  {/* ANSWER BOX */}
                   <div className={`faq-answer ${isOpen ? "active" : ""}`}>
-                    <p>{item.a}</p>
+                    <p>{item.answer || item.a}</p>
                   </div>
 
                   <div className="faq-divider"></div>
@@ -75,7 +87,11 @@ export default function FAQs() {
             })}
           </div>
 
-          {/* <div className="faq-divider"></div> */}
+          <div style={{ textAlign: "center", marginTop: 28 }}>
+            <Link href="/faqs" className="explore-more-btn" style={{ display: "inline-block" }}>
+              View more FAQs
+            </Link>
+          </div>
         </div>
       </div>
     </section>

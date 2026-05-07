@@ -6,15 +6,13 @@ import {
   MdKeyboardArrowDown, MdPeople,
   MdChevronLeft, MdChevronRight,
 } from "react-icons/md";
-import { isAuthenticated } from "../../utils/voucherAuth";
-import Sidebar from "../../components/backend/Sidebar";
+import DashboardLayout, { useOpenSidebar } from "../../components/backend/DashboardLayout";
 
 const PAGE_SIZES = [10, 20, 50];
 
 export default function Destinations() {
   const router = useRouter();
-  const [ready, setReady]         = useState(false);
-  const [sidebarOpen, setSidebar] = useState(false);
+  const openSidebar = useOpenSidebar();
   const [destinations, setDests]  = useState([]);
   const [loading, setLoading]     = useState(true);
   const [tab, setTab]             = useState("national");
@@ -23,8 +21,6 @@ export default function Destinations() {
   const [pageSize, setPageSize]   = useState(10);
 
   useEffect(() => {
-    if (!isAuthenticated()) { router.replace("/dashboard/login"); return; }
-    setReady(true);
     fetchAll();
   }, []);
 
@@ -85,36 +81,26 @@ export default function Destinations() {
   const rows = filtered.slice((page - 1) * pageSize, page * pageSize);
   const pageNums = Array.from({ length: Math.min(totalPages, 5) }, (_, i) => i + 1);
 
-  if (!ready) return null;
-
   return (
     <>
-      <Head>
-        <title>Destinations — TourWatchOut</title>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-        <link rel="stylesheet" href="/assets/css/backend.css" />
-      </Head>
+      <Head><title>Destinations — TourWatchOut</title></Head>
 
-      <div className="bk-page">
-        <Sidebar active="Destinations" isOpen={sidebarOpen} onClose={() => setSidebar(false)} />
+      <header className="bk-header">
+        <div className="bk-header-left">
+          <button className="bk-hamburger" onClick={openSidebar}><MdMenu size={22} /></button>
+          <button className="bk-back-btn" onClick={() => router.push("/dashboard")}><MdChevronLeft size={20} /></button>
+          <h1 className="bk-page-title">Destinations</h1>
+        </div>
+        <div className="bk-header-right">
+          <div className="bk-team-pill"><span>Sales Team</span><MdKeyboardArrowDown size={16} /></div>
+          <button className="bk-avatar-btn">
+            <MdPeople size={18} color="#2563eb" />
+            <span className="bk-avatar-badge">4</span>
+          </button>
+        </div>
+      </header>
 
-        <main className="bk-main">
-          <header className="bk-header">
-            <div className="bk-header-left">
-              <button className="bk-hamburger" onClick={() => setSidebar(true)}><MdMenu size={22} /></button>
-              <button className="bk-back-btn" onClick={() => router.push("/dashboard")}><MdChevronLeft size={20} /></button>
-              <h1 className="bk-page-title">Destinations</h1>
-            </div>
-            <div className="bk-header-right">
-              <div className="bk-team-pill"><span>Sales Team</span><MdKeyboardArrowDown size={16} /></div>
-              <button className="bk-avatar-btn">
-                <MdPeople size={18} color="#2563eb" />
-                <span className="bk-avatar-badge">4</span>
-              </button>
-            </div>
-          </header>
-
-          <div className="bk-content">
+      <div className="bk-content">
             {/* Topbar */}
             <div className="bk-topbar">
               <div className="bk-search-wrap">
@@ -241,8 +227,10 @@ export default function Destinations() {
               </div>
             </div>
           </div>
-        </main>
-      </div>
     </>
   );
 }
+
+Destinations.getLayout = (page) => (
+  <DashboardLayout active="Destinations">{page}</DashboardLayout>
+);

@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
-import { MdSearch, MdBookmarkBorder, MdArrowForward, MdChevronLeft, MdChevronRight } from "react-icons/md";
+import { useRouter } from "next/router";
+import { MdSearch, MdArrowForward, MdChevronLeft, MdChevronRight } from "react-icons/md";
 
 const LIMIT = 9;
 
@@ -11,13 +12,8 @@ function formatDate(d) {
   return dt.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
 }
 
-function readTime(content) {
-  if (!content) return "3 min read";
-  const words = content.trim().split(/\s+/).length;
-  return `${Math.max(1, Math.round(words / 200))} min read`;
-}
-
 export default function BlogList() {
+  const router = useRouter();
   const [blogs,   setBlogs]   = useState([]);
   const [total,   setTotal]   = useState(0);
   const [pages,   setPages]   = useState(1);
@@ -25,21 +21,23 @@ export default function BlogList() {
   const [search,  setSearch]  = useState("");
   const [query,   setQuery]   = useState("");
   const [cat,     setCat]     = useState("");
+  const [tag,     setTag]     = useState("");
   const [cats,    setCats]    = useState([]);
   const [loading, setLoading] = useState(true);
+  const [ready,   setReady]   = useState(false);
 
-  const load = useCallback(async (q, c, p) => {
+  const load = useCallback(async (q, c, t, p) => {
     setLoading(true);
     try {
       const params = new URLSearchParams({ page: p, limit: LIMIT });
       if (q) params.set("search", q);
       if (c) params.set("category", c);
+      if (t) params.set("tag", t);
       const r = await fetch(`/api/blogs?${params}`);
       const data = await r.json();
       setBlogs(data.blogs || []);
       setTotal(data.total || 0);
       setPages(data.pages || 1);
-      // Collect unique categories from all returned blogs
       if (p === 1) {
         const allCats = (data.blogs || []).flatMap(b => b.categories || []);
         setCats(prev => {
@@ -51,50 +49,67 @@ export default function BlogList() {
     setLoading(false);
   }, []);
 
-  useEffect(() => { load("", "", 1); }, [load]);
+  // Read ?tag= from URL on first load
+  useEffect(() => {
+    if (!router.isReady) return;
+    const urlTag = router.query.tag || "";
+    setTag(urlTag);
+    setReady(true);
+    load("", "", urlTag, 1);
+  }, [router.isReady, router.query.tag]);
 
   function handleSearch(e) {
     e.preventDefault();
     setPage(1);
     setQuery(search);
-    load(search, cat, 1);
+    load(search, cat, tag, 1);
   }
 
   function handleCat(c) {
     const next = c === cat ? "" : c;
     setCat(next);
+    setTag("");
     setPage(1);
-    load(query, next, 1);
+    load(query, next, "", 1);
   }
 
   function handlePage(p) {
     setPage(p);
-    load(query, cat, p);
+    load(query, cat, tag, p);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   return (
     <section className="blogs-list-section ptb-80">
       <div className="container">
-        <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
-          <h2 className="blogs-title">
-            {total > 0 ? `${total} Blog${total !== 1 ? "s" : ""}` : "Blog Posts"}
-          </h2>
-          <form className="bl-controls" onSubmit={handleSearch} style={{ marginBottom: 0 }}>
-            <div className="bl-search-wrap">
-              <MdSearch className="bl-search-icon" />
-              <input
-                type="text"
-                placeholder="Search blogs…"
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-              />
-            </div>
-            <button type="submit" className="btn-primary btn px-4 py-2 rounded-3" style={{ fontSize: 14, whiteSpace: "nowrap" }}>
-              Search
-            </button>
-          </form>
+        {/* Section heading */}
+        <div className="bl-section-header">
+          <h2 className="bl-section-title">Stories &amp; Itineraries from Around the World</h2>
+          {tag ? (
+            <p className="bl-section-sub">
+              Showing posts tagged <span className="bl-brand">#{tag}</span>&nbsp;&nbsp;
+              <button onClick={() => { setTag(""); load("", "", "", 1); router.push("/blogs", undefined, { shallow: true }); }} style={{ background: "none", border: "none", color: "#EE4C49", fontSize: 13, fontWeight: 600, cursor: "pointer", textDecoration: "underline", padding: 0 }}>
+                Clear filter
+              </button>
+            </p>
+          ) : (
+            <p className="bl-section-sub">Explore the world with <span className="bl-brand">Tourwatchout!</span></p>
+          )}
         </div>
+
+        {/* Search bar */}
+        <form className="bl-hero-search" onSubmit={handleSearch}>
+          <div className="bl-hero-search-inner">
+            <MdSearch className="bl-hero-search-icon" />
+            <input
+              type="text"
+              placeholder="Search stories, destinations, tips…"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+            />
+          </div>
+          <button type="submit">Search</button>
+        </form>
 
         {/* Category filters */}
         {cats.length > 0 && (
@@ -152,16 +167,9 @@ export default function BlogList() {
                         <div className="bl-card-img-placeholder">✈️</div>
                       )}
                       {badge && <span className="bl-badge">{badge}</span>}
-                      <button
-                        className="bl-bookmark"
-                        onClick={e => e.preventDefault()}
-                        aria-label="Bookmark"
-                      >
-                        <MdBookmarkBorder />
-                      </button>
                     </div>
                     <div className="bl-card-body">
-                      {badge && <p className="bl-card-cat">{badge}</p>}
+                      {/* {badge && <p className="bl-card-cat">{badge}</p>} */}
                       <h3 className="bl-card-title">{blog.title}</h3>
                       {blog.summary && <p className="bl-card-summary">{blog.summary}</p>}
                       <div className="bl-card-footer">

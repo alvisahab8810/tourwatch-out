@@ -8,8 +8,7 @@ import {
   MdAddPhotoAlternate, MdEdit, MdDeleteOutline,
   MdCheckCircle, MdError, MdWarning, MdInfoOutline,
 } from "react-icons/md";
-import { isAuthenticated } from "../../../utils/voucherAuth";
-import Sidebar from "../../../components/backend/Sidebar";
+import DashboardLayout, { useOpenSidebar } from "../../../components/backend/DashboardLayout";
 
 const SCHEMA_TYPES = [
   "BlogPosting", "Article", "NewsArticle", "BreadcrumbList", "FAQPage",
@@ -271,8 +270,7 @@ export default function CreateBlog() {
   const router = useRouter();
   const { id: editId } = router.query;
 
-  const [ready,        setReady]        = useState(false);
-  const [sidebar,      setSidebar]      = useState(false);
+  const openSidebar = useOpenSidebar();
   const [form,         setForm]         = useState(BLANK);
   const [saving,       setSaving]       = useState(false);
   const [toasts,       setToasts]       = useState([]);
@@ -289,7 +287,6 @@ export default function CreateBlog() {
 
   /* ── Load existing blog ── */
   useEffect(() => {
-    if (!isAuthenticated()) { router.replace("/dashboard/login"); return; }
     if (editId) {
       fetch(`/api/dashboard/blogs/${editId}`)
         .then(r => r.json())
@@ -309,10 +306,8 @@ export default function CreateBlog() {
             });
             setSlugManual(true);
           }
-          setReady(true);
-        })
-        .catch(() => setReady(true));
-    } else { setReady(true); }
+        });
+    }
   }, [editId]);
 
   useEffect(() => {
@@ -425,8 +420,6 @@ export default function CreateBlog() {
     setSaving(false);
   }
 
-  if (!ready) return null;
-
   const charTitle    = (form.title    || "").length;
   const charSummary  = (form.summary  || "").length;
   const charMetaDesc = (form.metaDescription || "").length;
@@ -439,8 +432,6 @@ export default function CreateBlog() {
     <>
       <Head>
         <title>{`${editId ? "Edit Blog" : "New Blog"} — TourWatchOut`}</title>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-        <link rel="stylesheet" href="/assets/css/backend.css" />
         <style>{`
           @keyframes twSlideIn {
             from { opacity: 0; transform: translateX(64px) scale(0.95); }
@@ -449,14 +440,10 @@ export default function CreateBlog() {
         `}</style>
       </Head>
 
-      <div className="bk-page">
-        <Sidebar active="Blogs" isOpen={sidebar} onClose={() => setSidebar(false)} />
-        <main className="bk-main">
-
           {/* Header */}
           <header className="bk-header">
             <div className="bk-header-left">
-              <button className="bk-hamburger" onClick={() => setSidebar(true)}><MdMenu size={22} /></button>
+              <button className="bk-hamburger" onClick={openSidebar}><MdMenu size={22} /></button>
               <button style={s.backBtn} onClick={() => router.push("/dashboard/blogs")}><MdArrowBack size={16} /></button>
               <h1 className="bk-page-title">{editId ? "Edit Blog" : "New Blog Post"}</h1>
             </div>
@@ -729,13 +716,14 @@ export default function CreateBlog() {
             <button onClick={() => saveBlog("published")} disabled={saving} style={s.publishBtnLg}>{saving ? "Publishing…" : "Publish"}</button>
           </div>
 
-        </main>
-      </div>
-
       <ToastContainer toasts={toasts} onClose={dismissToast} />
     </>
   );
 }
+
+CreateBlog.getLayout = (page) => (
+  <DashboardLayout active="Blogs">{page}</DashboardLayout>
+);
 
 /* ══ Styles ══ */
 const s = {

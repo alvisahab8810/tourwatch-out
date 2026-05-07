@@ -79,8 +79,8 @@ function AccordionSection({ title, open, onToggle, children }) {
 }
 
 export default function PackageDetailPage({ pkg, dest }) {
-  const [openDay, setOpenDay]       = useState(1);
-  const [openSection, setOpenSection] = useState("inclusions");
+  const [openDay, setOpenDay]       = useState(null);
+  const [openSection, setOpenSection] = useState(null);
 
   function toggleSection(key) {
     setOpenSection(prev => prev === key ? null : key);

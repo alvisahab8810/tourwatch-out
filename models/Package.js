@@ -44,6 +44,7 @@ const PackageSchema = new mongoose.Schema(
     aboutImages:          [imageSchema],
     bucketImages:         [imageSchema],
     status:               { type: String, default: "Inactive" },
+    popular:              { type: Boolean, default: false },
   },
   { timestamps: true }
 );

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import {
@@ -8,9 +8,8 @@ import {
   MdInfo, MdEmail, MdSend, MdCheckCircle, MdMenu,
 } from "react-icons/md";
 import { FaWhatsapp } from "react-icons/fa";
-import { isAuthenticated } from "../../utils/voucherAuth";
 import VoucherPreview from "../../components/voucher/VoucherPreview";
-import Sidebar from "../../components/backend/Sidebar";
+import DashboardLayout, { useOpenSidebar } from "../../components/backend/DashboardLayout";
 
 // ─── Date helpers ─────────────────────────────────────────────────────────────
 function toISO(displayStr) {
@@ -130,9 +129,8 @@ const DEFAULT_FORM = {
 export default function CreateVoucher() {
   const router = useRouter();
   const { id: editId } = router.query;
-  const [ready, setReady] = useState(false);
+  const openSidebar = useOpenSidebar();
   const [formKey, setFormKey] = useState(0);
-  const [sidebar, setSidebar] = useState(false);
   const [form, setForm] = useState(DEFAULT_FORM);
   const [showPreview, setShowPreview] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -144,15 +142,13 @@ export default function CreateVoucher() {
   const [emailDone, setEmailDone] = useState(false);
   const [emailError, setEmailError] = useState("");
 
-  useEffect(() => {
-    if (!isAuthenticated()) { router.replace("/dashboard/login"); return; }
+  useLayoutEffect(() => {
     const vouchers = JSON.parse(localStorage.getItem("tw_vouchers") || "[]");
     if (editId) {
       const found = vouchers.find((v) => v.id === editId);
       if (found) {
         setForm(found);
         setFormKey((k) => k + 1);
-        setReady(true);
         return;
       }
     }
@@ -162,7 +158,6 @@ export default function CreateVoucher() {
       tripId: buildTripId(vouchers),
     }));
     setFormKey((k) => k + 1);
-    setReady(true);
   }, [editId]);
 
   const set = (key, val) => { setForm((f) => ({ ...f, [key]: val })); setSaved(false); };
@@ -364,36 +359,27 @@ export default function CreateVoucher() {
   }
   function handlePreview() { saveVoucher(); setShowPreview(true); }
 
-  if (!ready) return null;
-
   return (
     <>
-      <Head>
-        <title>{editId ? "Edit" : "New"} Voucher — TourWatchOut</title>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-        <link rel="stylesheet" href="/assets/css/backend.css" />
-      </Head>
-      <div className="bk-page">
-        <Sidebar active="Voucher" isOpen={sidebar} onClose={() => setSidebar(false)} />
+      <Head><title>{editId ? "Edit" : "New"} Voucher — TourWatchOut</title></Head>
 
-        <main className="bk-main">
-          <header className="bk-header">
-            <div className="bk-header-left">
-              <button className="bk-hamburger" onClick={() => setSidebar(true)}><MdMenu size={22} /></button>
-              <h1 className="bk-page-title">{editId ? "Edit Voucher" : "Create Voucher"}</h1>
-            </div>
-            <div className="bk-header-right">
-              {saved && <span style={s.savedTag}>✓ Saved</span>}
-              <button onClick={saveVoucher} disabled={saving} style={{ ...s.previewBtn, background: "#2563eb", color: "#fff", marginRight: 8 }}>
-                <MdSave size={16} /> {saving ? "Saving…" : "Save"}
-              </button>
-              <button onClick={handlePreview} style={s.previewBtn}>
-                <MdVisibility size={16} /> Preview & Export
-              </button>
-            </div>
-          </header>
+      <header className="bk-header">
+        <div className="bk-header-left">
+          <button className="bk-hamburger" onClick={openSidebar}><MdMenu size={22} /></button>
+          <h1 className="bk-page-title">{editId ? "Edit Voucher" : "Create Voucher"}</h1>
+        </div>
+        <div className="bk-header-right">
+          {saved && <span style={s.savedTag}>✓ Saved</span>}
+          <button onClick={saveVoucher} disabled={saving} style={{ ...s.previewBtn, background: "#2563eb", color: "#fff", marginRight: 8 }}>
+            <MdSave size={16} /> {saving ? "Saving…" : "Save"}
+          </button>
+          <button onClick={handlePreview} style={s.previewBtn}>
+            <MdVisibility size={16} /> Preview & Export
+          </button>
+        </div>
+      </header>
 
-          <div style={{ padding: "28px 36px 60px" }}>
+      <div style={{ padding: "28px 36px 60px" }}>
 
             {/* ── Voucher Info ── */}
             <FormSection id="section-voucher" title="Voucher Information" icon={<MdPerson />}>
@@ -688,8 +674,6 @@ export default function CreateVoucher() {
                 <MdVisibility size={17} /> Preview & Export
               </button>
             </div>
-          </div>
-        </main>
       </div>
 
       {/* ═══════════════ PREVIEW MODAL ═══════════════ */}
@@ -773,6 +757,10 @@ export default function CreateVoucher() {
     </>
   );
 }
+
+CreateVoucher.getLayout = (page) => (
+  <DashboardLayout active="Voucher">{page}</DashboardLayout>
+);
 
 // ─── Form building blocks ─────────────────────────────────────────────────────
 

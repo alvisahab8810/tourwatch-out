@@ -4,8 +4,7 @@ import Head from "next/head";
 import {
   MdPeople, MdMenu, MdKeyboardArrowDown, MdCallMade,
 } from "react-icons/md";
-import { isAuthenticated } from "../../utils/voucherAuth";
-import Sidebar from "../../components/backend/Sidebar";
+import DashboardLayout, { useOpenSidebar } from "../../components/backend/DashboardLayout";
 
 /* ─── Static chart data ─── */
 // NAV_ITEMS, CRM_ITEMS, and Sidebar extracted to components/backend/Sidebar.js
@@ -41,11 +40,6 @@ const CONVERSION_COLORS = ["#22c55e", "#eab308", "#ef4444"];
 const REVENUE_COLORS    = ["#2563eb", "#818cf8", "#a78bfa"];
 
 
-const STATIC_STATS = [
-  { title: "Blogs",  value: 0, subNum: 0, subLabel: "Active",    color: "bk-clr-green" },
-  { title: "FAQ's",  value: 0,  subNum: 0,  subLabel: "New Added", color: "bk-clr-gray"  },
-  { title: "Leads",  value: 0, subNum: 0,  subLabel: "Pending",   color: "bk-clr-red"   },
-];
 
 /* ─── Reusable bar chart ─── */
 function BarChart({ data, maxVal, colors }) {
@@ -124,77 +118,54 @@ function BarChart({ data, maxVal, colors }) {
 /* ─── Main page ─── */
 export default function Dashboard() {
   const router = useRouter();
-  const [ready, setReady] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const openSidebar = useOpenSidebar();
   const [destStat, setDestStat] = useState({ total: 0, active: 0 });
   const [pkgStat,  setPkgStat]  = useState({ total: 0, active: 0 });
+  const [blogStat, setBlogStat] = useState({ total: 0, published: 0 });
+  const [faqStat,  setFaqStat]  = useState({ total: 0, published: 0 });
 
   useEffect(() => {
-    if (!isAuthenticated()) {
-      router.replace("/dashboard/login");
-      return;
-    }
-    setReady(true);
-    // Fetch real counts for destinations and packages
     Promise.all([
       fetch("/api/dashboard/destinations").then(r => r.json()),
       fetch("/api/dashboard/packages").then(r => r.json()),
-    ]).then(([dests, pkgs]) => {
+      fetch("/api/dashboard/blogs").then(r => r.json()),
+      fetch("/api/dashboard/faqs").then(r => r.json()),
+    ]).then(([dests, pkgs, blogsRes, faqsRes]) => {
       const d = Array.isArray(dests) ? dests : [];
       const p = Array.isArray(pkgs)  ? pkgs  : [];
       setDestStat({ total: d.length, active: d.filter(x => x.status === "Active").length });
       setPkgStat ({ total: p.length, active: p.filter(x => x.status === "Active").length });
+      const blogsArr = Array.isArray(blogsRes) ? blogsRes : [];
+      setBlogStat({
+        total:     blogsArr.length,
+        published: blogsArr.filter(b => b.status === "published").length,
+      });
+      const fStats = faqsRes?.stats || {};
+      setFaqStat({ total: fStats.total || 0, published: fStats.published || 0 });
     }).catch(() => {});
   }, []);
 
-  if (!ready) return null;
-
   return (
     <>
-      <Head>
-        <title>Dashboard — TourWatchOut</title>
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
-        <link rel="stylesheet" href="/assets/css/backend.css" />
-      </Head>
+      <Head><title>Dashboard — TourWatchOut</title></Head>
 
-      <div className="bk-page">
-        <Sidebar
-          active="Dashboard"
-          isOpen={sidebarOpen}
-          onClose={() => setSidebarOpen(false)}
-        />
+      <header className="bk-header">
+        <div className="bk-header-left">
+          <button className="bk-hamburger" onClick={openSidebar} aria-label="Open menu">
+            <MdMenu size={22} />
+          </button>
+          <h1 className="bk-page-title">Dashboard</h1>
+        </div>
+        <div className="bk-header-right">
+          <div className="bk-team-pill"><span>Sales Team</span><MdKeyboardArrowDown size={16} /></div>
+          <button className="bk-avatar-btn">
+            <MdPeople size={18} color="#2563eb" />
+            <span className="bk-avatar-badge">4</span>
+          </button>
+        </div>
+      </header>
 
-        <main className="bk-main">
-          {/* ─── Header ─── */}
-          <header className="bk-header">
-            <div className="bk-header-left">
-              <button
-                className="bk-hamburger"
-                onClick={() => setSidebarOpen(true)}
-                aria-label="Open menu"
-              >
-                <MdMenu size={22} />
-              </button>
-              <h1 className="bk-page-title">Dashboard</h1>
-            </div>
-
-            <div className="bk-header-right">
-              <div className="bk-team-pill">
-                <span>Sales Team</span>
-                <MdKeyboardArrowDown size={16} />
-              </div>
-              <button className="bk-avatar-btn">
-                <MdPeople size={18} color="#2563eb" />
-                <span className="bk-avatar-badge">4</span>
-              </button>
-            </div>
-          </header>
-
-          {/* ─── Content ─── */}
-          <div className="bk-content">
+      <div className="bk-content">
             {/* Stats */}
             <div className="bk-stats-grid">
               {/* Dynamic: Total Destinations */}
@@ -221,20 +192,42 @@ export default function Dashboard() {
                   </div>
                 </div>
               </div>
-              {/* Static: remaining stats */}
-              {STATIC_STATS.map((s) => (
-                <div key={s.title} className="bk-stat-card">
-                  <MdCallMade className="bk-stat-arrow-icon" size={17} />
-                  <div className="bk-stat-title">{s.title}</div>
-                  <div className="bk-stat-row">
-                    <div className="bk-stat-number">{s.value}</div>
-                    <div className="bk-stat-sub">
-                      <div className={`bk-stat-sub-num ${s.color}`}>{s.subNum}</div>
-                      <div className="bk-stat-sub-label">{s.subLabel}</div>
-                    </div>
+              {/* Dynamic: Blogs */}
+              <div className="bk-stat-card">
+                <MdCallMade className="bk-stat-arrow-icon" size={17} />
+                <div className="bk-stat-title">Blogs</div>
+                <div className="bk-stat-row">
+                  <div className="bk-stat-number">{blogStat.total}</div>
+                  <div className="bk-stat-sub">
+                    <div className="bk-stat-sub-num bk-clr-green">{blogStat.published}</div>
+                    <div className="bk-stat-sub-label">Published</div>
                   </div>
                 </div>
-              ))}
+              </div>
+              {/* Dynamic: FAQ's */}
+              <div className="bk-stat-card">
+                <MdCallMade className="bk-stat-arrow-icon" size={17} />
+                <div className="bk-stat-title">FAQ&apos;s</div>
+                <div className="bk-stat-row">
+                  <div className="bk-stat-number">{faqStat.total}</div>
+                  <div className="bk-stat-sub">
+                    <div className="bk-stat-sub-num bk-clr-green">{faqStat.published}</div>
+                    <div className="bk-stat-sub-label">Published</div>
+                  </div>
+                </div>
+              </div>
+              {/* Static: Leads */}
+              <div className="bk-stat-card">
+                <MdCallMade className="bk-stat-arrow-icon" size={17} />
+                <div className="bk-stat-title">Leads</div>
+                <div className="bk-stat-row">
+                  <div className="bk-stat-number">0</div>
+                  <div className="bk-stat-sub">
+                    <div className="bk-stat-sub-num bk-clr-red">0</div>
+                    <div className="bk-stat-sub-label">Pending</div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Conversions chart */}
@@ -269,8 +262,10 @@ export default function Dashboard() {
               <BarChart data={REVENUE_DATA} maxVal={200} colors={REVENUE_COLORS} />
             </div>
           </div>
-        </main>
-      </div>
     </>
   );
 }
+
+Dashboard.getLayout = (page) => (
+  <DashboardLayout active="Dashboard">{page}</DashboardLayout>
+);

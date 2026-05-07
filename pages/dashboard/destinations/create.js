@@ -5,8 +5,7 @@ import {
   MdMenu, MdKeyboardArrowDown, MdPeople, MdChevronLeft,
   MdCheckCircle, MdMoreHoriz, MdImage, MdClose,
 } from "react-icons/md";
-import { isAuthenticated } from "../../../utils/voucherAuth";
-import Sidebar from "../../../components/backend/Sidebar";
+import DashboardLayout, { useOpenSidebar } from "../../../components/backend/DashboardLayout";
 
 const COUNTRIES = [
   "India", "UAE", "Indonesia", "Malaysia", "Singapore",
@@ -117,14 +116,12 @@ export default function CreateDestination() {
   const { id } = router.query;
   const isEdit = Boolean(id);
 
-  const [ready, setReady]     = useState(false);
-  const [sidebar, setSidebar] = useState(false);
+  const openSidebar = useOpenSidebar();
   const [form, setForm]       = useState(BLANK);
   const [saving, setSaving]   = useState(false);
   const [toast, setToast]     = useState("");
 
   useEffect(() => {
-    if (!isAuthenticated()) { router.replace("/dashboard/login"); return; }
     if (id) {
       fetch("/api/dashboard/destinations")
         .then(r => r.json())
@@ -149,7 +146,6 @@ export default function CreateDestination() {
           }
         });
     }
-    setReady(true);
   }, [id]);
 
   function f(key, val) {
@@ -210,25 +206,17 @@ export default function CreateDestination() {
     }
   }
 
-  if (!ready) return null;
-
   const isIndia = form.country === "India";
 
   return (
     <>
       <Head>
         <title>{isEdit ? "Edit" : "Add"} Destination — TourWatchOut</title>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-        <link rel="stylesheet" href="/assets/css/backend.css" />
       </Head>
 
-      <div className="bk-page">
-        <Sidebar active="Destinations" isOpen={sidebar} onClose={() => setSidebar(false)} />
-
-        <main className="bk-main">
           <header className="bk-header">
             <div className="bk-header-left">
-              <button className="bk-hamburger" onClick={() => setSidebar(true)}><MdMenu size={22} /></button>
+              <button className="bk-hamburger" onClick={openSidebar}><MdMenu size={22} /></button>
               <button className="bk-back-btn" onClick={() => router.push("/dashboard/destinations")}>
                 <MdChevronLeft size={20} />
               </button>
@@ -361,8 +349,6 @@ export default function CreateDestination() {
             </div>
 
           </div>
-        </main>
-      </div>
 
       {toast && (
         <div style={{
@@ -377,3 +363,7 @@ export default function CreateDestination() {
     </>
   );
 }
+
+CreateDestination.getLayout = (page) => (
+  <DashboardLayout active="Destinations">{page}</DashboardLayout>
+);

@@ -5,8 +5,7 @@ import {
   MdMenu, MdSearch, MdAdd, MdEdit, MdDelete,
   MdChevronLeft, MdChevronRight,
 } from "react-icons/md";
-import { isAuthenticated } from "../../utils/voucherAuth";
-import Sidebar from "../../components/backend/Sidebar";
+import DashboardLayout, { useOpenSidebar } from "../../components/backend/DashboardLayout";
 
 const PER_PAGE_OPTS = [10, 20, 50];
 
@@ -14,12 +13,11 @@ export default function VoucherList() {
   const router = useRouter();
   const [vouchers, setVouchers] = useState([]);
   const [search, setSearch]     = useState("");
-  const [sidebar, setSidebar]   = useState(false);
+  const openSidebar = useOpenSidebar();
   const [perPage, setPerPage]   = useState(10);
   const [page, setPage]         = useState(1);
 
   useEffect(() => {
-    if (!isAuthenticated()) { router.replace("/dashboard/login"); return; }
     setVouchers(JSON.parse(localStorage.getItem("tw_vouchers") || "[]"));
   }, []);
 
@@ -46,24 +44,16 @@ export default function VoucherList() {
 
   return (
     <>
-      <Head>
-        <title>All Vouchers — TourWatchOut</title>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-        <link rel="stylesheet" href="/assets/css/backend.css" />
-      </Head>
+      <Head><title>All Vouchers — TourWatchOut</title></Head>
 
-      <div className="bk-page">
-        <Sidebar active="Voucher" isOpen={sidebar} onClose={() => setSidebar(false)} />
+      <header className="bk-header">
+        <div className="bk-header-left">
+          <button className="bk-hamburger" onClick={openSidebar}><MdMenu size={22} /></button>
+          <h1 className="bk-page-title">All Vouchers</h1>
+        </div>
+      </header>
 
-        <main className="bk-main">
-          <header className="bk-header">
-            <div className="bk-header-left">
-              <button className="bk-hamburger" onClick={() => setSidebar(true)}><MdMenu size={22} /></button>
-              <h1 className="bk-page-title">All Vouchers</h1>
-            </div>
-          </header>
-
-          <div className="bk-content">
+      <div className="bk-content">
             {/* Top bar */}
             <div className="bk-topbar">
               <div className="bk-search-wrap">
@@ -175,9 +165,11 @@ export default function VoucherList() {
                 </div>
               </div>
             </div>
-          </div>
-        </main>
       </div>
     </>
   );
 }
+
+VoucherList.getLayout = (page) => (
+  <DashboardLayout active="Voucher">{page}</DashboardLayout>
+);

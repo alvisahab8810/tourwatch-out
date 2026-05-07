@@ -5,7 +5,7 @@ export default async function handler(req, res) {
   if (req.method !== "GET") return res.status(405).end();
   await connectDB();
 
-  const { search = "", category = "", page = 1, limit = 9 } = req.query;
+  const { search = "", category = "", tag = "", page = 1, limit = 9 } = req.query;
   const query = { status: "published" };
 
   if (search) {
@@ -15,6 +15,7 @@ export default async function handler(req, res) {
     ];
   }
   if (category) query.categories = category;
+  if (tag)      query.tags = tag;
 
   const skip  = (Number(page) - 1) * Number(limit);
   const [blogs, total] = await Promise.all([

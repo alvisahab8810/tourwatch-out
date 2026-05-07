@@ -38,6 +38,17 @@ export default async function handler(req, res) {
     return res.status(200).json({ ...updated, id: updated._id });
   }
 
+  if (req.method === "PATCH") {
+    // strict: false bypasses Mongoose model-cache stripping unknown fields
+    await Package.collection.updateOne(
+      { _id: id },
+      { $set: { popular: Boolean(req.body.popular) } }
+    );
+    const updated = await Package.findById(id).lean();
+    if (!updated) return res.status(404).json({ error: "Not found" });
+    return res.status(200).json({ ...updated, id: updated._id });
+  }
+
   if (req.method === "DELETE") {
     const pkg = await Package.findByIdAndDelete(id);
     if (!pkg) return res.status(404).json({ error: "Not found" });

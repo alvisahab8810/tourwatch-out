@@ -7,9 +7,8 @@ import {
   MdEmail, MdSend, MdCheckCircle, MdAttachMoney, MdMenu,
 } from "react-icons/md";
 import { FaWhatsapp } from "react-icons/fa";
-import { isAuthenticated } from "../../utils/voucherAuth";
 import InvoicePreview from "../../components/invoice/InvoicePreview";
-import Sidebar from "../../components/backend/Sidebar";
+import DashboardLayout, { useOpenSidebar } from "../../components/backend/DashboardLayout";
 
 // ─── Date helpers ─────────────────────────────────────────────────────────────
 function parseToISO(displayStr) {
@@ -64,8 +63,7 @@ const DEFAULT_FORM = {
 export default function CreateInvoice() {
   const router = useRouter();
   const { id: editId } = router.query;
-  const [ready, setReady] = useState(false);
-  const [sidebar, setSidebar] = useState(false);
+  const openSidebar = useOpenSidebar();
   const [form, setForm] = useState(DEFAULT_FORM);
   const [showPreview, setShowPreview] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -78,13 +76,11 @@ export default function CreateInvoice() {
   const [emailError, setEmailError] = useState("");
 
   useEffect(() => {
-    if (!isAuthenticated()) { router.replace("/dashboard/login"); return; }
     if (editId) {
       fetch(`/api/dashboard/invoices/${editId}`)
         .then(r => r.json())
         .then(found => { if (found && !found.error) setForm(prev => ({ ...prev, ...found })); })
-        .catch(() => {})
-        .finally(() => setReady(true));
+        .catch(() => {});
     } else {
       fetch("/api/dashboard/invoices")
         .then(r => r.json())
@@ -92,8 +88,7 @@ export default function CreateInvoice() {
           const all = Array.isArray(data) ? data : [];
           setForm(f => ({ ...f, invoiceNo: buildInvoiceNo(all) }));
         })
-        .catch(() => {})
-        .finally(() => setReady(true));
+        .catch(() => {});
     }
   }, [editId]);
 
@@ -321,8 +316,6 @@ export default function CreateInvoice() {
     }
   }
 
-  if (!ready) return null;
-
   // Derived totals for the form display
   const subTotal    = form.items.reduce((s, i) => s + (parseFloat(i.amount) || 0), 0);
   const cgstAmt     = form.cgstPct ? (subTotal * parseFloat(form.cgstPct)) / 100 : 0;
@@ -336,34 +329,25 @@ export default function CreateInvoice() {
 
   return (
     <>
-      <Head>
-        <title>{editId ? "Edit" : "New"} Invoice — TourWatchOut</title>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-        <link rel="stylesheet" href="/assets/css/backend.css" />
-      </Head>
-      <div className="bk-page">
+      <Head><title>{editId ? "Edit" : "New"} Invoice — TourWatchOut</title></Head>
 
-        <Sidebar active="Invoice" isOpen={sidebar} onClose={() => setSidebar(false)} />
+      <header className="bk-header">
+        <div className="bk-header-left">
+          <button className="bk-hamburger" onClick={openSidebar}><MdMenu size={22} /></button>
+          <h1 className="bk-page-title">{editId ? "Edit Invoice" : "New Tax Invoice"}</h1>
+        </div>
+        <div className="bk-header-right">
+          {saved && <span style={s.savedTag}>✓ Saved</span>}
+          <button onClick={saveInvoice} disabled={saving} style={{ ...s.previewBtn, background: "#2563eb", color: "#fff", marginRight: 8 }}>
+            <MdSave size={15} /> {saving ? "Saving…" : "Save"}
+          </button>
+          <button onClick={async () => { await saveInvoice(); setShowPreview(true); }} style={s.previewBtn}>
+            <MdVisibility size={15} /> Preview & Export
+          </button>
+        </div>
+      </header>
 
-        {/* ── Main form ── */}
-        <main className="bk-main">
-          <header className="bk-header">
-            <div className="bk-header-left">
-              <button className="bk-hamburger" onClick={() => setSidebar(true)}><MdMenu size={22} /></button>
-              <h1 className="bk-page-title">{editId ? "Edit Invoice" : "New Tax Invoice"}</h1>
-            </div>
-            <div className="bk-header-right">
-              {saved && <span style={s.savedTag}>✓ Saved</span>}
-              <button onClick={saveInvoice} disabled={saving} style={{ ...s.previewBtn, background: "#2563eb", color: "#fff", marginRight: 8 }}>
-                <MdSave size={15} /> {saving ? "Saving…" : "Save"}
-              </button>
-              <button onClick={async () => { await saveInvoice(); setShowPreview(true); }} style={s.previewBtn}>
-                <MdVisibility size={15} /> Preview & Export
-              </button>
-            </div>
-          </header>
-
-          <div style={{ padding: "28px 36px 60px" }}>
+      <div style={{ padding: "28px 36px 60px" }}>
 
           {/* ── Invoice Info ── */}
           <FormSection id="sec-meta" title="Invoice Information" icon={<MdReceipt />}>
@@ -478,8 +462,6 @@ export default function CreateInvoice() {
               <MdVisibility size={17} /> Preview & Export
             </button>
           </div>
-          </div>
-        </main>
       </div>
 
       {/* ═══ PREVIEW MODAL ═══ */}
@@ -566,6 +548,10 @@ export default function CreateInvoice() {
     </>
   );
 }
+
+CreateInvoice.getLayout = (page) => (
+  <DashboardLayout active="Invoice">{page}</DashboardLayout>
+);
 
 // ─── Reusable UI ──────────────────────────────────────────────────────────────
 function FormSection({ id, title, icon, children }) {

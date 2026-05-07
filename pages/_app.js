@@ -71,6 +71,7 @@ import Head from "next/head";
 import Script from "next/script";
 
 function MyApp({ Component, pageProps }) {
+  const getLayout = Component.getLayout ?? ((page) => page);
   return (
     <>
       <Head>
@@ -133,7 +134,7 @@ function MyApp({ Component, pageProps }) {
         strategy="lazyOnload"
       />
 
-      <Component {...pageProps} />
+      {getLayout(<Component {...pageProps} />)}
     </>
   );
 }

@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import {
   MdDashboard, MdLocationOn, MdApps, MdArticle, MdHelpOutline,
   MdPeople, MdAutorenew, MdNotificationsNone, MdStore,
-  MdConfirmationNumber, MdReceipt, MdLogout, MdSmartButton,
+  MdConfirmationNumber, MdReceipt, MdLogout, MdSmartButton, MdComment, MdStar,
 } from "react-icons/md";
 import { logout } from "../../utils/voucherAuth";
 
@@ -11,8 +11,10 @@ const NAV = [
   { label: "Destinations", Icon: MdLocationOn,         href: "/dashboard/destinations" },
   { label: "All Packages", Icon: MdApps,               href: "/dashboard/packages" },
   { label: "Blogs",        Icon: MdArticle,            href: "/dashboard/blogs" },
-  { label: "Robot.txt",   Icon: MdSmartButton,        href: "/dashboard/robots" },
-  { label: "Faq's",        Icon: MdHelpOutline,        href: "#" },
+  { label: "Comments",    Icon: MdComment,            href: "/dashboard/comments" },
+  { label: "Most Popular", Icon: MdStar,              href: "/dashboard/popular" },
+  // { label: "Robot.txt",   Icon: MdSmartButton,        href: "/dashboard/robots" },
+  { label: "Faq's",       Icon: MdHelpOutline,        href: "/dashboard/faqs" },
 ];
 
 const CRM = [

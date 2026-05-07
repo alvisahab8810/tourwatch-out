@@ -5,16 +5,14 @@ import {
   MdMenu, MdKeyboardArrowDown, MdPeople, MdSearch,
   MdAdd, MdEdit, MdDelete, MdChevronLeft, MdChevronRight,
 } from "react-icons/md";
-import { isAuthenticated } from "../../utils/voucherAuth";
-import Sidebar from "../../components/backend/Sidebar";
+import DashboardLayout, { useOpenSidebar } from "../../components/backend/DashboardLayout";
 
 const TABS = ["Family", "Couple", "Corporate", "Honeymoon", "Group"];
 const PER_PAGE_OPTS = [10, 20, 50];
 
 export default function PackagesList() {
   const router = useRouter();
-  const [ready, setReady]     = useState(false);
-  const [sidebar, setSidebar] = useState(false);
+  const openSidebar = useOpenSidebar();
   const [packages, setPackages] = useState([]);
   const [tab, setTab]         = useState("Family");
   const [search, setSearch]   = useState("");
@@ -22,12 +20,10 @@ export default function PackagesList() {
   const [page, setPage]       = useState(1);
 
   useEffect(() => {
-    if (!isAuthenticated()) { router.replace("/dashboard/login"); return; }
     fetch("/api/dashboard/packages")
       .then(r => r.json())
       .then(setPackages)
       .catch(() => {});
-    setReady(true);
   }, []);
 
   async function updateStatus(id, status) {
@@ -45,8 +41,6 @@ export default function PackagesList() {
     await fetch(`/api/dashboard/packages/${id}`, { method: "DELETE" });
   }
 
-  if (!ready) return null;
-
   const filtered = packages.filter(p => {
     if (p.packageType !== tab) return false;
     if (!search) return true;
@@ -63,31 +57,23 @@ export default function PackagesList() {
 
   return (
     <>
-      <Head>
-        <title>All Packages — TourWatchOut</title>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-        <link rel="stylesheet" href="/assets/css/backend.css" />
-      </Head>
+      <Head><title>All Packages — TourWatchOut</title></Head>
 
-      <div className="bk-page">
-        <Sidebar active="All Packages" isOpen={sidebar} onClose={() => setSidebar(false)} />
+      <header className="bk-header">
+        <div className="bk-header-left">
+          <button className="bk-hamburger" onClick={openSidebar}><MdMenu size={22} /></button>
+          <h1 className="bk-page-title">All Packages</h1>
+        </div>
+        <div className="bk-header-right">
+          <div className="bk-team-pill"><span>Sales Team</span><MdKeyboardArrowDown size={16} /></div>
+          <button className="bk-avatar-btn">
+            <MdPeople size={18} color="#2563eb" />
+            <span className="bk-avatar-badge">4</span>
+          </button>
+        </div>
+      </header>
 
-        <main className="bk-main">
-          <header className="bk-header">
-            <div className="bk-header-left">
-              <button className="bk-hamburger" onClick={() => setSidebar(true)}><MdMenu size={22} /></button>
-              <h1 className="bk-page-title">All Packages</h1>
-            </div>
-            <div className="bk-header-right">
-              <div className="bk-team-pill"><span>Sales Team</span><MdKeyboardArrowDown size={16} /></div>
-              <button className="bk-avatar-btn">
-                <MdPeople size={18} color="#2563eb" />
-                <span className="bk-avatar-badge">4</span>
-              </button>
-            </div>
-          </header>
-
-          <div className="bk-content">
+      <div className="bk-content">
             {/* Top bar */}
             <div className="bk-topbar">
               <div className="bk-search-wrap">
@@ -210,8 +196,10 @@ export default function PackagesList() {
               </div>
             </div>
           </div>
-        </main>
-      </div>
     </>
   );
 }
+
+PackagesList.getLayout = (page) => (
+  <DashboardLayout active="All Packages">{page}</DashboardLayout>
+);

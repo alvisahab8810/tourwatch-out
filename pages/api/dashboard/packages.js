@@ -12,7 +12,7 @@ export default async function handler(req, res) {
     // Exclude all large image/text fields — list view only needs metadata.
     // Full document (with images) is fetched via GET /api/dashboard/packages/:id.
     const packages = await Package.find({})
-      .select("destination packageType packageSubtype packageName duration basePrice finalPrice priceType status destinationHighlights amenities metaTitle metaDescription metaKeywords createdAt updatedAt")
+      .select("destination packageType packageSubtype packageName duration basePrice finalPrice priceType status popular destinationHighlights amenities featureImage metaTitle metaDescription metaKeywords createdAt updatedAt")
       .sort({ createdAt: -1 })
       .lean();
     return res.status(200).json(packages.map(p => ({ ...p, id: p._id })));

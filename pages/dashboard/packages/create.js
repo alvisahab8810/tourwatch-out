@@ -6,8 +6,7 @@ import {
   MdMenu, MdKeyboardArrowDown, MdPeople, MdChevronLeft,
   MdCheckCircle, MdMoreHoriz, MdImage, MdClose, MdAdd, MdDelete, MdSearch,
 } from "react-icons/md";
-import { isAuthenticated } from "../../../utils/voucherAuth";
-import Sidebar from "../../../components/backend/Sidebar";
+import DashboardLayout, { useOpenSidebar } from "../../../components/backend/DashboardLayout";
 
 /* ── Constants ── */
 const PKG_TYPES    = ["Family", "Couple", "Corporate", "Honeymoon", "Group"];
@@ -337,8 +336,7 @@ export default function CreatePackage() {
   const { id, destination: preDestination, packageType: preType, subtype: preSub } = router.query;
   const isEdit = Boolean(id);
 
-  const [ready, setReady]         = useState(false);
-  const [sidebar, setSidebar]     = useState(false);
+  const openSidebar = useOpenSidebar();
   const [form, setForm]           = useState(BLANK);
   const [saving, setSaving]       = useState(false);
   const [toast, setToast]         = useState(null);
@@ -369,7 +367,6 @@ export default function CreatePackage() {
 
   // Load package if editing or pre-fill from query
   useEffect(() => {
-    if (!isAuthenticated()) { router.replace("/dashboard/login"); return; }
     if (id) {
       fetch(`/api/dashboard/packages/${id}`)
         .then(r => r.json())
@@ -392,7 +389,6 @@ export default function CreatePackage() {
       if (preSub)         updates.packageSubtype = preSub;
       if (Object.keys(updates).length) setForm(p => ({ ...p, ...updates }));
     }
-    setReady(true);
   }, [id, preDestination, preType, preSub]);
 
   // Normalise amenities once allAmenities is loaded
@@ -484,25 +480,17 @@ export default function CreatePackage() {
     finally { setSaving(false); }
   }
 
-  if (!ready) return null;
-
   const destNames = [...new Set(destinations.map(d => d.name || d.title).filter(Boolean))];
 
   return (
     <>
       <Head>
         <title>{isEdit ? "Edit" : "Add"} Package — TourWatchOut</title>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-        <link rel="stylesheet" href="/assets/css/backend.css" />
       </Head>
 
-      <div className="bk-page">
-        <Sidebar active="All Packages" isOpen={sidebar} onClose={() => setSidebar(false)} />
-
-        <main className="bk-main">
           <header className="bk-header">
             <div className="bk-header-left">
-              <button className="bk-hamburger" onClick={() => setSidebar(true)}><MdMenu size={22} /></button>
+              <button className="bk-hamburger" onClick={openSidebar}><MdMenu size={22} /></button>
               <button className="bk-back-btn" onClick={() => router.push("/dashboard/packages")}>
                 <MdChevronLeft size={20} />
               </button>
@@ -805,8 +793,6 @@ export default function CreatePackage() {
             </div>
 
           </div>
-        </main>
-      </div>
 
       {toast && (
         <div style={{position:"fixed",bottom:28,right:28,background:"#1f2937",color:"#fff",borderRadius:10,padding:"14px 22px",fontSize:14,fontWeight:500,fontFamily:"Inter,sans-serif",boxShadow:"0 4px 16px rgba(0,0,0,0.18)",zIndex:9999,display:"flex",alignItems:"center",gap:14,maxWidth:420}}>
@@ -820,3 +806,7 @@ export default function CreatePackage() {
     </>
   );
 }
+
+CreatePackage.getLayout = (page) => (
+  <DashboardLayout active="All Packages">{page}</DashboardLayout>
+);

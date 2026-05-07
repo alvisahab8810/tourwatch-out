@@ -16,8 +16,15 @@ export default function BlogsPage() {
       </Head>
       <Topbar />
       <Offcanvas />
-      <Hero />
-      <About />
+      {/* <Hero /> */}
+      <div className="packages-hero-area">
+        <img
+          src="/assets/images/blogs/blog-hero.webp"
+          alt="Blogs Hero"
+          style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+        />
+      </div>
+      {/* <About /> */}
       <BlogList />
       <NewFooter />
     </>

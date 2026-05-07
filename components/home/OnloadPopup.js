@@ -12,15 +12,11 @@ export default function OnloadPopup() {
 
   const [loading, setLoading] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
-  const [showFormPopup, setShowFormPopup] = useState(false); // Initially hidden
+  const [showFormPopup, setShowFormPopup] = useState(false);
 
-  // Show the form popup 2 seconds after the page loads
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowFormPopup(true);
-    }, 2000);
-
-    return () => clearTimeout(timer); // Cleanup to prevent memory leaks
+    const timer = setTimeout(() => setShowFormPopup(true), 2000);
+    return () => clearTimeout(timer);
   }, []);
 
   const handleChange = (e) => {
@@ -30,24 +26,19 @@ export default function OnloadPopup() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-
     try {
       const response = await fetch(
         "https://script.google.com/macros/s/AKfycbxo7bKXBcwDk6oGV3pz1fzDR8cpaIKAJSW82flunKKrTOg1d_anWYMpVAXnEbOIXa9B/exec",
-        {
-          method: "POST",
-          body: new URLSearchParams(formData),
-        }
+        { method: "POST", body: new URLSearchParams(formData) }
       );
-
       if (response.ok) {
         setShowPopup(true);
-        setShowFormPopup(false); // Close form popup after submission
+        setShowFormPopup(false);
         setFormData({ fullName: "", destination: "", contact: "", email: "", formType: "TourWatchout-Form" });
       } else {
         toast.error("Failed to submit form. Please try again.");
       }
-    } catch (error) {
+    } catch {
       toast.error("Failed to submit form. Please try again.");
     } finally {
       setLoading(false);
@@ -58,167 +49,277 @@ export default function OnloadPopup() {
     <>
       <Toaster />
 
-      {/* Onload Form Popup (Appears after 2 seconds) */}
+      {/* ── Form Popup ── */}
       {showFormPopup && (
-        <div className="popup-overlay">
-          <div className="popup-content">
-            <button className="close-btn" onClick={() => setShowFormPopup(false)}>✖</button>
-            <h2>Get a Callback</h2>
-            <form onSubmit={handleSubmit}>
-              <div className="form-group mb-2">
-                <label htmlFor="fullName">Full Name</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  id="fullName"
-                  value={formData.fullName}
-                  onChange={handleChange}
-                  required
-                />
+        <div className="rop-overlay">
+          <div className="rop-card">
+
+            {/* Close button */}
+            <button className="rop-close" onClick={() => setShowFormPopup(false)} aria-label="Close">✕</button>
+
+            {/* Banner */}
+            <div className="rop-banner">
+              <div className="rop-banner-inner">
+                <h2 className="rop-banner-title">REACH OUT TO US</h2>
+                <p className="rop-banner-sub">Just A Few Details &amp; We're On It!</p>
               </div>
-              <div className="form-group  mb-2">
-                <label htmlFor="destination">Destination</label>
-                <select
-                  className="form-select"
-                  id="destination"
-                  value={formData.destination}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="">Select Destination</option>
-                  <optgroup label="🌍 International Destinations">
-                    <option>Dubai</option>
-                    <option>Bali</option>
-                    <option>Thailand</option>
-                    <option>Singapore</option>
-                    <option>Malaysia</option>
-                  </optgroup>
-                  <optgroup label="🏞️ National Destinations">
-                    <option>Kashmir</option>
-                    <option>Leh Ladakh</option>
-                    <option>Shimla</option>
-                    <option>Kullu</option>
-                    <option>Manali</option>
-                    <option>Dharamshala</option>
-                    <option>McLeod Ganj</option>
-                    <option>Dehradun</option>
-                    <option>Mussorie</option>
-                    <option>Nainital</option>
-                    <option>Jim Corbett</option>
-                    <option>Jaipur</option>
-                    <option>Udaipur</option>
-                    <option>Jaisalmer</option>
-                    <option>Gangtok</option>
-                    <option>Darjeeling</option>
-                    <option>Lonavala</option>
-                    <option>Khandala</option>
-                    <option>Goa</option>
-                    <option>Andaman & Nicobar</option>
-                  </optgroup>
-                </select>
-              </div>
-              <div className="form-group  mb-2">
-                <label htmlFor="contact">Contact</label>
+            </div>
+
+            {/* Form */}
+            <form className="rop-form" onSubmit={handleSubmit}>
+              <input
+                type="text"
+                id="fullName"
+                className="rop-input"
+                placeholder="Full Name"
+                value={formData.fullName}
+                onChange={handleChange}
+                required
+              />
+
+              <input
+                type="text"
+                id="destination"
+                className="rop-input"
+                placeholder="Destination"
+                value={formData.destination}
+                onChange={handleChange}
+                required
+              />
+
+              {/* Phone with flag */}
+              <div className="rop-phone-wrap">
+                <span className="rop-phone-prefix">
+                  <span className="rop-flag">🇮🇳</span>
+                  <span className="rop-code">+91</span>
+                  <span className="rop-divider">|</span>
+                </span>
                 <input
-                  type="text"
-                  className="form-control"
+                  type="tel"
                   id="contact"
+                  className="rop-phone-input"
+                  placeholder="0000 0000 00"
                   value={formData.contact}
                   onChange={handleChange}
                   required
                 />
               </div>
-              <div className="form-group  mb-2">
-                <label htmlFor="email">Email</label>
-                <input
-                  type="email"
-                  className="form-control"
-                  id="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <button type="submit" className="btn btn-danger" disabled={loading}>
-                {loading ? <span><i className="ri-loader-4-line ri-spin"></i> Submitting...</span> : "Get A Call"}
+
+              <input
+                type="email"
+                id="email"
+                className="rop-input"
+                placeholder="Email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
+
+              <button type="submit" className="rop-btn" disabled={loading}>
+                {loading ? "Submitting…" : "Request A Call back"}
               </button>
             </form>
           </div>
         </div>
       )}
 
-      {/* Success Popup */}
+      {/* ── Success Popup ── */}
       {showPopup && (
-        <div className="popup-overlay">
-          <div className="popup-content">
-            <h2>Form Submitted Successfully! 🎉</h2>
-            <p>Thank you for reaching out. We'll get back to you soon!</p>
-            <button onClick={() => setShowPopup(false)}>Close</button>
+        <div className="rop-overlay">
+          <div className="rop-success-card">
+            <div className="rop-success-icon">🎉</div>
+            <h3 className="rop-success-title">Form Submitted Successfully!</h3>
+            <p className="rop-success-msg">Thank you for reaching out. We'll get back to you soon!</p>
+            <button className="rop-btn" onClick={() => setShowPopup(false)}>Close</button>
           </div>
         </div>
       )}
 
-      {/* Styles */}
       <style jsx>{`
-        .popup-overlay {
+        .rop-overlay {
           position: fixed;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background: rgba(0, 0, 0, 0.5);
+          inset: 0;
+          background: rgba(0, 0, 0, 0.55);
           display: flex;
           align-items: center;
           justify-content: center;
           z-index: 11000;
+          padding: 16px;
         }
-        .popup-content {
-          background: white;
-          padding: 20px;
-          border-radius: 8px;
-          text-align: center;
-          max-width: 500px;
-          width:500px;
-          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+        /* Main card */
+        .rop-card {
+          background: #fff;
+          border-radius: 16px;
+          overflow: hidden;
+          width: 100%;
+          max-width: 548px;
+          box-shadow: 0 8px 40px rgba(0, 0, 0, 0.18);
           position: relative;
         }
-        .popup-content h2 {
-          margin-bottom: 10px;
-          font-size: 22px;
-        }
 
-        .popup-content form {
-        text-align:left;
-        }
-
-       
-        .popup-content .btn-danger {
-          padding: 10px 20px;
-          background-color: #f44336;
-          color: white;
-          border: none;
-          border-radius: 5px;
-          font-size: 14px;
-          cursor: pointer;
-        }
-        .close-btn {
+        /* Close button */
+        .rop-close {
           position: absolute;
-          top: 10px;
-          right: 10px;
-          background: none;
+          top: 12px;
+          right: 12px;
+          background: rgba(255, 255, 255, 0.85);
           border: none;
-          font-size: 10px;
+          width: 28px;
+          height: 28px;
+          border-radius: 50%;
+          font-size: 13px;
           cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #333;
+          z-index: 10;
+          line-height: 1;
+          transition: background 0.15s;
+        }
+        .rop-close:hover { background: #fff; }
+
+        /* Banner */
+        .rop-banner {
+          height: 130px;
+          background:
+            linear-gradient(rgba(0, 0, 0, 0.50), rgba(0, 0, 0, 0.50)),
+            url('/assets/images/blogs/blog-hero.webp') center / cover no-repeat;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 16px 16px 0 0;
+        }
+        .rop-banner-inner { text-align: center; padding: 0 20px; }
+        .rop-banner-title {
+          font-size: 26px;
+          font-weight: 900;
+          color: #fff;
+          margin: 0 0 6px;
+          letter-spacing: 0.6px;
+          line-height: 1.15;
+        }
+        .rop-banner-sub {
+          font-size: 13px;
+          color: rgba(255, 255, 255, 0.85);
+          margin: 0;
         }
 
-        @media(max-width:760px){
-         .popup-content {
-           width:95%;
-         }
-
-          .popup-content form select{
-        font-size:12px;
+        /* Form */
+        .rop-form {
+          padding: 20px 22px 24px;
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
         }
+
+        /* Standard inputs */
+        .rop-input {
+          width: 100%;
+          border: 1.5px solid #e5e7eb;
+          border-radius: 10px;
+          padding: 13px 15px;
+          font-size: 14px;
+          color: #0c141d;
+          background: #fff;
+          outline: none;
+          box-sizing: border-box;
+          font-family: inherit;
+          transition: border 0.2s, box-shadow 0.2s;
+          appearance: none;
+          -webkit-appearance: none;
+        }
+        .rop-input:focus {
+          border-color: #EE4C49;
+          box-shadow: 0 0 0 3px rgba(238, 76, 73, 0.08);
+        }
+        .rop-input::placeholder { color: #b0b7c3; }
+
+        /* Phone field */
+        .rop-phone-wrap {
+          display: flex;
+          align-items: center;
+          border: 1.5px solid #e5e7eb;
+          border-radius: 10px;
+          overflow: hidden;
+          background: #fff;
+          transition: border 0.2s, box-shadow 0.2s;
+        }
+        .rop-phone-wrap:focus-within {
+          border-color: #EE4C49;
+          box-shadow: 0 0 0 3px rgba(238, 76, 73, 0.08);
+        }
+        .rop-phone-prefix {
+          display: flex;
+          align-items: center;
+          gap: 5px;
+          padding: 0 10px 0 14px;
+          flex-shrink: 0;
+          white-space: nowrap;
+        }
+        .rop-flag  { font-size: 20px; line-height: 1; }
+        .rop-code  { font-size: 14px; font-weight: 600; color: #0c141d; }
+        .rop-divider { color: #d1d5db; font-size: 20px; margin-left: 2px; }
+        .rop-phone-input {
+          flex: 1;
+          border: none;
+          outline: none;
+          padding: 13px 14px 13px 6px;
+          font-size: 14px;
+          color: #0c141d;
+          background: transparent;
+          font-family: inherit;
+        }
+        .rop-phone-input::placeholder { color: #b0b7c3; }
+
+        /* Submit button */
+        .rop-btn {
+          width: 100%;
+          background: #EE4C49;
+          color: #fff;
+          border: none;
+          padding: 15px 20px;
+          border-radius: 50px;
+          font-size: 15px;
+          font-weight: 700;
+          cursor: pointer;
+          letter-spacing: 0.2px;
+          margin-top: 2px;
+          transition: background 0.2s, transform 0.1s;
+        }
+        .rop-btn:hover:not(:disabled) { background: #d43d3a; transform: translateY(-1px); }
+        .rop-btn:disabled { opacity: 0.7; cursor: default; }
+
+        /* Success card */
+        .rop-success-card {
+          background: #fff;
+          border-radius: 16px;
+          padding: 44px 32px 36px;
+          width: 100%;
+          max-width: 420px;
+          text-align: center;
+          box-shadow: 0 8px 40px rgba(0, 0, 0, 0.18);
+        }
+        .rop-success-icon { font-size: 48px; margin-bottom: 14px; }
+        .rop-success-title {
+          font-size: 20px;
+          font-weight: 800;
+          color: #0c141d;
+          margin: 0 0 10px;
+        }
+        .rop-success-msg {
+          font-size: 14px;
+          color: #667085;
+          line-height: 1.6;
+          margin: 0 0 24px;
+        }
+        .rop-success-card .rop-btn { max-width: 200px; margin: 0 auto; }
+
+        @media (max-width: 600px) {
+          .rop-banner { height: 110px; }
+          .rop-banner-title { font-size: 21px; }
+          .rop-form { padding: 16px 16px 20px; gap: 10px; }
         }
       `}</style>
     </>

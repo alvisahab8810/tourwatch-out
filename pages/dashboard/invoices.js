@@ -5,8 +5,7 @@ import {
   MdMenu, MdSearch, MdAdd, MdEdit, MdDelete,
   MdChevronLeft, MdChevronRight,
 } from "react-icons/md";
-import { isAuthenticated } from "../../utils/voucherAuth";
-import Sidebar from "../../components/backend/Sidebar";
+import DashboardLayout, { useOpenSidebar } from "../../components/backend/DashboardLayout";
 
 const PER_PAGE_OPTS = [10, 20, 50];
 
@@ -49,12 +48,11 @@ export default function InvoiceList() {
   const router = useRouter();
   const [invoices, setInvoices] = useState([]);
   const [search, setSearch]     = useState("");
-  const [sidebar, setSidebar]   = useState(false);
+  const openSidebar = useOpenSidebar();
   const [perPage, setPerPage]   = useState(10);
   const [page, setPage]         = useState(1);
 
   useEffect(() => {
-    if (!isAuthenticated()) { router.replace("/dashboard/login"); return; }
     migrateLocalStorage().then(() => {
       fetch("/api/dashboard/invoices")
         .then(r => r.json())
@@ -91,24 +89,16 @@ export default function InvoiceList() {
 
   return (
     <>
-      <Head>
-        <title>All Invoices — TourWatchOut</title>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-        <link rel="stylesheet" href="/assets/css/backend.css" />
-      </Head>
+      <Head><title>All Invoices — TourWatchOut</title></Head>
 
-      <div className="bk-page">
-        <Sidebar active="Invoice" isOpen={sidebar} onClose={() => setSidebar(false)} />
+      <header className="bk-header">
+        <div className="bk-header-left">
+          <button className="bk-hamburger" onClick={openSidebar}><MdMenu size={22} /></button>
+          <h1 className="bk-page-title">All Invoices</h1>
+        </div>
+      </header>
 
-        <main className="bk-main">
-          <header className="bk-header">
-            <div className="bk-header-left">
-              <button className="bk-hamburger" onClick={() => setSidebar(true)}><MdMenu size={22} /></button>
-              <h1 className="bk-page-title">All Invoices</h1>
-            </div>
-          </header>
-
-          <div className="bk-content">
+      <div className="bk-content">
             {/* Top bar */}
             <div className="bk-topbar">
               <div className="bk-search-wrap">
@@ -222,9 +212,11 @@ export default function InvoiceList() {
                 </div>
               </div>
             </div>
-          </div>
-        </main>
       </div>
     </>
   );
 }
+
+InvoiceList.getLayout = (page) => (
+  <DashboardLayout active="Invoice">{page}</DashboardLayout>
+);
