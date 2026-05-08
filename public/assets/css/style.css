@@ -1601,12 +1601,14 @@ section.national-dest .swiper-slide{
 /*=======================================================  Contact Us Page ======================================*/
 
 
-.contact-hero{
-    background-image: url(../images/hero/contact-banner.webp);
-    width:100%;
+.contact-hero {
+    background-image: url(../images/hero/contact-hero.webp);
+    width: 100%;
     background-size: cover;
-    padding-bottom: 250px;
-    padding-top: 150px;
+    /* padding-bottom: 250px; */
+    /* padding-top: 150px; */
+    height: calc(640px - 74px);
+    position: relative;
 }
 
 .contact-info, .contact-form {
@@ -4798,4 +4800,29 @@ section.blogs-list-section.ptb-80 {
     display: block;
     object-fit: cover;
     max-height: 260px;
+}
+
+
+.contact-hero-title {
+    font-size: 163px;
+    font-weight: bold;
+    color: #ffffffb5;
+}
+
+.about-contennt{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+h3.contact-hero-subtitle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    font-size: 54px;
+    line-height: 72px;
+    transform: translate(-50%, -50%);
+    color: #F74C4D;
 }

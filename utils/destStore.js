@@ -1,6 +1,8 @@
 // Server-side only — do NOT import in client components
 import fs from "fs";
 import path from "path";
+import connectDB from "./mongodb";
+import PackageImage from "../models/PackageImage";
 
 const DATA_FILE = path.join(process.cwd(), "data", "destinations.json");
 
@@ -17,42 +19,60 @@ export function writeAll(data) {
   fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
 }
 
-export function saveImage(base64, destId, name) {
+// Stores image in MongoDB (same collection as package images).
+// ID format: dest_{destId}__{name}  →  served at /api/images/dest_{destId}__{name}
+export async function saveImage(base64, destId, name) {
   if (!base64 || !base64.startsWith("data:")) return null;
   const match = base64.match(/^data:([^;]+);base64,(.+)$/s);
   if (!match) return null;
-  const ext = match[1].split("/")[1]?.replace("jpeg", "jpg").replace("svg+xml", "svg") || "jpg";
-  const dir = path.join(process.cwd(), "public", "uploads", "destinations", destId);
-  fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(path.join(dir, `${name}.${ext}`), Buffer.from(match[2], "base64"));
-  return `/uploads/destinations/${destId}/${name}.${ext}`;
+
+  try {
+    await connectDB();
+    const contentType = match[1];
+    const data        = Buffer.from(match[2], "base64");
+    const id          = `dest_${destId}__${name}`;
+
+    await PackageImage.findByIdAndUpdate(
+      id,
+      { _id: id, data, contentType },
+      { upsert: true }
+    );
+    return `/api/images/${id}`;
+  } catch (e) {
+    console.error("[destStore.saveImage] MongoDB save failed:", e.message);
+    return null;
+  }
 }
 
 const PKG_TYPES    = ["Family", "Couple"];
 const PKG_SUBTYPES = ["Economy", "Deluxe", "Premium"];
 
-/* Save all image fields in a destination payload, return updated payload */
-export function processDestImages(data, id) {
+export async function processDestImages(data, id) {
   const d = JSON.parse(JSON.stringify(data));
 
-  function img(obj, name) {
+  async function img(obj, name) {
     if (!obj) return obj;
-    if (obj.src?.startsWith("data:")) obj.src = saveImage(obj.src, id, name);
+    if (obj.src?.startsWith("data:")) {
+      obj.src = await saveImage(obj.src, id, name);
+    }
     return obj;
   }
 
-  if (d.mainImage) d.mainImage = img(d.mainImage, "main");
+  if (d.mainImage) d.mainImage = await img(d.mainImage, "main");
 
   if (d.images) {
-    PKG_TYPES.forEach(type => {
+    for (const type of PKG_TYPES) {
       if (d.images[type]) {
-        PKG_SUBTYPES.forEach(sub => {
+        for (const sub of PKG_SUBTYPES) {
           if (d.images[type][sub]) {
-            d.images[type][sub] = img(d.images[type][sub], `${type.toLowerCase()}-${sub.toLowerCase()}`);
+            d.images[type][sub] = await img(
+              d.images[type][sub],
+              `${type.toLowerCase()}-${sub.toLowerCase()}`
+            );
           }
-        });
+        }
       }
-    });
+    }
   }
 
   return d;

@@ -30,6 +30,9 @@ const PKG_SUBTYPES = ["Economy", "Deluxe", "Premium"];
 /* ── Image Uploader ── */
 function ImageUploader({ label, value, alt, onImage, onAlt, small }) {
   const fileRef = useRef(null);
+  const [imgError, setImgError] = useState(false);
+
+  useEffect(() => { setImgError(false); }, [value]);
 
   function handleFile(e) {
     const file = e.target.files[0];
@@ -40,21 +43,28 @@ function ImageUploader({ label, value, alt, onImage, onAlt, small }) {
     reader.readAsDataURL(file);
   }
 
+  const showImage = value && !imgError;
+
   return (
     <div className={`dest-img-col ${small ? "dest-img-col-sm" : ""}`}>
       <div className="dest-img-top">
         <span className="dest-img-label">{label}</span>
-        <span className={`bk-img-status-icon ${value ? "uploaded" : ""}`}>
-          {value ? <MdCheckCircle size={18} /> : <MdMoreHoriz size={18} />}
+        <span className={`bk-img-status-icon ${showImage ? "uploaded" : ""}`}>
+          {showImage ? <MdCheckCircle size={18} /> : <MdMoreHoriz size={18} />}
         </span>
       </div>
       <div
-        className={`bk-upload-area ${value ? "has-image" : ""} ${small ? "bk-upload-sm" : ""}`}
+        className={`bk-upload-area ${showImage ? "has-image" : ""} ${small ? "bk-upload-sm" : ""}`}
         onClick={() => fileRef.current?.click()}
       >
-        {value ? (
+        {showImage ? (
           <>
-            <img src={value} alt={label} className="bk-upload-preview" />
+            <img
+              src={value}
+              alt={label}
+              className="bk-upload-preview"
+              onError={() => setImgError(true)}
+            />
             <button className="bk-upload-remove" onClick={e => { e.stopPropagation(); onImage(null); }}>
               <MdClose size={14} />
             </button>
@@ -62,7 +72,7 @@ function ImageUploader({ label, value, alt, onImage, onAlt, small }) {
         ) : (
           <div className="bk-upload-placeholder">
             <MdImage size={small ? 22 : 28} />
-            <span>{small ? "Upload" : "Click to upload"}</span>
+            <span>{imgError ? "Broken — click to re-upload" : small ? "Upload" : "Click to upload"}</span>
           </div>
         )}
       </div>

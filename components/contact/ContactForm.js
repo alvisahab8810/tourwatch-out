@@ -1,442 +1,312 @@
-// "use client";
-// import { useState } from "react";
-// import Link from "next/link";
-
-// export default function ContactForm() {
-//   const [formData, setFormData] = useState({
-//     name: "",
-//     phone: "",
-//     email: "",
-//     formType: "Contact Us Form", // 📌 Form Type for Sheet
-//   });
-
-//   const [loading, setLoading] = useState(false); // 🔥 State for Loader
-//   const [showPopup, setShowPopup] = useState(false); // 🔥 State for Popup
-
-//   const handleChange = (e) => {
-//     setFormData({ ...formData, [e.target.name]: e.target.value });
-//   };
-
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-//     setLoading(true); // 🔥 Show loader
-
-//     try {
-//       const response = await fetch(
-//         "https://script.google.com/macros/s/AKfycbznGhweLHBIxRd-ehdq1MAlYkWeiLCz_8-7J37axj90qmfVzFZqZkwfNASwO-gZKHOK/exec",
-//         {
-//           method: "POST",
-//           body: new URLSearchParams(formData).toString(),
-//           headers: {
-//             "Content-Type": "application/x-www-form-urlencoded",
-//           },
-//         }
-//       );
-
-//       if (response.ok) {
-//         setShowPopup(true); // ✅ Show Popup
-//         setFormData({
-//           name: "",
-//           phone: "",
-//           email: "",
-//           formType: "Contact Us Form",
-//         }); // ✅ Reset form
-//       } else {
-//         alert("Failed to submit. Try again."); // ❌ Show error message
-//       }
-//     } catch (error) {
-//       alert("Failed to submit. Try again."); // ❌ Show error message
-//     } finally {
-//       setLoading(false); // 🔥 Hide loader after submission
-//     }
-//   };
-
-//   return (
-//     <>
-//       <section className="contact-form-section">
-//         <div className="container">
-//           <div className="row pt-100 flex-wrap-bx">
-//             <div className="col-md-6 c-leftbx">
-//               <h2>Get in Touch with Tourwatchout</h2>
-//               <p className="contact-para">
-//                  Our team is dedicated to turning your travel aspirations into reality by crafting unforgettable journeys tailored to your unique preferences and passions. Whether you dream of exploring uncharted landscapes, immersing yourself in vibrant cultures, or simply finding a serene escape, we bring expertise, creativity, and care to every step of your adventure.
-//               </p>
-
-//               <div className="c-parent-bx">
-//                 <div className="contact-info d-flex align-items-center mb-3">
-//                   <i className="ri-phone-line"></i>
-//                   <div className="ms-3">
-//                     <h5>Phone</h5>
-//                     <p>
-//                       <Link href="tel:+91 8882701800">+91 8882701800</Link>
-//                     </p>
-//                   </div>
-//                 </div>
-//                 <div className="contact-info d-flex align-items-center mb-3">
-//                   <i className="ri-mail-line"></i>
-//                   <div className="ms-3">
-//                     <h5>Email</h5>
-//                     <p>
-//                       <Link href="mailto:sales1@tourwatchout.com">
-//                         sales1@tourwatchout.com
-//                       </Link>
-//                     </p>
-//                   </div>
-//                 </div>
-//               </div>
-
-//               <div className="contact-info d-flex align-items-center mb-3">
-//                 <i className="ri-map-pin-line"></i>
-//                 <div className="ms-3">
-//                   <h5>Office Address</h5>
-//                   <p>
-//                   DLF Mypad, Vibhuti Khand,
-//                   Gomti Nagar Lucknow - 226010
-//                   </p>
-//                 </div>
-//               </div>
-//               <div className="social-icons">
-//                 <h5>Follow Us on Social Media</h5>
-//                 <div className="social-icons1">
-//                   <Link href="https://www.facebook.com/TourWatchout/">
-//                     <i className="ri-facebook-fill"></i>
-//                   </Link>
-//                   <Link href="https://www.instagram.com/tourwatchout/">
-//                     <i className="ri-instagram-line"></i>
-//                   </Link>
-//                   <Link href="https://x.com/tourwatchout">
-//                     <i>
-//                       <img src="./assets/images/icons/x.png" alt="X Logo" />
-//                     </i>
-//                   </Link>
-//                 </div>
-//               </div>
-//             </div>
-//             <div className="col-md-6 c-right-bx">
-//               <h2>Reach out to us today and let’s start the conversation!</h2>
-//               <p>
-//                 Have questions, feedback, or need assistance with planning your
-//                 next adventure? Get in touch with us today!
-//               </p>
-//               <div className="contact-form p-5">
-//                 <form onSubmit={handleSubmit}>
-//                   <div className="mb-3">
-//                     <label htmlFor="name" className="form-label">
-//                       Full Name
-//                     </label>
-//                     <input
-//                       type="text"
-//                       className="form-control"
-//                       name="name"
-//                       value={formData.name}
-//                       onChange={handleChange}
-//                       required
-//                     />
-//                   </div>
-//                   <div className="mb-3">
-//                     <label htmlFor="phone" className="form-label">
-//                       Phone Number
-//                     </label>
-//                     <input
-//                       type="text"
-//                       className="form-control"
-//                       name="phone"
-//                       value={formData.phone}
-//                       onChange={handleChange}
-//                       required
-//                     />
-//                   </div>
-//                   <div className="mb-3">
-//                     <label htmlFor="email" className="form-label">
-//                       Email Address
-//                     </label>
-//                     <input
-//                       type="email"
-//                       className="form-control"
-//                       name="email"
-//                       value={formData.email}
-//                       onChange={handleChange}
-//                       required
-//                     />
-//                   </div>
-//                   <button type="submit" className="btn btn-block" disabled={loading}>
-//                     {loading ? (
-//                       <span>
-//                         <i className="ri-loader-4-line ri-spin"></i> Submitting...
-//                       </span>
-//                     ) : (
-//                       "Contact Us"
-//                     )}
-//                   </button>
-//                 </form>
-//               </div>
-//             </div>
-//           </div>
-//         </div>
-//       </section>
-
-//       {/* ✅ Popup Modal */}
-//       {showPopup && (
-//         <div className="popup-overlay">
-//           <div className="popup-content">
-//             <h2>Form Submitted Successfully! 🎉</h2>
-//             <p>Thank you for reaching out. We'll get back to you soon!</p>
-//             <button onClick={() => setShowPopup(false)}>Close</button>
-//           </div>
-//         </div>
-//       )}
-
-//       {/* ✅ Popup Styles */}
-//       <style jsx>{`
-//         .popup-overlay {
-//           position: fixed;
-//           top: 0;
-//           left: 0;
-//           width: 100%;
-//           height: 100%;
-//           background: rgba(0, 0, 0, 0.5);
-//           display: flex;
-//           align-items: center;
-//           justify-content: center;
-//         }
-//         .popup-content {
-//           background: white;
-//           padding: 20px;
-//           border-radius: 8px;
-//           text-align: center;
-//           max-width: 400px;
-//           box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-//         }
-//           .popup-content p{
-//            font-size: 13px;
-//            margin-top: 20px;
-//             margin-bottom: 20px;
-//           }
-//         .popup-content h2 {
-//           margin-bottom: 10px;
-//           font-size:22px;
-//         }
-//         .popup-content button {
-//           padding: 10px 20px;
-//           background-color: #f44336;
-//           color: white;
-//           border: none;
-//           border-radius: 5px;
-//           font-size:14px;
-//           cursor: pointer;
-//         }
-//       `}</style>
-//     </>
-//   );
-// }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 "use client";
 import { useState } from "react";
 import Link from "next/link";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+
 export default function ContactForm() {
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
     email: "",
-    formType: "Contact Form", // 📌 Form Type for Sheet
+    message: "",
+    formType: "Contact Form",
   });
-
-  const [loading, setLoading] = useState(false); // 🔥 State for Loader
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-
-  
- const handleSubmit = async (e) => {
-  e.preventDefault();
-
-  // Check if all fields are filled
-  if (
-    !formData.name ||
-    !formData.phone ||
-    !formData.email ||
-    !formData.formType
-  ) {
-    toast.error("Please fill in all required fields.");
-    return;
-  }
-
-  try {
-    const res = await fetch("/api/queries/contact", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
-    });
-
-    const data = await res.json();
-
-    if (data.success) {
-      toast.success("Your request has been sent. We’ll be in touch soon.");
-
-      setFormData({
-        name: "",
-        phone: "",
-        email: "",
-        formType: "Contact Form", // reset to default, not empty
-      });
-    } else {
-      toast.error("Something went wrong. Please try again.");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!formData.name || !formData.phone || !formData.email) {
+      toast.error("Please fill in all required fields.");
+      return;
     }
-  } catch (error) {
-    console.error("Form submission error:", error);
-    toast.error("Network error. Please try again.");
-  }
-};
-
+    setLoading(true);
+    try {
+      const res = await fetch("/api/queries/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success("Your request has been sent. We'll be in touch soon.");
+        setFormData({ name: "", phone: "", email: "", message: "", formType: "Contact Form" });
+      } else {
+        toast.error("Something went wrong. Please try again.");
+      }
+    } catch (error) {
+      toast.error("Network error. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <>
-      <section className="contact-form-section">
+      <section className="cf-section">
         <div className="container">
-          <div className="row pt-100 flex-wrap-bx">
-            <div className="col-md-6 c-leftbx">
-              <h2>Get in Touch with Tourwatchout</h2>
-              <p className="contact-para">
-                 Our team is dedicated to turning your travel aspirations into reality by crafting unforgettable journeys tailored to your unique preferences and passions. Whether you dream of exploring uncharted landscapes, immersing yourself in vibrant cultures, or simply finding a serene escape, we bring expertise, creativity, and care to every step of your adventure.
-              </p>
+          <div className="cf-grid">
 
-              <div className="c-parent-bx">
-                <div className="contact-info d-flex align-items-center mb-3">
-                  <i className="ri-phone-line"></i>
-                  <div className="ms-3">
-                    <h5>Phone</h5>
-                    <p>
-                      <Link href="tel:+91 8882701800">+91 8882701800</Link>
-                    </p>
-                  </div>
-                </div>
-                <div className="contact-info d-flex align-items-center mb-3">
-                  <i className="ri-mail-line"></i>
-                  <div className="ms-3">
-                    <h5>Email</h5>
-                    <p>
-                      <Link href="mailto:sales1@tourwatchout.com">
-                        sales1@tourwatchout.com
-                      </Link>
-                    </p>
-                  </div>
-                </div>
+            {/* ── Left: Form ── */}
+            <div className="cf-left">
+              <span className="cf-tag">HAVE QUESTIONS?</span>
+              <div className="cf-heading-box">
+                <h2 className="cf-heading">Reach out to us today and let's start the conversation!</h2>
               </div>
 
-              <div className="contact-info d-flex align-items-center mb-3">
-                <i className="ri-map-pin-line"></i>
-                <div className="ms-3">
-                  <h5>Office Address</h5>
-                  <p>
-                  DLF Mypad, Vibhuti Khand,
-                  Gomti Nagar Lucknow - 226010
-                  </p>
+              <form className="cf-form" onSubmit={handleSubmit}>
+                <div className="cf-field">
+                  <input
+                    type="text"
+                    name="name"
+                    placeholder="Name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                  />
                 </div>
-              </div>
-              <div className="social-icons">
-                <h5>Follow Us on Social Media</h5>
-                <div className="social-icons1">
-                  <Link href="https://www.facebook.com/TourWatchout/">
-                    <i className="ri-facebook-fill"></i>
-                  </Link>
-                  <Link href="https://www.instagram.com/tourwatchout/">
-                    <i className="ri-instagram-line"></i>
-                  </Link>
-                  <Link href="https://x.com/tourwatchout">
-                    <i>
-                      <img src="./assets/images/icons/x.png" alt="X Logo" />
-                    </i>
-                  </Link>
-                </div>
-              </div>
-            </div>
-            <div className="col-md-6 c-right-bx">
-              <h2>Reach out to us today and let’s start the conversation!</h2>
-              <p>
-                Have questions, feedback, or need assistance with planning your
-                next adventure? Get in touch with us today!
-              </p>
-              <div className="contact-form p-5">
-                <form onSubmit={handleSubmit}>
-                  <div className="mb-3">
-                    <label htmlFor="name" className="form-label">
-                      Full Name
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label htmlFor="phone" className="form-label">
-                      Phone Number
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label htmlFor="email" className="form-label">
-                      Email Address
-                    </label>
+                <div className="cf-row">
+                  <div className="cf-field">
                     <input
                       type="email"
-                      className="form-control"
                       name="email"
+                      placeholder="Email*"
                       value={formData.email}
                       onChange={handleChange}
                       required
                     />
                   </div>
-                  <button type="submit" className="btn btn-block" disabled={loading}>
-                    {loading ? (
-                      <span>
-                        <i className="ri-loader-4-line ri-spin"></i> Submitting...
-                      </span>
-                    ) : (
-                      "Contact Us"
-                    )}
-                  </button>
-                </form>
+                  <div className="cf-field">
+                    <input
+                      type="tel"
+                      name="phone"
+                      placeholder="Phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                </div>
+                <div className="cf-field">
+                  <textarea
+                    name="message"
+                    placeholder="Tell Us About Project *"
+                    rows={5}
+                    value={formData.message}
+                    onChange={handleChange}
+                  />
+                </div>
+                <button type="submit" className="cf-btn" disabled={loading}>
+                  {loading ? "Submitting…" : "Get In Touch"}
+                </button>
+              </form>
+            </div>
+
+            {/* ── Right: Info ── */}
+            <div className="cf-right">
+              <h2 className="cf-right-title">
+                Get in Touch with <span className="cf-brand">Tourwatchout</span>
+              </h2>
+
+              <div className="cf-info-item">
+                <p className="cf-info-label">Location</p>
+                <p className="cf-info-text">Regency Rd, Vibhuti Khand, Gomti Nagar, Lucknow,<br />Uttar Pradesh 226010</p>
+                <div className="cf-divider" />
+              </div>
+
+              <div className="cf-info-item">
+                <p className="cf-info-label">Email</p>
+                <p className="cf-info-text">
+                  <Link href="mailto:Sales1@tourwatchout.com">Sales1@tourwatchout.com</Link>
+                </p>
+                <div className="cf-divider" />
+              </div>
+
+              <div className="cf-info-item">
+                <p className="cf-info-label">Phone</p>
+                <p className="cf-info-text">
+                  <Link href="tel:+918882701800">+91 88827 01800</Link>
+                </p>
+                <div className="cf-divider" />
+              </div>
+
+              <div className="cf-socials">
+                <Link href="https://www.instagram.com/tourwatchout/" target="_blank" aria-label="Instagram">
+                  <span className="cf-social-icon"><i className="ri-instagram-line"></i></span>
+                </Link>
+                <Link href="https://www.youtube.com/@tourwatchout" target="_blank" aria-label="YouTube">
+                  <span className="cf-social-icon"><i className="ri-youtube-fill"></i></span>
+                </Link>
+                <Link href="https://www.facebook.com/TourWatchout/" target="_blank" aria-label="Facebook">
+                  <span className="cf-social-icon"><i className="ri-facebook-fill"></i></span>
+                </Link>
+                <Link href="https://www.linkedin.com/company/tourwatchout" target="_blank" aria-label="LinkedIn">
+                  <span className="cf-social-icon"><i className="ri-linkedin-fill"></i></span>
+                </Link>
               </div>
             </div>
+
           </div>
         </div>
 
-              <ToastContainer position="top-right" autoClose={3000} />
-        
+        <ToastContainer position="top-right" autoClose={3000} />
       </section>
 
-    
+      <style jsx>{`
+        .cf-section {
+          background: #fff;
+          padding: 80px 0 100px;
+        }
+        .cf-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 60px;
+          align-items: start;
+        }
+
+        /* ── Left ── */
+        .cf-tag {
+          display: inline-block;
+          font-size: 12px;
+          font-weight: 700;
+          color: #ee4c49;
+          letter-spacing: 1.5px;
+          margin-bottom: 16px;
+        }
+        .cf-heading-box {
+          border: 1.5px dashed #a8c4e0;
+          border-radius: 10px;
+          padding: 18px 22px;
+          margin-bottom: 32px;
+          display: inline-block;
+        }
+        .cf-heading {
+          font-size: 22px;
+          font-weight: 700;
+          color: #1a1a2e;
+          line-height: 1.45;
+          margin: 0;
+        }
+        .cf-form {
+          display: flex;
+          flex-direction: column;
+          gap: 14px;
+        }
+        .cf-field input,
+        .cf-field textarea {
+          width: 100%;
+          border: 1px solid #d1d5db;
+          border-radius: 8px;
+          padding: 12px 16px;
+          font-size: 14px;
+          color: #1a1a2e;
+          background: #fff;
+          outline: none;
+          transition: border-color 0.2s;
+          resize: none;
+          font-family: inherit;
+        }
+        .cf-field input::placeholder,
+        .cf-field textarea::placeholder {
+          color: #9ca3af;
+        }
+        .cf-field input:focus,
+        .cf-field textarea:focus {
+          border-color: #2563eb;
+        }
+        .cf-row {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 14px;
+        }
+        .cf-btn {
+          align-self: flex-start;
+          background: #ee4c49;
+          color: #fff;
+          border: none;
+          border-radius: 50px;
+          padding: 13px 36px;
+          font-size: 15px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: background 0.2s;
+        }
+        .cf-btn:hover { background: #d63b38; }
+        .cf-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+
+        /* ── Right ── */
+        .cf-right {
+          padding-top: 8px;
+        }
+        .cf-right-title {
+          font-size: 30px;
+          font-weight: 700;
+          color: #1a1a2e;
+          line-height: 1.35;
+          margin-bottom: 32px;
+        }
+        .cf-brand {
+          color: #ee4c49;
+        }
+        .cf-info-item {
+          margin-bottom: 4px;
+        }
+        .cf-info-label {
+          font-size: 15px;
+          font-weight: 700;
+          color: #1a1a2e;
+          margin: 0 0 4px;
+        }
+        .cf-info-text {
+          font-size: 14px;
+          color: #4b5563;
+          margin: 0 0 14px;
+          line-height: 1.6;
+        }
+        .cf-info-text a {
+          color: #4b5563;
+          text-decoration: none;
+        }
+        .cf-info-text a:hover { color: #ee4c49; }
+        .cf-divider {
+          height: 1px;
+          background: #e5e7eb;
+          margin-bottom: 18px;
+        }
+        .cf-socials {
+          display: flex;
+          gap: 12px;
+          margin-top: 8px;
+        }
+        .cf-social-icon {
+          width: 38px;
+          height: 38px;
+          border-radius: 50%;
+          background: #ee4c49;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #fff;
+          font-size: 18px;
+          transition: background 0.2s;
+        }
+        .cf-social-icon:hover { background: #d63b38; }
+
+        @media (max-width: 768px) {
+          .cf-grid {
+            grid-template-columns: 1fr;
+            gap: 40px;
+          }
+          .cf-row {
+            grid-template-columns: 1fr;
+          }
+          .cf-right-title { font-size: 24px; }
+        }
+      `}</style>
     </>
   );
 }

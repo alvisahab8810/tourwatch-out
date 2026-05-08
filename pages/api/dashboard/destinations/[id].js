@@ -8,7 +8,9 @@ const PKG_SUBTYPES = ["Economy", "Deluxe", "Premium"];
 function mergeImg(existing, incoming) {
   if (!incoming) return existing;
   if (incoming.src?.startsWith("data:")) return incoming;
-  return { ...(existing || {}), ...incoming };
+  const merged = { ...(existing || {}), ...incoming };
+  if (!incoming.src && existing?.src) merged.src = existing.src;
+  return merged;
 }
 
 function mergeTypeImages(existing = {}, incoming = {}) {
@@ -26,7 +28,7 @@ function mergeTypeImages(existing = {}, incoming = {}) {
   return result;
 }
 
-export default function handler(req, res) {
+export default async function handler(req, res) {
   const { id } = req.query;
   const all = readAll();
   const idx = all.findIndex(d => d.id === id);
@@ -43,7 +45,7 @@ export default function handler(req, res) {
       mainImage: mergeImg(existing.mainImage, req.body.mainImage),
       images: mergeTypeImages(existing.images, req.body.images || {}),
     };
-    const data = processDestImages(raw, id);
+    const data = await processDestImages(raw, id);
     all[idx] = data;
     writeAll(all);
     return res.json(data);

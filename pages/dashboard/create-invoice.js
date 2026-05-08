@@ -405,13 +405,13 @@ export default function CreateInvoice() {
                   <input value={item.hsn} onChange={(e) => updateItem(item.id, "hsn", e.target.value)} placeholder="9985" style={{ ...s.itemInput, textAlign: "center" }} />
                 </div>
                 <div style={{ flex: 1 }}>
-                  <input type="number" value={item.qty} onChange={(e) => updateItem(item.id, "qty", e.target.value)} placeholder="1" style={{ ...s.itemInput, textAlign: "center" }} />
+                  <input type="number" value={item.qty} onChange={(e) => updateItem(item.id, "qty", e.target.value)} onWheel={(e) => e.currentTarget.blur()} placeholder="1" style={{ ...s.itemInput, textAlign: "center" }} />
                 </div>
                 <div style={{ flex: 1.5 }}>
-                  <input type="number" value={item.rate} onChange={(e) => updateItem(item.id, "rate", e.target.value)} placeholder="0%" style={{ ...s.itemInput, textAlign: "right" }} />
+                  <input type="number" value={item.rate} onChange={(e) => updateItem(item.id, "rate", e.target.value)} onWheel={(e) => e.currentTarget.blur()} placeholder="0%" style={{ ...s.itemInput, textAlign: "right" }} />
                 </div>
                 <div style={{ flex: 1.5 }}>
-                  <input type="number" value={item.amount} onChange={(e) => updateItem(item.id, "amount", e.target.value)} placeholder="0.00" style={{ ...s.itemInput, textAlign: "right", fontWeight: 600 }} />
+                  <input type="number" value={item.amount} onChange={(e) => updateItem(item.id, "amount", e.target.value)} onWheel={(e) => e.currentTarget.blur()} placeholder="0.00" style={{ ...s.itemInput, textAlign: "right", fontWeight: 600 }} />
                 </div>
                 <div style={{ width: 32 }}>
                   {form.items.length > 1 && (
@@ -432,15 +432,15 @@ export default function CreateInvoice() {
             <div style={s.taxNote}>For domestic packages use CGST + SGST. For interstate use IGST. Leave unused fields blank.</div>
 
             <TwoCol>
-              <Field label="CGST %" value={form.cgstPct} onChange={(v) => set("cgstPct", v)} placeholder="e.g. 5" type="number" />
-              <Field label="SGST %" value={form.sgstPct} onChange={(v) => set("sgstPct", v)} placeholder="e.g. 5" type="number" />
+              <Field label="CGST %" value={form.cgstPct} onChange={(v) => set("cgstPct", v)} placeholder="e.g. 5" inputMode="decimal" />
+              <Field label="SGST %" value={form.sgstPct} onChange={(v) => set("sgstPct", v)} placeholder="e.g. 5" inputMode="decimal" />
             </TwoCol>
-            <Field label="IGST % (interstate / inter-state — leave blank if CGST+SGST applies)" value={form.igstPct} onChange={(v) => set("igstPct", v)} placeholder="e.g. 18 (or leave blank)" type="number" />
+            <Field label="IGST % (interstate / inter-state — leave blank if CGST+SGST applies)" value={form.igstPct} onChange={(v) => set("igstPct", v)} placeholder="e.g. 18 (or leave blank)" inputMode="decimal" />
 
             <div style={s.divider} />
             <div style={s.subHeading}>TCS — Tax Collected at Source</div>
             <div style={s.taxNote}>Applicable for international tour packages u/s 206C(1G). TCS is calculated on (Subtotal + GST). Enter 5% for packages up to ₹7L, 20% above.</div>
-            <Field label="TCS % (leave blank if not applicable)" value={form.tcsPct} onChange={(v) => set("tcsPct", v)} placeholder="e.g. 5 (international) or leave blank" type="number" />
+            <Field label="TCS % (leave blank if not applicable)" value={form.tcsPct} onChange={(v) => set("tcsPct", v)} placeholder="e.g. 5 (international) or leave blank" inputMode="decimal" />
 
             {/* Summary box */}
             <div style={s.summaryBox}>
@@ -566,11 +566,19 @@ function FormSection({ id, title, icon, children }) {
   );
 }
 function TwoCol({ children }) { return <div style={s.twoCol}>{children}</div>; }
-function Field({ label, value, onChange, placeholder, type = "text", full }) {
+function Field({ label, value, onChange, placeholder, type = "text", full, inputMode }) {
   return (
     <div style={{ flex: full ? "1 1 100%" : "1 1 0", minWidth: 0 }}>
       {label && <label style={s.label}>{label}</label>}
-      <input type={type} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} style={s.input} />
+      <input
+        type={type}
+        inputMode={inputMode}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        style={s.input}
+        onWheel={type === "number" ? (e) => e.currentTarget.blur() : undefined}
+      />
     </div>
   );
 }

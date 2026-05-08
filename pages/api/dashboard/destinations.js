@@ -3,7 +3,7 @@ import { v4 as uuid } from "uuid";
 
 export const config = { api: { bodyParser: { sizeLimit: "25mb" } } };
 
-export default function handler(req, res) {
+export default async function handler(req, res) {
   if (req.method === "GET") {
     return res.json(readAll());
   }
@@ -17,7 +17,7 @@ export default function handler(req, res) {
       type: req.body.type || (req.body.country === "India" ? "national" : "international"),
       createdAt: new Date().toISOString(),
     };
-    const data = processDestImages(raw, id);
+    const data = await processDestImages(raw, id);
     const all = readAll();
     writeAll([...all, data]);
     return res.status(201).json(data);
