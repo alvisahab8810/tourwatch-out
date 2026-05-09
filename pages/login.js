@@ -1,9 +1,7 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import toast from "react-hot-toast";
-import Topbar from "../components/header/Header";
-import Offcanvas from "../components/header/Offcanvas";
 import { saveSession, isLoggedIn } from "../utils/userAuth";
 
 // ── Icons ─────────────────────────────────────────────────────

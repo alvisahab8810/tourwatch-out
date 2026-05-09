@@ -6,7 +6,7 @@ import toast from "react-hot-toast";
 import Topbar from "../components/header/Header";
 import Offcanvas from "../components/header/Offcanvas";
 import NewFooter from "../components/footer/NewFooter";
-import { getUser, getToken } from "../utils/userAuth";
+import { getUser } from "../utils/userAuth";
 
 function fmt(n) {
   const num = Number(n);
