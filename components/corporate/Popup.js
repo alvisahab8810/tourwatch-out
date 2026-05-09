@@ -355,7 +355,6 @@ export default function Popup() {
 
           .rop-banner-inner img{
           width: 100%!important;}
-        }
 
         .rop-input {
             padding: 10px 15px!important;

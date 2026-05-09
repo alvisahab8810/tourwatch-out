@@ -26,7 +26,8 @@
       "Bash(node -e \"const {v4} = require\\('uuid'\\); console.log\\(v4\\(\\)\\)\")",
       "Bash(node -e \"require\\('react-hot-toast'\\); console.log\\('ok'\\)\")",
       "Bash(node -e \"const m = require\\('mongoose'\\); console.log\\(m.version\\)\")",
-      "Bash(grep -n \"\\\\.bk-sidebar {\" \"d:\\\\\\\\tourwatch-out\\\\\\\\public\\\\\\\\assets\\\\\\\\css\\\\\\\\backend.css\")"
+      "Bash(grep -n \"\\\\.bk-sidebar {\" \"d:\\\\\\\\tourwatch-out\\\\\\\\public\\\\\\\\assets\\\\\\\\css\\\\\\\\backend.css\")",
+      "Bash(Select-Object -Last 10)"
     ]
   }
 }

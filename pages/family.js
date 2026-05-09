@@ -148,11 +148,11 @@ export default function FamilyPackages({ packages = [], initialTab = "", destNam
 
       {/* Full-width hero banner */}
       <div className="packages-hero-area">
-        <img
+        {/* <img
           src="/assets/images/family/hero-banner.webp"
           alt="Family Packages"
           style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-        />
+        /> */}
       </div>
 
       <div className="package-details-page">

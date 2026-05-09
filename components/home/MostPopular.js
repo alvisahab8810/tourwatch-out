@@ -217,7 +217,7 @@ export default function MostPopular() {
   }, []);
 
   return (
-    <>
+    <div className="most-popular-section">
       <section className="international-dest national-dest">
         <div className="mini-container1">
           <div className="explore-row">
@@ -236,7 +236,7 @@ export default function MostPopular() {
             pagination={{ clickable: true, el: ".swiper-pagination" }}
             navigation={{ nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" }}
             breakpoints={{
-              240: { centeredSlides: true, slidesPerView: 1.2, spaceBetween: 10 },
+              240: { centeredSlides: true, slidesPerView: 1, spaceBetween: 10 },
               768: { slidesPerView: 2.5, spaceBetween: 10 },
               1024: { slidesPerView: 3.2, spaceBetween: 20 },
             }}
@@ -251,6 +251,6 @@ export default function MostPopular() {
           </Swiper>
         </div>
       </section>
-    </>
+    </div>
   );
 }

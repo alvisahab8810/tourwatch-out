@@ -87,46 +87,46 @@ export default function Hero() {
               Request A Call back
             </button>
           </div>
-          <div class="stats-container">
-          <div class="stat-item">
-            <div class="stat-icon">
+          <div className="stats-container">
+          <div className="stat-item">
+            <div className="stat-icon">
               <img src="/assets/images/icons/home/icon1.svg" alt="Experience icon"/>
             </div>
-            <div class="stat-content">
+            <div className="stat-content">
               <h3>10+</h3>
               <p>Years of Expertise</p>
             </div>
           </div>
-          <div class="stat-item">
-            <div class="stat-icon">
+          <div className="stat-item">
+            <div className="stat-icon">
               <img src="/assets/images/icons/home/icon2.svg" alt="Clients icon"/>
             </div>
-            <div class="stat-content">
+            <div className="stat-content">
               <h3>5000+</h3>
               <p>Happy Clients</p>
             </div>
           </div>
-          <div class="stat-item">
-            <div class="stat-icon">
+          <div className="stat-item">
+            <div className="stat-icon">
               <img src="/assets/images/icons/home/icon3.svg" alt="Hotels icon"/>
             </div>
-            <div class="stat-content">
+            <div className="stat-content">
               <h3>500+</h3>
               <p>Hotel Collaboration</p>
             </div>
           </div>
-          <div class="stat-item">
-            <div class="stat-icon">
+          <div className="stat-item">
+            <div className="stat-icon">
               <img src="/assets/images/icons/home/icon4.svg" alt="Destinations icon"/>
             </div>
-            <div class="stat-content">
+            <div className="stat-content">
               <h3>50+</h3>
               <p>Destinations</p>
             </div>
           </div>
-          <div class="stat-item mobile-none">
+          <div className="stat-item mobile-none">
             <img src="/assets/images/icons/home/review.svg" alt="Google Reviews" />
-            <div class="stat-content">
+            <div className="stat-content">
               <h3>4.9 Reviews</h3>
               <p>Customer  Reviews</p>
             </div>

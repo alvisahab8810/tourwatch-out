@@ -460,7 +460,7 @@ right: 0;
 @media(max-width:760px){
 
     .dyna-destination-pages .dubai-hero {
-    background-image: url(../images/dubai/destination-mobile.webp) !important;
+    /* background-image: url(../images/dubai/destination-mobile.webp) !important; */
 }
 
     .header-updated {
@@ -1175,14 +1175,16 @@ color: #667085;
 /* ============================================== Contact Mobile Banner ======================================= */
 
 .contact-hero {
-    background-image: url(../images/hero/contact-mobile.webp);
+    /* background-image: url(../images/hero/contact-mobile.webp); */
     width: 100%;
     background-size: cover;
     padding-bottom: 100px;
     padding-top: 100px;
     background-position: center;
 }
-
+.contact-hero-title {
+    color:#fff!important;
+}
 .contact-form-section .flex-wrap-bx{
  flex-wrap: wrap-reverse;
 }

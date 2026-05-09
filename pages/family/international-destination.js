@@ -8,116 +8,44 @@ import Blogs from "../../components/home/Blogs";
 import Popup from "../../components/corporate/Popup";
 import NewFooter from "../../components/footer/NewFooter";
 
-const AMENITY_ICONS = {
-  Meals:            "/assets/images/icons/itinerary/icon1.svg",
-  Hotel:            "/assets/images/icons/itinerary/icon2.svg",
-  Sightseeing:      "/assets/images/icons/itinerary/icon3.svg",
-  WiFi:             "/assets/images/icons/itinerary/icon4.svg",
-  Transport:        "/assets/images/icons/itinerary/icon5.svg",
-  "Local Guide":    "/assets/images/icons/itinerary/icon6.svg",
-  "Safe to Travel": "/assets/images/icons/itinerary/icon7.svg",
-  "DJ Night":       "/assets/images/icons/itinerary/icon8.svg",
-};
-
 function fmt(n) {
+  if (!n) return null;
   return `₹${Number(n).toLocaleString("en-IN")}`;
 }
 
-function truncate(name) {
-  const words = (name || "").split(" ");
-  return words.length > 2 ? words.slice(0, 2).join(" ") + "..." : words.join(" ");
-}
-
-function PackageCard({ pkg }) {
-  const href        = pkg.destination?.toLowerCase() === "dubai"
-    ? `/dubai/dubai-family?tab=${pkg.packageSubtype?.toLowerCase()}`
-    : `/destination/${pkg.destSlug}/package/${pkg.id}`;
-  const image       = pkg.featureImage?.src || pkg.webBanner?.src || "/assets/images/i-destination/dubai.webp";
-  const hasDiscount = pkg.basePrice && pkg.finalPrice && pkg.basePrice !== pkg.finalPrice;
-  const highlights  = pkg.destinationHighlights || "";
+function DestCard({ d }) {
+  const image = d.mainImage?.src || d.images?.Family?.Economy?.src || "/assets/images/i-destination/dubai.webp";
+  const price = d.startingPrice ? fmt(d.startingPrice) : null;
+  const href  = `/destination/${d.slug}`;
 
   return (
-    <div className="new-desti-card">
-      <Link href={href}>
-        <img
-          src={image}
-          alt={pkg.webBanner?.alt || pkg.packageName}
-          loading="lazy"
-          width="400"
-          height="284"
-          style={{ width: "100%", height: 284, objectFit: "cover" }}
-        />
-      </Link>
-
-      <div className="p-4">
-        <div className="header">
-          <h2>{truncate(pkg.packageName || pkg.destination)}</h2>
-          <div className="share-area">
-            <span className="duration-badge">{pkg.duration}</span>
-            <Link href={href}>
-              <img src="/assets/images/icons/share.svg" alt="share" />
-            </Link>
-          </div>
+    <Link href={href} className="dest-slide-card">
+      <div className="dest-slide-img">
+        <img src={image} alt={d.mainImage?.alt || d.name || d.title} loading="lazy" />
+        <div className="dest-slide-overlay">
+          <h3 className="dest-slide-name">{d.name || d.title}</h3>
+          {price && (
+            <p className="dest-slide-price">
+              Starting from <br />
+              <span className="destination-card-price"><strong>{price}</strong></span>
+            </p>
+          )}
         </div>
-
-        {highlights && (
-          <div className="location">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM12 11.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z" />
-            </svg>
-            <span>{highlights.slice(0, 100)}{highlights.length > 100 ? "…" : ""}</span>
-          </div>
-        )}
-
-        {Array.isArray(pkg.amenities) && pkg.amenities.length > 0 && (
-          <div className="icons" aria-label="Travel amenities">
-            <ul className="amenities-icons">
-              {pkg.amenities.map((a, i) => {
-                const name = typeof a === "string" ? a : a?.name;
-                const icon = (typeof a === "object" && a?.icon) || AMENITY_ICONS[name];
-                return icon ? (
-                  <li key={i}><img src={icon} alt={name} title={name} /></li>
-                ) : null;
-              })}
-            </ul>
-          </div>
-        )}
-
-        <div className="price-section">
-          <div className="price-info">
-            {hasDiscount && (
-              <p className="old-price">Starting from <span className="oldcut">{fmt(pkg.basePrice)}</span></p>
-            )}
-            <p className="new-price">{fmt(pkg.finalPrice || pkg.basePrice)}</p>
-            <p className="price-desc">{pkg.priceType || "per person on twin sharing"}</p>
-          </div>
-          <div className="contact-icons">
-            <Link href="tel:+918882701800">
-              <img src="/assets/images/hero/icons/call.svg" alt="Call" className="contact-icon" />
-            </Link>
-            <Link href="https://wa.link/pshqg5">
-              <img src="/assets/images/hero/icons/whatsapp.svg" alt="WhatsApp" className="contact-icon" />
-            </Link>
-          </div>
-        </div>
-        <Link href={href} className="package-button" style={{ display: "block", textAlign: "center", textDecoration: "none" }}>
-          View Package
-        </Link>
       </div>
-    </div>
+    </Link>
   );
 }
 
-export default function InternationalDestinationPage({ packages = [] }) {
+export default function InternationalDestinationPage({ destinations = [] }) {
   return (
-    <div className="dubai-family-package  national-pages">
+    <div className="dubai-family-package national-pages">
       <Topbar />
       <Offcanvas />
 
       <div className="packages-hero-area">
         <img
           src="/assets/images/family/inter-national-hero.webp"
-          alt="International Packages"
+          alt="International Destinations"
           style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
         />
       </div>
@@ -133,15 +61,15 @@ export default function InternationalDestinationPage({ packages = [] }) {
               <p className="section-subtitle">Find Your perfect International Destination</p>
             </div>
 
-            {packages.length > 0 ? (
+            {destinations.length > 0 ? (
               <div className="national-list-bx">
-                {packages.map(pkg => (
-                  <PackageCard key={pkg.id} pkg={pkg} />
+                {destinations.map(d => (
+                  <DestCard key={d.id || d.slug} d={d} />
                 ))}
               </div>
             ) : (
               <p style={{ textAlign: "center", padding: "3rem", color: "#888" }}>
-                No packages available yet.
+                No destinations available yet.
               </p>
             )}
 
@@ -159,33 +87,28 @@ export default function InternationalDestinationPage({ packages = [] }) {
 }
 
 export async function getServerSideProps() {
-  const connectDB  = require("../../utils/mongodb").default;
-  const Package    = require("../../models/Package").default;
   const { readAll: readDests } = require("../../utils/destStore");
+  const connectDB = require("../../utils/mongodb").default;
+  const Package   = require("../../models/Package").default;
 
   await connectDB();
 
   const allDests = readDests();
-  const intlNames = allDests
-    .filter(d => d.type === "international" && d.status === "Active")
-    .map(d => d.name || d.title)
-    .filter(Boolean);
+  const intlDests = allDests.filter(d => d.type === "international" && d.status === "Active");
 
-  const slugMap = {};
-  allDests.forEach(d => {
-    slugMap[(d.name || d.title || "").toLowerCase()] = d.slug;
+  const pkgsRaw = await Package.find({ status: { $regex: /^active$/i } }).lean();
+
+  const priceMap = {};
+  pkgsRaw.forEach(p => {
+    const price = Number(p.finalPrice || p.basePrice || 0);
+    const key   = p.destination;
+    if (key && (!priceMap[key] || price < priceMap[key])) priceMap[key] = price;
   });
 
-  const raw = await Package.find({
-    destination: { $in: intlNames },
-    status:      { $regex: /^active$/i },
-  }).sort({ createdAt: 1 }).lean();
-
-  const packages = raw.map(p => ({
-    ...p,
-    id:       p._id,
-    destSlug: slugMap[p.destination?.toLowerCase()] || p.destination?.toLowerCase().replace(/\s+/g, "-") || "",
+  const destinations = intlDests.map(d => ({
+    ...d,
+    startingPrice: priceMap[d.name] || priceMap[d.title] || null,
   }));
 
-  return { props: { packages: JSON.parse(JSON.stringify(packages)) } };
+  return { props: { destinations: JSON.parse(JSON.stringify(destinations)) } };
 }

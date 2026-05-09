@@ -3,6 +3,7 @@ import {
   MdDashboard, MdLocationOn, MdApps, MdArticle, MdHelpOutline,
   MdPeople, MdAutorenew, MdNotificationsNone, MdStore,
   MdConfirmationNumber, MdReceipt, MdLogout, MdSmartButton, MdComment, MdStar,
+  MdManageAccounts,
 } from "react-icons/md";
 import { logout } from "../../utils/voucherAuth";
 
@@ -15,6 +16,7 @@ const NAV = [
   { label: "Most Popular", Icon: MdStar,              href: "/dashboard/popular" },
   // { label: "Robot.txt",   Icon: MdSmartButton,        href: "/dashboard/robots" },
   { label: "Faq's",       Icon: MdHelpOutline,        href: "/dashboard/faqs" },
+  { label: "Users",       Icon: MdManageAccounts,     href: "/dashboard/users" },
 ];
 
 const CRM = [

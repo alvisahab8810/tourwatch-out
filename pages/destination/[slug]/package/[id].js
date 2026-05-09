@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import Head from "next/head";
+import { useRouter } from "next/router";
+import toast from "react-hot-toast";
 import Topbar from "../../../../components/header/Header";
 import Offcanvas from "../../../../components/header/Offcanvas";
 import Popup from "../../../../components/corporate/Popup";
@@ -81,9 +83,23 @@ function AccordionSection({ title, open, onToggle, children }) {
 export default function PackageDetailPage({ pkg, dest }) {
   const [openDay, setOpenDay]       = useState(null);
   const [openSection, setOpenSection] = useState(null);
+  const router = useRouter();
 
   function toggleSection(key) {
     setOpenSection(prev => prev === key ? null : key);
+  }
+
+  function handlePayClick(e) {
+    e.preventDefault();
+    // isLoggedIn reads localStorage — must be client-side only
+    const token = typeof window !== "undefined" ? localStorage.getItem("tw_user_token") : null;
+    if (!token) {
+      toast.error("Please login to proceed with booking.", { duration: 3000 });
+      const dest_url = encodeURIComponent(`/checkout?packageId=${pkg.id}&slug=${dest.slug}`);
+      router.push(`/login?redirect=${dest_url}`);
+      return;
+    }
+    router.push(`/checkout?packageId=${pkg.id}&slug=${dest.slug}`);
   }
 
   const destName = dest.name || dest.title;
@@ -188,8 +204,8 @@ export default function PackageDetailPage({ pkg, dest }) {
                     </div>
                     <div className="mob-pc-actions">
                       <a href="#cancellation-policy" className="mob-cancel-link">*Cancellation Policy</a>
-                      <button className="pc-cta mob-pc-cta" data-bs-toggle="modal" data-bs-target="#exampleModalCenter">
-                        Request A Call Back
+                      <button className="pc-cta-pay mob" onClick={handlePayClick}>
+                        Proceed to Payment
                       </button>
                     </div>
                   </div>
@@ -349,8 +365,9 @@ export default function PackageDetailPage({ pkg, dest }) {
                         <img src={pkg.priceImage?.src || "/assets/images/dubai/itinerary/it-banner.png"} alt="package" />
                       </div>
                     </div>
-                    <button className="pc-cta" data-bs-toggle="modal"
-                    data-bs-target="#exampleModalCenter">Request A Callback</button>
+                    <button className="pc-cta-pay" onClick={handlePayClick}>
+                      Proceed to Payment
+                    </button>
                   </div>
 
                   <div className="enquiry-card mobile-none">

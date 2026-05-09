@@ -144,11 +144,11 @@ export default function CouplePackages({ packages = [], initialTab = "", destNam
 
       {/* Hero banner */}
       <div className="packages-hero-area">
-        <img
+        {/* <img
           src="/assets/images/family/inter-national-hero.webp"
           alt="Couple Packages"
           style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-        />
+        /> */}
       </div>
 
       <div className="package-details-page">

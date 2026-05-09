@@ -159,8 +159,11 @@ export default function ContactForm() {
       <style jsx>{`
         .cf-section {
           background: #fff;
-          padding: 80px 0 100px;
+          padding: 80px 0 200px;
         }
+
+        .cf-right-title span{
+        color: #F74C4D;}
         .cf-grid {
           display: grid;
           grid-template-columns: 1fr 1fr;
@@ -170,26 +173,27 @@ export default function ContactForm() {
 
         /* ── Left ── */
         .cf-tag {
-          display: inline-block;
-          font-size: 12px;
-          font-weight: 700;
-          color: #ee4c49;
-          letter-spacing: 1.5px;
-          margin-bottom: 16px;
+       display: inline-block;
+    font-size: 20px;
+    font-weight: bold;
+    line-height: 24px;
+    color: #F74C4D;
+    letter-spacing: 1.5px;
+    margin-bottom: 16px;
         }
         .cf-heading-box {
-          border: 1.5px dashed #a8c4e0;
-          border-radius: 10px;
-          padding: 18px 22px;
+          // border: 1.5px dashed #a8c4e0;
+          // border-radius: 10px;
+          // padding: 18px 22px;
           margin-bottom: 32px;
-          display: inline-block;
         }
         .cf-heading {
-          font-size: 22px;
-          font-weight: 700;
-          color: #1a1a2e;
-          line-height: 1.45;
-          margin: 0;
+              font-size: 45px;
+    font-weight: 500;
+    color: #1a1a2e;
+    line-height: 42px;
+    margin: 0;
+    font-family: 'Erstoria';
         }
         .cf-form {
           display: flex;
@@ -225,7 +229,7 @@ export default function ContactForm() {
         }
         .cf-btn {
           align-self: flex-start;
-          background: #ee4c49;
+          background: #F74C4D;
           color: #fff;
           border: none;
           border-radius: 50px;
@@ -235,7 +239,7 @@ export default function ContactForm() {
           cursor: pointer;
           transition: background 0.2s;
         }
-        .cf-btn:hover { background: #d63b38; }
+        .cf-btn:hover { background: #F74C4D; }
         .cf-btn:disabled { opacity: 0.7; cursor: not-allowed; }
 
         /* ── Right ── */
@@ -243,20 +247,25 @@ export default function ContactForm() {
           padding-top: 8px;
         }
         .cf-right-title {
-          font-size: 30px;
-          font-weight: 700;
-          color: #1a1a2e;
-          line-height: 1.35;
-          margin-bottom: 32px;
-        }
+    font-size: 45px;
+    font-weight: 500;
+    color: #1a1a2e;
+    line-height: 41px;
+    margin-bottom: 30px;
+    padding-top: 32px;
+    font-family: "Erstoria";
+}
+        
+
+        
         .cf-brand {
-          color: #ee4c49;
+          color: #F74C4D!important;
         }
         .cf-info-item {
           margin-bottom: 4px;
         }
         .cf-info-label {
-          font-size: 15px;
+          font-size: 17px;
           font-weight: 700;
           color: #1a1a2e;
           margin: 0 0 4px;
@@ -271,7 +280,7 @@ export default function ContactForm() {
           color: #4b5563;
           text-decoration: none;
         }
-        .cf-info-text a:hover { color: #ee4c49; }
+        .cf-info-text a:hover { color: #F74C4D; }
         .cf-divider {
           height: 1px;
           background: #e5e7eb;
@@ -286,7 +295,7 @@ export default function ContactForm() {
           width: 38px;
           height: 38px;
           border-radius: 50%;
-          background: #ee4c49;
+          background: #F74C4D;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -294,12 +303,41 @@ export default function ContactForm() {
           font-size: 18px;
           transition: background 0.2s;
         }
-        .cf-social-icon:hover { background: #d63b38; }
+        .cf-social-icon:hover { background: #F74C4D; }
 
         @media (max-width: 768px) {
+
+        .cf-btn {
+    padding: 10px 36px;
+    font-size: 13px;
+      }
+
+        .cf-field input{
+    padding: 10px 16px;
+    font-size: 12px;
+
+}
+
+        .cf-field textarea{
+    font-size: 12px;
+
+}
+        .cf-heading {
+    font-size: 24px;
+    font-weight: bold;
+    line-height: 24px;
+}
+
+        .cf-section{
+    padding: 50px 0 100px;
+}
+
+        .cf-tag{
+            margin-bottom: 5px;
+        font-size: 18px;}
           .cf-grid {
             grid-template-columns: 1fr;
-            gap: 40px;
+            gap: 0px;
           }
           .cf-row {
             grid-template-columns: 1fr;

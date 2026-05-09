@@ -76,9 +76,9 @@ export default function IndexPage({ destinations = [] }) {
        
 
         <div className="desktop-none mobile-g-reviews">
-           <div class="stat-item">
+           <div className="stat-item">
             <img src="/assets/images/icons/home/review-mob.svg" alt="Google Reviews" />
-            <div class="stat-content">
+            <div className="stat-content">
               <h3>4.9 Google Reviews</h3>
               <p>675 Google Reviews</p>
             </div>

@@ -98,7 +98,7 @@ export default function NewFooter() {
           </Link>
         </div>
         
-        <p className="footer-legal">Copyright © 2025 <span className="brand">Tourwatchout.</span> All Rights Reserved</p>
+        {/* <p className="footer-legal">Copyright © 2025 <span className="brand">Tourwatchout.</span> All Rights Reserved</p> */}
         <p className="footer-disclaimer">The content and images used on this site are copyright protected and copyrights vests with the respective Owners. The usage Of the content and images on this website is intended to promote the works and no endorsement Of the artist Shall be implied. Unauthorized use is prohbited and punishable by law.</p>
         
         <div className="footer-policies">

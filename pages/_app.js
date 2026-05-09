@@ -69,6 +69,7 @@
 
 import Head from "next/head";
 import Script from "next/script";
+import { Toaster } from "react-hot-toast";
 
 function MyApp({ Component, pageProps }) {
   const getLayout = Component.getLayout ?? ((page) => page);
@@ -77,6 +78,8 @@ function MyApp({ Component, pageProps }) {
       <Head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+        
 
         <link rel="preconnect" href="https://fonts.googleapis.com"></link>
         <link
@@ -122,7 +125,14 @@ function MyApp({ Component, pageProps }) {
           href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
         ></link>
 
-        <title>TourWatchOut</title>
+
+        <link rel="preconnect" href="https://fonts.googleapis.com"/>
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous"/>
+        <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet"/>
+
+
+
+        <title>Tourwatchout</title>
       </Head>
 
       {/* Scripts */}
@@ -134,6 +144,15 @@ function MyApp({ Component, pageProps }) {
         strategy="lazyOnload"
       />
 
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 3500,
+          style: { fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: 500 },
+          success: { style: { background: "#fff", border: "1.5px solid #22c55e", color: "#166534" }, iconTheme: { primary: "#22c55e", secondary: "#fff" } },
+          error:   { style: { background: "#fff", border: "1.5px solid #ef4444", color: "#991b1b" }, iconTheme: { primary: "#ef4444", secondary: "#fff" } },
+        }}
+      />
       {getLayout(<Component {...pageProps} />)}
     </>
   );

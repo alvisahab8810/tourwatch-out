@@ -1578,7 +1578,7 @@
   display: inline-block;
   background: #F2F4FC;
   color: #373B51;
-  background: linear-gradient(87deg, #FFFFFF 0%, #C4E2FF 100%);
+  /* background: linear-gradient(87deg, #FFFFFF 0%, #C4E2FF 100%); */
   padding: 12px 25px;
   border-radius: 0px 50px 50px 0px;
   font-weight: 600;
@@ -2067,7 +2067,7 @@ img.top-bottom-img {
 }
 .package-details-tabs .it-day-pill {
     color: #373B51;
-    background: linear-gradient(87deg, #FFFFFF 0%, #C4E2FF 100%);
+       background: #F2F4FC;
     padding: 8px 12px;
     border-radius: 0px 20px 20px 0px;
     font-weight: 700;
@@ -2331,6 +2331,7 @@ span.chip.left > img {
 .prices-row {
     display: flex;
     justify-content: space-between;
+    margin-bottom: 10px;  
 }
 
 .dubai-family-package .light-pages{
@@ -2382,7 +2383,9 @@ button.pdt-tab img {
   padding-top: 20px;;
 }
 .dyna-destination-pages .dubai-hero {
-    background-image: url(../images/dubai/dubai-hero.webp)!important;
+    background-image: url(../images/kashmir/kashmir.webp)!important;
+    background-size: cover;
+    background-position: bottom;
 }
 
 .desk-logo img{
@@ -2400,3 +2403,35 @@ button.pdt-tab img {
    .dyna-destination-pages .hero-subtitle {
     margin-bottom: 0!important;
     }
+
+
+
+
+
+
+
+
+    .dubai-hero {
+  position: relative;
+  background-size: cover !important;
+  background-position: center !important;
+  overflow: hidden;
+}
+
+.dubai-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+
+
+  
+
+background: linear-gradient(to bottom, rgb(0 0 0 / 65%) 0%, rgb(0 0 0 / 40%) 30%, rgb(0 0 0 / 39%) 55%, rgb(0 0 0) 100%);
+}
+
+/* Keep content above gradient */
+.dubai-hero > * {
+  position: relative;
+  z-index: 2;
+}
