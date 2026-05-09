@@ -79,7 +79,7 @@ function Steps({ current }) {
 }
 
 // ── Package summary card ──────────────────────────────────────
-function PackageSummary({ pkg, adults, children, travelDate, fixedPax }) {
+function PackageSummary({ pkg, adults, childCount, travelDate, fixedPax }) {
   const price = Number(pkg.finalPrice || pkg.basePrice || 0);
   // Fixed-pax: the listed price is the total for the whole group — never multiply
   const total = fixedPax ? price : price * (Number(adults) || 1);
@@ -108,10 +108,10 @@ function PackageSummary({ pkg, adults, children, travelDate, fixedPax }) {
             <span>Adults</span>
             <strong>{adults || 1}</strong>
           </div>
-          {Number(children) > 0 && (
+          {Number(childCount) > 0 && (
             <div className="ck-summary-row">
               <span>Children</span>
-              <strong>{children}</strong>
+              <strong>{childCount}</strong>
             </div>
           )}
         </div>
@@ -588,7 +588,7 @@ export default function CheckoutPage() {
 
             {/* ── Right: Summary ── */}
             <div className="ck-right">
-              <PackageSummary pkg={pkg} adults={adults} children={children} travelDate={travelDate} fixedPax={fixedPax} />
+              <PackageSummary pkg={pkg} adults={adults} childCount={children} travelDate={travelDate} fixedPax={fixedPax} />
 
               <div className="ck-help-card">
                 <p className="ck-help-title">Need Help?</p>
