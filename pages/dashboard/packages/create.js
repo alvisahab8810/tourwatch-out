@@ -8,6 +8,9 @@ import {
 } from "react-icons/md";
 import DashboardLayout, { useOpenSidebar } from "../../../components/backend/DashboardLayout";
 
+// Add this line alongside your other component imports
+import RichTextEditor from "../../../components/backend/RichTextEditor";
+
 /* ── Constants ── */
 const PKG_TYPES    = ["Family", "Couple", "Corporate", "Honeymoon", "Group"];
 const PKG_SUBTYPES = ["Economy", "Deluxe", "Premium"];
@@ -702,7 +705,7 @@ export default function CreatePackage() {
             </div> */}
 
             {/* ── Section 9: Inclusions / Exclusions ── */}
-            <div className="bk-form-section">
+            {/* <div className="bk-form-section">
               <h2 className="bk-section-title">Inclusions &amp; Exclusions</h2>
               <div className="bk-form-row bk-form-row-2">
                 <div className="bk-form-group">
@@ -714,6 +717,31 @@ export default function CreatePackage() {
                   <label className="bk-form-label">Exclusions</label>
                   <textarea className="bk-textarea" rows={6} placeholder="• International flights&#10;• Visa charges"
                     value={form.exclusions} onChange={e => f("exclusions",e.target.value)} />
+                </div>
+              </div>
+            </div> */}
+
+
+
+            {/* ── Section 9: Inclusions / Exclusions ── */}
+            <div className="bk-form-section">
+              <h2 className="bk-section-title">Inclusions &amp; Exclusions</h2>
+              <div className="bk-form-row bk-form-row-2">
+                <div className="bk-form-group">
+                  <RichTextEditor
+                    label="Inclusions"
+                    value={form.inclusions}
+                    onChange={val => f("inclusions", val)}
+                    rows={8}
+                  />
+                </div>
+                <div className="bk-form-group">
+                  <RichTextEditor
+                    label="Exclusions"
+                    value={form.exclusions}
+                    onChange={val => f("exclusions", val)}
+                    rows={8}
+                  />
                 </div>
               </div>
             </div>

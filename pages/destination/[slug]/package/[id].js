@@ -272,7 +272,7 @@ export default function PackageDetailPage({ pkg, dest }) {
               <div className="dubai-family-notes">
                 <div className="dfn-accordion">
 
-                  {(pkg.inclusions || pkg.exclusions) && (
+                  {/* {(pkg.inclusions || pkg.exclusions) && (
                     <AccordionSection title="Inclusions &amp; Exclusions" open={openSection === "inclusions"} onToggle={() => toggleSection("inclusions")}>
                       {pkg.inclusions && (
                         <><h4 className="dfn-sub-heading">Inclusions</h4><BulletText text={pkg.inclusions} /></>
@@ -281,7 +281,31 @@ export default function PackageDetailPage({ pkg, dest }) {
                         <><h4 className="dfn-sub-heading">Exclusions</h4><BulletText text={pkg.exclusions} /></>
                       )}
                     </AccordionSection>
-                  )}
+                  )} */}
+
+
+                  {(pkg.inclusions || pkg.exclusions) && (
+  <AccordionSection title="Inclusions &amp; Exclusions" open={openSection === "inclusions"} onToggle={() => toggleSection("inclusions")}>
+    {pkg.inclusions && (
+      <>
+        <h4 className="dfn-sub-heading">Inclusions</h4>
+        <div
+          className="dfn-rich-text"
+          dangerouslySetInnerHTML={{ __html: pkg.inclusions }}
+        />
+      </>
+    )}
+    {pkg.exclusions && (
+      <>
+        <h4 className="dfn-sub-heading">Exclusions</h4>
+        <div
+          className="dfn-rich-text"
+          dangerouslySetInnerHTML={{ __html: pkg.exclusions }}
+        />
+      </>
+    )}
+  </AccordionSection>
+)}
 
                   {pkg.aboutText && (
                     <AccordionSection title={`About ${destName}`} open={openSection === "about"} onToggle={() => toggleSection("about")}>
