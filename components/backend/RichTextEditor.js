@@ -2,14 +2,15 @@
 import { useMemo, useRef, forwardRef } from "react";
 import dynamic from "next/dynamic";
 
-// CSS must be imported inside the dynamic import to avoid SSR path errors
 const ReactQuill = dynamic(
   async () => {
     const { default: RQ } = await import("react-quill");
     await import("react-quill/dist/quill.snow.css");
-    return forwardRef(({ forwardedRef, ...props }, _) => (
+    const QuillWrapper = forwardRef(({ forwardedRef, ...props }, _) => (
       <RQ ref={forwardedRef} {...props} />
     ));
+    QuillWrapper.displayName = "QuillWrapper";
+    return QuillWrapper;
   },
   { ssr: false }
 );
