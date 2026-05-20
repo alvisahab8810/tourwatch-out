@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import Head from "next/head";
 import {
   MdMenu, MdKeyboardArrowDown, MdPeople, MdSearch,
-  MdAdd, MdEdit, MdDelete, MdChevronLeft, MdChevronRight,
+  MdAdd, MdEdit, MdDelete, MdChevronLeft, MdChevronRight, MdUpload,
 } from "react-icons/md";
 import DashboardLayout, { useOpenSidebar } from "../../components/backend/DashboardLayout";
 
@@ -85,6 +85,12 @@ export default function PackagesList() {
                   onChange={e => { setSearch(e.target.value); setPage(1); }}
                 />
               </div>
+              <button
+                className="bk-import-btn"
+                onClick={() => router.push("/dashboard/packages/import")}
+              >
+                <MdUpload size={17} /> Import Excel
+              </button>
               <button
                 className="bk-add-btn"
                 onClick={() => router.push("/dashboard/packages/create")}

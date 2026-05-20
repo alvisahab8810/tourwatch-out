@@ -5,6 +5,8 @@ const videoSources = [
   "/assets/images/instagram/video2.mp4",
   "/assets/images/instagram/video1.mp4",
   "/assets/images/instagram/video3.mp4",
+  "/assets/images/instagram/video4.mp4",
+
 ];
 
 export default function WhatMakeus() {
@@ -125,7 +127,7 @@ export default function WhatMakeus() {
           </div>
 
           {/* CARD 4 */}
-          {/* <div className="feature-card">
+          <div className="feature-card">
             <div className="feature-image">
               <video
                 ref={(el) => (videoRefs.current[3] = el)}
@@ -151,7 +153,7 @@ export default function WhatMakeus() {
                 <p>Global Destinations</p>
               </div>
             </div>
-          </div> */}
+          </div>
 
         </div>
       </div>
