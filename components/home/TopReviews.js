@@ -10,13 +10,13 @@ export default function TopReviews() {
   // Read More Function
   const ReviewText = ({ text }) => {
     const [expanded, setExpanded] = useState(false);
-    const shortText = text.substring(0, 170);
+    const shortText = text.substring(0, 130);
 
     return (
       <p className="review-text">
-        {expanded ? text : shortText + (text.length > 170 ? "..." : "")}
+        {expanded ? text : shortText + (text.length > 130 ? "..." : "")}
 
-        {text.length > 170 && (
+        {text.length > 130 && (
           <span
             className="read-more"
             onClick={() => setExpanded(!expanded)}
@@ -76,7 +76,7 @@ export default function TopReviews() {
                 loop={true}
                 breakpoints={{
                   240: { slidesPerView: 1.1, spaceBetween: 15 },
-                  768: { slidesPerView: 2, spaceBetween: 20 },
+                  768: { slidesPerView: 3, spaceBetween: 20 },
                 }}
                 navigation={false}
                 //   pagination={{ clickable: true }}
@@ -156,7 +156,7 @@ export default function TopReviews() {
                           className="reviewer-avatar"
                         />
                         <div className="reviewer-details">
-                          <h4>ASHWANI KUMAR KUVIND</h4>
+                          <h4>ASHWANI KUMAR</h4>
                           <p>a month ago</p>
                         </div>
                       </div>
@@ -325,7 +325,7 @@ A big thank you to the TourWatchOut team for making our Goa tour so memorable. H
                           className="reviewer-avatar"
                         />
                         <div className="reviewer-details">
-                          <h4>CHANDAN CHATTRAJ</h4>
+                          <h4>CHANDAN..</h4>
                           <p>2 months ago</p>
                         </div>
                       </div>
@@ -355,7 +355,7 @@ A big thank you to the TourWatchOut team for making our Goa tour so memorable. H
                           className="reviewer-avatar"
                         />
                         <div className="reviewer-details">
-                          <h4>Rakesh Kumar Maurya</h4>
+                          <h4>Rakesh Kumar </h4>
                           <p>8 months ago</p>
                         </div>
                       </div>

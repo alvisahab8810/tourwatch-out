@@ -67,8 +67,8 @@ function isCellBold(cell) {
   if (cell.s?.font?.bold) return true;
   // Method 2: rich text XML contains a bold run marker
   if (typeof cell.r === "string" && /<b(\s|\/|>)/i.test(cell.r)) return true;
-  // Method 3: HTML rendering starts with <b> (partially bold cell)
-  if (typeof cell.h === "string" && /^\s*<b>/i.test(cell.h)) return true;
+  // Method 3: HTML rendering contains a bold tag anywhere (handles span-wrapped bold)
+  if (typeof cell.h === "string" && /<b(?:\s|>)/i.test(cell.h)) return true;
   return false;
 }
 
@@ -99,7 +99,8 @@ function getSectionMarker(text) {
   const norm = text.toUpperCase().replace(/\s+/g, "");
   if (norm === "INCLUSIONS") return "inclusions";
   if (norm === "EXCLUSIONS") return "exclusions";
-  if (norm.startsWith("ABOUTDESTINATION")) return "about";
+  // Matches "About Destination-", "About Kashmir-", "About Goa:", etc.
+  if (norm.startsWith("ABOUT")) return "about";
   return null;
 }
 
@@ -107,7 +108,7 @@ function getSectionMarker(text) {
 const NOISE_RE = [
   /^Price\s+Details\s*[:/]/i,
   /^(ECONOMY|DELUXE|PREMIUM)\s*[:/]/i,
-  /^(COST|PRICE|RATE)\s/i,
+  /^(COST|RATE)\s/i,
   /^\d{1,3},\d{3}/,
   /^Above\s+\d+/i,
   /^Add\s+including/i,
@@ -141,7 +142,8 @@ function extractPackageType(text) {
   return types.find(t => t.toLowerCase() === val.toLowerCase()) || val;
 }
 function extractSubtype(text) {
-  const m = text.match(/^Package\s+sub\s+type\s*[-:]\s*(.+)$/i);
+  // handles "Package sub type-", "Package subtype-", "Package Sub Type:"
+  const m = text.match(/^Package\s+sub\s*[_\s]?type\s*[-:]\s*(.+)$/i);
   if (!m) return null;
   const val = m[1].replace(/,\s*$/, "").trim();
   const subs = ["Economy", "Deluxe", "Premium"];
@@ -157,7 +159,8 @@ function extractDuration(text) {
   return parseDuration(m[1]) || null;
 }
 function extractDestHighlight(text) {
-  const m = text.match(/^Destination\s+[Hh]ighlight\s*[-:]\s*(.+)$/i);
+  // handles both "Destination Highlight-" and "Destination Highlights-"
+  const m = text.match(/^Destination\s+[Hh]ighlights?\s*[-:]\s*(.+)$/i);
   return m ? m[1].trim() : null;
 }
 function extractBasePrice(text) {
@@ -168,16 +171,22 @@ function extractFinalPrice(text) {
   const m = text.match(/^Final\s*[Pp]rice\s*[-:–\s]+([\d,]+)/i);
   return m ? m[1].replace(/,/g, "") : null;
 }
-function extractPriceType(text) {
-  const m = text.match(/^(per\b.+)$/i);
-  if (!m) return null;
-  const raw = m[1].trim();
+function normalizePriceType(raw) {
   if (/^per\s+couple$/i.test(raw)) return "Per Couple";
   if (/^per\s+person$/i.test(raw)) return "Per Person";
   if (/^per\s+group$/i.test(raw))  return "Per Group";
   if (/1\s+couple.*1\s+child.*below\s+5/i.test(raw)) return "01 Couple + 01 Child (below 5 years)";
   if (/1\s+couple.*1\s+child.*below\s+4/i.test(raw)) return "01 Couple + 01 Child (below 4 years) + 01 Child (below 10 years)";
   return raw;
+}
+function extractPriceType(text) {
+  // Format: "Price type- Per couple" or "Price Type: Per person"
+  const labeled = text.match(/^Price\s+[Tt]ype\s*[-:]\s*(.+)$/i);
+  if (labeled) return normalizePriceType(labeled[1].trim());
+  // Format: standalone "Per couple" / "Per person" line
+  const m = text.match(/^(per\b.+)$/i);
+  if (!m) return null;
+  return normalizePriceType(m[1].trim());
 }
 
 /* ── Apply one metadata line ─────────────────────────────── */

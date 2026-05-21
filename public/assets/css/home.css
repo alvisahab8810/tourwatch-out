@@ -556,7 +556,7 @@
     
     .reviews-summary {
       text-align: center;
-      width: 30%;
+      width: 20%;
     }
     
    .rating-display {
@@ -587,7 +587,7 @@
     
     .rating-text {
       font-size: 16px;
-      font-weight: 500;
+      font-weight: 800;
       line-height: 24px;
       color: #111;
       margin-bottom: 10px;
@@ -595,7 +595,7 @@
     
     @media (min-width: 768px) {
       .rating-text {
-        font-size: 18px;
+        font-size: 22px;
       }
     }
     
@@ -609,6 +609,9 @@
     @media (min-width: 768px) {
       .rating-source {
         font-size: 22px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
       }
     }
     
@@ -626,7 +629,7 @@
     @media (min-width: 768px) {
       .review-cards {
         overflow-x: visible;
-        width: 70%;
+        width: 80%;
       }
     }
     
@@ -634,7 +637,7 @@
       background-color: #ffffff;
       border: 1px solid #eff3ff;
       border-radius: 16px;
-      padding: 35px 25px;
+      padding: 20px 20px;
       /* min-width: 280px; */
       flex-shrink: 0;
     }
@@ -2453,4 +2456,14 @@ background: linear-gradient(to bottom, rgb(0 0 0 / 65%) 0%, rgb(0 0 0 / 40%) 30%
 
 .dubai-family-package .promo-section{
   margin:30px 0px!important;
+}
+
+
+.rating-source img {
+    width: 64px;
+    margin-left: 5px;
+}
+
+.family-packages .reviews-section {
+    padding-top: 50px;
 }
