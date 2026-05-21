@@ -710,7 +710,7 @@ section.google-reviews.desktop-none {
 .package-details-page{
         background: white;
     border-radius: 20px;
-    transform: translate(0px, -30px);
+    margin-top: -30px;
 }
 
 

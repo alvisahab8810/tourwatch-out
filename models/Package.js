@@ -10,6 +10,46 @@ const daySchema = new mongoose.Schema(
   { _id: false }
 );
 
+const staySchema = new mongoose.Schema({
+  vendorId:     String,
+  vendorName:   String,
+  roomCategory: String,
+  address:      String,
+  phone:        String,
+  price:        Number,
+  nights:       { type: Number, default: 1 },
+  rooms:        { type: Number, default: 1 },
+  gstPct:       { type: Number, default: 0 },
+  subTotal:     Number,
+  gstAmt:       Number,
+  total:        Number,
+}, { _id: false });
+
+const transferSchema = new mongoose.Schema({
+  vendorId:    String,
+  vendorName:  String,
+  vehicleType: String,
+  pricePerDay: Number,
+  days:        { type: Number, default: 1 },
+  gstPct:      { type: Number, default: 0 },
+  subTotal:    Number,
+  gstAmt:      Number,
+  total:       Number,
+  inclusions:  [String],
+}, { _id: false });
+
+const activityBookingSchema = new mongoose.Schema({
+  vendorId:       String,
+  vendorName:     String,
+  activityName:   String,
+  pricePerPerson: Number,
+  persons:        { type: Number, default: 1 },
+  gstPct:         { type: Number, default: 0 },
+  subTotal:       Number,
+  gstAmt:         Number,
+  total:          Number,
+}, { _id: false });
+
 const PackageSchema = new mongoose.Schema(
   {
     _id:                  { type: String },
@@ -43,6 +83,9 @@ const PackageSchema = new mongoose.Schema(
     advertisement:        { type: mongoose.Schema.Types.Mixed, default: {} },
     aboutImages:          [imageSchema],
     bucketImages:         [imageSchema],
+    stays:                [staySchema],
+    transfers:            [transferSchema],
+    activityBookings:     [activityBookingSchema],
     status:               { type: String, default: "Inactive" },
     popular:              { type: Boolean, default: false },
   },

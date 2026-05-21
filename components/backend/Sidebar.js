@@ -23,7 +23,7 @@ const CRM = [
   { label: "Leads",      Icon: MdPeople,             href: "#" },
   { label: "Follow Up",  Icon: MdAutorenew,          href: "#" },
   { label: "Reminder",   Icon: MdNotificationsNone,  href: "#" },
-  { label: "Vendors",    Icon: MdStore,              href: "#" },
+  { label: "Vendors",    Icon: MdStore,              href: "/dashboard/vendors" },
   { label: "Voucher",    Icon: MdConfirmationNumber, href: "/dashboard/vouchers" },
   { label: "Invoice",    Icon: MdReceipt,            href: "/dashboard/invoices" },
 ];

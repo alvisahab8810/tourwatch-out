@@ -986,9 +986,10 @@
   margin-bottom: 20px;
 }
 
-/* .bk-form-row-3 { grid-template-columns: 1fr 1fr 1fr; } */
-/* .bk-form-row-2 { grid-template-columns: 1fr 1fr; } */
+.bk-form-row-3 { grid-template-columns: 1fr 1fr 1fr; }
+.bk-form-row-2 { grid-template-columns: 1fr 1fr; }
 .bk-form-row-1 { grid-template-columns: 1fr; }
+.bk-form-row-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
 
 .bk-form-group {
   display: flex;
@@ -1178,12 +1179,14 @@
    RESPONSIVE — destination/form pages
    ================================================================ */
 @media (max-width: 900px) {
-  .bk-form-row-3 { grid-template-columns: 1fr 1fr; }
+  .bk-form-row-3,
+  .bk-form-row-4 { grid-template-columns: 1fr 1fr; }
   .bk-img-grid { grid-template-columns: 1fr 1fr; }
 }
 
 @media (max-width: 600px) {
   .bk-form-row-3,
+  .bk-form-row-4,
   .bk-form-row-2 { grid-template-columns: 1fr; }
   .bk-img-grid { grid-template-columns: 1fr; }
   .bk-topbar { flex-wrap: wrap; }
@@ -1358,6 +1361,47 @@
   cursor: pointer;
   font-family: 'Inter', sans-serif;
   margin-top: 4px;
+}
+
+/* Vendor row card (hotel / transfer entries in package create) */
+.bk-vendor-row-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin-bottom: 14px;
+  background: #fafafa;
+}
+.bk-vendor-row-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.bk-calc-field {
+  background: #f3f4f6;
+  color: #6b7280;
+  cursor: default;
+}
+.bk-calc-total {
+  background: #f0fdf4;
+  color: #15803d;
+  font-weight: 700;
+  cursor: default;
+}
+.bk-checkbox-row {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+.bk-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #374151;
+  cursor: pointer;
+  font-weight: 500;
 }
 
 /* About / Bucket 2-col image grid */

@@ -82,121 +82,125 @@ function fmt(n) {
   return `₹${Number(n).toLocaleString("en-IN")}`;
 }
 
-function getHref(pkg) {
-  if (pkg.destination?.toLowerCase() === "dubai") {
-    return `/dubai/dubai-family?tab=${(pkg.packageSubtype || "economy").toLowerCase()}`;
+function getCardHref(card) {
+  if (card.href) return card.href;
+  if (card.destination?.toLowerCase() === "dubai") {
+    return `/dubai/dubai-family?tab=${(card.packageSubtype || "economy").toLowerCase()}`;
   }
-  const slug = pkg.destination?.toLowerCase().replace(/\s+/g, "-") || "";
-  return `/destination/${slug}/package/${pkg.id}`;
+  const slug = card.destSlug || card.destination?.toLowerCase().replace(/\s+/g, "-") || "";
+  return `/destination/${slug}/package/${card.id || card._id}`;
 }
 
 function PackageCard({ card }) {
-  const href        = card.href || getHref(card);
-  const image       = card.image || card.featureImage?.src || card.webBanner?.src || "/assets/images/i-destination/dubai.webp";
-  const highlights  = card.highlights || card.destinationHighlights || "";
-  const hasDiscount = card.basePrice && card.finalPrice && String(card.basePrice) !== String(card.finalPrice);
-  const amenities   = Array.isArray(card.amenities) ? card.amenities : [];
+  const href = getCardHref(card);
 
-  const displayName = (() => {
-    const words = (card.name || card.packageName || card.destination || "").split(" ");
-    return words.length > 2 ? words.slice(0, 2).join(" ") + "..." : words.join(" ");
-  })();
+  /* images — handle both API shape (gallery/featureImage) and static shape (image) */
+  const galleryImgs = (card.gallery || [])
+    .filter(g => g?.src)
+    .map(g => ({ src: g.src, alt: g.alt || card.packageName || card.name }));
+
+  let images = galleryImgs;
+  if (!images.length) {
+    images = [
+      card.featureImage?.src ? { src: card.featureImage.src, alt: card.featureImage.alt || card.name } : null,
+      card.webBanner?.src    ? { src: card.webBanner.src,    alt: card.webBanner.alt    || card.name } : null,
+      card.image             ? { src: card.image,            alt: card.name }                         : null,
+    ].filter(Boolean);
+  }
+  if (!images.length) images.push({ src: "/assets/images/i-destination/dubai.webp", alt: card.name });
+
+  /* price */
+  const base    = Number(card.basePrice)  || 0;
+  const final   = Number(card.finalPrice) || base;
+  const discPct = base > final && base > 0 ? Math.round((base - final) / base * 100) : 0;
+
+  /* highlights — handle "• A • B" string or plain "A, B" string */
+  const highlightStr = card.destinationHighlights || card.highlights || "";
+  const bullets = highlightStr
+    .split(/[-,•]\s*/)
+    .map(h => h.trim())
+    .filter(Boolean);
+
+  const displayName = card.packageName || card.name || card.destination || "";
+  const amenities   = Array.isArray(card.amenities) ? card.amenities : [];
 
   return (
     <div className="new-desti-card">
-      <Link href={href}>
-        <img
-          src={image}
-          alt={card.name || card.packageName}
-          loading="lazy"
-          width="400"
-          height="284"
-          style={{ width: "100%", height: 254, objectFit: "cover" }}
-        />
-      </Link>
+      {images.length > 1 ? (
+        <Swiper
+          modules={[Pagination, Autoplay]}
+          pagination={{ clickable: true }}
+          autoplay={{ delay: 3500, disableOnInteraction: false }}
+          loop
+          className="pkg-card-swiper"
+        >
+          {images.map((img, i) => (
+            <SwiperSlide key={i}>
+              <Link href={href} style={{ display: "block" }}>
+                <img src={img.src} alt={img.alt} loading="lazy"
+                  style={{ width: "100%", height: 150, objectFit: "cover", display: "block" }} />
+              </Link>
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      ) : (
+        <Link href={href}>
+          <img src={images[0].src} alt={images[0].alt} loading="lazy"
+            style={{ width: "100%", height: 150, objectFit: "cover" }} />
+        </Link>
+      )}
 
       <div className="p-4">
-        <div className="header">
-          <Link href={href}>
-            <h2>{displayName}</h2>
-          </Link>
-          <div className="share-area">
-            {card.duration && <span className="duration-badge">{card.duration}</span>}
-            <Link href={href}>
-              <img src="/assets/images/icons/share.svg" alt="share" />
-            </Link>
+        <div className="pkg-badges-row">
+          <div className="pkg-badges-left">
+            {card.duration        && <span className="pkg-bdg pkg-bdg-dur">{card.duration}</span>}
+            {card.packageType     && <span className="pkg-bdg pkg-bdg-type">{card.packageType}</span>}
+            {card.packageSubtype  && <span className="pkg-bdg pkg-bdg-sub">{card.packageSubtype}</span>}
+          </div>
+          <div className="pkg-rating">
+            <span className="pkg-star">★</span>
+            <span><span className="font-bold">4.1</span> (230)</span>
           </div>
         </div>
 
-        {highlights && (
-          <div className="location">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="currentColor"
-              stroke="none"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-              focusable="false"
-            >
-              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM12 11.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z" />
-            </svg>
-            <span>{highlights.slice(0, 100)}{highlights.length > 100 ? "…" : ""}</span>
-          </div>
+        <h2 className="pkg-card-name">{displayName}</h2>
+
+        {bullets.length > 0 && (
+          <p className="pkg-card-highlights">
+            {bullets.map((b, i) => <span key={i}>• {b} </span>)}
+          </p>
         )}
+
+        <hr className="pkg-card-divider" />
 
         {amenities.length > 0 && (
-          <div className="icons" aria-label="Travel amenities">
-            <ul className="amenities-icons">
-              {amenities.map((a, i) => {
-                const name = typeof a === "string" ? a : a?.name;
-                const icon = (typeof a === "object" && a?.icon) || AMENITY_ICONS[name];
-                return icon ? (
-                  <li key={i}>
-                    <img src={icon} alt={name} title={name} />
-                  </li>
-                ) : null;
-              })}
-            </ul>
-          </div>
+          <ul className="pkg-amenities-row">
+            {amenities.map((a, i) => {
+              const name = typeof a === "string" ? a : a?.name;
+              const icon = (typeof a === "object" && a?.icon) || AMENITY_ICONS[name];
+              return icon ? (
+                <li key={i} className="pkg-amenity-item">
+                  <img src={icon} alt={name} />
+                  <span>{name}</span>
+                </li>
+              ) : null;
+            })}
+          </ul>
         )}
 
-        <div className="price-section">
-          <div className="price-info">
-            {hasDiscount && (
-              <p className="old-price">
-                Starting from <span className="oldcut">{fmt(card.basePrice)}</span>
-              </p>
-            )}
-            <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-              <p className="new-price" style={{ margin: 0 }}>
-                {fmt(card.finalPrice || card.basePrice)}
-              </p>
-              <span style={{
-                fontSize: 9, fontWeight: 700, background: "#e84949", color: "#fff",
-                borderRadius: 4, padding: "2px 6px", letterSpacing: 0.3, whiteSpace: "nowrap",
-              }}>
-                Incl. taxes
-              </span>
+        <div className="pkg-price-main-row">
+          <div className="pkg-price-left">
+            <div className="pkg-price-top-row">
+              {base > final && <span className="pkg-old-price">{fmt(base)}</span>}
+              {discPct > 0  && <span className="pkg-disc-badge">{discPct}% OFF</span>}
             </div>
-            <p className="price-desc">{card.priceType || "per person on twin sharing"}</p>
+            <span className="pkg-final-price">{fmt(final || base)} <span className="per-person">/person</span></span>
+            <p className="pkg-total-line">Total Price {fmt(base || final)} inc. of taxes</p>
           </div>
-          <div className="contact-icons">
-            <Link href="tel:+918882701800">
-              <img src="/assets/images/hero/icons/call.svg" alt="Call" className="contact-icon" />
-            </Link>
-            <Link href="https://wa.link/pshqg5">
-              <img src="/assets/images/hero/icons/whatsapp.svg" alt="WhatsApp" className="contact-icon" />
-            </Link>
-          </div>
+          <Link href={href} className="pkg-view-btn">View Package</Link>
         </div>
 
-        <Link
-          href={href}
-          className="package-button"
-          style={{ display: "block", textAlign: "center", textDecoration: "none" }}
-        >
-          View Package
-        </Link>
+        {card.priceType && <p className="pkg-price-type-line">{card.priceType}</p>}
       </div>
     </div>
   );

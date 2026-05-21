@@ -130,7 +130,7 @@ function FilterPanel({
             min={minNight} max={maxNight} step={1}
             value={nightRange}
             onChange={setNightRange}
-            formatLabel={n => `${n}N`}
+            formatLabel={n => `${n}N ${n + 1}D`}
           />
         </div>
       )}
@@ -533,6 +533,8 @@ export default function CouplePackages({ packages = [], initialTab = "", destNam
                     )}
                   </div>
                 )}
+
+                <PromoSection/>
               </div>
 
             </div>
@@ -565,9 +567,10 @@ export default function CouplePackages({ packages = [], initialTab = "", destNam
         </>
       )}
 
-      <PromoSection/>
-      <MostPopular/>
       <TopReviews/>
+      {/* <PromoSection/> */}
+      {/* <BenifitSection/> */}
+      <MostPopular/>
       <Instagram/>
       <FAQs />
       <Blogs />
@@ -604,12 +607,27 @@ export async function getServerSideProps({ query }) {
     }
   }
 
-  const raw = await Package.find(filter).sort({ createdAt: 1 }).lean();
+  const raw = await Package.find(filter)
+    .select("packageName destination duration packageType packageSubtype basePrice finalPrice priceType gallery featureImage webBanner amenities destinationHighlights")
+    .sort({ createdAt: 1 })
+    .lean();
 
   const packages = raw
     .map(p => ({
-      ...p,
-      id:       p._id,
+      id:                   String(p._id),
+      packageName:          p.packageName,
+      destination:          p.destination,
+      duration:             p.duration,
+      packageType:          p.packageType,
+      packageSubtype:       p.packageSubtype,
+      basePrice:            p.basePrice,
+      finalPrice:           p.finalPrice,
+      priceType:            p.priceType,
+      gallery:              p.gallery,
+      featureImage:         p.featureImage,
+      webBanner:            p.webBanner,
+      amenities:            p.amenities,
+      destinationHighlights: p.destinationHighlights,
       destSlug:
         slugMap[p.destination?.toLowerCase()] ||
         p.destination?.toLowerCase().replace(/\s+/g, "-") ||

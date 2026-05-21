@@ -322,6 +322,9 @@ const BLANK = {
   aboutImages:   [{ src: null, alt: "" }, { src: null, alt: "" }],
   bucketImages:  [{ src: null, alt: "" }, { src: null, alt: "" }],
   days: [{ day: 1, title: "", icon: "", description: "" }],
+  stays: [],
+  transfers: [],
+  activityBookings: [],
 };
 
 /* ── Normalise amenities from old string[] format ── */
@@ -346,6 +349,7 @@ export default function CreatePackage() {
   const [destinations, setDests]  = useState([]);
   const [siblings, setSiblings]   = useState([]);
   const [customAmenities, setCustomAmenities] = useState([]);
+  const [vendors, setVendors]               = useState([]);
 
   const allAmenities = [
     ...DEFAULT_AMENITIES,
@@ -357,6 +361,14 @@ export default function CreatePackage() {
     fetch("/api/dashboard/destinations")
       .then(r => r.json())
       .then(data => setDests(Array.isArray(data) ? data.filter(d => d.status === "Active") : []))
+      .catch(() => {});
+  }, []);
+
+  // Load vendors for Hotel/Transfer selectors
+  useEffect(() => {
+    fetch("/api/dashboard/vendors")
+      .then(r => r.json())
+      .then(data => setVendors(Array.isArray(data) ? data : []))
       .catch(() => {});
   }, []);
 
@@ -377,11 +389,14 @@ export default function CreatePackage() {
           if (found && !found.error) {
             setForm({
               ...BLANK, ...found,
-              amenities:   found.amenities || [],
+              amenities:   found.amenities   || [],
               days:        found.days?.length        ? found.days        : BLANK.days,
               gallery:     found.gallery?.length     ? found.gallery     : BLANK.gallery,
               aboutImages: found.aboutImages?.length ? found.aboutImages : BLANK.aboutImages,
               bucketImages:found.bucketImages?.length? found.bucketImages: BLANK.bucketImages,
+              stays:            found.stays            || [],
+              transfers:        found.transfers        || [],
+              activityBookings: found.activityBookings || [],
             });
           }
         });
@@ -425,6 +440,66 @@ export default function CreatePackage() {
   function setDay(i, key, val) { setForm(p => { const d=[...p.days]; d[i]={...d[i],[key]:val}; return {...p,days:d}; }); }
   function addDay() { setForm(p => ({ ...p, days: [...p.days, { day: p.days.length+1, title:"", icon:"", description:"" }] })); }
   function removeDay(i) { setForm(p => { const d=p.days.filter((_,idx)=>idx!==i).map((d,idx)=>({...d,day:idx+1})); return {...p,days:d}; }); }
+
+  /* ── Stays helpers ── */
+  const stayVendors      = vendors.filter(v => v.vendorTab === "Stay");
+  const transferVendors  = vendors.filter(v => v.vendorTab === "Transfers");
+  const activityVendors  = vendors.filter(v => v.vendorTab === "Activities");
+
+  function calcStay(s) {
+    const sub = (s.price||0) * (s.nights||1) * (s.rooms||1);
+    const gst = Math.round(sub * (s.gstPct||0) / 100);
+    return { ...s, subTotal: sub, gstAmt: gst, total: sub + gst };
+  }
+  function calcTransfer(t) {
+    const sub = (t.pricePerDay||0) * (t.days||1);
+    const gst = Math.round(sub * (t.gstPct||0) / 100);
+    return { ...t, subTotal: sub, gstAmt: gst, total: sub + gst };
+  }
+  function calcActivity(a) {
+    const sub = (a.pricePerPerson||0) * (a.persons||1);
+    const gst = Math.round(sub * (a.gstPct||0) / 100);
+    return { ...a, subTotal: sub, gstAmt: gst, total: sub + gst };
+  }
+  function addStay() {
+    setForm(p => ({ ...p, stays: [...(p.stays||[]), calcStay({ vendorId:"", vendorName:"", roomCategory:"", address:"", phone:"", vendorImg:"", price:0, nights:1, rooms:1, gstPct:0 })] }));
+  }
+  function removeStay(i) {
+    setForm(p => ({ ...p, stays: (p.stays||[]).filter((_,idx)=>idx!==i) }));
+  }
+  function updateStay(i, updates) {
+    setForm(p => {
+      const stays = [...(p.stays||[])];
+      stays[i] = calcStay({ ...stays[i], ...updates });
+      return { ...p, stays };
+    });
+  }
+  function addTransfer() {
+    setForm(p => ({ ...p, transfers: [...(p.transfers||[]), calcTransfer({ vendorId:"", vendorName:"", vehicleType:"", vehicleImg:"", pricePerDay:0, days:1, gstPct:0, inclusions:[] })] }));
+  }
+  function removeTransfer(i) {
+    setForm(p => ({ ...p, transfers: (p.transfers||[]).filter((_,idx)=>idx!==i) }));
+  }
+  function updateTransfer(i, updates) {
+    setForm(p => {
+      const transfers = [...(p.transfers||[])];
+      transfers[i] = calcTransfer({ ...transfers[i], ...updates });
+      return { ...p, transfers };
+    });
+  }
+  function addActivity() {
+    setForm(p => ({ ...p, activityBookings: [...(p.activityBookings||[]), calcActivity({ vendorId:"", vendorName:"", activityName:"", activityImg:"", pricePerPerson:0, persons:1, gstPct:0 })] }));
+  }
+  function removeActivity(i) {
+    setForm(p => ({ ...p, activityBookings: (p.activityBookings||[]).filter((_,idx)=>idx!==i) }));
+  }
+  function updateActivity(i, updates) {
+    setForm(p => {
+      const activityBookings = [...(p.activityBookings||[])];
+      activityBookings[i] = calcActivity({ ...activityBookings[i], ...updates });
+      return { ...p, activityBookings };
+    });
+  }
 
   async function saveCustomAmenity(name, iconBase64) {
     try {
@@ -488,7 +563,7 @@ export default function CreatePackage() {
   return (
     <>
       <Head>
-        <title>{isEdit ? "Edit" : "Add"} Package — TourWatchOut</title>
+        <title>{`${isEdit ? "Edit" : "Add"} Package — TourWatchOut`}</title>
       </Head>
 
           <header className="bk-header">
@@ -703,6 +778,276 @@ export default function CreatePackage() {
                   onChange={e => setForm(p=>({...p,advertisement:{...p.advertisement,image:{...p.advertisement.image,alt:e.target.value}}}))} />
               </div>
             </div> */}
+
+            {/* ── Section 7b: Hotel Details ── */}
+            <div className="bk-form-section">
+              <h2 className="bk-section-title">Hotel Details</h2>
+              {(form.stays||[]).map((stay, i) => {
+                const vendor = stayVendors.find(v => (v.id||v._id) === stay.vendorId);
+                const vendorImg = vendor?.image?.src || stay.vendorImg || "";
+                return (
+                  <div key={i} className="bk-vendor-row-card">
+                    <div className="bk-vendor-row-header">
+                      <span className="bk-day-badge">Hotel {i+1}</span>
+                      <button className="bk-del-btn" onClick={() => removeStay(i)}><MdDelete size={15} /></button>
+                    </div>
+                    {/* Image preview + selectors row */}
+                    <div style={{display:"flex",gap:16,alignItems:"flex-start",marginBottom:14}}>
+                      {vendorImg && (
+                        <div style={{flexShrink:0,width:90,height:70,borderRadius:8,overflow:"hidden",border:"1px solid #e5e7eb"}}>
+                          <img src={vendorImg} alt="hotel" style={{width:"100%",height:"100%",objectFit:"cover"}} />
+                        </div>
+                      )}
+                      <div style={{flex:1,display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
+                        <div className="bk-form-group">
+                          <label className="bk-form-label">Select Hotel</label>
+                          <select className="bk-form-select" value={stay.vendorId} onChange={e => {
+                            const v = stayVendors.find(v => (v.id||v._id) === e.target.value);
+                            updateStay(i, { vendorId: e.target.value, vendorName: v?.businessName||"", vendorImg: v?.image?.src||"", address: v?.place||"", phone: v?.contactPerson?.contactNumber||"", roomCategory:"", price:0 });
+                          }}>
+                            <option value="">— Select Hotel —</option>
+                            {stayVendors.map(v => <option key={v.id||v._id} value={v.id||v._id}>{v.businessName}</option>)}
+                          </select>
+                        </div>
+                        <div className="bk-form-group">
+                          <label className="bk-form-label">Select Room Category</label>
+                          <select className="bk-form-select" value={stay.roomCategory} onChange={e => {
+                            const room = vendor?.hotelRooms?.find(r => r.roomType === e.target.value);
+                            updateStay(i, { roomCategory: e.target.value, price: +(room?.pricePerNight||0) });
+                          }} disabled={!vendor}>
+                            <option value="">— Select Room —</option>
+                            {(vendor?.hotelRooms||[]).map(r => (
+                              <option key={r.roomType} value={r.roomType}>{r.roomType}{r.pricePerNight ? ` — ₹${r.pricePerNight}` : ""}</option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="bk-form-row bk-form-row-2">
+                      <div className="bk-form-group">
+                        <label className="bk-form-label">Address</label>
+                        <input className="bk-form-input" value={stay.address||""} onChange={e => updateStay(i, {address: e.target.value})} placeholder="Auto-filled from vendor" />
+                      </div>
+                      <div className="bk-form-group">
+                        <label className="bk-form-label">Phone</label>
+                        <input className="bk-form-input" value={stay.phone||""} onChange={e => updateStay(i, {phone: e.target.value})} placeholder="Auto-filled from vendor" />
+                      </div>
+                    </div>
+                    <div className="bk-form-row bk-form-row-4">
+                      <div className="bk-form-group">
+                        <label className="bk-form-label">Price / Night (₹)</label>
+                        <input className="bk-form-input" type="number" min="0" value={stay.price||""} onChange={e => updateStay(i, {price: +e.target.value})} />
+                      </div>
+                      <div className="bk-form-group">
+                        <label className="bk-form-label">Nights</label>
+                        <input className="bk-form-input" type="number" min="1" value={stay.nights||1} onChange={e => updateStay(i, {nights: +e.target.value})} />
+                      </div>
+                      <div className="bk-form-group">
+                        <label className="bk-form-label">Rooms</label>
+                        <input className="bk-form-input" type="number" min="1" value={stay.rooms||1} onChange={e => updateStay(i, {rooms: +e.target.value})} />
+                      </div>
+                      <div className="bk-form-group">
+                        <label className="bk-form-label">Sub Total (₹)</label>
+                        <input className="bk-form-input bk-calc-field" readOnly value={stay.subTotal||0} />
+                      </div>
+                    </div>
+                    <div className="bk-form-row bk-form-row-3">
+                      <div className="bk-form-group">
+                        <label className="bk-form-label">GST %</label>
+                        <select className="bk-form-select" value={stay.gstPct??0} onChange={e => updateStay(i, {gstPct: +e.target.value})}>
+                          {[0,5,12,18,28].map(p => <option key={p} value={p}>{p}%</option>)}
+                        </select>
+                      </div>
+                      <div className="bk-form-group">
+                        <label className="bk-form-label">GST Amount (₹)</label>
+                        <input className="bk-form-input bk-calc-field" readOnly value={stay.gstAmt||0} />
+                      </div>
+                      <div className="bk-form-group">
+                        <label className="bk-form-label">Total (₹)</label>
+                        <input className="bk-form-input bk-calc-total" readOnly value={stay.total||0} />
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+              <button className="bk-add-day-btn" onClick={addStay}><MdAdd size={18} /> Add Hotel</button>
+            </div>
+
+            {/* ── Section 7c: Transfer Details ── */}
+            <div className="bk-form-section">
+              <h2 className="bk-section-title">Transfer Details</h2>
+              {(form.transfers||[]).map((tr, i) => {
+                const vendor = transferVendors.find(v => (v.id||v._id) === tr.vendorId);
+                const selVehicle = vendor?.vehicles?.find(v => v.vehicleType === tr.vehicleType);
+                const vehicleImg = selVehicle?.vehicleImage?.src || tr.vehicleImg || "";
+                return (
+                  <div key={i} className="bk-vendor-row-card">
+                    <div className="bk-vendor-row-header">
+                      <span className="bk-day-badge">Transfer {i+1}</span>
+                      <button className="bk-del-btn" onClick={() => removeTransfer(i)}><MdDelete size={15} /></button>
+                    </div>
+                    {/* Image preview + selectors */}
+                    <div style={{display:"flex",gap:16,alignItems:"flex-start",marginBottom:14}}>
+                      {vehicleImg && (
+                        <div style={{flexShrink:0,width:90,height:70,borderRadius:8,overflow:"hidden",border:"1px solid #e5e7eb"}}>
+                          <img src={vehicleImg} alt="vehicle" style={{width:"100%",height:"100%",objectFit:"cover"}} />
+                        </div>
+                      )}
+                      <div style={{flex:1,display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
+                        <div className="bk-form-group">
+                          <label className="bk-form-label">Select Vendor</label>
+                          <select className="bk-form-select" value={tr.vendorId} onChange={e => {
+                            const v = transferVendors.find(v => (v.id||v._id) === e.target.value);
+                            updateTransfer(i, { vendorId: e.target.value, vendorName: v?.businessName||"", vehicleType:"", vehicleImg:"", pricePerDay:0 });
+                          }}>
+                            <option value="">— Select Vendor —</option>
+                            {transferVendors.map(v => <option key={v.id||v._id} value={v.id||v._id}>{v.businessName}</option>)}
+                          </select>
+                        </div>
+                        <div className="bk-form-group">
+                          <label className="bk-form-label">Vehicle Type</label>
+                          <select className="bk-form-select" value={tr.vehicleType} onChange={e => {
+                            const vh = vendor?.vehicles?.find(v => v.vehicleType === e.target.value);
+                            updateTransfer(i, { vehicleType: e.target.value, vehicleImg: vh?.vehicleImage?.src||"", pricePerDay: +(vh?.pricePerDay||0) });
+                          }} disabled={!vendor}>
+                            <option value="">— Select Vehicle —</option>
+                            {(vendor?.vehicles||[]).map(v => (
+                              <option key={v.vehicleType} value={v.vehicleType}>{v.vehicleType}{v.pricePerDay ? ` — ₹${v.pricePerDay}/day` : ""}</option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="bk-form-row bk-form-row-4">
+                      <div className="bk-form-group">
+                        <label className="bk-form-label">Price / Day (₹)</label>
+                        <input className="bk-form-input" type="number" min="0" value={tr.pricePerDay||""} onChange={e => updateTransfer(i, {pricePerDay: +e.target.value})} />
+                      </div>
+                      <div className="bk-form-group">
+                        <label className="bk-form-label">Days</label>
+                        <input className="bk-form-input" type="number" min="1" value={tr.days||1} onChange={e => updateTransfer(i, {days: +e.target.value})} />
+                      </div>
+                      <div className="bk-form-group">
+                        <label className="bk-form-label">Sub Total (₹)</label>
+                        <input className="bk-form-input bk-calc-field" readOnly value={tr.subTotal||0} />
+                      </div>
+                    </div>
+                    <div className="bk-form-row bk-form-row-3">
+                      <div className="bk-form-group">
+                        <label className="bk-form-label">GST %</label>
+                        <select className="bk-form-select" value={tr.gstPct??0} onChange={e => updateTransfer(i, {gstPct: +e.target.value})}>
+                          {[0,5,12,18,28].map(p => <option key={p} value={p}>{p}%</option>)}
+                        </select>
+                      </div>
+                      <div className="bk-form-group">
+                        <label className="bk-form-label">GST Amount (₹)</label>
+                        <input className="bk-form-input bk-calc-field" readOnly value={tr.gstAmt||0} />
+                      </div>
+                      <div className="bk-form-group">
+                        <label className="bk-form-label">Total (₹)</label>
+                        <input className="bk-form-input bk-calc-total" readOnly value={tr.total||0} />
+                      </div>
+                    </div>
+                    <div className="bk-form-group">
+                      <label className="bk-form-label">Inclusions</label>
+                      <div className="bk-checkbox-row">
+                        {["Toll & Parking","Driver Allowance","Fuel","Night Charges"].map(inc => (
+                          <label key={inc} className="bk-checkbox-label">
+                            <input type="checkbox" checked={(tr.inclusions||[]).includes(inc)}
+                              onChange={e => {
+                                const list = tr.inclusions||[];
+                                updateTransfer(i, { inclusions: e.target.checked ? [...list, inc] : list.filter(x=>x!==inc) });
+                              }} />
+                            {inc}
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+              <button className="bk-add-day-btn" onClick={addTransfer}><MdAdd size={18} /> Add Transfer</button>
+            </div>
+
+            {/* ── Section 7d: Activity Details ── */}
+            <div className="bk-form-section">
+              <h2 className="bk-section-title">Activity Details</h2>
+              {(form.activityBookings||[]).map((ab, i) => {
+                const vendor = activityVendors.find(v => (v.id||v._id) === ab.vendorId);
+                const selActivity = vendor?.activities?.find(a => a.activityName === ab.activityName);
+                const actImg = selActivity?.activityImage?.src || ab.activityImg || "";
+                return (
+                  <div key={i} className="bk-vendor-row-card">
+                    <div className="bk-vendor-row-header">
+                      <span className="bk-day-badge">Activity {i+1}</span>
+                      <button className="bk-del-btn" onClick={() => removeActivity(i)}><MdDelete size={15} /></button>
+                    </div>
+                    <div style={{display:"flex",gap:16,alignItems:"flex-start",marginBottom:14}}>
+                      {actImg && (
+                        <div style={{flexShrink:0,width:90,height:70,borderRadius:8,overflow:"hidden",border:"1px solid #e5e7eb"}}>
+                          <img src={actImg} alt="activity" style={{width:"100%",height:"100%",objectFit:"cover"}} />
+                        </div>
+                      )}
+                      <div style={{flex:1,display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
+                        <div className="bk-form-group">
+                          <label className="bk-form-label">Select Vendor</label>
+                          <select className="bk-form-select" value={ab.vendorId} onChange={e => {
+                            const v = activityVendors.find(v => (v.id||v._id) === e.target.value);
+                            updateActivity(i, { vendorId: e.target.value, vendorName: v?.businessName||"", activityName:"", activityImg:"", pricePerPerson:0 });
+                          }}>
+                            <option value="">— Select Vendor —</option>
+                            {activityVendors.map(v => <option key={v.id||v._id} value={v.id||v._id}>{v.businessName}</option>)}
+                          </select>
+                        </div>
+                        <div className="bk-form-group">
+                          <label className="bk-form-label">Activity</label>
+                          <select className="bk-form-select" value={ab.activityName} onChange={e => {
+                            const ac = vendor?.activities?.find(a => a.activityName === e.target.value);
+                            updateActivity(i, { activityName: e.target.value, activityImg: ac?.activityImage?.src||"", pricePerPerson: +(ac?.pricePerPerson||0) });
+                          }} disabled={!vendor}>
+                            <option value="">— Select Activity —</option>
+                            {(vendor?.activities||[]).map(a => (
+                              <option key={a.activityName} value={a.activityName}>{a.activityName}{a.pricePerPerson ? ` — ₹${a.pricePerPerson}/person` : ""}</option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="bk-form-row bk-form-row-4">
+                      <div className="bk-form-group">
+                        <label className="bk-form-label">Price / Person (₹)</label>
+                        <input className="bk-form-input" type="number" min="0" value={ab.pricePerPerson||""} onChange={e => updateActivity(i, {pricePerPerson: +e.target.value})} />
+                      </div>
+                      <div className="bk-form-group">
+                        <label className="bk-form-label">Persons</label>
+                        <input className="bk-form-input" type="number" min="1" value={ab.persons||1} onChange={e => updateActivity(i, {persons: +e.target.value})} />
+                      </div>
+                      <div className="bk-form-group">
+                        <label className="bk-form-label">Sub Total (₹)</label>
+                        <input className="bk-form-input bk-calc-field" readOnly value={ab.subTotal||0} />
+                      </div>
+                    </div>
+                    <div className="bk-form-row bk-form-row-3">
+                      <div className="bk-form-group">
+                        <label className="bk-form-label">GST %</label>
+                        <select className="bk-form-select" value={ab.gstPct??0} onChange={e => updateActivity(i, {gstPct: +e.target.value})}>
+                          {[0,5,12,18,28].map(p => <option key={p} value={p}>{p}%</option>)}
+                        </select>
+                      </div>
+                      <div className="bk-form-group">
+                        <label className="bk-form-label">GST Amount (₹)</label>
+                        <input className="bk-form-input bk-calc-field" readOnly value={ab.gstAmt||0} />
+                      </div>
+                      <div className="bk-form-group">
+                        <label className="bk-form-label">Total (₹)</label>
+                        <input className="bk-form-input bk-calc-total" readOnly value={ab.total||0} />
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+              <button className="bk-add-day-btn" onClick={addActivity}><MdAdd size={18} /> Add Activity</button>
+            </div>
 
             {/* ── Section 9: Inclusions / Exclusions ── */}
             {/* <div className="bk-form-section">

@@ -6181,32 +6181,39 @@ h3.contact-hero-subtitle {
   padding: 4px 0 0;
 }
 
+/*
+  Key: wrap + inputs must be as tall as the thumb (20px).
+  Chrome clips pointer events to the element's bounding box,
+  so a 6px-tall input means you can only drag within 6px vertically.
+*/
 .drs-wrap {
   position: relative;
-  height: 6px;
-  margin: 0px 0 10px;
+  height: 20px;        /* = thumb height, so full thumb is interactive */
+  margin: 10px 0 8px;
 }
 
 .drs-track {
   position: absolute;
-  left: 0; right: 0; top: 0; bottom: 0;
+  left: 0; right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 4px;
   background: #e5e7eb;
-  border-radius: 3px;
+  border-radius: 2px;
 }
 
 .drs-fill {
   position: absolute;
   top: 0; bottom: 0;
   background: #e84949;
-  border-radius: 3px;
+  border-radius: 2px;
 }
 
 .drs-input {
   position: absolute;
-  left: 0;
-  top: 0;
+  left: 0; top: 0;
   width: 100%;
-  height: 6px;
+  height: 100%;          /* fills the 20px wrap */
   margin: 0;
   padding: 0;
   pointer-events: none;
@@ -6217,21 +6224,25 @@ h3.contact-hero-subtitle {
 }
 
 .drs-input::-webkit-slider-runnable-track {
-  height: 6px;
+  height: 4px;
   background: transparent;
 }
 
 .drs-input::-webkit-slider-thumb {
   pointer-events: all;
   -webkit-appearance: none;
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   background: #e84949;
-  cursor: pointer;
+  cursor: grab;
   border: 2.5px solid #fff;
   box-shadow: 0 1px 4px rgba(0,0,0,0.25);
-  margin-top: -6px;
+  margin-top: -8px;      /* center 20px thumb on 4px track: -(20-4)/2 */
+}
+
+.drs-input:active::-webkit-slider-thumb {
+  cursor: grabbing;
 }
 
 .drs-input::-moz-range-track { background: transparent; }
@@ -6369,4 +6380,286 @@ h3.contact-hero-subtitle {
   .family-filter-sidebar { display: none; }
   .family-mobile-filter-bar { display: flex; }
   .family-layout { display: block; }
+}
+/* ══════════════════════════════════════════
+   PACKAGE DETAIL — STICKY TABS + SECTIONS
+══════════════════════════════════════════ */
+
+/* Inner container — keeps tab buttons constrained to 1280px when bar is full-width fixed */
+.pkg-tabs-inner {
+  display: flex;
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Main sticky tab bar — position is set via JS (fixed when scrolled past sentinel) */
+.pkg-tabs-bar {
+  z-index: 80;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-bottom: 1.5px solid #e5e7eb;
+  margin-bottom: 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.pkg-tab-item {
+  /* flex: 1; */
+  padding: 14px 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #6b7280;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+  font-family: inherit;
+  letter-spacing: 0.01em;
+}
+.pkg-tab-item.active {
+  color: #e84949;
+  border-bottom-color: #e84949;
+}
+.pkg-tab-item:hover { color: #e84949; }
+
+/* Content sections */
+.pkg-section {
+  padding: 10px 0 8px;
+  border-bottom: 1px solid #f0f0f0;
+  margin-bottom: 4px;
+}
+
+/* Sub-tabs row (second row inside .pkg-tabs-bar) */
+.pkg-subtabs-row {
+  border-top: 1px solid #f0f0f0;
+  padding-top: 0;
+}
+
+/* Sub-tabs (Stay | Transfers | Activities) — position set via JS when fixed */
+.pkg-inclusions-subtabs {
+  z-index: 70;
+  display: flex;
+  gap: 0;
+  background: #fafafa;
+  border-bottom: 1px solid #e5e7eb;
+  border-radius: 0;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+.pkg-sub-tab {
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b7280;
+  background: none;
+  border: none;
+  border-bottom: 2.5px solid transparent;
+  cursor: pointer;
+  font-family: inherit;
+  transition: color 0.2s, border-color 0.2s;
+}
+.pkg-sub-tab.active {
+  color: #e84949;
+  border-bottom-color: #e84949;
+}
+.pkg-sub-tab:hover { color: #e84949; }
+
+/* Sub-section wrapper (Stay / Transfers / Activities) */
+.pkg-sub-section {
+  padding-top: 10px;
+  border-top: 1px solid #f0f0f0;
+  margin-top: 0;
+}
+/* first-child override added at end of file for reliability */
+
+/* Vendor card grid */
+.pkg-vendor-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.pkg-vendor-card {
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+  background: #fff;
+  border: 1px solid #f0f0f0;
+}
+.pkg-vendor-swiper {
+  height: 200px;
+}
+.pkg-vendor-swiper .swiper,
+.pkg-vendor-swiper .swiper-wrapper,
+.pkg-vendor-swiper .swiper-slide {
+  height: 100%;
+}
+.pkg-vendor-img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  display: block;
+}
+.pkg-vendor-img-placeholder {
+  width: 100%;
+  height: 200px;
+  background: #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+}
+.pkg-vendor-info {
+  padding: 14px 16px 16px;
+}
+.pkg-vendor-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 8px;
+}
+.pkg-vendor-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.pkg-vendor-badge {
+  background: #eff6ff;
+  color: #2563eb;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+.pkg-vendor-addr,
+.pkg-vendor-phone {
+  font-size: 12px;
+  color: #6b7280;
+}
+.pkg-vendor-pricing-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 13px;
+  color: #374151;
+  font-weight: 500;
+}
+.pkg-x { color: #9ca3af; font-size: 11px; }
+.pkg-total {
+  font-size: 14px;
+  font-weight: 700;
+  color: #15803d;
+  margin-left: 4px;
+}
+.pkg-vendor-inclusions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 8px;
+}
+.pkg-incl-chip {
+  background: #fef3c7;
+  color: #92400e;
+  font-size: 11px;
+  padding: 3px 9px;
+  border-radius: 20px;
+  font-weight: 600;
+}
+
+/* Highlights section */
+.pkg-highlights-block {
+  margin-bottom: 28px;
+}
+.pkg-highlights-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 12px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #f3f4f6;
+}
+.pkg-highlights-text {
+  font-size: 14px;
+  color: #4b5563;
+  line-height: 1.7;
+  margin-bottom: 14px;
+}
+.pkg-bucket-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.pkg-bucket-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 14px;
+  color: #374151;
+  line-height: 1.5;
+}
+.pkg-bucket-dot {
+  color: #e84949;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* Swiper pagination dots in vendor cards */
+.pkg-vendor-swiper .swiper-pagination-bullet { background: #fff; opacity: 0.6; }
+.pkg-vendor-swiper .swiper-pagination-bullet-active { background: #fff; opacity: 1; }
+
+/* Sub-section headings (Stay / Transfers / Activities) */
+.pkg-sub-section-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.pkg-sub-section-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0;
+  padding-left: 12px;
+  border-left: 3px solid #e84949;
+  line-height: 1.2;
+}
+
+/* Fix first sub-section selector — :first-of-type is unreliable when siblings differ */
+.pkg-sub-section:first-child {
+  border-top: none;
+  margin-top: 0;
+  padding-top: 4px;
+}
+
+/* Inner tab bar container — zero padding so tabs align flush with the container */
+.pkg-tabs-inner {
+  padding: 0;
+}
+
+/* Tablet: 2 columns for vendor cards */
+@media (max-width: 980px) {
+  .pkg-vendor-cards { grid-template-columns: repeat(2, 1fr); }
+  .pkg-tabs-inner { padding: 0 15px; }
+}
+
+/* Sticky sidebar below header + tab bar */
+.itinerary-page .package-details-tabs .pdt-right {
+  position: sticky;
+  top: 150px;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .pkg-vendor-cards { grid-template-columns: 1fr; }
+  .pkg-tabs-bar { overflow-x: auto; }
+  .pkg-tab-item { flex: 0 0 auto; padding: 12px 14px; }
+  .pkg-sub-tab { flex: 0 0 auto; padding: 10px 14px; }
+  .pkg-tabs-inner { padding: 0 12px; }
+  .pkg-sub-section-title { font-size: 14px; }
+  .pkg-vendor-img, .pkg-vendor-img-placeholder, .pkg-vendor-swiper { height: 170px; }
 }

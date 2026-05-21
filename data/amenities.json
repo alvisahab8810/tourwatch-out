@@ -2,5 +2,9 @@
   {
     "name": "Wifi",
     "icon": "/uploads/amenities/wifi.svg"
+  },
+  {
+    "name": "Ticket",
+    "icon": "/uploads/amenities/ticket.svg"
   }
 ]
