@@ -1908,6 +1908,7 @@ img.top-bottom-img {
 .package-details-tabs .pdt-best {
     display: inline-block;
     background: #DFF3FE;
+    height:100%;
     color: #1877F2;
     font-size: 8px;
     padding: 3px 6px;
@@ -2439,4 +2440,17 @@ background: linear-gradient(to bottom, rgb(0 0 0 / 65%) 0%, rgb(0 0 0 / 40%) 30%
 .dubai-hero > * {
   position: relative;
   z-index: 2;
+}
+
+.couplepage .package-details-tabs{
+  padding-top: 60px;
+}
+
+
+.package-details-tabs button:hover{
+  transform: unset;
+}
+
+.dubai-family-package .promo-section{
+  margin:30px 0px!important;
 }

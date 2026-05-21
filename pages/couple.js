@@ -181,7 +181,7 @@ function FilterPanel({
       </div>
 
       {/* ── Cities ── */}
-      {allCities.length > 0 && (
+      {/* {allCities.length > 0 && (
         <div className="ffp-section">
           <p className="ffp-section-title">Cities</p>
           <div className="ffp-city-search-wrap">
@@ -214,10 +214,10 @@ function FilterPanel({
             </button>
           )}
         </div>
-      )}
+      )} */}
 
       {/* ── Buy Now, Pay Later ── */}
-      <div className="ffp-section">
+      {/* <div className="ffp-section">
         <p className="ffp-section-title">Buy Now, Pay Later</p>
         <label className="ffp-check-row">
           <input
@@ -228,7 +228,7 @@ function FilterPanel({
           />
           <span>Book @ ₹2,000</span>
         </label>
-      </div>
+      </div> */}
 
     </div>
   );

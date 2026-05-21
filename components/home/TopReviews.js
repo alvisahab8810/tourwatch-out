@@ -54,11 +54,13 @@ export default function TopReviews() {
                   className="rating-stars"
                 /> */}
                 {/* <div className="rating-number">4.9 Star</div> */}
-                <img src="/assets/icons/google.png"></img>
                 <div className="rating-text">4.9 Star</div>
-                {/* <div className="rating-source">
-                  by trips from <span className="highlight">65+ countries</span>
-                </div> */}
+                <img src="/assets/icons/google.png"></img>
+                <div className="rating-source">
+                  <span className="highlight">Reviews</span>
+                <img src="/assets/icons/stars.png"></img>
+
+                </div>
               </div>
             </div>
 

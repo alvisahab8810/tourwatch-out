@@ -435,18 +435,6 @@ export default async function handler(req, res) {
       continue;
     }
 
-    /* ── Duplicate check ── */
-    try {
-      const dup = await Package.findOne({ packageName, destination, packageSubtype });
-      if (dup) {
-        results.push({ success: false, name: packageName, error: "Duplicate: already exists in database" });
-        continue;
-      }
-    } catch (e) {
-      results.push({ success: false, name: packageName, error: "DB check failed: " + e.message });
-      continue;
-    }
-
     try {
       await Package.create({
         _id:                   uuidv4(),

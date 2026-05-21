@@ -189,7 +189,7 @@ function FilterPanel({
       </div>
 
       {/* ── Cities ── */}
-      {allCities.length > 0 && (
+      {/* {allCities.length > 0 && (
         <div className="ffp-section">
           <p className="ffp-section-title">Cities</p>
           <div className="ffp-city-search-wrap">
@@ -222,10 +222,10 @@ function FilterPanel({
             </button>
           )}
         </div>
-      )}
+      )} */}
 
       {/* ── Buy Now, Pay Later ── */}
-      <div className="ffp-section">
+      {/* <div className="ffp-section">
         <p className="ffp-section-title">Buy Now, Pay Later</p>
         <label className="ffp-check-row">
           <input
@@ -236,7 +236,7 @@ function FilterPanel({
           />
           <span>Book @ ₹2,000</span>
         </label>
-      </div>
+      </div> */}
 
     </div>
   );
@@ -530,7 +530,11 @@ export default function FamilyPackages({ packages = [], initialTab = "", destNam
                 {filteredPkgs.length > 0 ? (
                   <div className="national-list-bx">
                     {filteredPkgs.map(pkg => <PackageCard key={pkg.id} pkg={pkg} />)}
+
+                    
                   </div>
+
+                  
                 ) : (
                   <div style={{ textAlign: "center", padding: "3rem 1rem", color: "#888" }}>
                     <p style={{ marginBottom: 12 }}>No packages match the selected filters.</p>
@@ -544,6 +548,8 @@ export default function FamilyPackages({ packages = [], initialTab = "", destNam
                     )}
                   </div>
                 )}
+
+                <PromoSection/>
               </div>
 
             </div>
@@ -576,10 +582,12 @@ export default function FamilyPackages({ packages = [], initialTab = "", destNam
         </>
       )}
 
-      <PromoSection/>
+         <TopReviews/>
+
+      {/* <PromoSection/> */}
       {/* <BenifitSection/> */}
       <MostPopular/>
-      <TopReviews/>
+   
       <Instagram/>
       <FAQs />
       <Blogs />
