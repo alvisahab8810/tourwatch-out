@@ -3,7 +3,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import toast from "react-hot-toast";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination } from "swiper/modules";
+import { Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import Topbar from "../../../../components/header/Header";
@@ -16,6 +16,20 @@ import Blogs from "../../../../components/home/Blogs";
 import PromoSection from "../../../../components/home/PromoSection";
 import MostPopular from "../../../../components/home/MostPopular";
 import BenifitSection from "../../../../components/home/BenifitSection";
+
+const HOTEL_AMENITY_ICONS = {
+  "Breakfast":           "/assets/images/icons/itinerary/icon1.svg",
+  "Breakfast & Dinner":  "/assets/images/icons/itinerary/icon1.svg",
+  "Lunch":               "/assets/images/icons/itinerary/icon1.svg",
+  "Dinner":              "/assets/images/icons/itinerary/icon1.svg",
+  "All Meals":           "/assets/images/icons/itinerary/icon1.svg",
+  "Room Service":        "/assets/images/icons/itinerary/icon1.svg",
+  "Restaurant":          "/assets/images/icons/itinerary/icon1.svg",
+  "Bar":                 "/assets/images/icons/itinerary/icon1.svg",
+  "WiFi":                "/assets/images/icons/itinerary/icon4.svg",
+  "Parking":             "/assets/images/icons/itinerary/icon5.svg",
+  "Transport":           "/assets/images/icons/itinerary/icon5.svg",
+};
 
 const AMENITY_ICONS = {
   Meals:            "/assets/images/icons/itinerary/icon1.svg",
@@ -98,12 +112,10 @@ export default function PackageDetailPage({ pkg, dest, vendorMap = {} }) {
   );
   const [tabsFixed, setTabsFixed] = useState(false);
   const [tabsH, setTabsH]         = useState(50);
-  const [headerH, setHeaderH]     = useState(64);
-  const headerHRef                = useRef(64);
   const router = useRouter();
 
-  const tabBarRef       = useRef(null);
-  const tabsSentinelRef = useRef(null);
+  const tabBarRef         = useRef(null);
+  const tabsSentinelRef   = useRef(null);
   const itineraryRef      = useRef(null);
   const inclusionsRef     = useRef(null);
   const highlightsRef     = useRef(null);
@@ -119,13 +131,6 @@ export default function PackageDetailPage({ pkg, dest, vendorMap = {} }) {
   const hasInclusions    = hasVendorContent || pkg.inclusions || pkg.exclusions;
   const hasHighlights    = pkg.aboutText || pkg.bucketListText;
 
-  // Measure actual site header height once on mount (ref for closure, state for inline style)
-  useEffect(() => {
-    const h = document.querySelector(".header-updated")?.offsetHeight || 64;
-    headerHRef.current = h;
-    setHeaderH(h);
-  }, []);
-
   // Re-measure tab bar height whenever active tab changes (sub-tabs row appears/disappears)
   useEffect(() => {
     if (tabBarRef.current) setTabsH(tabBarRef.current.offsetHeight);
@@ -134,30 +139,28 @@ export default function PackageDetailPage({ pkg, dest, vendorMap = {} }) {
   // Sticky tabs + active-section + active sub-tab detection
   useEffect(() => {
     function onScroll() {
-      const barH = tabBarRef.current?.offsetHeight || 50;
-
-      // Main tab bar fixed — threshold = actual header height (use ref to avoid stale closure)
+      // Fix tab bar to top of viewport once sentinel scrolls off screen
       if (tabsSentinelRef.current) {
-        const sr = tabsSentinelRef.current.getBoundingClientRect();
-        setTabsFixed(sr.top <= headerHRef.current);
+        setTabsFixed(tabsSentinelRef.current.getBoundingClientRect().top <= 0);
       }
 
+      const barH = (tabBarRef.current?.offsetHeight || 50) + 8;
+
       // Active main-tab detection
-      const threshold = barH + 8;
       const inclTop = inclusionsRef.current?.getBoundingClientRect().top;
       const hiTop   = highlightsRef.current?.getBoundingClientRect().top;
       let newTab = "itinerary";
-      if      (hiTop   !== undefined && hiTop   <= threshold) newTab = "highlights";
-      else if (inclTop !== undefined && inclTop <= threshold) newTab = "inclusions";
+      if      (hiTop   !== undefined && hiTop   <= barH) newTab = "highlights";
+      else if (inclTop !== undefined && inclTop <= barH) newTab = "inclusions";
       setActiveTab(newTab);
 
       // Active sub-tab detection (scroll-based highlight)
       const actTop = activitiesRef.current?.getBoundingClientRect().top;
       const trTop  = transfersRef.current?.getBoundingClientRect().top;
       const stTop  = staysRef.current?.getBoundingClientRect().top;
-      if      (actTop !== undefined && actTop <= threshold) setInclSubTab("activities");
-      else if (trTop  !== undefined && trTop  <= threshold) setInclSubTab("transfers");
-      else if (stTop  !== undefined && stTop  <= threshold) setInclSubTab("stays");
+      if      (actTop !== undefined && actTop <= barH) setInclSubTab("activities");
+      else if (trTop  !== undefined && trTop  <= barH) setInclSubTab("transfers");
+      else if (stTop  !== undefined && stTop  <= barH) setInclSubTab("stays");
     }
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -166,14 +169,14 @@ export default function PackageDetailPage({ pkg, dest, vendorMap = {} }) {
   function scrollToTab(ref) {
     if (!ref.current) return;
     const barH = tabBarRef.current?.offsetHeight || 50;
-    const top  = ref.current.getBoundingClientRect().top + window.scrollY - headerHRef.current - barH - 6;
+    const top  = ref.current.getBoundingClientRect().top + window.scrollY - barH - 6;
     window.scrollTo({ top, behavior: "smooth" });
   }
 
   function scrollToSubTab(ref) {
     if (!ref.current) return;
     const barH = tabBarRef.current?.offsetHeight || 94;
-    const top  = ref.current.getBoundingClientRect().top + window.scrollY - headerHRef.current - barH - 6;
+    const top  = ref.current.getBoundingClientRect().top + window.scrollY - barH - 6;
     window.scrollTo({ top, behavior: "smooth" });
   }
 
@@ -202,12 +205,20 @@ export default function PackageDetailPage({ pkg, dest, vendorMap = {} }) {
   const heroBig      = pkg.webBanner?.src || dest.mainImage?.src || "/assets/images/dubai/itinerary/left.png";
   const heroGallery  = pkg.gallery || [];
 
+  const pkgFaqs    = Array.isArray(pkg.faqs)    ? pkg.faqs.filter(f => f.question) : [];
+  const pkgSchemas = Array.isArray(pkg.schemas) ? pkg.schemas.filter(s => s.content) : [];
+
   return (
     <>
       <Head>
-        <title>{pkg.packageName || destName} — TourWatchOut</title>
+        <title>{pkg.metaTitle || pkg.packageName || destName} — TourWatchOut</title>
         <meta name="description" content={pkg.metaDescription || `${destName} ${pkg.packageSubtype} package`} />
+        {pkg.metaKeywords && <meta name="keywords" content={pkg.metaKeywords} />}
+        {pkg.metaRobots   && <meta name="robots"   content={pkg.metaRobots} />}
         <link rel="stylesheet" href="/assets/css/style.css" />
+        {pkgSchemas.map((sc, i) => (
+          <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: sc.content }} />
+        ))}
       </Head>
 
       <div className="dubai-family-package family-packages itinerary-page">
@@ -261,10 +272,12 @@ export default function PackageDetailPage({ pkg, dest, vendorMap = {} }) {
                   {/* Package title */}
                   <div className="pdt-header">
                     <h1 className="pdt-title">{pkg.packageName || `${pkg.packageSubtype} ${destName}`}</h1>
-                    {pkg.duration && <div className="pdt-tag">{pkg.duration}</div>}
+                    {pkg.duration && <div className="pdt-tag mobile-none">{pkg.duration}</div>}
                   </div>
+
+                  {/* Desktop location row */}
                   {pkg.destinationHighlights && (
-                    <div className="location">
+                    <div className="location mobile-none">
                       <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                         <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM12 11.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z" />
                       </svg>
@@ -272,28 +285,54 @@ export default function PackageDetailPage({ pkg, dest, vendorMap = {} }) {
                     </div>
                   )}
 
-                  {/* Mobile price card */}
-                  <div className="price-card desktop-none">
-                    <div className="mob-pc-top-row">
-                      <div className="mob-pc-left">
-                        <div className="pc-top">
-                          From
-                          {pkg.basePrice && pkg.finalPrice && String(pkg.basePrice) !== String(pkg.finalPrice) && (
-                            <span className="pc-old"> {fmtPrice(pkg.basePrice)}</span>
-                          )}
-                        </div>
-                        <div className="pc-amount">{price || "—"}</div>
-                        <div className="pc-note">{pkg.priceType || "02 Couples"}</div>
-                      </div>
+                  {/* ── MOBILE CARD (replaces all above on mobile) ── */}
+                  <div className="mob-info-card desktop-none">
+
+                    {/* Row 1: title + rating */}
+                    <div className="mob-info-title-row">
+                      <h2 className="mob-info-title">{pkg.packageName || `${pkg.packageSubtype} ${destName}`}</h2>
                       <div className="mob-pc-rating">
                         <span>Rating: {pkg.rating || "4.5"}</span>
                         <img src="/assets/images/icons/itinerary/iti.svg" alt="Rating" />
                       </div>
                     </div>
-                    <div className="mob-pc-actions">
-                      <a href="#cancellation-policy" className="mob-cancel-link">*Cancellation Policy</a>
-                      <button className="pc-cta-pay mob" onClick={handlePayClick}>Proceed to Payment</button>
+
+                    {/* Row 2: duration chip + highlights */}
+                    <div className="mob-info-meta">
+                      {pkg.duration && <span className="mob-info-duration">{pkg.duration}</span>}
+                      {pkg.destinationHighlights && (
+                        <span className="mob-info-highlights">
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" width="10" height="10" aria-hidden="true">
+                            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM12 11.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z" />
+                          </svg>
+                          {pkg.destinationHighlights}
+                        </span>
+                      )}
                     </div>
+
+                    {/* Row 3: price */}
+                    <div className="mob-info-price-row">
+                      <div className="mob-info-old-row">
+                        {pkg.basePrice && pkg.finalPrice && String(pkg.basePrice) !== String(pkg.finalPrice) && (
+                          <>
+                            <span className="mob-info-old">{fmtPrice(pkg.basePrice)}</span>
+                            <span className="mob-info-off">{Math.round((1 - Number(pkg.finalPrice)/Number(pkg.basePrice))*100)}% OFF</span>
+                          </>
+                        )}
+                      </div>
+                      <div className="mob-info-price">{price || "—"} <span className="mob-info-per">/person</span></div>
+                      {pkg.priceType && <div className="mob-info-note">{pkg.priceType}</div>}
+                    </div>
+
+                  </div>
+
+                  {/* Mobile sticky bottom bar */}
+                  <div className="mob-sticky-bar desktop-none">
+                    <div className="mob-sticky-left">
+                      <span className="mob-sticky-amount">{price || "—"}</span>
+                      <a href="#cancellation-policy" className="mob-sticky-policy">*Cancellation Policy</a>
+                    </div>
+                    <button className="mob-sticky-cta" onClick={handlePayClick}>Proceed to Payment</button>
                   </div>
 
                   {/* Banner */}
@@ -322,13 +361,12 @@ export default function PackageDetailPage({ pkg, dest, vendorMap = {} }) {
                     </div>
                   )}
 
-                  {/* ── Sentinel: when this scrolls out of view, tabs go fixed ── */}
                   <div ref={tabsSentinelRef} />
                   {tabsFixed && <div style={{ height: tabsH }} />}
                   <div
                     ref={tabBarRef}
-                    className="pkg-tabs-bar"
-                    style={tabsFixed ? { position:"fixed", top:`${0}px`, left:0, right:0, zIndex:200, background:"#fff", boxShadow:"0 2px 8px rgba(0,0,0,0.12)" } : {}}>
+                    className={`pkg-tabs-bar${tabsFixed ? " pkg-tabs-bar--fixed" : ""}`}
+                    style={tabsFixed ? { position:"fixed", top:0, left:0, right:0, zIndex:200, background:"#fff", boxShadow:"0 2px 8px rgba(0,0,0,0.12)" } : {}}>
                     {/* Row 1: main tabs */}
                     <div className="pkg-tabs-inner">
                       <button
@@ -353,7 +391,7 @@ export default function PackageDetailPage({ pkg, dest, vendorMap = {} }) {
                     </div>
                     {/* Row 2: sub-tabs — visible only when in Inclusions */}
                     {activeTab === "inclusions" && hasVendorContent && (
-                      <div className="pkg-tabs-inner pkg-subtabs-row">
+                      <div className={`pkg-tabs-inner pkg-subtabs-row${tabsFixed ? " pkg-subtabs-row--fixed" : ""}`}>
                         {stays.length > 0 && (
                           <button className={`pkg-sub-tab ${inclSubTab === "stays" ? "active" : ""}`}
                             onClick={() => scrollToSubTab(staysRef)}>Stay</button>
@@ -426,7 +464,25 @@ export default function PackageDetailPage({ pkg, dest, vendorMap = {} }) {
                   {hasInclusions && (
                     <div ref={inclusionsRef} className="pkg-section">
 
-                      {/* ── Stay cards (always visible) ── */}
+                      {/* ── Inline sub-tabs (always visible at top of Inclusions) ── */}
+                      {hasVendorContent && (
+                        <div className="pkg-inline-subtabs">
+                          {stays.length > 0 && (
+                            <button className={`pkg-inline-subtab ${inclSubTab === "stays" ? "active" : ""}`}
+                              onClick={() => scrollToSubTab(staysRef)}>Stays</button>
+                          )}
+                          {transfers.length > 0 && (
+                            <button className={`pkg-inline-subtab ${inclSubTab === "transfers" ? "active" : ""}`}
+                              onClick={() => scrollToSubTab(transfersRef)}>Transfers</button>
+                          )}
+                          {activityBookings.length > 0 && (
+                            <button className={`pkg-inline-subtab ${inclSubTab === "activities" ? "active" : ""}`}
+                              onClick={() => scrollToSubTab(activitiesRef)}>Activities</button>
+                          )}
+                        </div>
+                      )}
+
+                      {/* ── Stay cards ── */}
                       {stays.length > 0 && (
                         <div ref={staysRef} className="pkg-sub-section">
                           <div className="pkg-sub-section-header">
@@ -435,16 +491,30 @@ export default function PackageDetailPage({ pkg, dest, vendorMap = {} }) {
                           <div className="pkg-vendor-cards">
                             {stays.map((stay, i) => {
                               const vendor = vendorMap[stay.vendorId] || {};
-                              const gallery = (vendor.gallery || []).filter(g => g?.src);
-                              const images = gallery.length > 0
-                                ? gallery
+                              // For old packages that pre-date the new fields, fall back to live vendor data
+                              const matchedRoom = (vendor.hotelRooms || []).find(r => r.roomType === stay.roomCategory);
+                              const roomName   = stay.roomName   || matchedRoom?.roomName   || "";
+                              const bedType    = stay.bedType    || matchedRoom?.bedType    || "";
+                              const roomSize   = stay.roomSize   || matchedRoom?.roomSize   || "";
+                              const starRating = stay.starRating || vendor.starRating       || null;
+                              const amenities  = (stay.amenities || []).length > 0
+                                ? stay.amenities
+                                : (matchedRoom?.amenities || []);
+                              const images = (matchedRoom?.gallery || []).filter(g => g?.src).length > 0
+                                ? (matchedRoom.gallery).filter(g => g?.src)
                                 : (stay.vendorImg ? [{ src: stay.vendorImg, alt: stay.vendorName }] : []);
                               return (
                                 <div key={i} className="pkg-vendor-card">
+                                  <div className="pkg-card-stay-label">Stay {i + 1}</div>
                                   {images.length > 1 ? (
                                     <div className="pkg-vendor-swiper">
-                                      <Swiper modules={[Pagination]} pagination={{ clickable: true }}
-                                        spaceBetween={0} slidesPerView={1} style={{ height: "100%" }}>
+                                      <Swiper
+                                        modules={[Pagination, Autoplay]}
+                                        pagination={{ clickable: true }}
+                                        autoplay={{ delay: 3000, disableOnInteraction: false }}
+                                        spaceBetween={0}
+                                        slidesPerView={1}
+                                        style={{ height: "100%" }}>
                                         {images.map((img, j) => (
                                           <SwiperSlide key={j}>
                                             <img src={img.src} alt={img.alt || stay.vendorName} className="pkg-vendor-img" />
@@ -458,12 +528,34 @@ export default function PackageDetailPage({ pkg, dest, vendorMap = {} }) {
                                     <div className="pkg-vendor-img-placeholder">🏨</div>
                                   )}
                                   <div className="pkg-vendor-info">
-                                    <h4 className="pkg-vendor-name">{stay.vendorName || "Hotel"}</h4>
-                                    <div className="pkg-vendor-meta">
+                                    <h4 className="pkg-vendor-name">{roomName || stay.vendorName || "Hotel name or similar"}</h4>
+                                    {bedType && (
+                                      <div className="pkg-stay-bed-type">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 20v-8a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v8"/><path d="M4 10V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4"/><path d="M12 10v10"/><path d="M2 15h20"/></svg>
+                                        {bedType}
+                                      </div>
+                                    )}
+                                    <div className="pkg-stay-tags">
+                                      {starRating && (
+                                        <span className="pkg-stay-star-tag">
+                                          {starRating} ⭐ Hotel
+                                        </span>
+                                      )}
                                       {stay.roomCategory && <span className="pkg-vendor-badge">{stay.roomCategory}</span>}
-                                      {stay.address && <span className="pkg-vendor-addr">📍 {stay.address}</span>}
-                                      {stay.phone && <span className="pkg-vendor-phone">📞 {stay.phone}</span>}
+                                      {roomSize && <span className="pkg-stay-size-tag">{roomSize}</span>}
                                     </div>
+                                    {amenities.length > 0 && (
+                                      <div className="pkg-stay-amenities">
+                                        {amenities.map(am => (
+                                          <span key={am} className="pkg-stay-amenity">
+                                            {HOTEL_AMENITY_ICONS[am]
+                                              ? <img src={HOTEL_AMENITY_ICONS[am]} className="pkg-am-icon" alt={am} />
+                                              : <span className="pkg-am-icon-fallback">✓</span>
+                                            } {am}
+                                          </span>
+                                        ))}
+                                      </div>
+                                    )}
                                     <div className="pkg-vendor-pricing-row">
                                       {stay.price > 0 && <><span>₹{Number(stay.price).toLocaleString("en-IN")}/night</span><span className="pkg-x">×</span></>}
                                       <span>{stay.nights}N</span>
@@ -557,11 +649,11 @@ export default function PackageDetailPage({ pkg, dest, vendorMap = {} }) {
                           <div className="dfn-accordion">
                             <AccordionSection title="Inclusions &amp; Exclusions" open={openSection === "inclusions"} onToggle={() => toggleSection("inclusions")}>
                               {pkg.inclusions && (
-                                <><h4 className="dfn-sub-heading">Inclusions</h4>
+                                <><h4 className="dfn-sub-heading inclusion-head">Includes</h4>
                                 <div className="dfn-rich-text" dangerouslySetInnerHTML={{ __html: pkg.inclusions }} /></>
                               )}
                               {pkg.exclusions && (
-                                <><h4 className="dfn-sub-heading">Exclusions</h4>
+                                <><h4 className="dfn-sub-heading exclusion-head">Not Includes</h4>
                                 <div className="dfn-rich-text" dangerouslySetInnerHTML={{ __html: pkg.exclusions }} /></>
                               )}
                             </AccordionSection>
@@ -670,11 +762,11 @@ export default function PackageDetailPage({ pkg, dest, vendorMap = {} }) {
           </div>
         </div>
 
-        <BenifitSection />
+        {/* <BenifitSection /> */}
         <MostPopular />
         <BottomReviews />
         <PromoSection />
-        <FAQs />
+        <FAQs items={pkgFaqs.length > 0 ? pkgFaqs : null} />
         <Blogs />
         <Popup />
         <NewFooter />

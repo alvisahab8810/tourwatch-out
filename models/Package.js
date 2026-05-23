@@ -5,6 +5,16 @@ const imageSchema = new mongoose.Schema(
   { _id: false }
 );
 
+const schemaEntrySchema = new mongoose.Schema(
+  { type: String, content: String },
+  { _id: false }
+);
+
+const faqItemSchema = new mongoose.Schema(
+  { question: String, answer: String },
+  { _id: false }
+);
+
 const daySchema = new mongoose.Schema(
   { day: Number, title: String, icon: String, description: String },
   { _id: false }
@@ -14,6 +24,11 @@ const staySchema = new mongoose.Schema({
   vendorId:     String,
   vendorName:   String,
   roomCategory: String,
+  roomName:     String,
+  bedType:      String,
+  roomSize:     String,
+  starRating:   Number,
+  amenities:    [String],
   address:      String,
   phone:        String,
   price:        Number,
@@ -75,6 +90,10 @@ const PackageSchema = new mongoose.Schema(
     metaTitle:            String,
     metaDescription:      String,
     metaKeywords:         String,
+    metaRobots:           { type: String, default: "index, follow, max-image-preview:large, max-snippet:-1" },
+    xRobotsTag:           { type: String, default: "index, follow, max-image-preview:large, max-snippet:-1" },
+    schemas:              [schemaEntrySchema],
+    faqs:                 [faqItemSchema],
     featureImage:         imageSchema,
     webBanner:            imageSchema,
     mobileBanner:         imageSchema,
@@ -94,4 +113,5 @@ const PackageSchema = new mongoose.Schema(
 
 PackageSchema.index({ createdAt: -1 });
 
+if (process.env.NODE_ENV !== "production") delete mongoose.models["Package"];
 export default mongoose.models.Package || mongoose.model("Package", PackageSchema);

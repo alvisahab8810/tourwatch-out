@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import Head from "next/head";
 import {
   MdMenu, MdSearch, MdAdd, MdEdit, MdDelete,
-  MdChevronLeft, MdChevronRight,
+  MdChevronLeft, MdChevronRight, MdVisibility,
 } from "react-icons/md";
 import DashboardLayout, { useOpenSidebar } from "../../components/backend/DashboardLayout";
 
@@ -155,12 +155,20 @@ export default function InvoiceList() {
                         <td>
                           <div className="bk-action-btns">
                             <button
+                              className="bk-view-btn"
+                              title="Preview invoice"
+                              onClick={() => router.push(`/dashboard/create-invoice?id=${inv.id}&preview=1`)}
+                            >
+                              <MdVisibility size={15} />
+                            </button>
+                            <button
                               className="bk-edit-btn"
+                              title="Edit"
                               onClick={() => router.push(`/dashboard/create-invoice?id=${inv.id}`)}
                             >
                               <MdEdit size={15} />
                             </button>
-                            <button className="bk-del-btn" onClick={() => deleteInv(inv.id)}>
+                            <button className="bk-del-btn" title="Delete" onClick={() => deleteInv(inv.id)}>
                               <MdDelete size={15} />
                             </button>
                           </div>

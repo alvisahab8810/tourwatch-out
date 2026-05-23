@@ -459,6 +459,10 @@ right: 0;
 
 @media(max-width:760px){
 
+    .login-right-col{
+        border-radius: 0px;
+    }
+
     .dyna-destination-pages .dubai-hero {
     /* background-image: url(../images/dubai/destination-mobile.webp) !important; */
 }

@@ -5,6 +5,7 @@ import Head from "next/head";
 import {
   MdMenu, MdKeyboardArrowDown, MdPeople, MdChevronLeft,
   MdCheckCircle, MdMoreHoriz, MdImage, MdClose, MdAdd, MdDelete, MdSearch,
+  MdCode, MdCopyAll, MdDeleteOutline,
 } from "react-icons/md";
 import DashboardLayout, { useOpenSidebar } from "../../../components/backend/DashboardLayout";
 
@@ -12,6 +13,17 @@ import DashboardLayout, { useOpenSidebar } from "../../../components/backend/Das
 import RichTextEditor from "../../../components/backend/RichTextEditor";
 
 /* ── Constants ── */
+const DEFAULT_ROBOTS = "index, follow, max-image-preview:large, max-snippet:-1";
+const BLANK_SCHEMA   = { type: "TouristAttraction", content: "" };
+const BASE_URL       = "https://tourwatchout.com";
+
+const SCHEMA_TYPES = [
+  "TouristAttraction", "TouristTrip", "Product", "Service",
+  "BreadcrumbList", "FAQPage", "TravelAction", "LodgingBusiness",
+  "Hotel", "Organization", "LocalBusiness", "WebPage",
+  "Article", "BlogPosting", "Event",
+];
+
 const PKG_TYPES    = ["Family", "Couple", "Corporate", "Honeymoon", "Group"];
 const PKG_SUBTYPES = ["Economy", "Deluxe", "Premium"];
 const DURATION_OPTS = [
@@ -303,6 +315,51 @@ function SubtypeProgress({ destination, packageType, currentSubtype, siblings })
   );
 }
 
+/* ── Schema generator (adapted for packages) ── */
+function buildSchemaJson(type, form) {
+  const destSlug = (form.destination || "destination").toLowerCase().replace(/\s+/g, "-");
+  const pkgUrl   = `${BASE_URL}/destination/${destSlug}`;
+
+  if (type === "BreadcrumbList") {
+    return {
+      "@context": "https://schema.org", "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": BASE_URL },
+        { "@type": "ListItem", "position": 2, "name": form.destination || "Destination", "item": `${BASE_URL}/destination/${destSlug}` },
+        { "@type": "ListItem", "position": 3, "name": form.packageName || "Package", "item": pkgUrl },
+      ],
+    };
+  }
+
+  if (type === "FAQPage") {
+    return {
+      "@context": "https://schema.org", "@type": "FAQPage",
+      "mainEntity": (form.faqs || []).filter(f => f.question).map(f => ({
+        "@type": "Question", "name": f.question,
+        "acceptedAnswer": { "@type": "Answer", "text": f.answer || "" },
+      })),
+    };
+  }
+
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": type,
+    "name": form.packageName || "",
+    "description": form.metaDescription || form.destinationHighlights || "",
+    "url": pkgUrl,
+    "provider": { "@type": "Organization", "name": "TourWatchOut", "url": BASE_URL },
+  };
+
+  if (form.faqs?.filter(f => f.question).length > 0) {
+    schema.mainEntity = form.faqs.filter(f => f.question).map(f => ({
+      "@type": "Question", "name": f.question,
+      "acceptedAnswer": { "@type": "Answer", "text": f.answer || "" },
+    }));
+  }
+
+  return schema;
+}
+
 /* ── Blank form ── */
 const BLANK = {
   destination: "", packageType: "Family", packageSubtype: "Economy",
@@ -312,6 +369,8 @@ const BLANK = {
   inclusions: "", exclusions: "", aboutText: "", bucketListText: "",
   bookingPolicy: "", cancellationPolicy: "", termsConditions: "",
   metaTitle: "", metaDescription: "", metaKeywords: "",
+  metaRobots: DEFAULT_ROBOTS, xRobotsTag: DEFAULT_ROBOTS,
+  schemas: [{ ...BLANK_SCHEMA }], faqs: [],
   status: "Inactive",
   featureImage: { src: null, alt: "" },
   webBanner:    { src: null, alt: "" },
@@ -397,6 +456,10 @@ export default function CreatePackage() {
               stays:            found.stays            || [],
               transfers:        found.transfers        || [],
               activityBookings: found.activityBookings || [],
+              schemas:    found.schemas?.length ? found.schemas : [{ ...BLANK_SCHEMA }],
+              faqs:       Array.isArray(found.faqs) ? found.faqs : [],
+              metaRobots: found.metaRobots || DEFAULT_ROBOTS,
+              xRobotsTag: found.xRobotsTag || DEFAULT_ROBOTS,
             });
           }
         });
@@ -462,7 +525,7 @@ export default function CreatePackage() {
     return { ...a, subTotal: sub, gstAmt: gst, total: sub + gst };
   }
   function addStay() {
-    setForm(p => ({ ...p, stays: [...(p.stays||[]), calcStay({ vendorId:"", vendorName:"", roomCategory:"", address:"", phone:"", vendorImg:"", price:0, nights:1, rooms:1, gstPct:0 })] }));
+    setForm(p => ({ ...p, stays: [...(p.stays||[]), calcStay({ vendorId:"", vendorName:"", roomCategory:"", roomName:"", bedType:"", roomSize:"", amenities:[], starRating:null, address:"", phone:"", vendorImg:"", price:0, nights:1, rooms:1, gstPct:0 })] }));
   }
   function removeStay(i) {
     setForm(p => ({ ...p, stays: (p.stays||[]).filter((_,idx)=>idx!==i) }));
@@ -500,6 +563,18 @@ export default function CreatePackage() {
       return { ...p, activityBookings };
     });
   }
+
+  /* ── Schema helpers ── */
+  const addSchema      = ()        => setForm(p => ({ ...p, schemas: [...p.schemas, { ...BLANK_SCHEMA }] }));
+  const removeSchema   = i        => setForm(p => ({ ...p, schemas: p.schemas.filter((_, idx) => idx !== i) }));
+  const updateSchema   = (i, k, v) => setForm(p => ({ ...p, schemas: p.schemas.map((sc, idx) => idx === i ? { ...sc, [k]: v } : sc) }));
+  const generateSchemaAt = i      => updateSchema(i, "content", JSON.stringify(buildSchemaJson(form.schemas[i].type, form), null, 2));
+  const copySchemaAt   = i        => { navigator.clipboard?.writeText(form.schemas[i]?.content || ""); setToast({ msg: "Schema copied to clipboard!", next: null }); };
+
+  /* ── FAQ helpers ── */
+  const addFaq    = ()        => setForm(p => ({ ...p, faqs: [...p.faqs, { question: "", answer: "" }] }));
+  const removeFaq = i         => setForm(p => ({ ...p, faqs: p.faqs.filter((_, idx) => idx !== i) }));
+  const updateFaq = (i, k, v) => setForm(p => ({ ...p, faqs: p.faqs.map((q, idx) => idx === i ? { ...q, [k]: v } : q) }));
 
   async function saveCustomAmenity(name, iconBase64) {
     try {
@@ -659,17 +734,14 @@ export default function CreatePackage() {
             {/* ── Section 4: Itinerary Header ── */}
             <div className="bk-form-section">
               <h2 className="bk-section-title">Itinerary Details</h2>
-              <div className="bk-form-row bk-form-row-2">
-                <div className="bk-form-group">
-                  <label className="bk-form-label">Itinerary Title</label>
-                  <input className="bk-form-input" placeholder="e.g. Dubai Family Adventure" value={form.itineraryTitle} onChange={e => f("itineraryTitle",e.target.value)} />
-                </div>
-                <div className="bk-form-group">
-                  <label className="bk-form-label">Duration</label>
-                  <select className="bk-form-select" value={form.duration} onChange={e => f("duration",e.target.value)}>
-                    {DURATION_OPTS.map(o => <option key={o}>{o}</option>)}
-                  </select>
-                </div>
+              <div style={{ display:"none" }}>
+                <input className="bk-form-input" value={form.itineraryTitle} onChange={e => f("itineraryTitle",e.target.value)} />
+              </div>
+              <div className="bk-form-group" style={{ maxWidth: 320 }}>
+                <label className="bk-form-label">Duration</label>
+                <select className="bk-form-select" value={form.duration} onChange={e => f("duration",e.target.value)}>
+                  {DURATION_OPTS.map(o => <option key={o}>{o}</option>)}
+                </select>
               </div>
               <div className="bk-form-group">
                 <label className="bk-form-label">Destination Highlights</label>
@@ -803,7 +875,7 @@ export default function CreatePackage() {
                           <label className="bk-form-label">Select Hotel</label>
                           <select className="bk-form-select" value={stay.vendorId} onChange={e => {
                             const v = stayVendors.find(v => (v.id||v._id) === e.target.value);
-                            updateStay(i, { vendorId: e.target.value, vendorName: v?.businessName||"", vendorImg: v?.image?.src||"", address: v?.place||"", phone: v?.contactPerson?.contactNumber||"", roomCategory:"", price:0 });
+                            updateStay(i, { vendorId: e.target.value, vendorName: v?.businessName||"", vendorImg: v?.image?.src||"", address: v?.place||"", phone: v?.contactPerson?.contactNumber||"", roomCategory:"", roomName:"", bedType:"", roomSize:"", amenities:[], starRating: v?.starRating||null, price:0 });
                           }}>
                             <option value="">— Select Hotel —</option>
                             {stayVendors.map(v => <option key={v.id||v._id} value={v.id||v._id}>{v.businessName}</option>)}
@@ -813,7 +885,15 @@ export default function CreatePackage() {
                           <label className="bk-form-label">Select Room Category</label>
                           <select className="bk-form-select" value={stay.roomCategory} onChange={e => {
                             const room = vendor?.hotelRooms?.find(r => r.roomType === e.target.value);
-                            updateStay(i, { roomCategory: e.target.value, price: +(room?.pricePerNight||0) });
+                            updateStay(i, {
+                              roomCategory: e.target.value,
+                              price:        +(room?.pricePerNight || 0),
+                              roomName:     room?.roomName     || "",
+                              bedType:      room?.bedType      || "",
+                              roomSize:     room?.roomSize     || "",
+                              amenities:    room?.amenities    || [],
+                              starRating:   vendor?.starRating || null,
+                            });
                           }} disabled={!vendor}>
                             <option value="">— Select Room —</option>
                             {(vendor?.hotelRooms||[]).map(r => (
@@ -1143,13 +1223,111 @@ export default function CreatePackage() {
               <div className="bk-form-group">
                 <label className="bk-form-label">Meta Description</label>
                 <textarea className="bk-textarea" rows={3} placeholder="SEO description (under 160 chars)…"
-                  value={form.metaDescription} onChange={e => f("metaDescription",e.target.value)} />
+                  value={form.metaDescription} maxLength={160} onChange={e => f("metaDescription",e.target.value)} />
+                <p style={{fontSize:11,color:"#9ca3af",textAlign:"right",margin:"4px 0 0"}}>{(form.metaDescription||"").length}/160</p>
               </div>
               <div className="bk-form-group">
                 <label className="bk-form-label">Meta Keywords</label>
                 <input className="bk-form-input" placeholder="keyword1, keyword2, keyword3"
                   value={form.metaKeywords} onChange={e => f("metaKeywords",e.target.value)} />
               </div>
+            </div>
+
+            {/* ── Section 14: Robots Directives ── */}
+            <div className="bk-form-section">
+              <h2 className="bk-section-title">Robots Directives</h2>
+              <div className="bk-form-row bk-form-row-2">
+                <div className="bk-form-group">
+                  <label className="bk-form-label">Meta Robots Tag</label>
+                  <p style={{fontSize:11,color:"#9ca3af",margin:"0 0 6px",fontStyle:"italic"}}>Injected as <code style={{fontSize:10}}>{`<meta name="robots">`}</code></p>
+                  <input className="bk-form-input" value={form.metaRobots} onChange={e => f("metaRobots",e.target.value)} />
+                  <p style={{fontSize:10,color:"#9ca3af",margin:"4px 0 0",fontStyle:"italic"}}><code>{`<meta name="robots" content="${form.metaRobots}">`}</code></p>
+                </div>
+                <div className="bk-form-group">
+                  <label className="bk-form-label">X-Robots-Tag (HTTP Header)</label>
+                  <p style={{fontSize:11,color:"#9ca3af",margin:"0 0 6px",fontStyle:"italic"}}>Sent as a server response header</p>
+                  <input className="bk-form-input" value={form.xRobotsTag} onChange={e => f("xRobotsTag",e.target.value)} />
+                  <p style={{fontSize:10,color:"#9ca3af",margin:"4px 0 0",fontStyle:"italic"}}><code>{`X-Robots-Tag: ${form.xRobotsTag}`}</code></p>
+                </div>
+              </div>
+              <div style={{marginTop:10,display:"flex",gap:8,flexWrap:"wrap"}}>
+                {[["index, follow","index, follow, max-image-preview:large, max-snippet:-1"],["noindex","noindex, nofollow"],["noarchive","index, follow, noarchive"]].map(([lbl,val])=>(
+                  <button key={lbl} onClick={()=>{f("metaRobots",val);f("xRobotsTag",val);}}
+                    style={{fontSize:12,padding:"5px 12px",borderRadius:20,border:"1.5px solid #e5e7eb",background:"#f3f4f6",color:"#374151",cursor:"pointer",fontWeight:600}}>
+                    {lbl}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* ── Section 15: FAQs ── */}
+            <div className="bk-form-section">
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
+                <h2 className="bk-section-title" style={{margin:0}}>FAQs</h2>
+                <button onClick={addFaq} style={{display:"inline-flex",alignItems:"center",gap:5,background:"#f0fdf4",color:"#16a34a",border:"1px solid #bbf7d0",borderRadius:7,padding:"7px 14px",fontSize:13,fontWeight:600,cursor:"pointer"}}>
+                  <MdAdd size={15} /> Add FAQ
+                </button>
+              </div>
+              <p style={{fontSize:12,color:"#9ca3af",margin:"0 0 16px",fontStyle:"italic"}}>FAQs are shown on the itinerary page and auto-included in FAQPage schema generation.</p>
+
+              {form.faqs.length === 0 ? (
+                <div style={{background:"#f9fafb",borderRadius:8,padding:"22px",textAlign:"center",color:"#9ca3af",fontSize:13}}>
+                  No FAQs yet — click <strong>"Add FAQ"</strong> to add your first question
+                </div>
+              ) : form.faqs.map((faq, i) => (
+                <div key={i} style={{marginTop:i===0?0:16,paddingTop:i===0?0:16,borderTop:i===0?"none":"1.5px solid #f3f4f6"}}>
+                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
+                    <span style={{fontSize:11,fontWeight:700,color:"#9ca3af",textTransform:"uppercase",letterSpacing:0.5}}>Q{i+1}</span>
+                    <button onClick={()=>removeFaq(i)} style={{display:"inline-flex",alignItems:"center",background:"#fff1f2",color:"#e84949",border:"1px solid #fecdd3",borderRadius:7,padding:"5px 7px",cursor:"pointer"}}>
+                      <MdDeleteOutline size={15} />
+                    </button>
+                  </div>
+                  <input className="bk-form-input" placeholder="Question e.g. What is included in the package?" value={faq.question} onChange={e=>updateFaq(i,"question",e.target.value)} />
+                  <textarea className="bk-textarea" rows={3} style={{marginTop:8}} placeholder="Answer…" value={faq.answer} onChange={e=>updateFaq(i,"answer",e.target.value)} />
+                </div>
+              ))}
+            </div>
+
+            {/* ── Section 16: Schema (JSON-LD) ── */}
+            <div className="bk-form-section">
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+                <h2 className="bk-section-title" style={{margin:0}}>Schema (JSON-LD)</h2>
+                <button onClick={addSchema} style={{display:"inline-flex",alignItems:"center",gap:5,background:"#f0fdf4",color:"#16a34a",border:"1px solid #bbf7d0",borderRadius:7,padding:"7px 14px",fontSize:13,fontWeight:600,cursor:"pointer"}}>
+                  <MdAdd size={15} /> Add Schema
+                </button>
+              </div>
+
+              {form.schemas.map((sc, i) => (
+                <div key={i} style={{borderTop:i>0?"1.5px solid #f0f2f7":"none",paddingTop:i>0?16:0,marginTop:i>0?16:0}}>
+                  <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10,flexWrap:"wrap"}}>
+                    <span style={{fontSize:11,fontWeight:700,color:"#9ca3af",textTransform:"uppercase",letterSpacing:0.5,minWidth:60}}>
+                      Schema {form.schemas.length>1?i+1:""}
+                    </span>
+                    <select className="bk-form-select" style={{flex:1,minWidth:150,fontSize:13}} value={sc.type} onChange={e=>updateSchema(i,"type",e.target.value)}>
+                      {SCHEMA_TYPES.map(t=><option key={t} value={t}>{t}</option>)}
+                    </select>
+                    <button onClick={()=>generateSchemaAt(i)} style={{display:"inline-flex",alignItems:"center",gap:5,background:"#eff6ff",color:"#2563eb",border:"1px solid #bfdbfe",borderRadius:7,padding:"6px 12px",fontSize:12,fontWeight:600,cursor:"pointer"}}>
+                      <MdCode size={14} /> Generate
+                    </button>
+                    <button onClick={()=>copySchemaAt(i)} style={{display:"inline-flex",alignItems:"center",gap:5,background:"#eff6ff",color:"#2563eb",border:"1px solid #bfdbfe",borderRadius:7,padding:"6px 12px",fontSize:12,fontWeight:600,cursor:"pointer"}}>
+                      <MdCopyAll size={14} /> Copy
+                    </button>
+                    {form.schemas.length>1 && (
+                      <button onClick={()=>removeSchema(i)} style={{display:"inline-flex",alignItems:"center",background:"#fff1f2",color:"#e84949",border:"1px solid #fecdd3",borderRadius:7,padding:"6px 8px",cursor:"pointer"}}>
+                        <MdDeleteOutline size={16} />
+                      </button>
+                    )}
+                  </div>
+                  <textarea
+                    className="bk-textarea"
+                    rows={8}
+                    style={{fontFamily:"monospace",fontSize:12}}
+                    placeholder={`{\n  "@context": "https://schema.org",\n  "@type": "${sc.type}"\n}`}
+                    value={sc.content}
+                    onChange={e=>updateSchema(i,"content",e.target.value)}
+                  />
+                </div>
+              ))}
             </div>
 
             {/* ── Actions ── */}

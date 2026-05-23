@@ -62,7 +62,7 @@ const DEFAULT_FORM = {
 
 export default function CreateInvoice() {
   const router = useRouter();
-  const { id: editId } = router.query;
+  const { id: editId, preview: previewParam } = router.query;
   const openSidebar = useOpenSidebar();
   const [form, setForm] = useState(DEFAULT_FORM);
   const [showPreview, setShowPreview] = useState(false);
@@ -79,7 +79,12 @@ export default function CreateInvoice() {
     if (editId) {
       fetch(`/api/dashboard/invoices/${editId}`)
         .then(r => r.json())
-        .then(found => { if (found && !found.error) setForm(prev => ({ ...prev, ...found })); })
+        .then(found => {
+          if (found && !found.error) {
+            setForm(prev => ({ ...prev, ...found }));
+            if (previewParam === "1") setShowPreview(true);
+          }
+        })
         .catch(() => {});
     } else {
       fetch("/api/dashboard/invoices")

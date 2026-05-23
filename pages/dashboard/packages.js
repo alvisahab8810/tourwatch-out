@@ -7,17 +7,20 @@ import {
 } from "react-icons/md";
 import DashboardLayout, { useOpenSidebar } from "../../components/backend/DashboardLayout";
 
-const TABS = ["Family", "Couple", "Corporate", "Honeymoon", "Group"];
-const PER_PAGE_OPTS = [10, 20, 50];
+const TABS = ["Family", "Couple"];
+const PER_PAGE_OPTS = [20, 50, 100];
 
 export default function PackagesList() {
   const router = useRouter();
   const openSidebar = useOpenSidebar();
   const [packages, setPackages] = useState([]);
-  const [tab, setTab]         = useState("Family");
-  const [search, setSearch]   = useState("");
-  const [perPage, setPerPage] = useState(10);
-  const [page, setPage]       = useState(1);
+  const [tab, setTab]             = useState("Family");
+  const [search, setSearch]       = useState("");
+  const [destFilter, setDestFilter] = useState("");
+  const [subtypeFilter, setSubtypeFilter] = useState("");
+  const [statusFilter, setStatusFilter]   = useState("");
+  const [perPage, setPerPage]     = useState(20);
+  const [page, setPage]           = useState(1);
 
   useEffect(() => {
     fetch("/api/dashboard/packages")
@@ -41,15 +44,22 @@ export default function PackagesList() {
     await fetch(`/api/dashboard/packages/${id}`, { method: "DELETE" });
   }
 
+  const destinations = [...new Set(packages.map(p => p.destination).filter(Boolean))].sort();
+
   const filtered = packages.filter(p => {
     if (p.packageType !== tab) return false;
-    if (!search) return true;
-    const q = search.toLowerCase();
-    return (
-      p.packageName?.toLowerCase().includes(q) ||
-      p.destination?.toLowerCase().includes(q) ||
-      p.packageSubtype?.toLowerCase().includes(q)
-    );
+    if (destFilter    && p.destination   !== destFilter)    return false;
+    if (subtypeFilter && p.packageSubtype !== subtypeFilter) return false;
+    if (statusFilter  && p.status        !== statusFilter)  return false;
+    if (search) {
+      const q = search.toLowerCase();
+      return (
+        p.packageName?.toLowerCase().includes(q) ||
+        p.destination?.toLowerCase().includes(q) ||
+        p.packageSubtype?.toLowerCase().includes(q)
+      );
+    }
+    return true;
   });
 
   const totalPages = Math.ceil(filtered.length / perPage);
@@ -99,17 +109,43 @@ export default function PackagesList() {
               </button>
             </div>
 
-            {/* Tabs */}
-            <div className="bk-tabs">
-              {TABS.map(t => (
-                <button
-                  key={t}
-                  className={`bk-tab ${tab === t ? "active" : ""}`}
-                  onClick={() => { setTab(t); setPage(1); }}
-                >
-                  {t}
-                </button>
-              ))}
+            {/* Tabs + Filters in one row */}
+            <div style={{ display:"flex", alignItems:"center", gap:8, marginTop:14 }}>
+              {/* Left: tabs */}
+              <div className="bk-tabs" style={{ margin:0, flex:"0 0 auto" }}>
+                {TABS.map(t => (
+                  <button key={t} className={`bk-tab ${tab === t ? "active" : ""}`}
+                    onClick={() => { setTab(t); setPage(1); }}>
+                    {t}
+                  </button>
+                ))}
+              </div>
+
+              {/* Right: filters pushed to end */}
+              <div style={{ marginLeft:"auto", display:"flex", alignItems:"center", gap:8 }}>
+                <select style={selStyle} value={destFilter} onChange={e => { setDestFilter(e.target.value); setPage(1); }}>
+                  <option value="">All Destinations</option>
+                  {destinations.map(d => <option key={d} value={d}>{d}</option>)}
+                </select>
+
+                <select style={selStyle} value={subtypeFilter} onChange={e => { setSubtypeFilter(e.target.value); setPage(1); }}>
+                  <option value="">All Subtypes</option>
+                  {["Economy","Deluxe","Premium"].map(s => <option key={s} value={s}>{s}</option>)}
+                </select>
+
+                <select style={selStyle} value={statusFilter} onChange={e => { setStatusFilter(e.target.value); setPage(1); }}>
+                  <option value="">All Status</option>
+                  <option value="Active">Active</option>
+                  <option value="Inactive">Inactive</option>
+                </select>
+
+                {(destFilter || subtypeFilter || statusFilter) && (
+                  <button onClick={() => { setDestFilter(""); setSubtypeFilter(""); setStatusFilter(""); setPage(1); }}
+                    style={{ padding:"8px 12px", borderRadius:8, border:"1.5px solid #fecdd3", background:"#fff1f2", color:"#e84949", fontSize:12, fontWeight:600, cursor:"pointer", whiteSpace:"nowrap" }}>
+                    ✕ Clear
+                  </button>
+                )}
+              </div>
             </div>
 
             {/* Table */}
@@ -209,3 +245,9 @@ export default function PackagesList() {
 PackagesList.getLayout = (page) => (
   <DashboardLayout active="All Packages">{page}</DashboardLayout>
 );
+
+const selStyle = {
+  border: "1.5px solid #e5e7eb", borderRadius: 8, padding: "8px 14px",
+  fontSize: 13, fontWeight: 500, background: "#fff", color: "#374151",
+  outline: "none", cursor: "pointer", boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
+};

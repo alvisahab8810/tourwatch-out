@@ -128,7 +128,7 @@ const DEFAULT_FORM = {
 
 export default function CreateVoucher() {
   const router = useRouter();
-  const { id: editId } = router.query;
+  const { id: editId, preview: previewParam } = router.query;
   const openSidebar = useOpenSidebar();
   const [formKey, setFormKey] = useState(0);
   const [form, setForm] = useState(DEFAULT_FORM);
@@ -143,21 +143,59 @@ export default function CreateVoucher() {
   const [emailError, setEmailError] = useState("");
 
   useLayoutEffect(() => {
-    const vouchers = JSON.parse(localStorage.getItem("tw_vouchers") || "[]");
-    if (editId) {
-      const found = vouchers.find((v) => v.id === editId);
-      if (found) {
-        setForm(found);
-        setFormKey((k) => k + 1);
-        return;
+    async function init() {
+      // Migrate any localStorage vouchers to DB (one-time)
+      try {
+        const raw = localStorage.getItem("tw_vouchers");
+        if (raw) {
+          localStorage.removeItem("tw_vouchers");
+          const local = JSON.parse(raw);
+          if (Array.isArray(local) && local.length > 0) {
+            const dbRes = await fetch("/api/dashboard/vouchers");
+            const dbVouchers = dbRes.ok ? await dbRes.json() : [];
+            const dbNos = new Set(dbVouchers.map(v => v.voucherNo).filter(Boolean));
+            const toMigrate = local.filter(v => !v.voucherNo || !dbNos.has(v.voucherNo));
+            await Promise.all(toMigrate.map(v =>
+              fetch("/api/dashboard/vouchers", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(v),
+              })
+            ));
+          }
+        }
+      } catch (_) {}
+
+      const dbRes  = await fetch("/api/dashboard/vouchers").then(r => r.json()).catch(() => []);
+      const allVouchers = Array.isArray(dbRes) ? dbRes : [];
+
+      if (editId) {
+        const found = allVouchers.find((v) => v.id === editId);
+        if (found) {
+          setForm(found);
+          setFormKey((k) => k + 1);
+          if (previewParam === "1") setShowPreview(true);
+          return;
+        }
+        // fallback: fetch single
+        try {
+          const single = await fetch(`/api/dashboard/vouchers/${editId}`).then(r => r.json());
+          if (single && !single.error) {
+            setForm(single);
+            setFormKey((k) => k + 1);
+            if (previewParam === "1") setShowPreview(true);
+            return;
+          }
+        } catch (_) {}
       }
+      setForm((f) => ({
+        ...f,
+        voucherNo: buildVoucherNo(allVouchers),
+        tripId: buildTripId(allVouchers),
+      }));
+      setFormKey((k) => k + 1);
     }
-    setForm((f) => ({
-      ...f,
-      voucherNo: buildVoucherNo(vouchers),
-      tripId: buildTripId(vouchers),
-    }));
-    setFormKey((k) => k + 1);
+    init();
   }, [editId]);
 
   const set = (key, val) => { setForm((f) => ({ ...f, [key]: val })); setSaved(false); };
@@ -195,18 +233,37 @@ export default function CreateVoucher() {
   const updateItinerary = (id, k, v) => set("itineraries", form.itineraries.map((i) => i.id === id ? { ...i, [k]: v } : i));
 
   // Save
-  const saveVoucher = () => {
+  const saveVoucher = async () => {
     setSaving(true);
-    const vouchers = JSON.parse(localStorage.getItem("tw_vouchers") || "[]");
-    const voucherId = editId || ("twv_" + Date.now());
-    const payload = { ...form, id: voucherId, createdAt: editId ? (form.createdAt || new Date().toISOString()) : new Date().toISOString() };
-    const idx = vouchers.findIndex((v) => v.id === voucherId);
-    if (idx >= 0) vouchers[idx] = payload;
-    else vouchers.unshift(payload);
-    localStorage.setItem("tw_vouchers", JSON.stringify(vouchers));
-    setForm(payload);
-    setTimeout(() => { setSaving(false); setSaved(true); }, 500);
-    return payload;
+    try {
+      const payload = { ...form };
+      let saved;
+      if (editId) {
+        const r = await fetch(`/api/dashboard/vouchers/${editId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        saved = await r.json();
+      } else {
+        const r = await fetch("/api/dashboard/vouchers", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...payload, createdAt: new Date().toISOString() }),
+        });
+        saved = await r.json();
+        if (saved.id && !editId) {
+          router.replace(`/dashboard/create-voucher?id=${saved.id}`, undefined, { shallow: true });
+        }
+      }
+      setForm(prev => ({ ...prev, ...saved }));
+      setSaved(true);
+      return saved;
+    } catch (e) {
+      alert("Save failed: " + e.message);
+    } finally {
+      setSaving(false);
+    }
   };
 
   // PDF generation

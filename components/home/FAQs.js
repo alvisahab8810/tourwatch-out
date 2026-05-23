@@ -29,18 +29,19 @@ const STATIC = [
   },
 ];
 
-export default function FAQs() {
+export default function FAQs({ items = null }) {
   const [activeIndex, setActiveIndex] = useState(2);
-  const [faqs, setFaqs] = useState(STATIC);
+  const [faqs, setFaqs] = useState(items || STATIC);
 
   useEffect(() => {
+    if (items) { setFaqs(items); return; }
     fetch("/api/faqs?limit=15")
       .then(r => r.json())
       .then(data => {
         if (Array.isArray(data) && data.length > 0) setFaqs(data);
       })
       .catch(() => {});
-  }, []);
+  }, [items]);
 
   const toggleFAQ = (index) => {
     setActiveIndex(activeIndex === index ? null : index);

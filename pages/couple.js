@@ -330,7 +330,9 @@ function PackageCard({ pkg }) {
               {base > final && <span className="pkg-old-price">{fmt(base)}</span>}
               {discPct > 0  && <span className="pkg-disc-badge">{discPct}% OFF</span>}
             </div>
-            <span className="pkg-final-price">{fmt(final || base)} <span className="per-person">/person</span></span>
+            <span className="pkg-final-price">{fmt(final || base)}
+               {/* <span className="per-person">/person</span> */}
+               </span>
             <p className="pkg-total-line">Total Price {fmt(base || final)} inc. of taxes</p>
           </div>
           <Link href={href} className="pkg-view-btn">View Package</Link>

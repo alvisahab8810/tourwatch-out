@@ -103,8 +103,8 @@ function BackBtn({ onClick }) {
 function GetStarted({ onLogin, onSignup }) {
   return (
     <>
-      <img src="/assets/images/logo.png" alt="TourWatchOut" style={s.logo} />
-      <h1 style={s.title}>Let's Get Started</h1>
+      <img src="/assets/images/dark-logo.svg" alt="TourWatchOut" style={s.logo} />
+      <h1 style={s.title}>Let's Get Started</h1><br/>
       <p style={s.subtitle}>Welcome to TourWatchOut! Sign in or create an account to plan your next adventure.</p>
       <SocialRow />
       <Divider label="or continue with email" />
@@ -162,7 +162,7 @@ function LoginForm({ onSignup, onForgot, onBack, onSuccess }) {
   return (
     <>
       <BackBtn onClick={onBack} />
-      <img src="/assets/images/logo.png" alt="TourWatchOut" style={s.logo} />
+      <img src="/assets/images/dark-logo.svg" alt="TourWatchOut" style={s.logo} />
       <h1 style={s.title}>Log In To Your Account</h1>
       <p style={s.subtitle}>Welcome back! Please enter your details to continue.</p>
       <form onSubmit={handleSubmit} style={s.form} noValidate>
@@ -245,7 +245,7 @@ function SignupForm({ onLogin, onBack, onOtp }) {
   return (
     <>
       <BackBtn onClick={onBack} />
-      <img src="/assets/images/logo.png" alt="TourWatchOut" style={s.logo} />
+      <img src="/assets/images/dark-logo.svg" alt="TourWatchOut" style={s.logo} />
       <h1 style={s.title}>Create Your Account</h1>
       <p style={s.subtitle}>Join TourWatchOut and discover your next unforgettable journey.</p>
       <form onSubmit={handleSubmit} style={s.form} noValidate>
@@ -373,7 +373,7 @@ function OtpForm({ email, name, onBack, onSuccess }) {
   return (
     <>
       <BackBtn onClick={onBack} />
-      <img src="/assets/images/logo.png" alt="TourWatchOut" style={s.logo} />
+      <img src="/assets/images/dark-logo.svg" alt="TourWatchOut" style={s.logo} />
 
       {/* Email icon */}
       <div style={{ display: "flex", justifyContent: "center", marginBottom: 14 }}>
@@ -485,7 +485,7 @@ function ForgotForm({ onBack }) {
   return (
     <>
       <BackBtn onClick={onBack} />
-      <img src="/assets/images/logo.png" alt="TourWatchOut" style={s.logo} />
+      <img src="/assets/images/dark-logo.svg" alt="TourWatchOut" style={s.logo} />
       <h1 style={s.title}>Forgot Password?</h1>
       <p style={s.subtitle}>Enter your registered email and we'll send you reset instructions.</p>
       {sent ? (

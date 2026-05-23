@@ -183,7 +183,7 @@
     
     /* What Makes Us Section */
     .what-makes-us {
-      padding: 50px 0;
+      padding: 60px 0;
     }
     
     .section-header {
@@ -365,6 +365,8 @@
       display: grid;
       grid-template-columns: 1fr;
       gap: 20px;
+          max-width: 976px;
+    margin: auto;
       margin-bottom: 40px;
     }
     
@@ -382,27 +384,27 @@
       }
     }
     
-    .benefit-item {
-      display: flex;
-      align-items: center;
-      flex-flow: column;
-      border-right: 1px solid #ddd;
-      gap: 16px;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-    }
+.benefit-item {
+    display: flex;
+    align-items: center;
+    /* flex-flow: column; */
+    /* border-right: 1px solid #ddd; */
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+    text-align: left;
+}
     
-    .benefit-icon {
-      /* width: 60px; */
-      /* height: 60px; */
-      /* background-color: #eff3ff; */
-      /* border-radius: 30px; */
-      /* display: flex; */
-      /* align-items: center; */
-      /* justify-content: center; */
-      /* flex-shrink: 0; */
-    }
+  .benefit-icon {
+    width: 60px;
+    height: 60px;
+    background-color: #eff3ff;
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
     
     .benefit-icon img {
       /* width: 38px; */
@@ -2019,11 +2021,14 @@ img.top-bottom-img {
 
 /* amenities row */
 .package-details-tabs .pdt-amenities {
-  display: flex;
-  gap: 12px;
-  margin-top: 30px;
-  color: #495560;
-  flex-wrap: wrap;
+    display: flex;
+    gap: 12px;
+    margin-top: 30px;
+    margin-bottom: 30px;
+    color: #495560;
+    flex-wrap: wrap;
+    border-bottom: 1px solid #E0E0E0;
+    padding-bottom: 30px;
 }
 .package-details-tabs .pdt-amenities .amenity {
   background: rgba(255,255,255,0.02);
@@ -2466,4 +2471,20 @@ background: linear-gradient(to bottom, rgb(0 0 0 / 65%) 0%, rgb(0 0 0 / 40%) 30%
 
 .family-packages .reviews-section {
     padding-top: 50px;
+}
+
+
+.itinerary-page .pkg-tabs-bar{
+ margin:0!important;
+}
+
+.pkg-subtabs-row--fixed{
+  padding:15px 0px!important;
+}
+
+
+.itinerary-page .package-details-page{
+  margin-top: -30px;
+        z-index: 100;
+        position: relative;
 }

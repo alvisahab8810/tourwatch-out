@@ -762,6 +762,7 @@
   border: 1px solid #f1f5f9;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
   overflow: hidden;
+  margin-top: 20px;
 }
 
 .bk-table-wrap {
@@ -873,6 +874,22 @@
   display: flex;
   gap: 8px;
 }
+
+.bk-view-btn {
+  padding: 6px 18px;
+  border-radius: 7px;
+  border: 1px solid #d1fae5;
+  background: #ecfdf5;
+  color: #059669;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: background 0.15s;
+  display: inline-flex;
+  align-items: center;
+}
+.bk-view-btn:hover { background: #d1fae5; }
 
 .bk-edit-btn {
   padding: 6px 18px;

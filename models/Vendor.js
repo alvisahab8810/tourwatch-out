@@ -4,12 +4,16 @@ const imageSchema = new mongoose.Schema({ src: String, alt: String }, { _id: fal
 
 const hotelRoomSchema = new mongoose.Schema({
   roomType:      String,
+  roomName:      String,   // display name e.g. "Standard Double"
+  bedType:       String,   // e.g. "1 queen bed or 2 Single beds"
+  roomSize:      String,   // e.g. "Normal Size Room"
   pricePerNight: Number,
   cp:            Number,
   map:           Number,
   ap:            Number,
   guests:        { type: Number, default: 2 },
   amenities:     [String],
+  gallery:       [imageSchema],
 }, { _id: false });
 
 const vehicleSchema = new mongoose.Schema({
@@ -45,6 +49,7 @@ const VendorSchema = new mongoose.Schema(
       countryCode:   { type: String, default: "+91" },
       contactNumber: String,
     },
+    starRating: { type: Number },   // hotel star rating e.g. 3.5
     hotelRooms: [hotelRoomSchema],
     vehicles:   [vehicleSchema],
     activities: [activitySchema],
@@ -53,4 +58,5 @@ const VendorSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+if (process.env.NODE_ENV !== "production") delete mongoose.models["Vendor"];
 export default mongoose.models.Vendor || mongoose.model("Vendor", VendorSchema);

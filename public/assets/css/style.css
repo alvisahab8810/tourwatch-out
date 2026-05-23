@@ -1746,7 +1746,7 @@ section.national-dest .swiper-slide{
 }
 
 .national-list-bx > div{
-    width:calc(33.33% - 10px);
+    width:calc(50% - 10px);
     margin-bottom: 20px;
 
 }
@@ -4512,7 +4512,7 @@ section.blogs-list-section.ptb-80 {
 .dfn-about .dfn-intro{display:flex;gap:10px;align-items:flex-start;}
 .dfn-about .dfn-intro .info-icon{width:22px;height:22px;flex-shrink:0;margin-top:2px;}
 .dfn-about .dfn-intro p{margin:0;line-height:1.6;color:#374151; text-align: justify;}
-.dfn-highlights{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px;}
+.dfn-highlights{display:flex;gap:14px;flex-wrap:nowrap;margin-top:8px;}
 .dfn-highlights img {
     min-width: 50%;
     max-width: 50%;
@@ -6016,12 +6016,12 @@ h3.contact-hero-subtitle {
 
 .family-layout {
   display: flex;
-  gap: 20px;
+  gap: 35px;
   align-items: flex-start;
 }
 
 .family-filter-sidebar {
-  width: 240px;
+  width: 320px;
   flex-shrink: 0;
   position: sticky;
   top: 100px;
@@ -6040,6 +6040,7 @@ h3.contact-hero-subtitle {
   border: 1px solid #e5e7eb;
   border-radius: 5px;
   overflow: hidden;
+      padding: 10px;
 }
 
 .ffp-header {
@@ -6387,55 +6388,69 @@ h3.contact-hero-subtitle {
 
 /* Inner container — keeps tab buttons constrained to 1280px when bar is full-width fixed */
 .pkg-tabs-inner {
-  display: flex;
-  width: 100%;
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 0;
-  box-sizing: border-box;
+      display: flex;
+    width: 100%;
+    gap: 16px;
+    /* padding: 10px 0px !important; */
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 /* Main sticky tab bar — position is set via JS (fixed when scrolled past sentinel) */
 .pkg-tabs-bar {
-  z-index: 80;
-  display: flex;
-  flex-direction: column;
-  background: #fff;
-  border-bottom: 1.5px solid #e5e7eb;
-  margin-bottom: 0;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    margin-top: 35px;
+    background: #fff;
+    border-bottom: 1.5px solid #e5e7eb;
 }
 .pkg-tab-item {
-  /* flex: 1; */
-  padding: 14px 10px;
-  font-size: 14px;
-  font-weight: 600;
-  color: #6b7280;
-  background: none;
-  border: none;
-  border-bottom: 3px solid transparent;
-  cursor: pointer;
-  transition: color 0.2s, border-color 0.2s;
-  font-family: inherit;
-  letter-spacing: 0.01em;
+    flex: 1;
+    padding: 14px 10px;
+    font-size: 17.6px;
+    line-height: 17.6px;
+    font-weight: 600;
+    color: #18191F;
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+    font-family: inherit;
+    letter-spacing: 0.01em;
 }
 .pkg-tab-item.active {
-  color: #e84949;
-  border-bottom-color: #e84949;
+    color: #26828D;
+    border-bottom-color: #26828D;
+    background: #F5FCFD;
 }
-.pkg-tab-item:hover { color: #e84949; }
+.pkg-tab-item:hover { color: #26828D; }
 
 /* Content sections */
 .pkg-section {
   padding: 10px 0 8px;
   border-bottom: 1px solid #f0f0f0;
-  margin-bottom: 4px;
 }
+.pdt-itinerary{
+  margin-top: 20px;
 
+
+}
 /* Sub-tabs row (second row inside .pkg-tabs-bar) */
 .pkg-subtabs-row {
   border-top: 1px solid #f0f0f0;
   padding-top: 0;
+}
+
+/* When tab bar is fixed/sticky */
+.pkg-tabs-bar--fixed .pkg-tab-item {
+  flex: 0 0 auto;
+}
+.pkg-subtabs-row--fixed {
+  padding: 10px 0;
 }
 
 /* Sub-tabs (Stay | Transfers | Activities) — position set via JS when fixed */
@@ -6450,22 +6465,22 @@ h3.contact-hero-subtitle {
   box-shadow: 0 1px 4px rgba(0,0,0,0.04);
 }
 .pkg-sub-tab {
-  padding: 10px 20px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #6b7280;
-  background: none;
-  border: none;
-  border-bottom: 2.5px solid transparent;
-  cursor: pointer;
-  font-family: inherit;
-  transition: color 0.2s, border-color 0.2s;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 8.37px;
+    background: #F9F6F8;
+    color: #26828D;
+    border: 1px solid #EDEDED;
+    font-family: inherit;
+    transition: color 0.2s, border-color 0.2s;
 }
 .pkg-sub-tab.active {
-  color: #e84949;
-  border-bottom-color: #e84949;
+    color: #26828D;
+    border: 1px solid #3CB5C3;
+    border-radius: 8.37px;
 }
-.pkg-sub-tab:hover { color: #e84949; }
+.pkg-sub-tab:hover { color: #26828D; }
 
 /* Sub-section wrapper (Stay / Transfers / Activities) */
 .pkg-sub-section {
@@ -6483,7 +6498,7 @@ h3.contact-hero-subtitle {
   margin-bottom: 16px;
 }
 .pkg-vendor-card {
-  border-radius: 14px;
+  border-radius: 7.88px;
   overflow: hidden;
   box-shadow: 0 2px 12px rgba(0,0,0,0.10);
   background: #fff;
@@ -6516,10 +6531,11 @@ h3.contact-hero-subtitle {
   padding: 14px 16px 16px;
 }
 .pkg-vendor-name {
-  font-size: 15px;
-  font-weight: 700;
-  color: #1f2937;
-  margin: 0 0 8px;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 14.3px;
+    color: #1f2937;
+    margin: 0 0 12px !important;
 }
 .pkg-vendor-meta {
   display: flex;
@@ -6528,12 +6544,14 @@ h3.contact-hero-subtitle {
   margin-bottom: 10px;
 }
 .pkg-vendor-badge {
-  background: #eff6ff;
-  color: #2563eb;
-  font-size: 11px;
-  font-weight: 700;
-  padding: 3px 10px;
-  border-radius: 20px;
+    background: #eff6ff;
+    color: #2563eb;
+    font-size: 11px;
+    display: flex;
+    font-weight: 700;
+    padding: 5px 15px;
+    align-items: center;
+    border-radius: 20px;
 }
 .pkg-vendor-addr,
 .pkg-vendor-phone {
@@ -6563,12 +6581,12 @@ h3.contact-hero-subtitle {
   margin-top: 8px;
 }
 .pkg-incl-chip {
-  background: #fef3c7;
-  color: #92400e;
-  font-size: 11px;
-  padding: 3px 9px;
-  border-radius: 20px;
-  font-weight: 600;
+    background: #f9f6f8;
+    color: #26828d;
+    font-size: 11px;
+    padding: 3px 9px;
+    border-radius: 20px;
+    font-weight: 600;
 }
 
 /* Highlights section */
@@ -6585,7 +6603,7 @@ h3.contact-hero-subtitle {
 }
 .pkg-highlights-text {
   font-size: 14px;
-  color: #4b5563;
+  color: #111;
   line-height: 1.7;
   margin-bottom: 14px;
 }
@@ -6609,15 +6627,117 @@ h3.contact-hero-subtitle {
   margin-top: 1px;
 }
 
+/* ── Stay card enhanced fields ── */
+.pkg-stay-room-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  margin: 2px 0 6px;
+}
+.pkg-stay-bed-type {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10.75px;
+    color: #111;
+    margin-bottom: 15px;
+}
+.pkg-stay-bed-type svg { flex-shrink: 0; color: #111; }
+.pkg-stay-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.pkg-stay-star-tag {
+    background: #F2F4FC;
+    color: #495560;
+    font-size: 9.86px;
+    display: flex;
+    align-items: center;
+    font-weight: 700;
+    padding: 5px 15px;
+    border-radius: 20px;
+}
+.pkg-stay-size-tag {
+    background: #E9FDFF;
+    color: #26828D;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 5px 9px;
+    border-radius: 20px;
+}
+.pkg-stay-amenities {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 9px;
+    margin-bottom: 15px;
+    margin-top: 15px;
+}
+.pkg-stay-amenity {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12.9px;
+    color: #1C1C1C;
+}
+.pkg-am-icon { width: 16px; height: 16px; object-fit: contain; flex-shrink: 0; }
+.pkg-am-icon-fallback { font-size: 13px; line-height: 1; }
+
 /* Swiper pagination dots in vendor cards */
-.pkg-vendor-swiper .swiper-pagination-bullet { background: #fff; opacity: 0.6; }
-.pkg-vendor-swiper .swiper-pagination-bullet-active { background: #fff; opacity: 1; }
+.pkg-vendor-swiper .swiper-pagination-bullet {
+  background: #fff;
+  opacity: 0.5;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  transition: width 0.3s ease, opacity 0.3s ease, border-radius 0.3s ease;
+}
+.pkg-vendor-swiper .swiper-pagination-bullet-active {
+  background: #fff;
+  opacity: 1;
+  width: 24px;
+  border-radius: 4px;
+}
+
+/* Inline sub-tabs (Stays | Transfers | Activities) always visible in Inclusions */
+.pkg-inline-subtabs {
+  display: flex;
+  gap: 8px;
+     margin-top: 30px;
+    margin-bottom: 40px;
+  /* border-bottom: 2px solid #f3f4f6; */
+  padding-bottom: 0;
+}
+
+
+.pkg-inline-subtab {
+    padding: 10px 18px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 8.37px;
+    background: #F9F6F8;
+    color: #26828D;
+    border: 1px solid #EDEDED;
+}
+.pkg-inline-subtab:hover { color: #26828D; }
+.pkg-inline-subtab.active { color: #26828D; border: 1px solid #26828D; }
+
+/* "Stay 1 / Stay 2" label above card image */
+.pkg-card-stay-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #374151;
+  padding: 10px 14px 6px;
+  letter-spacing: 0.01em;
+}
 
 /* Sub-section headings (Stay / Transfers / Activities) */
 .pkg-sub-section-header {
   display: flex;
   align-items: center;
-  margin-bottom: 12px;
+     margin-bottom: 20px;
+    margin-top: 15px;
 }
 .pkg-sub-section-title {
   font-size: 16px;
@@ -6625,7 +6745,7 @@ h3.contact-hero-subtitle {
   color: #1f2937;
   margin: 0;
   padding-left: 12px;
-  border-left: 3px solid #e84949;
+      border-left: 3px solid #26828D;
   line-height: 1.2;
 }
 
@@ -6657,9 +6777,48 @@ h3.contact-hero-subtitle {
 @media (max-width: 600px) {
   .pkg-vendor-cards { grid-template-columns: 1fr; }
   .pkg-tabs-bar { overflow-x: auto; }
-  .pkg-tab-item { flex: 0 0 auto; padding: 12px 14px; }
-  .pkg-sub-tab { flex: 0 0 auto; padding: 10px 14px; }
-  .pkg-tabs-inner { padding: 0 12px; }
+  .pkg-tab-item { flex: 0 0 auto; padding: 12px 14px;  font-size: 13px; }
+  .pkg-sub-tab { flex: 0 0 auto; padding: 7px 14px; font-size: 13px;
+    .pkg-subtabs-row--fixed {
+    padding: 15px 15px !important;
+}
+
+.pkg-stay-amenity {
+    
+    font-size: 10.9px;
+}
+}
+  .pkg-tabs-inner { padding: 0 0; }
   .pkg-sub-section-title { font-size: 14px; }
   .pkg-vendor-img, .pkg-vendor-img-placeholder, .pkg-vendor-swiper { height: 170px; }
+  .pkg-inline-subtab {
+    padding: 7px 15px;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 8.37px;
+    background: #F9F6F8;
+    color: #26828D;
+    border: 1px solid #EDEDED;
+}
+.pkg-inline-subtabs {
+    margin-top: 10px;
+    margin-bottom: 17px;
+    padding-bottom: 0;
+    justify-content: center;
+}
+}
+
+
+
+.inclusion-head{
+    color: #047857!important;
+}
+
+
+.inclusion-head{
+    color: #047857!important;
+}
+
+.exclusion-head{
+    color: #B91C21!important;
 }

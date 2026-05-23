@@ -18,7 +18,11 @@ const BUSINESS_TYPES = {
 
 const VEHICLE_TYPES  = ["Sedan", "SUV", "XUV", "Hatchback", "Innova", "Fortuner", "Tempo Traveller", "Mini Bus", "Bus"];
 const ROOM_TYPES     = ["Standard", "Deluxe", "Premium", "Suite", "Economy", "Luxury"];
-const HOTEL_AMENITIES = ["Breakfast", "WiFi", "Pool", "Gym", "Parking", "AC", "Room Service", "Laundry"];
+const HOTEL_AMENITIES = [
+  "Breakfast", "Breakfast & Dinner", "Lunch", "Dinner", "All Meals",
+  "WiFi", "Pool", "Gym", "Parking", "AC", "Elevator",
+  "Room Service", "Laundry", "Spa", "Bar", "Restaurant",
+];
 const VEH_INCLUSIONS  = ["Toll & Parking", "Driver Allowance", "Fuel", "Night Charges"];
 
 const COUNTRY_CODES = [
@@ -34,10 +38,11 @@ const EMPTY_FORM = {
   businessName:   "",
   typeOfBusiness: "",
   place:          "",
+  starRating:     "",
   image:          { src: "", alt: "" },
   gallery:        [],
   contactPerson:  { position: "Mr", firstName: "", lastName: "", email: "", countryCode: "+91 (India)", contactNumber: "" },
-  hotelRooms:  [{ roomType: "", pricePerNight: "", cp: "", map: "", ap: "", guests: 2, amenities: [] }],
+  hotelRooms:  [{ roomType: "", roomName: "", bedType: "", roomSize: "", pricePerNight: "", cp: "", map: "", ap: "", guests: 2, amenities: [], gallery: [] }],
   vehicles:    [{ vehicleImage: { src: "", alt: "" }, vehicleType: "", pricePerDay: "", passengers: "", inclusions: [] }],
   activities:  [{ activityImage: { src: "", alt: "" }, activityName: "", pricePerPerson: "", duration: "", description: "" }],
   status: "Active",
@@ -102,11 +107,12 @@ function VendorModal({ initial, onSave, onClose, saving }) {
   const [form, setForm]             = useState(initial);
   const [imgPreview, setImgPreview] = useState(initial.image?.src || "");
 
-  const mainImgRef     = useRef();
-  const vehicleImgRef  = useRef();
-  const activityImgRef = useRef();
-  const galleryImgRef  = useRef();
-  const pendingRow     = useRef(null);
+  const mainImgRef       = useRef();
+  const vehicleImgRef    = useRef();
+  const activityImgRef   = useRef();
+  const galleryImgRef    = useRef();
+  const roomGalleryRef   = useRef();
+  const pendingRow       = useRef(null);
 
   /* ── generic field setters ── */
   function set(f, v) { setForm(p => ({ ...p, [f]: v })); }
@@ -124,7 +130,7 @@ function VendorModal({ initial, onSave, onClose, saving }) {
       return { ...p, hotelRooms: a };
     });
   }
-  function addRoom()        { setForm(p => ({ ...p, hotelRooms: [...p.hotelRooms, { roomType: "", pricePerNight: "", cp: "", map: "", ap: "", guests: 2, amenities: [] }] })); }
+  function addRoom()        { setForm(p => ({ ...p, hotelRooms: [...p.hotelRooms, { roomType: "", roomName: "", bedType: "", roomSize: "", pricePerNight: "", cp: "", map: "", ap: "", guests: 2, amenities: [], gallery: [] }] })); }
   function removeRoom(idx)  { setForm(p => ({ ...p, hotelRooms: p.hotelRooms.filter((_, i) => i !== idx) })); }
 
   /* ── vehicles ── */
@@ -161,6 +167,27 @@ function VendorModal({ initial, onSave, onClose, saving }) {
     const idx = pendingRow.current;
     toBase64(file, src => setAct(idx, "activityImage", { src, alt: file.name }));
     e.target.value = "";
+  }
+
+  /* ── room gallery ── */
+  function openRoomGallery(idx) { pendingRow.current = idx; roomGalleryRef.current.click(); }
+  function handleRoomGallery(e) {
+    const idx = pendingRow.current;
+    Array.from(e.target.files).forEach(file =>
+      toBase64(file, src => setForm(p => {
+        const rooms = [...p.hotelRooms];
+        rooms[idx] = { ...rooms[idx], gallery: [...(rooms[idx].gallery || []), { src, alt: file.name }] };
+        return { ...p, hotelRooms: rooms };
+      }))
+    );
+    e.target.value = "";
+  }
+  function removeRoomGalleryImg(roomIdx, imgIdx) {
+    setForm(p => {
+      const rooms = [...p.hotelRooms];
+      rooms[roomIdx] = { ...rooms[roomIdx], gallery: (rooms[roomIdx].gallery || []).filter((_, i) => i !== imgIdx) };
+      return { ...p, hotelRooms: rooms };
+    });
   }
 
   /* ── gallery (hotel photos) ── */
@@ -273,43 +300,51 @@ function VendorModal({ initial, onSave, onClose, saving }) {
                     </select>
                   </div>
                   <div style={S.fieldGroup}>
-                    <label style={S.label}>Business Name</label>
+                    <label style={S.label}>Business Name (Hotel Name)</label>
                     <input style={S.input} placeholder="Enter Business Name" value={form.businessName} onChange={e => set("businessName", e.target.value)} />
                   </div>
-                  <div style={S.fieldGroup}>
-                    <label style={S.label}>Place</label>
-                    <input style={S.input} placeholder="e.g. Kashmir, J&K" value={form.place} onChange={e => set("place", e.target.value)} />
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 120px", gap: 10 }}>
+                    <div style={S.fieldGroup}>
+                      <label style={S.label}>Place</label>
+                      <input style={S.input} placeholder="e.g. Kashmir, J&K" value={form.place} onChange={e => set("place", e.target.value)} />
+                    </div>
+                    <div style={S.fieldGroup}>
+                      <label style={S.label}>Star Rating</label>
+                      <input style={S.input} type="number" min="1" max="5" step="0.5" placeholder="e.g. 3.5" value={form.starRating || ""} onChange={e => set("starRating", e.target.value)} />
+                    </div>
                   </div>
                 </div>
               </div>
 
               {contactJSX}
 
-              {/* Gallery */}
-              <div style={S.sectionHead}>Gallery Images (Hotel Photos)</div>
-              <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 4 }}>
-                {(form.gallery || []).map((img, i) => (
-                  <div key={i} style={{ position: "relative", width: 72, height: 72 }}>
-                    <img src={img.src} alt={img.alt} style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: 6 }} />
-                    <button onClick={() => removeGalleryImg(i)} style={{ position: "absolute", top: 2, right: 2, background: "rgba(0,0,0,0.5)", color: "#fff", border: "none", borderRadius: "50%", width: 18, height: 18, cursor: "pointer", fontSize: 11, display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
-                  </div>
-                ))}
-                <div style={{ width: 72, height: 72, border: "2px dashed #cbd5e1", borderRadius: 6, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", background: "#f8fafc" }}
-                  onClick={() => galleryImgRef.current.click()}>
-                  <MdAdd size={22} color="#94a3b8" />
-                </div>
-              </div>
-              <input ref={galleryImgRef} type="file" accept="image/*" multiple hidden onChange={handleGallery} />
+              <input ref={roomGalleryRef} type="file" accept="image/*" multiple hidden onChange={handleRoomGallery} />
 
               {/* Room Categories */}
               <div style={S.sectionHead}>Room Categories & Pricing</div>
               {form.hotelRooms.map((room, idx) => (
                 <div key={idx} style={{ border: "1px solid #e2e8f0", borderRadius: 10, padding: "12px 14px", marginBottom: 10, background: "#fafafa", position: "relative" }}>
 
+                  {/* Row 0: Room display name + bed type + room size */}
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: 10 }}>
+                    <div>
+                      <label style={S.label}>Room Display Name</label>
+                      <input style={S.input} placeholder="e.g. Standard Double" value={room.roomName || ""} onChange={e => setRoom(idx, "roomName", e.target.value)} />
+                    </div>
+                    <div>
+                      <label style={S.label}>Bed Type</label>
+                      <input style={S.input} placeholder="e.g. 1 queen bed or 2 Single beds" value={room.bedType || ""} onChange={e => setRoom(idx, "bedType", e.target.value)} />
+                    </div>
+                    <div>
+                      <label style={S.label}>Room Size / Tag</label>
+                      <input style={S.input} placeholder="e.g. Normal Size Room" value={room.roomSize || ""} onChange={e => setRoom(idx, "roomSize", e.target.value)} />
+                    </div>
+                  </div>
+
                   {/* Row 1: Room Type + pricing fields + Guests */}
                   <div style={{ display: "grid", gridTemplateColumns: "1.6fr 1fr 1fr 1fr 1fr 68px", gap: 10, marginBottom: 10 }}>
                     <div>
-                      <label style={S.label}>Room Type</label>
+                      <label style={S.label}>Room Category</label>
                       <select style={S.select} value={room.roomType} onChange={e => setRoom(idx, "roomType", e.target.value)}>
                         <option value="">Select Type</option>
                         {ROOM_TYPES.map(r => <option key={r}>{r}</option>)}
@@ -338,7 +373,7 @@ function VendorModal({ initial, onSave, onClose, saving }) {
                   </div>
 
                   {/* Row 2: Amenities */}
-                  <div>
+                  <div style={{ marginBottom: 10 }}>
                     <label style={S.label}>Amenities</label>
                     <div style={{ display: "flex", flexWrap: "wrap", gap: "5px 14px" }}>
                       {HOTEL_AMENITIES.map(am => (
@@ -347,6 +382,24 @@ function VendorModal({ initial, onSave, onClose, saving }) {
                           {am}
                         </label>
                       ))}
+                    </div>
+                  </div>
+
+                  {/* Row 3: Room Gallery */}
+                  <div>
+                    <label style={S.label}>Room Photos</label>
+                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 4 }}>
+                      {(room.gallery || []).map((img, j) => (
+                        <div key={j} style={{ position: "relative", width: 64, height: 64 }}>
+                          <img src={img.src} alt={img.alt} style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: 6 }} />
+                          <button onClick={() => removeRoomGalleryImg(idx, j)} style={{ position: "absolute", top: 2, right: 2, background: "rgba(0,0,0,0.5)", color: "#fff", border: "none", borderRadius: "50%", width: 16, height: 16, cursor: "pointer", fontSize: 10, display: "flex", alignItems: "center", justifyContent: "center", padding: 0 }}>✕</button>
+                        </div>
+                      ))}
+                      <div
+                        onClick={() => openRoomGallery(idx)}
+                        style={{ width: 64, height: 64, border: "2px dashed #cbd5e1", borderRadius: 6, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", background: "#f8fafc" }}>
+                        <MdAdd size={20} color="#94a3b8" />
+                      </div>
                     </div>
                   </div>
 
@@ -410,7 +463,7 @@ function VendorModal({ initial, onSave, onClose, saving }) {
                       </select>
                     </div>
                     <div>
-                      <label style={S.label}>Price per Night</label>
+                      <label style={S.label}>Price per Day</label>
                       <input style={S.input} type="number" placeholder="e.g. 2300" value={veh.pricePerDay} onChange={e => setVeh(idx, "pricePerDay", e.target.value)} />
                     </div>
                     <div>
@@ -556,10 +609,23 @@ export default function VendorsPage() {
     setSaving(true);
     try {
       const isEdit = !!form.id;
+      // Coerce numeric fields so Mongoose doesn't get empty strings for Number fields
+      const payload = {
+        ...form,
+        starRating: form.starRating !== "" && form.starRating != null ? Number(form.starRating) : undefined,
+        hotelRooms: (form.hotelRooms || []).map(r => ({
+          ...r,
+          pricePerNight: r.pricePerNight !== "" ? Number(r.pricePerNight) || 0 : 0,
+          cp:            r.cp  !== "" ? Number(r.cp)  || 0 : 0,
+          map:           r.map !== "" ? Number(r.map) || 0 : 0,
+          ap:            r.ap  !== "" ? Number(r.ap)  || 0 : 0,
+          guests:        Number(r.guests) || 2,
+        })),
+      };
       const res = await fetch(isEdit ? `/api/dashboard/vendors/${form.id}` : "/api/dashboard/vendors", {
         method: isEdit ? "PUT" : "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify(payload),
       });
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
@@ -592,7 +658,7 @@ export default function VendorsPage() {
       ...EMPTY_FORM,
       ...v,
       contactPerson: { ...EMPTY_FORM.contactPerson, ...(v.contactPerson || {}) },
-      hotelRooms:    v.hotelRooms?.length    ? v.hotelRooms.map(r => ({ roomType: r.roomType || "", pricePerNight: r.pricePerNight ?? "", cp: r.cp ?? "", map: r.map ?? "", ap: r.ap ?? "", guests: r.guests ?? 2, amenities: r.amenities || [] }))    : EMPTY_FORM.hotelRooms,
+      hotelRooms:    v.hotelRooms?.length    ? v.hotelRooms.map(r => ({ roomType: r.roomType || "", roomName: r.roomName || "", bedType: r.bedType || "", roomSize: r.roomSize || "", pricePerNight: r.pricePerNight ?? "", cp: r.cp ?? "", map: r.map ?? "", ap: r.ap ?? "", guests: r.guests ?? 2, amenities: r.amenities || [], gallery: r.gallery || [] }))    : EMPTY_FORM.hotelRooms,
       vehicles:      v.vehicles?.length      ? v.vehicles      : EMPTY_FORM.vehicles,
       activities:    v.activities?.length    ? v.activities    : EMPTY_FORM.activities,
       gallery:       v.gallery || [],
