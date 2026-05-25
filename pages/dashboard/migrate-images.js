@@ -1,5 +1,5 @@
 import { useState } from "react";
-import DashboardLayout from "../../components/dashboard/DashboardLayout";
+import DashboardLayout from "../../components/backend/DashboardLayout";
 
 export default function MigrateImages() {
   const [status,   setStatus]   = useState("idle");   // idle | running | done | error
