@@ -55,12 +55,26 @@ const DEFAULT_AMENITIES = [
 
 /* ── Image Uploader — uploads immediately on select, stores URL not base64 ── */
 function ImageUploader({ label, value, onChange, hint, accept }) {
-  const fileRef = useRef(null);
-  const [broken,    setBroken]    = useState(false);
+  const fileRef  = useRef(null);
+  const [localSrc,  setLocalSrc]  = useState(null); // data URL for instant preview
   const [uploading, setUploading] = useState(false);
   const [errMsg,    setErrMsg]    = useState("");
+  const [broken,    setBroken]    = useState(false);
 
-  useEffect(() => { setBroken(false); setErrMsg(""); }, [value]);
+  // When value changes from the parent (e.g. loading existing package),
+  // clear the local preview so we use the server URL instead.
+  const prevValue = useRef(value);
+  useEffect(() => {
+    if (prevValue.current !== value) {
+      prevValue.current = value;
+      if (!localSrc) setBroken(false); // reset broken only when not mid-upload
+      setErrMsg("");
+    }
+  }, [value, localSrc]);
+
+  // displaySrc: prefer local data URL (always loads) over server URL
+  const displaySrc = localSrc || value;
+  const hasImage   = Boolean(displaySrc) && (!broken || Boolean(localSrc));
 
   async function handleFile(e) {
     const file = e.target.files[0];
@@ -68,22 +82,27 @@ function ImageUploader({ label, value, onChange, hint, accept }) {
     if (file.size > 5 * 1024 * 1024) { setErrMsg("Max file size is 5 MB"); return; }
     setUploading(true);
     setErrMsg("");
+    setBroken(false);
     const reader = new FileReader();
     reader.onload = async ev => {
+      const dataUrl = ev.target.result;
+      setLocalSrc(dataUrl); // show preview immediately — guaranteed to work
       try {
         const r = await fetch("/api/dashboard/packages/upload-image", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ base64: ev.target.result, name: file.name }),
+          body: JSON.stringify({ base64: dataUrl, name: file.name }),
         });
         if (!r.ok) {
           const err = await r.json().catch(() => ({}));
           throw new Error(err.error || `Upload failed (${r.status})`);
         }
         const { url } = await r.json();
-        onChange(url);
+        onChange(url); // store server URL in form (for save)
+        // keep localSrc so preview stays visible without flickering
       } catch (err) {
         setErrMsg(err.message || "Upload failed — try again");
+        setLocalSrc(null);
       } finally {
         setUploading(false);
       }
@@ -91,21 +110,29 @@ function ImageUploader({ label, value, onChange, hint, accept }) {
     reader.readAsDataURL(file);
   }
 
+  function handleRemove(e) {
+    e.stopPropagation();
+    setLocalSrc(null);
+    setBroken(false);
+    setErrMsg("");
+    onChange(null);
+  }
+
   return (
     <div className="bk-img-col">
       <div className="bk-img-col-header">
         <span className="bk-img-col-title">{label}</span>
-        <span className={`bk-img-status-icon ${value && !broken ? "uploaded" : ""}`}>
+        <span className={`bk-img-status-icon ${hasImage ? "uploaded" : ""}`}>
           {uploading
             ? <span style={{ fontSize: 11, color: "#6366f1", fontWeight: 700 }}>Uploading…</span>
-            : value && !broken
+            : hasImage
               ? <MdCheckCircle size={22} />
               : <MdMoreHoriz size={22} />}
         </span>
       </div>
       {hint && <p className="bk-img-note"><strong>Note:</strong> {hint}</p>}
       <div
-        className={`bk-upload-area ${value && !broken ? "has-image" : ""}`}
+        className={`bk-upload-area ${hasImage ? "has-image" : ""}`}
         onClick={() => !uploading && fileRef.current?.click()}
         style={{ cursor: uploading ? "wait" : "pointer", opacity: uploading ? 0.7 : 1 }}
       >
@@ -113,10 +140,15 @@ function ImageUploader({ label, value, onChange, hint, accept }) {
           <div className="bk-upload-placeholder">
             <span style={{ fontSize: 13, color: "#6366f1", fontWeight: 600 }}>Uploading image…</span>
           </div>
-        ) : value && !broken ? (
+        ) : hasImage ? (
           <>
-            <img src={value} alt={label} className="bk-upload-preview" onError={() => setBroken(true)} />
-            <button className="bk-upload-remove" onClick={e => { e.stopPropagation(); onChange(null); }}>
+            <img
+              src={displaySrc}
+              alt={label}
+              className="bk-upload-preview"
+              onError={() => { if (!localSrc) setBroken(true); }}
+            />
+            <button className="bk-upload-remove" onClick={handleRemove}>
               <MdClose size={14} />
             </button>
           </>
@@ -141,7 +173,10 @@ function ImageUploader({ label, value, onChange, hint, accept }) {
 function DayIconUploader({ value, onChange }) {
   const fileRef = useRef(null);
   const [uploading, setUploading] = useState(false);
-  const isUrl = value && (value.startsWith("/") || value.startsWith("http"));
+  const [localSrc,  setLocalSrc]  = useState(null);
+
+  const displaySrc = localSrc || value;
+  const hasIcon    = Boolean(displaySrc);
 
   async function handleFile(e) {
     const file = e.target.files[0];
@@ -150,17 +185,20 @@ function DayIconUploader({ value, onChange }) {
     setUploading(true);
     const reader = new FileReader();
     reader.onload = async ev => {
+      const dataUrl = ev.target.result;
+      setLocalSrc(dataUrl); // instant preview
       try {
         const r = await fetch("/api/dashboard/packages/upload-image", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ base64: ev.target.result, name: file.name }),
+          body: JSON.stringify({ base64: dataUrl, name: file.name }),
         });
         if (!r.ok) throw new Error("Upload failed");
         const { url } = await r.json();
         onChange(url);
       } catch {
         alert("Icon upload failed — try again");
+        setLocalSrc(null);
       } finally {
         setUploading(false);
       }
@@ -173,10 +211,10 @@ function DayIconUploader({ value, onChange }) {
       style={{ cursor: uploading ? "wait" : "pointer", opacity: uploading ? 0.6 : 1 }}>
       {uploading ? (
         <div className="bk-day-icon-placeholder"><span style={{ fontSize: 10, color: "#6366f1" }}>…</span></div>
-      ) : isUrl ? (
+      ) : hasIcon ? (
         <>
-          <img src={value} alt="icon" className="bk-day-icon-img" />
-          <button className="bk-day-icon-remove" onClick={e => { e.stopPropagation(); onChange(""); }}>
+          <img src={displaySrc} alt="icon" className="bk-day-icon-img" />
+          <button className="bk-day-icon-remove" onClick={e => { e.stopPropagation(); setLocalSrc(null); onChange(""); }}>
             <MdClose size={11} />
           </button>
         </>
