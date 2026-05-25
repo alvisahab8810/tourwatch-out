@@ -278,6 +278,10 @@ export default function CreateBlog() {
   const [showColors,   setShowColors]   = useState(false);
   const [uploadingImg, setUploadingImg] = useState(false);
   const [contentMode,  setContentMode]  = useState("write"); // "write" | "split" | "preview"
+  const [aiPanelOpen,  setAiPanelOpen]  = useState(false);
+  const [aiTopic,      setAiTopic]      = useState("");
+  const [aiFillMeta,   setAiFillMeta]   = useState(true);
+  const [aiGenerating, setAiGenerating] = useState(false);
 
   const contentRef   = useRef(null);
   const imgInsertRef = useRef(null);
@@ -388,6 +392,77 @@ export default function CreateBlog() {
   const removeFaq = i          => setForm(p => ({ ...p, faqs: p.faqs.filter((_, idx) => idx !== i) }));
   const updateFaq = (i, k, v)  => setForm(p => ({ ...p, faqs: p.faqs.map((q, idx) => idx === i ? { ...q, [k]: v } : q) }));
 
+  /* ── AI Blog Generator ── */
+  async function generateBlogContent() {
+    if (!aiTopic.trim()) return;
+    setAiGenerating(true);
+    let accumulated = "";
+    try {
+      const r = await fetch("/api/dashboard/generate-blog", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ topic: aiTopic, fillMeta: aiFillMeta }),
+      });
+      if (!r.ok) throw new Error("Generation failed");
+
+      const reader  = r.body.getReader();
+      const decoder = new TextDecoder();
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        accumulated += decoder.decode(value, { stream: true });
+
+        // If fillMeta, split content from the JSON tail — don't show JSON in editor
+        const sepIdx = accumulated.indexOf("METAJSON_START");
+        const displayContent = sepIdx >= 0 ? accumulated.slice(0, sepIdx).trimEnd() : accumulated;
+        setForm(p => ({ ...p, content: displayContent }));
+      }
+
+      // Parse meta block if present
+      if (aiFillMeta) {
+        const sepIdx = accumulated.indexOf("METAJSON_START");
+        if (sepIdx >= 0) {
+          try {
+            const metaJson = accumulated.slice(sepIdx + "METAJSON_START".length).trim();
+            const meta = JSON.parse(metaJson);
+            setForm(p => ({
+              ...p,
+              content: accumulated.slice(0, sepIdx).trimEnd(),
+              ...(meta.metaTitle       ? { metaTitle:       meta.metaTitle       } : {}),
+              ...(meta.metaDescription ? { metaDescription: meta.metaDescription } : {}),
+              ...(meta.summary         ? { summary:         meta.summary         } : {}),
+              ...(meta.tags            ? { tags:            meta.tags            } : {}),
+              ...(meta.categories      ? { categories:      meta.categories      } : {}),
+            }));
+            // Auto-fill title from first # heading if title is empty
+            const titleMatch = accumulated.match(/^#\s+(.+)/m);
+            if (titleMatch && !form.title.trim()) {
+              const t = titleMatch[1].trim();
+              setForm(p => ({ ...p, title: t }));
+              if (!slugManual) setForm(p => ({ ...p, slug: slugify(t) }));
+            }
+          } catch (_) {}
+        }
+      } else {
+        // Auto-fill title from first # heading if title is empty
+        const titleMatch = accumulated.match(/^#\s+(.+)/m);
+        if (titleMatch && !form.title.trim()) {
+          const t = titleMatch[1].trim();
+          setForm(p => ({ ...p, title: t }));
+          if (!slugManual) setForm(p => ({ ...p, slug: slugify(t) }));
+        }
+      }
+
+      setContentMode("split");
+      showToast("success", "Blog content generated! Review and edit before publishing.");
+    } catch (e) {
+      showToast("error", "AI generation failed: " + e.message);
+    } finally {
+      setAiGenerating(false);
+    }
+  }
+
   /* ── Save ── */
   async function saveBlog(status) {
     if (!form.title.trim()) { showToast("warning", "Title is required before saving."); return; }
@@ -437,6 +512,7 @@ export default function CreateBlog() {
             from { opacity: 0; transform: translateX(64px) scale(0.95); }
             to   { opacity: 1; transform: translateX(0)   scale(1);    }
           }
+          @keyframes spin { to { transform: rotate(360deg); } }
         `}</style>
       </Head>
 
@@ -473,8 +549,16 @@ export default function CreateBlog() {
 
               {/* ── Content Editor ── */}
               <div style={s.card}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-                  <h2 style={{ ...s.cardTitle, margin: 0 }}>Content</h2>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12, flexWrap: "wrap", gap: 8 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <h2 style={{ ...s.cardTitle, margin: 0 }}>Content</h2>
+                    <button
+                      onClick={() => setAiPanelOpen(p => !p)}
+                      style={{ display: "inline-flex", alignItems: "center", gap: 5, background: aiPanelOpen ? "linear-gradient(135deg,#6366f1,#8b5cf6)" : "#f5f3ff", color: aiPanelOpen ? "#fff" : "#6366f1", border: aiPanelOpen ? "none" : "1.5px solid #e0e7ff", borderRadius: 7, padding: "5px 12px", fontSize: 12, fontWeight: 700, cursor: "pointer", transition: "all 0.2s" }}
+                    >
+                      <span style={{ fontSize: 14 }}>✦</span> Write with AI
+                    </button>
+                  </div>
                   {/* Mode tabs */}
                   <div style={s.modeTabs}>
                     {[["write", <MdEdit key="e" size={13} />, "Write"], ["split", null, "Split"], ["preview", <MdVisibility key="v" size={13} />, "Preview"]].map(([m, icon, label]) => (
@@ -484,6 +568,40 @@ export default function CreateBlog() {
                     ))}
                   </div>
                 </div>
+
+                {/* ── AI Writing Panel ── */}
+                {aiPanelOpen && (
+                  <div style={{ background: "linear-gradient(135deg,#f8f7ff,#f0f4ff)", border: "1.5px solid #e0e7ff", borderRadius: 12, padding: "16px 18px", marginBottom: 14 }}>
+                    <p style={{ fontSize: 11, fontWeight: 800, color: "#6366f1", margin: "0 0 10px", textTransform: "uppercase", letterSpacing: 1 }}>✦ AI Blog Writer</p>
+                    <textarea
+                      rows={3}
+                      style={{ width: "100%", border: "1.5px solid #c7d2fe", borderRadius: 8, padding: "10px 12px", fontSize: 14, outline: "none", boxSizing: "border-box", background: "#fff", color: "#111", fontFamily: "inherit", resize: "vertical", lineHeight: 1.6 }}
+                      placeholder={'Describe the blog you want…\ne.g. "Top 5 things to do in Kashmir for families in summer"\ne.g. "A complete guide to Goa honeymoon packages under 50000"'}
+                      value={aiTopic}
+                      onChange={e => setAiTopic(e.target.value)}
+                      onKeyDown={e => { if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) generateBlogContent(); }}
+                    />
+                    <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 10, flexWrap: "wrap" }}>
+                      <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12.5, color: "#4f46e5", cursor: "pointer", fontWeight: 600 }}>
+                        <input type="checkbox" checked={aiFillMeta} onChange={e => setAiFillMeta(e.target.checked)} style={{ accentColor: "#6366f1", width: 14, height: 14 }} />
+                        Auto-fill title, meta &amp; tags
+                      </label>
+                      <span style={{ fontSize: 11, color: "#a5b4fc", marginLeft: -4 }}>· Ctrl+Enter to generate</span>
+                      <button
+                        onClick={generateBlogContent}
+                        disabled={aiGenerating || !aiTopic.trim()}
+                        style={{ marginLeft: "auto", display: "inline-flex", alignItems: "center", gap: 7, background: aiGenerating || !aiTopic.trim() ? "#e0e7ff" : "linear-gradient(135deg,#6366f1,#8b5cf6)", color: aiGenerating || !aiTopic.trim() ? "#a5b4fc" : "#fff", border: "none", borderRadius: 8, padding: "9px 20px", fontSize: 13, fontWeight: 700, cursor: aiGenerating || !aiTopic.trim() ? "not-allowed" : "pointer", boxShadow: aiGenerating || !aiTopic.trim() ? "none" : "0 3px 12px rgba(99,102,241,0.35)", transition: "all 0.2s" }}
+                      >
+                        {aiGenerating
+                          ? <><span style={{ display: "inline-block", width: 13, height: 13, border: "2px solid #a5b4fc", borderTopColor: "transparent", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} /> Writing blog…</>
+                          : <><span style={{ fontSize: 15 }}>✦</span> Generate Blog</>}
+                      </button>
+                    </div>
+                    {aiGenerating && (
+                      <p style={{ fontSize: 11, color: "#818cf8", margin: "8px 0 0", fontStyle: "italic" }}>✦ AI is writing your blog — content will appear in the editor below as it streams in…</p>
+                    )}
+                  </div>
+                )}
 
                 {/* Toolbar — hidden in preview-only mode */}
                 {contentMode !== "preview" && (

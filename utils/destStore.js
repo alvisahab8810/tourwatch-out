@@ -1,10 +1,18 @@
 // Server-side only — do NOT import in client components
 import fs from "fs";
 import path from "path";
-import connectDB from "./mongodb";
-import PackageImage from "../models/PackageImage";
 
-const DATA_FILE = path.join(process.cwd(), "data", "destinations.json");
+const DATA_FILE    = path.join(process.cwd(), "data", "destinations.json");
+const UPLOADS_ROOT = path.join(process.cwd(), "public", "uploads");
+
+function ensureDir(dir) {
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+}
+
+function getExt(contentType) {
+  const map = { "image/jpeg":"jpg","image/jpg":"jpg","image/png":"png","image/webp":"webp","image/gif":"gif","image/svg+xml":"svg" };
+  return map[contentType] || "jpg";
+}
 
 export function readAll() {
   try {
@@ -19,27 +27,26 @@ export function writeAll(data) {
   fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
 }
 
-// Stores image in MongoDB (same collection as package images).
-// ID format: dest_{destId}__{name}  →  served at /api/images/dest_{destId}__{name}
 export async function saveImage(base64, destId, name) {
   if (!base64 || !base64.startsWith("data:")) return null;
   const match = base64.match(/^data:([^;]+);base64,(.+)$/s);
   if (!match) return null;
 
   try {
-    await connectDB();
     const contentType = match[1];
-    const data        = Buffer.from(match[2], "base64");
-    const id          = `dest_${destId}__${name}`;
+    const buffer      = Buffer.from(match[2], "base64");
+    const ext         = getExt(contentType);
+    const uploadDir   = path.join(UPLOADS_ROOT, "destinations");
+    ensureDir(uploadDir);
 
-    await PackageImage.findByIdAndUpdate(
-      id,
-      { _id: id, data, contentType },
-      { upsert: true }
-    );
-    return `/api/images/${id}`;
+    const safeName = `dest_${destId}__${name}`
+      .replace(/[^a-z0-9._-]/gi, "_")
+      .slice(0, 120);
+    const filename = `${safeName}.${ext}`;
+    fs.writeFileSync(path.join(uploadDir, filename), buffer);
+    return `/uploads/destinations/${filename}`;
   } catch (e) {
-    console.error("[destStore.saveImage] MongoDB save failed:", e.message);
+    console.error("[destStore.saveImage] Filesystem save failed:", e.message);
     return null;
   }
 }

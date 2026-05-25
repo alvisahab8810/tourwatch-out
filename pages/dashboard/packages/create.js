@@ -53,32 +53,67 @@ const DEFAULT_AMENITIES = [
   { name: "DJ Night",        icon: "/assets/images/icons/itinerary/icon8.svg" },
 ];
 
-/* ── Image Uploader ── */
+/* ── Image Uploader — uploads immediately on select, stores URL not base64 ── */
 function ImageUploader({ label, value, onChange, hint, accept }) {
   const fileRef = useRef(null);
-  const [broken, setBroken] = useState(false);
+  const [broken,    setBroken]    = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [errMsg,    setErrMsg]    = useState("");
 
-  useEffect(() => { setBroken(false); }, [value]);
+  useEffect(() => { setBroken(false); setErrMsg(""); }, [value]);
 
-  function handleFile(e) {
+  async function handleFile(e) {
     const file = e.target.files[0];
     if (!file) return;
-    if (file.size > 6 * 1024 * 1024) { alert("Max file size is 6 MB"); return; }
+    if (file.size > 5 * 1024 * 1024) { setErrMsg("Max file size is 5 MB"); return; }
+    setUploading(true);
+    setErrMsg("");
     const reader = new FileReader();
-    reader.onload = ev => onChange(ev.target.result);
+    reader.onload = async ev => {
+      try {
+        const r = await fetch("/api/dashboard/packages/upload-image", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ base64: ev.target.result, name: file.name }),
+        });
+        if (!r.ok) {
+          const err = await r.json().catch(() => ({}));
+          throw new Error(err.error || `Upload failed (${r.status})`);
+        }
+        const { url } = await r.json();
+        onChange(url);
+      } catch (err) {
+        setErrMsg(err.message || "Upload failed — try again");
+      } finally {
+        setUploading(false);
+      }
+    };
     reader.readAsDataURL(file);
   }
+
   return (
     <div className="bk-img-col">
       <div className="bk-img-col-header">
         <span className="bk-img-col-title">{label}</span>
         <span className={`bk-img-status-icon ${value && !broken ? "uploaded" : ""}`}>
-          {value && !broken ? <MdCheckCircle size={22} /> : <MdMoreHoriz size={22} />}
+          {uploading
+            ? <span style={{ fontSize: 11, color: "#6366f1", fontWeight: 700 }}>Uploading…</span>
+            : value && !broken
+              ? <MdCheckCircle size={22} />
+              : <MdMoreHoriz size={22} />}
         </span>
       </div>
       {hint && <p className="bk-img-note"><strong>Note:</strong> {hint}</p>}
-      <div className={`bk-upload-area ${value && !broken ? "has-image" : ""}`} onClick={() => fileRef.current?.click()}>
-        {value && !broken ? (
+      <div
+        className={`bk-upload-area ${value && !broken ? "has-image" : ""}`}
+        onClick={() => !uploading && fileRef.current?.click()}
+        style={{ cursor: uploading ? "wait" : "pointer", opacity: uploading ? 0.7 : 1 }}
+      >
+        {uploading ? (
+          <div className="bk-upload-placeholder">
+            <span style={{ fontSize: 13, color: "#6366f1", fontWeight: 600 }}>Uploading image…</span>
+          </div>
+        ) : value && !broken ? (
           <>
             <img src={value} alt={label} className="bk-upload-preview" onError={() => setBroken(true)} />
             <button className="bk-upload-remove" onClick={e => { e.stopPropagation(); onChange(null); }}>
@@ -94,6 +129,7 @@ function ImageUploader({ label, value, onChange, hint, accept }) {
           <div className="bk-upload-placeholder"><MdImage size={32} /><span>Click to upload</span></div>
         )}
       </div>
+      {errMsg && <p style={{ fontSize: 11, color: "#e84949", margin: "4px 0 0", fontWeight: 600 }}>{errMsg}</p>}
       <input ref={fileRef} type="file"
         accept={accept || "image/svg+xml,image/png,image/jpeg,image/webp"}
         style={{ display: "none" }} onChange={handleFile} onClick={e => { e.target.value = ""; }} />
@@ -104,20 +140,40 @@ function ImageUploader({ label, value, onChange, hint, accept }) {
 /* ── Day Icon Uploader ── */
 function DayIconUploader({ value, onChange }) {
   const fileRef = useRef(null);
-  const isUrl   = value && (value.startsWith("/") || value.startsWith("http") || value.startsWith("data:"));
+  const [uploading, setUploading] = useState(false);
+  const isUrl = value && (value.startsWith("/") || value.startsWith("http"));
 
-  function handleFile(e) {
+  async function handleFile(e) {
     const file = e.target.files[0];
     if (!file) return;
     if (file.size > 2 * 1024 * 1024) { alert("Max 2MB"); return; }
+    setUploading(true);
     const reader = new FileReader();
-    reader.onload = ev => onChange(ev.target.result);
+    reader.onload = async ev => {
+      try {
+        const r = await fetch("/api/dashboard/packages/upload-image", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ base64: ev.target.result, name: file.name }),
+        });
+        if (!r.ok) throw new Error("Upload failed");
+        const { url } = await r.json();
+        onChange(url);
+      } catch {
+        alert("Icon upload failed — try again");
+      } finally {
+        setUploading(false);
+      }
+    };
     reader.readAsDataURL(file);
   }
 
   return (
-    <div className="bk-day-icon-uploader" onClick={() => fileRef.current?.click()} title="Click to upload icon">
-      {isUrl ? (
+    <div className="bk-day-icon-uploader" onClick={() => !uploading && fileRef.current?.click()} title="Click to upload icon"
+      style={{ cursor: uploading ? "wait" : "pointer", opacity: uploading ? 0.6 : 1 }}>
+      {uploading ? (
+        <div className="bk-day-icon-placeholder"><span style={{ fontSize: 10, color: "#6366f1" }}>…</span></div>
+      ) : isUrl ? (
         <>
           <img src={value} alt="icon" className="bk-day-icon-img" />
           <button className="bk-day-icon-remove" onClick={e => { e.stopPropagation(); onChange(""); }}>
@@ -576,6 +632,32 @@ export default function CreatePackage() {
   const removeFaq = i         => setForm(p => ({ ...p, faqs: p.faqs.filter((_, idx) => idx !== i) }));
   const updateFaq = (i, k, v) => setForm(p => ({ ...p, faqs: p.faqs.map((q, idx) => idx === i ? { ...q, [k]: v } : q) }));
 
+  const [faqGenerating, setFaqGenerating] = useState(false);
+  async function generateFaqsWithAI() {
+    setFaqGenerating(true);
+    try {
+      const r = await fetch("/api/dashboard/generate-faqs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          destination:  form.destination,
+          packageName:  form.packageName,
+          packageType:  form.packageType,
+          duration:     form.duration,
+          highlights:   form.destinationHighlights,
+        }),
+      });
+      const data = await r.json();
+      if (!r.ok) throw new Error(data.error || "Failed");
+      setForm(p => ({ ...p, faqs: data }));
+      setToast({ msg: `${data.length} FAQs generated!`, next: null });
+    } catch (e) {
+      alert("AI generation failed: " + e.message);
+    } finally {
+      setFaqGenerating(false);
+    }
+  }
+
   async function saveCustomAmenity(name, iconBase64) {
     try {
       const r = await fetch("/api/dashboard/amenities", {
@@ -639,6 +721,7 @@ export default function CreatePackage() {
     <>
       <Head>
         <title>{`${isEdit ? "Edit" : "Add"} Package — TourWatchOut`}</title>
+        <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
       </Head>
 
           <header className="bk-header">
@@ -1262,11 +1345,23 @@ export default function CreatePackage() {
 
             {/* ── Section 15: FAQs ── */}
             <div className="bk-form-section">
-              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8,flexWrap:"wrap",gap:8}}>
                 <h2 className="bk-section-title" style={{margin:0}}>FAQs</h2>
-                <button onClick={addFaq} style={{display:"inline-flex",alignItems:"center",gap:5,background:"#f0fdf4",color:"#16a34a",border:"1px solid #bbf7d0",borderRadius:7,padding:"7px 14px",fontSize:13,fontWeight:600,cursor:"pointer"}}>
-                  <MdAdd size={15} /> Add FAQ
-                </button>
+                <div style={{display:"flex",gap:8}}>
+                  <button
+                    onClick={generateFaqsWithAI}
+                    disabled={faqGenerating}
+                    style={{display:"inline-flex",alignItems:"center",gap:6,background: faqGenerating ? "#f3f4f6" : "linear-gradient(135deg,#6366f1,#8b5cf6)",color: faqGenerating ? "#9ca3af" : "#fff",border:"none",borderRadius:7,padding:"7px 14px",fontSize:13,fontWeight:600,cursor: faqGenerating ? "not-allowed" : "pointer",boxShadow: faqGenerating ? "none" : "0 2px 8px rgba(99,102,241,0.3)",transition:"all 0.2s"}}>
+                    {faqGenerating ? (
+                      <><span style={{display:"inline-block",width:13,height:13,border:"2px solid #9ca3af",borderTopColor:"transparent",borderRadius:"50%",animation:"spin 0.7s linear infinite"}} /> Generating…</>
+                    ) : (
+                      <><span style={{fontSize:15}}>✦</span> Generate by AI</>
+                    )}
+                  </button>
+                  <button onClick={addFaq} style={{display:"inline-flex",alignItems:"center",gap:5,background:"#f0fdf4",color:"#16a34a",border:"1px solid #bbf7d0",borderRadius:7,padding:"7px 14px",fontSize:13,fontWeight:600,cursor:"pointer"}}>
+                    <MdAdd size={15} /> Add FAQ
+                  </button>
+                </div>
               </div>
               <p style={{fontSize:12,color:"#9ca3af",margin:"0 0 16px",fontStyle:"italic"}}>FAQs are shown on the itinerary page and auto-included in FAQPage schema generation.</p>
 

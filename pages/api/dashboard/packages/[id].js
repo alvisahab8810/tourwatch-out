@@ -15,27 +15,40 @@ export default async function handler(req, res) {
   }
 
   if (req.method === "PUT") {
-    const existing = await Package.findById(id).lean();
-    if (!existing) return res.status(404).json({ error: "Not found" });
+    try {
+      const existing = await Package.findById(id).lean();
+      if (!existing) return res.status(404).json({ error: "Not found" });
 
-    const raw = { ...existing, ...req.body, _id: id };
-    raw.featureImage = mergeImg(existing.featureImage, req.body.featureImage);
-    raw.webBanner    = mergeImg(existing.webBanner,    req.body.webBanner);
-    raw.mobileBanner = mergeImg(existing.mobileBanner, req.body.mobileBanner);
-    raw.priceImage   = mergeImg(existing.priceImage,   req.body.priceImage);
-    if (req.body.advertisement?.image)
-      raw.advertisement = {
-        ...(existing.advertisement || {}),
-        ...req.body.advertisement,
-        image: mergeImg(existing.advertisement?.image, req.body.advertisement.image),
-      };
-    raw.gallery      = mergeArr(existing.gallery,      req.body.gallery);
-    raw.aboutImages  = mergeArr(existing.aboutImages,  req.body.aboutImages);
-    raw.bucketImages = mergeArr(existing.bucketImages, req.body.bucketImages);
+      const raw = { ...existing, ...req.body, _id: id };
+      raw.featureImage = mergeImg(existing.featureImage, req.body.featureImage);
+      raw.webBanner    = mergeImg(existing.webBanner,    req.body.webBanner);
+      raw.mobileBanner = mergeImg(existing.mobileBanner, req.body.mobileBanner);
+      raw.priceImage   = mergeImg(existing.priceImage,   req.body.priceImage);
+      if (req.body.advertisement?.image)
+        raw.advertisement = {
+          ...(existing.advertisement || {}),
+          ...req.body.advertisement,
+          image: mergeImg(existing.advertisement?.image, req.body.advertisement.image),
+        };
+      raw.gallery      = mergeArr(existing.gallery,      req.body.gallery);
+      raw.aboutImages  = mergeArr(existing.aboutImages,  req.body.aboutImages);
+      raw.bucketImages = mergeArr(existing.bucketImages, req.body.bucketImages);
 
-    const data = await processImages(raw, id);
-    const updated = await Package.findByIdAndUpdate(id, data, { new: true, overwrite: true }).lean();
-    return res.status(200).json({ ...updated, id: updated._id });
+      // Strip unknown/computed fields that Mongoose strict mode rejects
+      delete raw.id;
+      delete raw.__v;
+      delete raw.updatedAt;
+
+      const data = await processImages(raw, id);
+      const updated = await Package.findByIdAndUpdate(
+        id, data, { new: true, overwrite: true, runValidators: false }
+      ).lean();
+      if (!updated) return res.status(404).json({ error: "Update failed — document not found" });
+      return res.status(200).json({ ...updated, id: updated._id });
+    } catch (e) {
+      console.error("[packages PUT] Error:", e.message, e.stack);
+      return res.status(500).json({ error: e.message || "Internal server error" });
+    }
   }
 
   if (req.method === "PATCH") {

@@ -19,12 +19,18 @@ export default async function handler(req, res) {
   }
 
   if (req.method === "POST") {
-    const id  = uuidv4();
-    const raw = { ...req.body, _id: id, id };
-    const data = await processImages(raw, id);
-    const pkg  = await Package.create(data);
-    const obj  = pkg.toObject();
-    return res.status(201).json({ ...obj, id: obj._id });
+    try {
+      const id  = uuidv4();
+      const { id: _id, __v, updatedAt, ...body } = req.body;
+      const raw = { ...body, _id: id };
+      const data = await processImages(raw, id);
+      const pkg  = await Package.create(data);
+      const obj  = pkg.toObject();
+      return res.status(201).json({ ...obj, id: obj._id });
+    } catch (e) {
+      console.error("[packages POST] Error:", e.message, e.stack);
+      return res.status(500).json({ error: e.message || "Internal server error" });
+    }
   }
 
   res.status(405).end();
