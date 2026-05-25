@@ -39,12 +39,14 @@ export async function saveImage(base64, destId, name) {
     const uploadDir   = path.join(UPLOADS_ROOT, "destinations");
     ensureDir(uploadDir);
 
-    const safeName = `dest_${destId}__${name}`
-      .replace(/[^a-z0-9._-]/gi, "_")
+    const nameNoExt = (name || "image").replace(/\.[^.]+$/, "");
+    const safeName  = `dest_${destId}__${nameNoExt}`
+      .replace(/[^a-z0-9_-]/gi, "_")
+      .replace(/__+/g, "__")
       .slice(0, 120);
     const filename = `${safeName}.${ext}`;
     fs.writeFileSync(path.join(uploadDir, filename), buffer);
-    return `/uploads/destinations/${filename}`;
+    return `/api/images/${safeName}`;
   } catch (e) {
     console.error("[destStore.saveImage] Filesystem save failed:", e.message);
     return null;

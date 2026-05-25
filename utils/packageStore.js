@@ -21,8 +21,9 @@ function getExt(contentType) {
 }
 
 /**
- * Saves a base64 data URI to /public/uploads/<subdir>/<id>.<ext>
- * Returns a stable public URL — e.g. /uploads/packages/pkg__banner.jpg
+ * Saves a base64 data URI to /public/uploads/<subdir>/<safeName>.<ext>
+ * Returns /api/images/<safeName> — served by /api/images/[id].js
+ * which falls back to filesystem, so it works on all server configs.
  *
  * Existing images already stored in MongoDB (URLs like /api/images/...)
  * are NOT affected — they are served by /api/images/[id].js as before.
@@ -42,17 +43,23 @@ export async function saveImage(base64, pkgId, name) {
     const uploadDir = path.join(UPLOADS_ROOT, subdir);
     ensureDir(uploadDir);
 
-    const safeName = `${pkgId}__${name}`
-      .replace(/[^a-z0-9._-]/gi, "_")
+    // Strip any existing extension from name to avoid double-extension (e.g. foo.webp.webp)
+    const nameNoExt = (name || "image").replace(/\.[^.]+$/, "");
+
+    const safeName = `${pkgId}__${nameNoExt}`
+      .replace(/[^a-z0-9_-]/gi, "_")   // keep only alphanumeric, dash, underscore
+      .replace(/__+/g, "__")             // collapse multiple underscores
       .slice(0, 120);
+
     const filename = `${safeName}.${ext}`;
     const filepath = path.join(uploadDir, filename);
 
     fs.writeFileSync(filepath, buffer);
-    return `/uploads/${subdir}/${filename}`;
+
+    // Return via /api/images/ so it works regardless of static-file config
+    return `/api/images/${safeName}`;
   } catch (e) {
     console.error("[saveImage] Filesystem save failed:", e.message);
-    // Return base64 as last resort so image still shows in UI
     return base64;
   }
 }
