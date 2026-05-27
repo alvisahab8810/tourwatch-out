@@ -739,7 +739,7 @@ export default function CreatePackage() {
           })
         ));
         setToast({ msg: "All packages published!", next: null });
-        setTimeout(() => router.push("/dashboard/packages"), 1200);
+        setTimeout(() => router.back(), 1200);
       } else if (nextMissing) {
         setToast({
           msg: `${form.packageSubtype} saved as draft!`,
@@ -747,7 +747,7 @@ export default function CreatePackage() {
         });
       } else {
         setToast({ msg: isEdit ? "Package updated!" : "Package saved!", next: null });
-        setTimeout(() => router.push("/dashboard/packages"), 1200);
+        setTimeout(() => router.back(), 1200);
       }
     } catch (e) { alert("Error: " + e.message); }
     finally { setSaving(false); }
@@ -765,7 +765,7 @@ export default function CreatePackage() {
           <header className="bk-header">
             <div className="bk-header-left">
               <button className="bk-hamburger" onClick={openSidebar}><MdMenu size={22} /></button>
-              <button className="bk-back-btn" onClick={() => router.push("/dashboard/packages")}>
+              <button className="bk-back-btn" onClick={() => router.back()}>
                 <MdChevronLeft size={20} />
               </button>
               <h1 className="bk-page-title">{isEdit ? "Edit Package" : "Add New Package"}</h1>
@@ -1465,7 +1465,7 @@ export default function CreatePackage() {
 
             {/* ── Actions ── */}
             <div className="bk-form-actions">
-              <button className="bk-cancel-btn" onClick={() => router.push("/dashboard/packages")}>Cancel</button>
+              <button className="bk-cancel-btn" onClick={() => router.back()}>Cancel</button>
               <button className="bk-draft-btn" onClick={() => handleSave("Inactive")} disabled={saving}>
                 {saving ? "Saving…" : "Save Draft"}
               </button>

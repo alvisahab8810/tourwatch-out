@@ -10,17 +10,31 @@ import DashboardLayout, { useOpenSidebar } from "../../components/backend/Dashbo
 const TABS = ["Family", "Couple"];
 const PER_PAGE_OPTS = [20, 50, 100];
 
+const LIST_STATE_KEY = "pkgListState";
+
 export default function PackagesList() {
   const router = useRouter();
   const openSidebar = useOpenSidebar();
   const [packages, setPackages] = useState([]);
-  const [tab, setTab]             = useState("Family");
+
+  // Restore state from sessionStorage if coming back from edit
+  const saved = (() => {
+    if (typeof window === "undefined") return null;
+    try { return JSON.parse(sessionStorage.getItem(LIST_STATE_KEY) || "null"); } catch { return null; }
+  })();
+
+  const [tab, setTab]             = useState(saved?.tab || "Family");
   const [search, setSearch]       = useState("");
-  const [destFilter, setDestFilter] = useState("");
-  const [subtypeFilter, setSubtypeFilter] = useState("");
-  const [statusFilter, setStatusFilter]   = useState("");
-  const [perPage, setPerPage]     = useState(20);
-  const [page, setPage]           = useState(1);
+  const [destFilter, setDestFilter] = useState(saved?.destFilter || "");
+  const [subtypeFilter, setSubtypeFilter] = useState(saved?.subtypeFilter || "");
+  const [statusFilter, setStatusFilter]   = useState(saved?.statusFilter || "");
+  const [perPage, setPerPage]     = useState(saved?.perPage || 20);
+  const [page, setPage]           = useState(saved?.page || 1);
+
+  useEffect(() => {
+    // Clear saved state after restoring — only applies once per return
+    sessionStorage.removeItem(LIST_STATE_KEY);
+  }, []);
 
   useEffect(() => {
     fetch("/api/dashboard/packages")
@@ -195,7 +209,10 @@ export default function PackagesList() {
                         <div className="bk-action-btns">
                           <button
                             className="bk-edit-btn"
-                            onClick={() => router.push(`/dashboard/packages/create?id=${p.id}`)}
+                            onClick={() => {
+                              sessionStorage.setItem(LIST_STATE_KEY, JSON.stringify({ page, tab, destFilter, subtypeFilter, statusFilter, perPage }));
+                              router.push(`/dashboard/packages/create?id=${p.id}`);
+                            }}
                           >
                             <MdEdit size={15} />
                           </button>
