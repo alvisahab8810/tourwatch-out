@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import Topbar from "../../../components/header/Header";
 import Footer from "../../../components/footer/Footer";
 import Map from "../../../components/kashmir/Map";
@@ -163,7 +163,7 @@ export default function dubai() {
                           </li>
                         </ul>
                         <button class="btn btn-primary1">
-                          Request A Callback
+                          Request Callback
                         </button>
                       </div>
                     </div>
@@ -242,7 +242,7 @@ export default function dubai() {
                           <Link href="#">*Cancellation Policy</Link>
                           <button className="btn btn-primary1" data-bs-toggle="modal"
                                   data-bs-target="#exampleModalCenter"
-                                  fdprocessedid="s6df8j">Request A Callback</button>
+                                  fdprocessedid="s6df8j">Request Callback</button>
                         </div>
                       </div>
                     </section>
@@ -292,7 +292,7 @@ export default function dubai() {
                           </li>
                         </ul>
                         <button class="btn btn-primary1">
-                          Request A Callback
+                          Request Callback
                         </button>
                       </div>
                     </div>
@@ -369,7 +369,7 @@ export default function dubai() {
                           <Link href="#">*Cancellation Policy</Link>
                           <button className="btn btn-primary1" data-bs-toggle="modal"
                                   data-bs-target="#exampleModalCenter"
-                                  fdprocessedid="s6df8j">Request A Callback</button>
+                                  fdprocessedid="s6df8j">Request Callback</button>
                         </div>
                       </div>
                     </section>
@@ -417,7 +417,7 @@ export default function dubai() {
                           </li>
                         </ul>
                         <button class="btn btn-primary1">
-                          Request A Callback
+                          Request Callback
                         </button>
                       </div>
                     </div>
@@ -495,7 +495,7 @@ export default function dubai() {
                           <Link href="#">*Cancellation Policy</Link>
                           <button className="btn btn-primary1" data-bs-toggle="modal"
                                   data-bs-target="#exampleModalCenter"
-                                  fdprocessedid="s6df8j">Request A Callback</button>
+                                  fdprocessedid="s6df8j">Request Callback</button>
                         </div>
                       </div>
                     </section>
@@ -579,12 +579,12 @@ export default function dubai() {
               <h1 class="pacifico-regular">DUBAI</h1>
               <p>Explore get exciting offers</p>
               <button class="btn btn-primary1 desktop-none">
-                Request A Callback
+                Request Callback
               </button>
             </div>
             <div class="con-ctabx">
               <button class="btn btn-primary1 mobile-none">
-                Request A Callback
+                Request Callback
               </button>
             </div>
           </div>

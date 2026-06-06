@@ -1,4 +1,4 @@
-import React from 'react'
+﻿import React from 'react'
 
 export default function PromoSection() {
   return (
@@ -10,7 +10,7 @@ export default function PromoSection() {
         <h2 className="promo-title">Flat 20% Off</h2>
         <p className="promo-subtitle">on Your First Tour Package!</p>
         <button className="promo-button interactive" data-bs-toggle="modal"
-                    data-bs-target="#exampleModalCenter">Get a Callback</button>
+                    data-bs-target="#exampleModalCenter">Request Callback</button>
     </section>
       </div>
        </div>
@@ -24,7 +24,7 @@ export default function PromoSection() {
           <h2 className="promo-title">Flat<br/> 20% Off</h2>
         <p className="promo-subtitle">on Your First Tour Package!</p>
         <button className="promo-button interactive" data-bs-toggle="modal"
-                    data-bs-target="#exampleModalCenter">Get a Callback</button>
+                    data-bs-target="#exampleModalCenter">Request Callback</button>
         </div>
     </section>
        </div>

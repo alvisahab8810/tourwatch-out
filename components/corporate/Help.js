@@ -1,4 +1,4 @@
-
+﻿
 // "use client";
 // import { useState } from "react";
 // export default function Help() {
@@ -116,7 +116,7 @@
 //                     <button className="btn btn-primary1" data-bs-toggle="modal"
 //                     data-bs-target="#exampleModalCenter"
 //                     fdprocessedid="s6df8j">
-//                       Request A Callback
+//                       Request Callback
 //                     </button>
 //                   </div>
 //                   <div className="ms-auto"></div>
@@ -327,7 +327,7 @@ export default function Help() {
                     <button className="btn btn-primary1" data-bs-toggle="modal"
                     data-bs-target="#exampleModalCenter"
                     fdprocessedid="s6df8j">
-                      Request A Callback
+                      Request Callback
                     </button>
                   </div>
                   <div className="ms-auto"></div>

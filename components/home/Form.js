@@ -3,7 +3,7 @@
 
 
   import React, { useState } from "react";
-  import toast, { Toaster } from "react-hot-toast";
+  import toast from "react-hot-toast";
   
   export default function Form() {
     const [formData, setFormData] = useState({
@@ -51,7 +51,6 @@
       <section className="form-section ptb-80">
         <div className="container p-relative">
           <div className="container-form">
-            <Toaster />
             <form onSubmit={handleSubmit}>
               <div className="form-row">
                 <div className="form-group col-md-3">

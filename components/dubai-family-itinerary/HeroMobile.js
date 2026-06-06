@@ -22,7 +22,7 @@ export default function HeroMobile() {
           
             <button className="cta-button interactive " data-bs-toggle="modal"
                     data-bs-target="#exampleModalCenter">
-              Request A Call back
+              Request Callback
             </button>
           </div>
           <div class="stats-container">

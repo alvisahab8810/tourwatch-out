@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import Topbar from "../../../components/header/Header";
 import Offcanvas from "../../../components/header/Offcanvas";
 import Link from "next/link";
@@ -187,7 +187,7 @@ export default function NorthSikkim() {
                           data-bs-target="#exampleModalCenter"
                           fdprocessedid="s6df8j"
                         >
-                          Request A Callback
+                          Request Callback
                         </button>
                       </div>
                     </div>
@@ -244,7 +244,7 @@ export default function NorthSikkim() {
                             data-bs-target="#exampleModalCenter"
                             fdprocessedid="s6df8j"
                           >
-                            Request A Callback
+                            Request Callback
                           </button>
                         </div>
                       </div>
@@ -328,7 +328,7 @@ export default function NorthSikkim() {
                           data-bs-target="#exampleModalCenter"
                           fdprocessedid="s6df8j"
                         >
-                          Request A Callback
+                          Request Callback
                         </button>
                       </div>
                     </div>
@@ -405,7 +405,7 @@ export default function NorthSikkim() {
                             data-bs-target="#exampleModalCenter"
                             fdprocessedid="s6df8j"
                           >
-                            Request A Callback
+                            Request Callback
                           </button>
                         </div>
                       </div>
@@ -489,7 +489,7 @@ export default function NorthSikkim() {
                           data-bs-target="#exampleModalCenter"
                           fdprocessedid="s6df8j"
                         >
-                          Request A Callback
+                          Request Callback
                         </button>
                       </div>
                     </div>
@@ -564,7 +564,7 @@ export default function NorthSikkim() {
                             data-bs-target="#exampleModalCenter"
                             fdprocessedid="s6df8j"
                           >
-                            Request A Callback
+                            Request Callback
                           </button>
                         </div>
                       </div>

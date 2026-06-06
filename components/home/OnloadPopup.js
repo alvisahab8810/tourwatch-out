@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 
 export default function OnloadPopup() {
   const [formData, setFormData] = useState({
@@ -47,8 +47,6 @@ export default function OnloadPopup() {
 
   return (
     <>
-      <Toaster />
-
       {/* ── Form Popup ── */}
       {showFormPopup && (
         <div className="rop-overlay">
@@ -116,7 +114,7 @@ export default function OnloadPopup() {
               />
 
               <button type="submit" className="rop-btn" disabled={loading}>
-                {loading ? "Submitting…" : "Request A Call back"}
+                {loading ? "Submitting…" : "Request Callback"}
               </button>
             </form>
           </div>

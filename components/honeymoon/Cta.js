@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 
 export default function Cta() {
   return (
@@ -56,7 +56,7 @@ export default function Cta() {
                     <button className="btn btn-primary1" data-bs-toggle="modal"
                     data-bs-target="#exampleModalCenter"
                     fdprocessedid="s6df8j">
-                      Request A Callback
+                      Request Callback
                     </button>
                   </div>
                   <div className="ms-auto"></div>

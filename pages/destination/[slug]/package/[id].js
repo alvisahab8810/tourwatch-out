@@ -16,6 +16,7 @@ import Blogs from "../../../../components/home/Blogs";
 import PromoSection from "../../../../components/home/PromoSection";
 import MostPopular from "../../../../components/home/MostPopular";
 import BenifitSection from "../../../../components/home/BenifitSection";
+import PackageReviews from "../../../../components/reviews/PackageReviews";
 
 const HOTEL_AMENITY_ICONS = {
   "Breakfast":           "/assets/images/icons/itinerary/icon1.svg",
@@ -113,6 +114,73 @@ export default function PackageDetailPage({ pkg, dest, vendorMap = {} }) {
   const [tabsFixed, setTabsFixed] = useState(false);
   const [tabsH, setTabsH]         = useState(50);
   const router = useRouter();
+
+  /* ── Sidebar query form state ── */
+  const [qForm, setQForm] = useState({
+    name: "", destination: dest?.name || dest?.title || "", phone: "",
+    email: "", travelDate: "", pax: "", message: "",
+  });
+  const [qLoading, setQLoading] = useState(false);
+  const [qDone,    setQDone]    = useState(false);
+  const [qHoneypot, setQHoneypot] = useState("");
+  const qLoadTime = useRef(Date.now());
+
+  const [qUtm, setQUtm] = useState({});
+  useEffect(() => {
+    const p = new URLSearchParams(window.location.search);
+    setQUtm({
+      source: p.get("utm_source") || "", medium: p.get("utm_medium") || "",
+      campaign: p.get("utm_campaign") || "", adset: p.get("utm_adset") || p.get("utm_term") || "",
+      adContent: p.get("utm_content") || "", campaignId: p.get("utm_id") || p.get("campaign_id") || "",
+    });
+  }, []);
+
+  function handleQChange(e) {
+    const { name, value } = e.target;
+    if (name === "phone") {
+      setQForm(p => ({ ...p, phone: value.replace(/[^\d\s+\-()]/g, "") }));
+      return;
+    }
+    setQForm(p => ({ ...p, [name]: value }));
+  }
+
+  async function handleQuerySubmit(e) {
+    e.preventDefault();
+    const digits = qForm.phone.replace(/\D/g, "");
+    if (digits.length < 10) { toast.error("Please enter a valid 10-digit mobile number.", { id: "qf-err" }); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(qForm.email)) { toast.error("Please enter a valid email address.", { id: "qf-err" }); return; }
+
+    setQLoading(true);
+    try {
+      const res = await fetch("/api/dashboard/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...qForm, formType: "Query Form", ...qUtm,
+          _hp: qHoneypot, _t: qLoadTime.current,
+        }),
+      });
+      if (res.status === 409) {
+        const d = await res.json().catch(() => ({}));
+        toast.error(d.field === "phone" ? "This mobile is already registered." : "This email is already registered.", { id: "qf-err", duration: 5000 });
+        return;
+      }
+      if (res.status === 429) { toast.error("Too many attempts. Please try again later.", { id: "qf-err" }); return; }
+      if (!res.ok) { const d = await res.json().catch(() => ({})); toast.error(d.message || "Failed to submit.", { id: "qf-err" }); return; }
+      setQDone(true);
+    } catch { toast.error("Network error. Please try again.", { id: "qf-err" }); }
+    finally { setQLoading(false); }
+  }
+
+  function openCallback(e) {
+    if (e) e.preventDefault();
+    const el = document.getElementById("exampleModalCenter");
+    if (el && window.bootstrap) {
+      window.bootstrap.Modal.getOrCreateInstance(el).show();
+    } else if (el && window.$) {
+      window.$(el).modal("show");
+    }
+  }
 
   const tabBarRef         = useRef(null);
   const tabsSentinelRef   = useRef(null);
@@ -332,7 +400,7 @@ export default function PackageDetailPage({ pkg, dest, vendorMap = {} }) {
                       <span className="mob-sticky-amount">{price || "—"}</span>
                       <a href="#cancellation-policy" className="mob-sticky-policy">*Cancellation Policy</a>
                     </div>
-                    <button className="mob-sticky-cta" onClick={handlePayClick}>Proceed to Payment</button>
+                    <button className="mob-sticky-cta" onClick={openCallback}>Request Callback</button>
                   </div>
 
                   {/* Banner */}
@@ -727,8 +795,8 @@ export default function PackageDetailPage({ pkg, dest, vendorMap = {} }) {
                         <img src={pkg.priceImage?.src || "/assets/images/dubai/itinerary/it-banner.png"} alt="package" />
                       </div>
                     </div>
-                    <button className="pc-cta-pay" onClick={handlePayClick}>
-                      Proceed to Payment
+                    <button className="pc-cta-pay" onClick={openCallback}>
+                      Request Callback
                     </button>
                   </div>
 
@@ -744,16 +812,44 @@ export default function PackageDetailPage({ pkg, dest, vendorMap = {} }) {
                     <p className="query-form-heading">
                       {pkg.advertisement?.subtext || "Your Dream Destination Just One Click away"}
                     </p>
-                    <form className="enq-form" onSubmit={e => e.preventDefault()}>
-                      <input type="text" placeholder="Full Name" />
-                      <input type="text" placeholder="Destination" defaultValue={destName} />
-                      <div className="enq-phone">
-                        <select><option value="+91">+91</option></select>
-                        <input type="tel" placeholder="0000 0000 00" />
+                    {/* Honeypot — invisible */}
+                    <div aria-hidden="true" style={{ position:"absolute", left:"-9999px", width:1, height:1, overflow:"hidden", opacity:0 }}>
+                      <input type="text" name="_qhp" value={qHoneypot} onChange={e => setQHoneypot(e.target.value)} tabIndex={-1} autoComplete="nope" />
+                    </div>
+
+                    {qDone ? (
+                      <div style={{ textAlign:"center", padding:"28px 12px" }}>
+                        <div style={{ fontSize:36, marginBottom:8 }}>✓</div>
+                        <div style={{ fontWeight:700, color:"#16a34a", fontSize:15, marginBottom:6 }}>Request Received!</div>
+                        <div style={{ fontSize:13, color:"#64748b" }}>Our travel expert will call you shortly.</div>
                       </div>
-                      <input type="email" placeholder="Email" />
-                      <button className="enq-submit">Get a Callback</button>
-                    </form>
+                    ) : (
+                      <form className="enq-form" onSubmit={handleQuerySubmit} autoComplete="off">
+                        <input type="text" name="name" placeholder="Full Name *" value={qForm.name} onChange={handleQChange} required />
+                        <input type="text" name="destination" placeholder="Destination" value={qForm.destination} onChange={handleQChange} />
+                        <div className="enq-phone">
+                          <select><option value="+91">+91</option></select>
+                          <input type="tel" name="phone" placeholder="0000 0000 00" value={qForm.phone} onChange={handleQChange} inputMode="numeric" maxLength={15} required />
+                        </div>
+                        <input type="email" name="email" placeholder="Email *" value={qForm.email} onChange={handleQChange} required />
+                        <div style={{ display:"flex", gap:8 }}>
+                          <input type="date" name="travelDate" value={qForm.travelDate} onChange={handleQChange}
+                            min={new Date().toISOString().split("T")[0]}
+                            style={{ flex:1, border:"1px solid #e5e7eb", borderRadius:6, padding:"10px 10px", fontSize:13, color: qForm.travelDate ? "#0c141d" : "#9ca3af", outline:"none", background:"#fff" }}
+                          />
+                          <input type="number" name="pax" placeholder="Travellers" value={qForm.pax} onChange={handleQChange}
+                            min="1" max="50" inputMode="numeric"
+                            style={{ flex:1, border:"1px solid #e5e7eb", borderRadius:6, padding:"10px 10px", fontSize:13, outline:"none", background:"#fff" }}
+                          />
+                        </div>
+                        <textarea name="message" placeholder="Message (optional)" value={qForm.message} onChange={handleQChange}
+                          rows={2} style={{ width:"100%", border:"1px solid #e5e7eb", borderRadius:6, padding:"10px 12px", fontSize:13, outline:"none", resize:"none", background:"#fff", boxSizing:"border-box", fontFamily:"inherit" }}
+                        />
+                        <button className="enq-submit" type="submit" disabled={qLoading}>
+                          {qLoading ? "Sending…" : "Request Callback"}
+                        </button>
+                      </form>
+                    )}
                   </div>
                 </aside>
 
@@ -764,13 +860,23 @@ export default function PackageDetailPage({ pkg, dest, vendorMap = {} }) {
 
         {/* <BenifitSection /> */}
         <MostPopular />
-        <BottomReviews />
+        <PackageReviews
+          packageId={pkg.id}
+          packageName={pkg.packageName}
+          destinationSlug={dest.slug}
+        />
         <PromoSection />
         <FAQs items={pkgFaqs.length > 0 ? pkgFaqs : null} />
         <Blogs />
-        <Popup />
+        <Popup asDrawer autoShowDelay={15000} packageInfo={{
+          name:       pkg.packageName || dest.name || dest.title,
+          image:      pkg.priceImage?.src || pkg.featureImage?.src || null,
+          finalPrice: pkg.finalPrice || pkg.basePrice,
+          basePrice:  pkg.basePrice,
+        }} />
         <NewFooter />
       </div>
+
     </>
   );
 }

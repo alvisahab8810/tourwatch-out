@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import Link from "next/link";
@@ -170,7 +170,7 @@ export default function SimiliarPackage() {
                     data-bs-toggle="modal"
                     data-bs-target="#exampleModalCenter"
                   >
-                    Request A Callback
+                    Request Callback
                   </button>
                 </div>
               </div>
@@ -275,7 +275,7 @@ export default function SimiliarPackage() {
                     data-bs-toggle="modal"
                     data-bs-target="#exampleModalCenter"
                   >
-                    Request A Callback
+                    Request Callback
                   </button>
                 </div>
               </div>
@@ -378,7 +378,7 @@ export default function SimiliarPackage() {
                     data-bs-toggle="modal"
                     data-bs-target="#exampleModalCenter"
                   >
-                    Request A Callback
+                    Request Callback
                   </button>
                 </div>
               </div>
@@ -483,7 +483,7 @@ export default function SimiliarPackage() {
                     data-bs-toggle="modal"
                     data-bs-target="#exampleModalCenter"
                   >
-                    Request A Callback
+                    Request Callback
                   </button>
                 </div>
               </div>
@@ -588,7 +588,7 @@ export default function SimiliarPackage() {
                     data-bs-toggle="modal"
                     data-bs-target="#exampleModalCenter"
                   >
-                    Request A Callback
+                    Request Callback
                   </button>
                 </div>
               </div>
@@ -700,7 +700,7 @@ export default function SimiliarPackage() {
                     data-bs-toggle="modal"
                     data-bs-target="#exampleModalCenter"
                   >
-                    Request A Callback
+                    Request Callback
                   </button>
                 </div>
               </div>
@@ -805,7 +805,7 @@ export default function SimiliarPackage() {
                     data-bs-toggle="modal"
                     data-bs-target="#exampleModalCenter"
                   >
-                    Request A Callback
+                    Request Callback
                   </button>
                 </div>
               </div>
@@ -908,7 +908,7 @@ export default function SimiliarPackage() {
                     data-bs-toggle="modal"
                     data-bs-target="#exampleModalCenter"
                   >
-                    Request A Callback
+                    Request Callback
                   </button>
                 </div>
               </div>
@@ -1013,7 +1013,7 @@ export default function SimiliarPackage() {
                     data-bs-toggle="modal"
                     data-bs-target="#exampleModalCenter"
                   >
-                    Request A Callback
+                    Request Callback
                   </button>
                 </div>
               </div>
@@ -1118,7 +1118,7 @@ export default function SimiliarPackage() {
                     data-bs-toggle="modal"
                     data-bs-target="#exampleModalCenter"
                   >
-                    Request A Callback
+                    Request Callback
                   </button>
                 </div>
               </div>

@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 
 import Topbar from "../../../components/header/Header";
 import Footer from "../../../components/footer/Footer";
@@ -192,7 +192,7 @@ export default function Dharamshala() {
                         <button className="btn btn-primary1" data-bs-toggle="modal"
                         data-bs-target="#exampleModalCenter"
                          fdprocessedid="s6df8j">
-                          Request A Callback
+                          Request Callback
                         </button>
                       </div>
                     </div>
@@ -272,7 +272,7 @@ export default function Dharamshala() {
                           <Link href="#">*Cancellation Policy</Link>
                           <button className="btn btn-primary1" data-bs-toggle="modal"
                                   data-bs-target="#exampleModalCenter"
-                                  fdprocessedid="s6df8j">Request A Callback</button>
+                                  fdprocessedid="s6df8j">Request Callback</button>
                         </div>
                       </div>
                     </section>
@@ -345,7 +345,7 @@ export default function Dharamshala() {
                         <button className="btn btn-primary1" data-bs-toggle="modal"
                     data-bs-target="#exampleModalCenter"
                     fdprocessedid="s6df8j">
-                          Request A Callback
+                          Request Callback
                         </button>
                       </div>
                     </div>
@@ -426,7 +426,7 @@ export default function Dharamshala() {
                           <Link href="#">*Cancellation Policy</Link>
                           <button className="btn btn-primary1" data-bs-toggle="modal"
                                   data-bs-target="#exampleModalCenter"
-                                  fdprocessedid="s6df8j">Request A Callback</button>
+                                  fdprocessedid="s6df8j">Request Callback</button>
                         </div>
                       </div>
                     </section>
@@ -502,7 +502,7 @@ export default function Dharamshala() {
                         <button className="btn btn-primary1" data-bs-toggle="modal"
                           data-bs-target="#exampleModalCenter"
                            fdprocessedid="s6df8j">
-                          Request A Callback
+                          Request Callback
                         </button>
                       </div>
                     </div>
@@ -583,7 +583,7 @@ export default function Dharamshala() {
                           <Link href="#">*Cancellation Policy</Link>
                           <button className="btn btn-primary1" data-bs-toggle="modal"
                                   data-bs-target="#exampleModalCenter"
-                                  fdprocessedid="s6df8j">Request A Callback</button>
+                                  fdprocessedid="s6df8j">Request Callback</button>
                         </div>
                       </div>
                     </section>
@@ -755,7 +755,7 @@ export default function Dharamshala() {
                 <Link href="#">*Cancellation Policy</Link>
                 <button className="btn btn-primary1" data-bs-toggle="modal"
                         data-bs-target="#exampleModalCenter"
-                        fdprocessedid="s6df8j">Request A Callback</button>
+                        fdprocessedid="s6df8j">Request Callback</button>
               </div>
             </div>
           </section> */}

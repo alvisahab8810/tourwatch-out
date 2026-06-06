@@ -111,6 +111,8 @@
 .bk-main {
   margin-left: 240px;
   flex: 1;
+  min-width: 0;          /* stop flex child from overflowing its parent */
+  overflow: hidden;      /* clip any content wider than this column */
   display: flex;
   flex-direction: column;
   min-height: 100vh;

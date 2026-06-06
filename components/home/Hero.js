@@ -37,7 +37,7 @@ export default function Hero() {
 
         <button className="twc-cta" type="button" data-bs-toggle="modal"
                     data-bs-target="#exampleModalCenter">
-          Request A Call back
+          Request Callback
         </button>
       </div>
 
@@ -84,7 +84,7 @@ export default function Hero() {
           
             <button className="cta-button interactive" data-bs-toggle="modal"
                     data-bs-target="#exampleModalCenter">
-              Request A Call back
+              Request Callback
             </button>
           </div>
           <div className="stats-container">
@@ -168,7 +168,7 @@ export default function Hero() {
           
 //             <button className="cta-button interactive" data-bs-toggle="modal"
 //                     data-bs-target="#exampleModalCenter">
-//               Request A Call back
+//               Request Callback
 //             </button>
 //           </div>
 //           <div class="stats-container">

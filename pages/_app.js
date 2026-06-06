@@ -146,11 +146,31 @@ function MyApp({ Component, pageProps }) {
 
       <Toaster
         position="top-right"
+        gutter={10}
+        containerStyle={{ top: 20, right: 20 }}
         toastOptions={{
-          duration: 3500,
-          style: { fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: 500 },
-          success: { style: { background: "#fff", border: "1.5px solid #22c55e", color: "#166534" }, iconTheme: { primary: "#22c55e", secondary: "#fff" } },
-          error:   { style: { background: "#fff", border: "1.5px solid #ef4444", color: "#991b1b" }, iconTheme: { primary: "#ef4444", secondary: "#fff" } },
+          duration: 4500,
+          style: {
+            fontFamily: "-apple-system, 'SF Pro Display', 'Segoe UI', sans-serif",
+            fontSize: 13,
+            fontWeight: 500,
+            background: "rgba(255,255,255,0.92)",
+            backdropFilter: "blur(20px)",
+            WebkitBackdropFilter: "blur(20px)",
+            color: "#1d1d1f",
+            borderRadius: 14,
+            padding: "12px 16px",
+            boxShadow: "0 4px 24px rgba(0,0,0,0.12), 0 1px 4px rgba(0,0,0,0.08), inset 0 0 0 0.5px rgba(0,0,0,0.08)",
+            maxWidth: 360,
+            lineHeight: 1.45,
+            border: "none",
+          },
+          success: {
+            iconTheme: { primary: "#34c759", secondary: "#fff" },
+          },
+          error: {
+            iconTheme: { primary: "#ff3b30", secondary: "#fff" },
+          },
         }}
       />
       {getLayout(<Component {...pageProps} />)}

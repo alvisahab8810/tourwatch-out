@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import Link from "next/link";
 
 export default function NatInt() {
@@ -484,7 +484,7 @@ export default function NatInt() {
                     <button className="btn btn-primary1" data-bs-toggle="modal"
                     data-bs-target="#exampleModalCenter"
                     fdprocessedid="s6df8j">
-                      Request A Callback
+                      Request Callback
                     </button>
                   </div>
                   <div className="ms-auto"></div>

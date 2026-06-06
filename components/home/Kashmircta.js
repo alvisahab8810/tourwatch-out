@@ -1,4 +1,4 @@
-import React from 'react'
+﻿import React from 'react'
 
 export default function Kashmircta() {
   return (
@@ -13,7 +13,7 @@ export default function Kashmircta() {
                     <p>And get exciting offers</p>
                     <button className="btn btn-primary1" data-bs-toggle="modal"
                     data-bs-target="#exampleModalCenter"
-                    fdprocessedid="s6df8j">Request A Callback</button>
+                    fdprocessedid="s6df8j">Request Callback</button>
 
                 </div>
                 <div className="ms-auto">

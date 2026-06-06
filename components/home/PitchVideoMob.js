@@ -1,10 +1,10 @@
-import React, { useRef, useState } from "react";
+﻿import React, { useRef, useState } from "react";
 import { FaVolumeMute, FaVolumeUp } from "react-icons/fa";
 
 const videoSources = [
-  "/assets/images/instagram/video2.mp4",
-  "/assets/images/instagram/video1.mp4",
-  "/assets/images/instagram/video3.mp4",
+  "/assets/images/instagram/kashmir.mp4",
+  // "/assets/images/instagram/video1.mp4",
+  // "/assets/images/instagram/video3.mp4",
 ];
 
 export default function PitchVideoMob() {
@@ -104,7 +104,7 @@ export default function PitchVideoMob() {
                     data-bs-toggle="modal"
                     data-bs-target="#exampleModalCenter"
                   >
-                    Request A Callback
+                    Request Callback
                   </button>
       </div>
 

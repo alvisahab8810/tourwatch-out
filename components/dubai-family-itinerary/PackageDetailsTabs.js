@@ -1,4 +1,4 @@
-import PromoSection1 from "../dubai-package/PromoSection1";
+﻿import PromoSection1 from "../dubai-package/PromoSection1";
 import DubaiFamilyNotes from "../dubai-package/DubaiFamilyNotes";
 import WhyTourwatchout from "./WhyTourwatchout";
 import SimiliarPackage from "./SimiliarPackage";
@@ -56,7 +56,7 @@ function PriceCard({ pkg, className }) {
           <img src={imgSrc} alt={imgAlt} />
         </div>
       </div>
-      <button className="pc-cta">Request A Callback</button>
+      <button className="pc-cta">Request Callback</button>
     </div>
   );
 }
@@ -246,7 +246,7 @@ export default function PackageDetailsTabs({ packages = [] }) {
                     <input type="tel" placeholder="0000 0000 00" />
                   </div>
                   <input type="email" placeholder="Email" />
-                  <button className="enq-submit">Get a Callback</button>
+                  <button className="enq-submit">Request Callback</button>
                 </form>
               </div>
             </aside>

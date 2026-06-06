@@ -379,7 +379,7 @@ export default function BlogDetail({ blog, related }) {
                       onChange={e => setQueryForm(p => ({ ...p, email: e.target.value }))}
                     />
                     <button type="submit" className="bdd-reach-btn" disabled={queryLoading}>
-                      {queryLoading ? "Sending…" : "Request A Call back"}
+                      {queryLoading ? "Sending…" : "Request Callback"}
                     </button>
                   </form>
                 )}

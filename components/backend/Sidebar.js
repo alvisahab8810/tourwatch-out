@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import {
   MdDashboard, MdLocationOn, MdApps, MdArticle, MdHelpOutline,
   MdPeople, MdAutorenew, MdNotificationsNone, MdStore,
-  MdConfirmationNumber, MdReceipt, MdLogout, MdSmartButton, MdComment, MdStar,
+  MdConfirmationNumber, MdReceipt, MdLogout, MdSmartButton, MdComment, MdStar, MdRateReview,
   MdManageAccounts,
 } from "react-icons/md";
 import { logout } from "../../utils/voucherAuth";
@@ -13,6 +13,7 @@ const NAV = [
   { label: "All Packages", Icon: MdApps,               href: "/dashboard/packages" },
   { label: "Blogs",        Icon: MdArticle,            href: "/dashboard/blogs" },
   { label: "Comments",    Icon: MdComment,            href: "/dashboard/comments" },
+  { label: "Reviews",     Icon: MdRateReview,        href: "/dashboard/reviews" },
   { label: "Most Popular", Icon: MdStar,              href: "/dashboard/popular" },
   // { label: "Robot.txt",   Icon: MdSmartButton,        href: "/dashboard/robots" },
   { label: "Faq's",       Icon: MdHelpOutline,        href: "/dashboard/faqs" },
@@ -20,7 +21,7 @@ const NAV = [
 ];
 
 const CRM = [
-  { label: "Leads",      Icon: MdPeople,             href: "#" },
+  { label: "Leads",      Icon: MdPeople,             href: "/dashboard/leads" },
   { label: "Follow Up",  Icon: MdAutorenew,          href: "#" },
   { label: "Reminder",   Icon: MdNotificationsNone,  href: "#" },
   { label: "Vendors",    Icon: MdStore,              href: "/dashboard/vendors" },

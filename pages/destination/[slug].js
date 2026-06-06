@@ -1,30 +1,43 @@
 import React from "react";
 import Head from "next/head";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import Topbar from "../../components/header/Header";
-import Offcanvas from "../../components/header/Offcanvas";
-import NewFooter from "../../components/footer/NewFooter";
-import Popup from "../../components/corporate/Popup";
-import TopReviews from "../../components/home/TopReviews";
-import FAQs from "../../components/home/FAQs";
-import WhatMakeus from "../../components/home/WhatMakeus";
-import MostPopular from "../../components/home/MostPopular";
-import Blogs from "../../components/home/Blogs";
-import BottomReviews from "../../components/home/BottomReviews";
-import BottomReviewsMobile from "../../components/home/BottomReviewsMobile";
-import BenifitSection from "../../components/home/BenifitSection";
-import PitchVideoMob from "../../components/home/PitchVideoMob";
-import Kashmir from "../../components/destination/pitch-videos/Kashmir";
+
+// ── Lazy-load every component that is NOT above the fold ──────────────────────
+// These are downloaded AFTER the hero is painted, so the user sees content fast.
+const Offcanvas          = dynamic(() => import("../../components/header/Offcanvas"),                         { ssr: false });
+const Popup              = dynamic(() => import("../../components/corporate/Popup"),                          { ssr: false });
+const Kashmir            = dynamic(() => import("../../components/destination/pitch-videos/Kashmir"),         { ssr: false });
+const PitchVideoMob      = dynamic(() => import("../../components/home/PitchVideoMob"),                      { ssr: false });
+const TopReviews         = dynamic(() => import("../../components/home/TopReviews"),                         { ssr: false });
+const MostPopular        = dynamic(() => import("../../components/home/MostPopular"),                        { ssr: false });
+const FAQs               = dynamic(() => import("../../components/home/FAQs"),                               { ssr: false });
+const BottomReviews      = dynamic(() => import("../../components/home/BottomReviews"),                      { ssr: false });
+const BottomReviewsMobile= dynamic(() => import("../../components/home/BottomReviewsMobile"),                { ssr: false });
+const Blogs              = dynamic(() => import("../../components/home/Blogs"),                               { ssr: false });
+const NewFooter          = dynamic(() => import("../../components/footer/NewFooter"),                        { ssr: false });
+// ─────────────────────────────────────────────────────────────────────────────
 
 const PKG_TYPES = ["Family", "Couple"];
 const SUBTYPES  = ["Economy", "Deluxe", "Premium"];
-
 
 function fmt(n) {
   return `₹${Number(n).toLocaleString("en-IN")}`;
 }
 
-export async function getServerSideProps({ params }) {
+// ── Static paths — enumerate all active destinations at build time ────────────
+export async function getStaticPaths() {
+  const { readAll: readDests } = require("../../utils/destStore");
+  const dests = readDests().filter(d => d.status === "Active");
+  return {
+    paths:    dests.map(d => ({ params: { slug: d.slug } })),
+    fallback: "blocking", // new destinations SSR on first hit, then cached
+  };
+}
+
+// ── Static props with ISR — DB hit only on first build / revalidation ─────────
+export async function getStaticProps({ params }) {
   const { readAll: readDests } = require("../../utils/destStore");
   const connectDB = require("../../utils/mongodb").default;
   const Package   = require("../../models/Package").default;
@@ -46,22 +59,23 @@ export async function getServerSideProps({ params }) {
       dest:     JSON.parse(JSON.stringify(dest)),
       packages: JSON.parse(JSON.stringify(pkgs)),
     },
+    revalidate: 60, // regenerate at most once per minute when traffic hits
   };
 }
 
+// ── Package card ──────────────────────────────────────────────────────────────
 function CategoryCard({ dest, pkgType, subtype, packages }) {
   const pkgsForCategory = packages.filter(
     p => p.packageType?.toLowerCase()    === pkgType.toLowerCase() &&
          p.packageSubtype?.toLowerCase() === subtype.toLowerCase()
   );
-  // Find the package with the lowest final price to derive both prices
   const priced = pkgsForCategory
     .map(p => ({ base: Number(p.basePrice || 0), final: Number(p.finalPrice || p.basePrice || 0) }))
     .filter(p => p.final > 0);
   priced.sort((a, b) => a.final - b.final);
-  const minFinal = priced.length > 0 ? priced[0].final : 0;
-  const minBase  = priced.length > 0 ? priced[0].base  : 0;
-  const hasDiscount = minBase > 0 && minBase !== minFinal;
+  const minFinal     = priced[0]?.final ?? 0;
+  const minBase      = priced[0]?.base  ?? 0;
+  const hasDiscount  = minBase > 0 && minBase !== minFinal;
 
   const image =
     dest.images?.[pkgType]?.[subtype]?.src ||
@@ -74,20 +88,16 @@ function CategoryCard({ dest, pkgType, subtype, packages }) {
   return (
     <Link href={href} className="dest-cat-link">
       <div className="dest-cat-card">
-        <img src={image} alt={`${subtype} ${name}`} className="dest-cat-bg" />
+        <img src={image} alt={`${subtype} ${name}`} className="dest-cat-bg" loading="lazy" decoding="async" />
         <div className="dest-cat-gradient" />
         <div className="dest-cat-content">
           <h2>{subtype} {name}</h2>
           {minFinal > 0 && (
             <div className="price-section">
               <div className="price-info">
-                {hasDiscount ? (
-                  <p className="old-price">
-                    Starting from <span className="oldcut">{fmt(minBase)}</span>
-                  </p>
-                ) : (
-                  <p className="old-price">Starting from</p>
-                )}
+                {hasDiscount
+                  ? <p className="old-price">Starting from <span className="oldcut">{fmt(minBase)}</span></p>
+                  : <p className="old-price">Starting from</p>}
                 <p className="new-price">{fmt(minFinal)}</p>
               </div>
             </div>
@@ -112,13 +122,7 @@ function CategorySection({ dest, pkgType, packages }) {
         </div>
         <div className="dest-cat-row">
           {SUBTYPES.map(sub => (
-            <CategoryCard
-              key={sub}
-              dest={dest}
-              pkgType={pkgType}
-              subtype={sub}
-              packages={packages}
-            />
+            <CategoryCard key={sub} dest={dest} pkgType={pkgType} subtype={sub} packages={packages} />
           ))}
         </div>
       </div>
@@ -126,11 +130,11 @@ function CategorySection({ dest, pkgType, packages }) {
   );
 }
 
+// ── Page ──────────────────────────────────────────────────────────────────────
 export default function DestinationPage({ dest, packages }) {
   const banner = dest.mainImage?.src || dest.images?.Family?.Economy?.src;
   const name   = dest.name || dest.title;
 
-  // Show a section for a type if it has packages OR has any category image configured
   const typesToShow = PKG_TYPES.filter(t =>
     packages.some(p => p.packageType?.toLowerCase() === t.toLowerCase()) ||
     SUBTYPES.some(s => dest.images?.[t]?.[s]?.src)
@@ -141,9 +145,22 @@ export default function DestinationPage({ dest, packages }) {
       <Head>
         <title>{name} Packages — TourWatchOut</title>
         <meta name="description" content={`Explore ${name} packages — Economy, Deluxe and Premium options for Family and Couple travel.`} />
+
+        {/* ── Critical CSS — inline before anything renders ── */}
         <link rel="stylesheet" href="/assets/css/style.css" />
+
+        {/* ── Resource hints — resolve DNS / open connections early ── */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link rel="dns-prefetch" href="https://script.google.com" />
+
+        {/* ── Preload the hero banner so it paints with the first frame ── */}
+        {banner && (
+          <link rel="preload" as="image" href={banner} fetchpriority="high" />
+        )}
       </Head>
 
+      {/* Topbar is above-fold — SSR */}
       <Topbar />
       <Offcanvas />
 
@@ -163,7 +180,7 @@ export default function DestinationPage({ dest, packages }) {
                 data-bs-toggle="modal"
                 data-bs-target="#exampleModalCenter"
               >
-                Request A Call Back
+                Request Callback
               </button>
             </div>
             <div className="stats-container">
@@ -215,18 +232,17 @@ export default function DestinationPage({ dest, packages }) {
         </div>
       </section>
 
-       <div className="mobile-none">
-         {/* <WhatMakeus /> */}
-         <Kashmir />
-       </div>
-       <PitchVideoMob />
-       {/* <BenifitSection/> */}
+      {/* ── Below-fold — all lazy loaded ── */}
+      <div className="mobile-none">
+        <Kashmir />
+      </div>
+      <PitchVideoMob />
 
       {typesToShow.length === 0 && (
         <section className="family-dubai-packages">
           <div className="mini-container1">
             <p style={{ textAlign: "center", padding: "2rem 0", color: "#888" }}>
-              No packages available yet for this destination. Check back soon!
+              No packages available yet. Check back soon!
             </p>
           </div>
         </section>
@@ -239,10 +255,10 @@ export default function DestinationPage({ dest, packages }) {
       <TopReviews />
       <MostPopular />
       <FAQs />
-      <BottomReviews />
-      <BottomReviewsMobile />
+      <BottomReviews slug={dest.slug} />
+      <BottomReviewsMobile slug={dest.slug} />
       <Blogs />
-      <Popup />
+      <Popup destination={dest.name || dest.title} />
       <NewFooter />
     </div>
   );
