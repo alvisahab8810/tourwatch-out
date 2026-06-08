@@ -57,7 +57,7 @@ export default function PopularPackages() {
   return (
     <>
       <Toaster position="top-right" />
-      <Head><title>Most Popular — TourWatchOut</title></Head>
+      <Head><title>Most Popular — Tourwatchout</title></Head>
 
       <header className="bk-header">
         <div className="bk-header-left">

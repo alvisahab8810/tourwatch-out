@@ -46,7 +46,7 @@ export default function BlogList() {
 
   return (
     <>
-      <Head><title>Blogs — TourWatchOut</title></Head>
+      <Head><title>Blogs — Tourwatchout</title></Head>
 
       <header className="bk-header">
         <div className="bk-header-left">

@@ -5,7 +5,7 @@ import Head from "next/head";
 import {
   MdMenu, MdKeyboardArrowDown, MdPeople, MdChevronLeft,
   MdCheckCircle, MdMoreHoriz, MdImage, MdClose, MdAdd, MdDelete, MdSearch,
-  MdCode, MdCopyAll, MdDeleteOutline,
+  MdCode, MdCopyAll, MdDeleteOutline, MdStar,
 } from "react-icons/md";
 import DashboardLayout, { useOpenSidebar } from "../../../components/backend/DashboardLayout";
 
@@ -441,7 +441,7 @@ function buildSchemaJson(type, form) {
     "name": form.packageName || "",
     "description": form.metaDescription || form.destinationHighlights || "",
     "url": pkgUrl,
-    "provider": { "@type": "Organization", "name": "TourWatchOut", "url": BASE_URL },
+    "provider": { "@type": "Organization", "name": "Tourwatchout", "url": BASE_URL },
   };
 
   if (form.faqs?.filter(f => f.question).length > 0) {
@@ -504,6 +504,16 @@ export default function CreatePackage() {
   const [customAmenities, setCustomAmenities] = useState([]);
   const [vendors, setVendors]               = useState([]);
 
+  /* ── Reviews ── */
+  const [pkgReviews,    setPkgReviews]    = useState([]);
+  const [pendingReviews,setPendingReviews]= useState([]); // create mode: saved after package POST
+  const [reviewsLoaded, setReviewsLoaded] = useState(false);
+  const [revForm,       setRevForm]       = useState({ userName: "", userEmail: "", rating: 0, title: "", text: "", status: "approved" });
+  const [revAdding,     setRevAdding]     = useState(false);
+  const [revHovered,    setRevHovered]    = useState(0);
+  const [revImages,     setRevImages]     = useState([]); // { src, alt, uploading? }
+  const revImgRef = useRef(null);
+
   const allAmenities = [
     ...DEFAULT_AMENITIES,
     ...customAmenities.filter(c => !DEFAULT_AMENITIES.find(d => d.name === c.name)),
@@ -565,6 +575,64 @@ export default function CreatePackage() {
       if (Object.keys(updates).length) setForm(p => ({ ...p, ...updates }));
     }
   }, [id, preDestination, preType, preSub]);
+
+  // Load reviews for this package (edit mode only)
+  useEffect(() => {
+    if (!id) return;
+    fetch(`/api/dashboard/reviews?packageId=${id}`)
+      .then(r => r.json())
+      .then(data => { setPkgReviews(Array.isArray(data) ? data : []); setReviewsLoaded(true); })
+      .catch(() => setReviewsLoaded(true));
+  }, [id]);
+
+  async function handleAddReview(e) {
+    e.preventDefault();
+    if (!revForm.rating)          { alert("Please select a rating."); return; }
+    if (!revForm.text.trim())     { alert("Please enter review text."); return; }
+    if (!revForm.userName.trim()) { alert("Please enter reviewer name."); return; }
+
+    const blank = { userName: "", userEmail: "", rating: 0, title: "", text: "", status: "approved" };
+
+    if (!isEdit) {
+      // Create mode: store locally, will be submitted after package save
+      setPendingReviews(prev => [{ ...revForm, images: revImages.filter(i => i.src), _tempId: Date.now() }, ...prev]);
+      setRevForm(blank);
+      setRevImages([]);
+      setRevHovered(0);
+      return;
+    }
+
+    setRevAdding(true);
+    try {
+      const res = await fetch("/api/dashboard/reviews", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          packageId:       id,
+          packageName:     form.packageName || "",
+          destinationSlug: form.destination || "",
+          ...revForm,
+          images: revImages.filter(i => i.src),
+        }),
+      });
+      if (res.ok) {
+        const created = await res.json();
+        setPkgReviews(prev => [created, ...prev]);
+        setRevForm(blank);
+        setRevImages([]);
+        setRevHovered(0);
+      } else {
+        const d = await res.json();
+        alert(d.error || "Failed to add review.");
+      }
+    } finally { setRevAdding(false); }
+  }
+
+  async function handleDeleteReview(revId) {
+    if (!confirm("Delete this review?")) return;
+    await fetch(`/api/dashboard/reviews/${revId}`, { method: "DELETE" });
+    setPkgReviews(prev => prev.filter(r => r._id !== revId));
+  }
 
   // Normalise amenities once allAmenities is loaded
   useEffect(() => {
@@ -730,6 +798,20 @@ export default function CreatePackage() {
       const method = isEdit ? "PUT" : "POST";
       const r = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
       if (!r.ok) throw new Error("Save failed");
+      const saved = await r.json();
+
+      // Flush pending reviews after new package is created
+      if (!isEdit && pendingReviews.length > 0 && saved?._id) {
+        await Promise.all(pendingReviews.map(rev => {
+          const { _tempId, ...revData } = rev;
+          return fetch("/api/dashboard/reviews", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ ...revData, packageId: String(saved._id), packageName: form.packageName || "", destinationSlug: form.destination || "" }),
+          });
+        }));
+        setPendingReviews([]);
+      }
 
       if (publishStatus === "Active" && allDone) {
         await Promise.all(siblings.map(s =>
@@ -758,7 +840,7 @@ export default function CreatePackage() {
   return (
     <>
       <Head>
-        <title>{`${isEdit ? "Edit" : "Add"} Package — TourWatchOut`}</title>
+        <title>{`${isEdit ? "Edit" : "Add"} Package — Tourwatchout`}</title>
         <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
       </Head>
 
@@ -1338,7 +1420,7 @@ export default function CreatePackage() {
               <h2 className="bk-section-title">SEO Settings</h2>
               <div className="bk-form-group">
                 <label className="bk-form-label">Meta Title</label>
-                <input className="bk-form-input" placeholder="e.g. Dubai Family Package | TourWatchOut"
+                <input className="bk-form-input" placeholder="e.g. Dubai Family Package | Tourwatchout"
                   value={form.metaTitle} onChange={e => f("metaTitle",e.target.value)} />
               </div>
               <div className="bk-form-group">
@@ -1462,6 +1544,173 @@ export default function CreatePackage() {
                 </div>
               ))}
             </div>
+
+            {/* ── Section 17: Reviews ── */}
+            <div className="bk-form-section">
+                <h2 className="bk-section-title" style={{ marginBottom: 4 }}>Package Reviews</h2>
+                <p style={{ fontSize: 12, color: "#9ca3af", margin: "0 0 20px", fontStyle: "italic" }}>
+                  {isEdit
+                    ? "Add or manage reviews for this package. Reviews marked \"Approved\" appear on the package page."
+                    : "Add reviews below — they will be saved automatically when you save the package."}
+                </p>
+
+                {/* Add review form */}
+                <form onSubmit={handleAddReview} style={{ background: "#f8fafc", border: "1.5px solid #e2e8f0", borderRadius: 12, padding: 20, marginBottom: 24 }}>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: "#0f172a", marginBottom: 14 }}>Add New Review</div>
+
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
+                    <div>
+                      <div style={{ fontSize: 11, fontWeight: 700, color: "#374151", marginBottom: 5, textTransform: "uppercase", letterSpacing: "0.04em" }}>Reviewer Name *</div>
+                      <input className="bk-form-input" placeholder="e.g. Rahul Sharma"
+                        value={revForm.userName} onChange={e => setRevForm(p => ({ ...p, userName: e.target.value }))} />
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 11, fontWeight: 700, color: "#374151", marginBottom: 5, textTransform: "uppercase", letterSpacing: "0.04em" }}>Reviewer Email</div>
+                      <input className="bk-form-input" placeholder="e.g. rahul@email.com"
+                        value={revForm.userEmail} onChange={e => setRevForm(p => ({ ...p, userEmail: e.target.value }))} />
+                    </div>
+                  </div>
+
+                  <div style={{ marginBottom: 12 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#374151", marginBottom: 5, textTransform: "uppercase", letterSpacing: "0.04em" }}>Rating *</div>
+                    <div style={{ display: "flex", gap: 6 }}>
+                      {[1,2,3,4,5].map(n => (
+                        <span key={n} style={{ cursor: "pointer", fontSize: 28, color: n <= (revHovered || revForm.rating) ? "#f5a623" : "#d1d5db", transition: "color 0.1s" }}
+                          onMouseEnter={() => setRevHovered(n)} onMouseLeave={() => setRevHovered(0)}
+                          onClick={() => setRevForm(p => ({ ...p, rating: n }))}>★</span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div style={{ marginBottom: 12 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#374151", marginBottom: 5, textTransform: "uppercase", letterSpacing: "0.04em" }}>Review Title</div>
+                    <input className="bk-form-input" placeholder="e.g. Amazing Kashmir experience!"
+                      value={revForm.title} onChange={e => setRevForm(p => ({ ...p, title: e.target.value }))} maxLength={100} />
+                  </div>
+
+                  <div style={{ marginBottom: 12 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#374151", marginBottom: 5, textTransform: "uppercase", letterSpacing: "0.04em" }}>Review Text *</div>
+                    <textarea className="bk-textarea" rows={3} placeholder="Write the review content here…"
+                      value={revForm.text} onChange={e => setRevForm(p => ({ ...p, text: e.target.value }))} maxLength={1000} />
+                    <div style={{ fontSize: 11, color: "#94a3b8", textAlign: "right", marginTop: 2 }}>{revForm.text.length}/1000</div>
+                  </div>
+
+                  {/* Review photos upload */}
+                  <div style={{ marginBottom: 14 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#374151", marginBottom: 7, textTransform: "uppercase", letterSpacing: "0.04em" }}>Review Photos</div>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
+                      {revImages.map((img, idx) => (
+                        <div key={idx} style={{ position: "relative", width: 72, height: 72, borderRadius: 8, overflow: "hidden", border: "1.5px solid #e2e8f0", background: "#f1f5f9" }}>
+                          {img.uploading
+                            ? <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, color: "#94a3b8" }}>…</div>
+                            : <img src={img.src} alt={img.alt} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                          }
+                          <button type="button"
+                            onClick={() => setRevImages(p => p.filter((_, i) => i !== idx))}
+                            style={{ position: "absolute", top: 2, right: 2, width: 18, height: 18, borderRadius: "50%", background: "rgba(0,0,0,0.55)", border: "none", color: "#fff", fontSize: 11, lineHeight: 1, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", padding: 0 }}>✕</button>
+                        </div>
+                      ))}
+                      {revImages.length < 6 && (
+                        <button type="button"
+                          onClick={() => revImgRef.current?.click()}
+                          style={{ width: 72, height: 72, borderRadius: 8, border: "1.5px dashed #cbd5e1", background: "#f8fafc", color: "#64748b", fontSize: 11, fontWeight: 600, cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 3 }}>
+                          <MdImage size={20} />Add
+                        </button>
+                      )}
+                    </div>
+                    <input ref={revImgRef} type="file" accept="image/*" multiple style={{ display: "none" }}
+                      onChange={async e => {
+                        const files = Array.from(e.target.files || []);
+                        e.target.value = "";
+                        const slots = files.slice(0, 6 - revImages.length);
+                        const placeholders = slots.map(() => ({ src: "", alt: "", uploading: true }));
+                        setRevImages(p => [...p, ...placeholders]);
+                        const startIdx = revImages.length;
+                        await Promise.all(slots.map(async (file, i) => {
+                          const reader = new FileReader();
+                          reader.onload = async ev => {
+                            try {
+                              const r = await fetch("/api/dashboard/packages/upload-image", {
+                                method: "POST", headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ base64: ev.target.result, name: file.name }),
+                              });
+                              const { url } = await r.json();
+                              setRevImages(p => { const next = [...p]; next[startIdx + i] = { src: url, alt: file.name }; return next; });
+                            } catch { setRevImages(p => p.filter((_, idx2) => idx2 !== startIdx + i)); }
+                          };
+                          reader.readAsDataURL(file);
+                        }));
+                      }}
+                    />
+                  </div>
+
+                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, color: "#374151", marginBottom: 5, textTransform: "uppercase", letterSpacing: "0.04em" }}>Status</div>
+                      <select className="bk-form-select" value={revForm.status} onChange={e => setRevForm(p => ({ ...p, status: e.target.value }))}>
+                        <option value="approved">Approved (visible on page)</option>
+                        <option value="pending">Pending (hidden until approved)</option>
+                        <option value="rejected">Rejected</option>
+                      </select>
+                    </div>
+                    <button type="submit" disabled={revAdding}
+                      style={{ marginTop: 22, display: "inline-flex", alignItems: "center", gap: 6, background: "#EE4C49", color: "#fff", border: "none", borderRadius: 8, padding: "10px 22px", fontSize: 14, fontWeight: 700, cursor: revAdding ? "not-allowed" : "pointer", opacity: revAdding ? 0.7 : 1, whiteSpace: "nowrap" }}>
+                      <MdStar size={16} /> {revAdding ? "Adding…" : "Add Review"}
+                    </button>
+                  </div>
+                </form>
+
+                {/* Reviews list */}
+                {(() => {
+                  const displayList = isEdit ? pkgReviews : pendingReviews;
+                  if (isEdit && !reviewsLoaded) {
+                    return <div style={{ textAlign: "center", padding: "20px 0", color: "#94a3b8", fontSize: 13 }}>Loading reviews…</div>;
+                  }
+                  if (displayList.length === 0) {
+                    return <div style={{ textAlign: "center", padding: "20px 0", color: "#94a3b8", fontSize: 13 }}>
+                      {isEdit ? "No reviews yet for this package." : "No reviews added yet — they will be saved with the package."}
+                    </div>;
+                  }
+                  return (
+                    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                      {displayList.map(r => (
+                        <div key={r._id || r._tempId} style={{ background: "#fff", border: "1.5px solid #e2e8f0", borderRadius: 10, padding: "14px 16px", display: "flex", alignItems: "flex-start", gap: 12 }}>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4, flexWrap: "wrap" }}>
+                              <span style={{ fontWeight: 700, fontSize: 13, color: "#0f172a" }}>{r.userName}</span>
+                              {r.userEmail && <span style={{ fontSize: 11, color: "#94a3b8" }}>{r.userEmail}</span>}
+                              <span style={{ display: "inline-flex", gap: 1 }}>
+                                {[1,2,3,4,5].map(n => <span key={n} style={{ fontSize: 13, color: n <= r.rating ? "#f5a623" : "#d1d5db" }}>★</span>)}
+                              </span>
+                              <span style={{ fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 5,
+                                background: r.status === "approved" ? "#dcfce7" : r.status === "rejected" ? "#fee2e2" : "#fef9c3",
+                                color:      r.status === "approved" ? "#15803d" : r.status === "rejected" ? "#b91c1c" : "#a16207" }}>
+                                {r.status}
+                              </span>
+                              {!isEdit && <span style={{ fontSize: 10, color: "#94a3b8", fontStyle: "italic" }}>pending save</span>}
+                            </div>
+                            {r.title && <div style={{ fontSize: 12, fontWeight: 600, color: "#374151", marginBottom: 2 }}>{r.title}</div>}
+                            <div style={{ fontSize: 12, color: "#374151" }}>{r.text}</div>
+                            {Array.isArray(r.images) && r.images.length > 0 && (
+                              <div style={{ display: "flex", flexWrap: "wrap", gap: 5, marginTop: 6 }}>
+                                {r.images.map((img, i) => (
+                                  <img key={i} src={img.src} alt={img.alt || ""} style={{ width: 48, height: 48, objectFit: "cover", borderRadius: 6, border: "1px solid #e2e8f0" }} />
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                          <button
+                            onClick={() => isEdit ? handleDeleteReview(r._id) : setPendingReviews(p => p.filter(x => x._tempId !== r._tempId))}
+                            title="Remove review"
+                            style={{ flexShrink: 0, background: "#fff1f2", border: "1px solid #fecdd3", borderRadius: 7, color: "#e84949", width: 30, height: 30, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
+                            <MdDeleteOutline size={16} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })()}
+              </div>
 
             {/* ── Actions ── */}
             <div className="bk-form-actions">

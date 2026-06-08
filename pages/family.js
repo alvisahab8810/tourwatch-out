@@ -32,14 +32,29 @@ const PRICE_BUCKETS = [
 ];
 
 function fmt(n) {
-  return `₹${Number(n).toLocaleString("en-IN")}`;
+  return <><span className="rupee">₹</span>{Number(n).toLocaleString("en-IN")}</>;
+}
+
+function renderLabel(label) {
+  const parts = label.split("₹");
+  if (parts.length === 1) return label;
+  return (
+    <>
+      {parts.map((part, i) => (
+        <React.Fragment key={i}>
+          {i > 0 && <span className="rupee">₹</span>}
+          {part}
+        </React.Fragment>
+      ))}
+    </>
+  );
 }
 
 function getPackageHref(pkg) {
   if (pkg.destination?.toLowerCase() === "dubai") {
     return `/dubai/dubai-family?tab=${pkg.packageSubtype?.toLowerCase()}`;
   }
-  return `/destination/${pkg.destSlug}/package/${pkg.id}`;
+  return `/destination/${pkg.destSlug}/package/${pkg.slug || pkg.id}`;
 }
 
 const AMENITY_ICONS = {
@@ -182,7 +197,7 @@ function FilterPanel({
                 checked={filterPriceBuckets.includes(r.key)}
                 onChange={() => toggleBucket(r.key)}
               />
-              <span>{r.label}</span>
+              <span>{renderLabel(r.label)}</span>
             </label>
           ))}
         </div>
@@ -374,6 +389,7 @@ export default function FamilyPackages({ packages = [], initialTab = "", destNam
   const [showAllCities,       setShowAllCities]       = useState(false);
   const [filterEMI,           setFilterEMI]           = useState(false);
   const [mobileFiltersOpen,   setMobileFiltersOpen]   = useState(false);
+  const [visibleCount,        setVisibleCount]        = useState(6);
 
   /* ── base packages for this tab ── */
   const visiblePkgs = packages.filter(p => p.packageSubtype?.toLowerCase() === activeTab);
@@ -444,6 +460,7 @@ export default function FamilyPackages({ packages = [], initialTab = "", destNam
     setCitySearch("");
     setShowAllCities(false);
     setFilterEMI(false);
+    setVisibleCount(6);
   }
 
   function toggleBucket(key) {
@@ -487,7 +504,7 @@ export default function FamilyPackages({ packages = [], initialTab = "", destNam
                   <button
                     key={sub}
                     className={`pdt-tab ${activeTab === id ? "is-active" : ""}`}
-                    onClick={() => { setActiveTab(id); clearFilters(); }}
+                    onClick={() => { setActiveTab(id); clearFilters(); setVisibleCount(6); }}
                   >
                     <img src={icon} alt={sub} className="pdt-tab-icon" />
                     <span className="pdt-tab-label">{sub}</span>
@@ -530,13 +547,37 @@ export default function FamilyPackages({ packages = [], initialTab = "", destNam
               <p className="section-subtitle">Let's find out what suits you the best</p>
             </div>
                 {filteredPkgs.length > 0 ? (
-                  <div className="national-list-bx">
-                    {filteredPkgs.map(pkg => <PackageCard key={pkg.id} pkg={pkg} />)}
+                  <>
+                    <div className="national-list-bx">
+                      {filteredPkgs.slice(0, visibleCount).map(pkg => <PackageCard key={pkg.id} pkg={pkg} />)}
+                    </div>
 
-                    
-                  </div>
-
-                  
+                    {visibleCount < filteredPkgs.length && (
+                      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, margin: "32px 0 16px" }}>
+                        <p style={{ fontSize: 13, color: "#888", margin: 0 }}>
+                          Showing {Math.min(visibleCount, filteredPkgs.length)} of {filteredPkgs.length} packages
+                        </p>
+                        <button
+                          onClick={() => setVisibleCount(c => c + 6)}
+                          style={{
+                            display: "flex", alignItems: "center", gap: 8,
+                            background: "#fff", border: "2px solid #e84949", color: "#e84949",
+                            borderRadius: 10, padding: "12px 32px", fontSize: 15, fontWeight: 700,
+                            cursor: "pointer", transition: "all 0.2s", letterSpacing: 0.3,
+                            boxShadow: "0 2px 12px rgba(232,73,73,0.10)",
+                            width: "100%", maxWidth: 340, justifyContent: "center",
+                          }}
+                          onMouseEnter={e => { e.currentTarget.style.background = "#e84949"; e.currentTarget.style.color = "#fff"; }}
+                          onMouseLeave={e => { e.currentTarget.style.background = "#fff"; e.currentTarget.style.color = "#e84949"; }}
+                        >
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <polyline points="6 9 12 15 18 9"/>
+                          </svg>
+                          Load More Packages
+                        </button>
+                      </div>
+                    )}
+                  </>
                 ) : (
                   <div style={{ textAlign: "center", padding: "3rem 1rem", color: "#888" }}>
                     <p style={{ marginBottom: 12 }}>No packages match the selected filters.</p>
@@ -627,13 +668,14 @@ export async function getServerSideProps({ query }) {
   }
 
   const raw = await Package.find(filter)
-    .select("packageName destination duration packageType packageSubtype basePrice finalPrice priceType gallery featureImage webBanner amenities destinationHighlights")
+    .select("packageName slug destination duration packageType packageSubtype basePrice finalPrice priceType gallery featureImage webBanner amenities destinationHighlights")
     .sort({ createdAt: 1 })
     .lean();
 
   const packages = raw
     .map(p => ({
       id:                   String(p._id),
+      slug:                 p.slug || "",
       packageName:          p.packageName,
       destination:          p.destination,
       duration:             p.duration,

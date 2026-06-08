@@ -147,7 +147,7 @@ export default function Dashboard() {
 
   return (
     <>
-      <Head><title>Dashboard — TourWatchOut</title></Head>
+      <Head><title>Dashboard — Tourwatchout</title></Head>
 
       <header className="bk-header">
         <div className="bk-header-left">

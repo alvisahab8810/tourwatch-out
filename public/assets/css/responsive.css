@@ -1979,7 +1979,7 @@ section.national-dest {
     font-size: 14px;
 }
 .footer ul li a {
-    font-size: 12px;
+    font-size: 13px!important;
     line-height: 20px;
 }
 .form-pop p {

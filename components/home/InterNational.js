@@ -6,7 +6,7 @@ import "swiper/css/pagination";
 
 function fmt(n) {
   if (!n) return null;
-  return `₹${Number(n).toLocaleString("en-IN")}`;
+  return <><span className="rupee">₹</span>{Number(n).toLocaleString("en-IN")}</>;
 }
 
 function DestCard({ d }) {

@@ -182,9 +182,9 @@ function buildSchemaJson(type, form) {
     "description": form.metaDescription || form.summary || "",
     "url": postUrl,
     "mainEntityOfPage": { "@type": "WebPage", "@id": postUrl },
-    "author": { "@type": "Person", "name": form.authorName || "TourWatchOut" },
+    "author": { "@type": "Person", "name": form.authorName || "Tourwatchout" },
     "publisher": {
-      "@type": "Organization", "name": "TourWatchOut", "url": BASE_URL,
+      "@type": "Organization", "name": "Tourwatchout", "url": BASE_URL,
       "logo": { "@type": "ImageObject", "url": `${BASE_URL}/assets/images/logo.png` },
     },
     "datePublished": form.publishDate || new Date().toISOString().slice(0, 10),
@@ -506,7 +506,7 @@ export default function CreateBlog() {
   return (
     <>
       <Head>
-        <title>{`${editId ? "Edit Blog" : "New Blog"} — TourWatchOut`}</title>
+        <title>{`${editId ? "Edit Blog" : "New Blog"} — Tourwatchout`}</title>
         <style>{`
           @keyframes twSlideIn {
             from { opacity: 0; transform: translateX(64px) scale(0.95); }
@@ -715,7 +715,7 @@ export default function CreateBlog() {
                       <span style={{ fontSize: 11, fontWeight: 700, color: "#9ca3af", textTransform: "uppercase", letterSpacing: 0.5 }}>Q{i + 1}</span>
                       <button style={s.removeSchemaBtn} onClick={() => removeFaq(i)} title="Remove FAQ"><MdDeleteOutline size={15} /></button>
                     </div>
-                    <input style={s.input} placeholder="Question e.g. What is TourWatchOut?" value={faq.question} onChange={e => updateFaq(i, "question", e.target.value)} />
+                    <input style={s.input} placeholder="Question e.g. What is Tourwatchout?" value={faq.question} onChange={e => updateFaq(i, "question", e.target.value)} />
                     <textarea style={{ ...s.editor, minHeight: 80, marginTop: 8 }} placeholder="Answer…" value={faq.answer} onChange={e => updateFaq(i, "answer", e.target.value)} />
                   </div>
                 ))}

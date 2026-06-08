@@ -2488,3 +2488,11 @@ background: linear-gradient(to bottom, rgb(0 0 0 / 65%) 0%, rgb(0 0 0 / 40%) 30%
         z-index: 100;
         position: relative;
 }
+span.rupee {
+    font-family: 'Inter'!important;
+}
+
+.rop-modal-content  div  span{
+    font-family: 'Inter'!important;
+
+}

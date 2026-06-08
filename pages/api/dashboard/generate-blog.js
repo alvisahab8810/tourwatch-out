@@ -10,7 +10,7 @@ export default async function handler(req, res) {
 
   const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-  const systemPrompt = `You are an expert travel SEO content writer for TourWatchOut, an Indian travel company.
+  const systemPrompt = `You are an expert travel SEO content writer for Tourwatchout, an Indian travel company.
 Follow the user's instructions precisely — including word count, structure, headings, tone, keywords, and all formatting requirements.
 Always write in Markdown. Start the blog with a # H1 title on the very first line.
 Do not add any preamble, commentary, or explanation — output only the blog content as instructed.`;

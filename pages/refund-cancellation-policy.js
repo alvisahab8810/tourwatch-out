@@ -25,7 +25,7 @@ export default function RefundCancellationPolicy() {
       <p className="mb-4">Last updated: 10 October 2025</p>
 
       <p className="mb-4">
-        At <strong>TourWatchOut</strong>, we strive to provide our customers with a seamless travel booking experience. 
+        At <strong>Tourwatchout</strong>, we strive to provide our customers with a seamless travel booking experience. 
         However, we understand that travel plans may change due to unforeseen circumstances. 
         The following Cancellation and Refund Policy outlines the conditions under which cancellations and refunds are processed.
       </p>
@@ -49,7 +49,7 @@ export default function RefundCancellationPolicy() {
         <li>In case of partial cancellations, applicable charges will be deducted, and the balance amount will be refunded.</li>
         <li><strong>Non-refundable components</strong> such as flight tickets, visa fees, insurance, or special event bookings are not eligible for any refund.</li>
         <li>Refunds are subject to confirmation from hotels, airlines, and other service providers involved in the booking.</li>
-        <li>If a refund is delayed due to third-party settlement (like airlines or hotels), TourWatchOut will not be held responsible for the delay.</li>
+        <li>If a refund is delayed due to third-party settlement (like airlines or hotels), Tourwatchout will not be held responsible for the delay.</li>
         <li>In cases where a credit note is issued, it cannot be encashed or transferred to another traveler.</li>
       </ul>
 
@@ -68,7 +68,7 @@ export default function RefundCancellationPolicy() {
 
       <h2 className="mb-2">5. Force Majeure</h2>
       <p className="mb-4">
-        TourWatchOut shall not be held liable or responsible for any failure or delay in performing its obligations 
+        Tourwatchout shall not be held liable or responsible for any failure or delay in performing its obligations 
         due to circumstances beyond its control, including but not limited to natural disasters, war, political unrest, 
         lockdowns, or technical failures of airlines or transport operators.
       </p>
@@ -85,7 +85,7 @@ export default function RefundCancellationPolicy() {
         For any questions or assistance related to cancellations or refunds, please reach out to our support team:
       </p>
       <p>
-        <strong>TourWatchOut</strong><br />
+        <strong>Tourwatchout</strong><br />
         Email: <a href="mailto:info@tourwatchout.com" className="text-blue-600">info@tourwatchout.com</a><br />
         Website: <a href="https://tourwatchout.com" className="text-blue-600">www.tourwatchout.com</a>
       </p>

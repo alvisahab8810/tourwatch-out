@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/router";
 import toast from "react-hot-toast";
 import { getToken, getUser } from "../../utils/userAuth";
@@ -84,9 +84,12 @@ export default function PackageReviews({ packageId, packageName, destinationSlug
   const [submitting, setSubmitting] = useState(false);
   const [submitted,  setSubmitted]  = useState(false);
 
-  const [rating, setRating] = useState(0);
-  const [title,  setTitle]  = useState("");
-  const [text,   setText]   = useState("");
+  const [rating,        setRating]        = useState(0);
+  const [title,         setTitle]         = useState("");
+  const [text,          setText]          = useState("");
+  const [reviewImages,  setReviewImages]  = useState([]); // { src, alt, uploading? }
+
+  const reviewImgRef = useRef(null);
 
   const [user,  setUser]  = useState(null);
   const [token, setToken] = useState(null);
@@ -109,13 +112,15 @@ export default function PackageReviews({ packageId, packageName, destinationSlug
     e.preventDefault();
     if (!rating)      { toast.error("Please select a star rating.", { id: "rev" }); return; }
     if (!text.trim()) { toast.error("Please write your review.",    { id: "rev" }); return; }
+    if (reviewImages.some(i => i.uploading)) { toast.error("Please wait for photos to finish uploading.", { id: "rev" }); return; }
 
     setSubmitting(true);
     try {
+      const uploadedImages = reviewImages.filter(i => i.src && !i.uploading);
       const res = await fetch("/api/reviews", {
         method:  "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body:    JSON.stringify({ packageId, packageName, destinationSlug, rating, title, text }),
+        body:    JSON.stringify({ packageId, packageName, destinationSlug, rating, title, text, images: uploadedImages }),
       });
       const data = await res.json();
       if (res.status === 409) { toast.error("You have already reviewed this package.", { id: "rev" }); return; }
@@ -129,13 +134,14 @@ export default function PackageReviews({ packageId, packageName, destinationSlug
         rating,
         title:      title.trim(),
         text:       text.trim(),
+        images:     uploadedImages,
         packageName,
         createdAt:  new Date().toISOString(),
       };
       setReviews(prev => [newReview, ...prev]);
       setSubmitted(true);
       setShowForm(false);
-      setRating(0); setTitle(""); setText("");
+      setRating(0); setTitle(""); setText(""); setReviewImages([]);
       toast.success("Review posted successfully!", { id: "rev" });
     } catch {
       toast.error("Network error. Please try again.", { id: "rev" });
@@ -149,7 +155,6 @@ export default function PackageReviews({ packageId, packageName, destinationSlug
   const extra   = reviews.length - INITIAL_COUNT;
 
   if (loading) return null;
-  if (reviews.length === 0 && !token) return null;
 
   return (
     <div>
@@ -157,7 +162,7 @@ export default function PackageReviews({ packageId, packageName, destinationSlug
         <div className="mini-container1">
 
           <h2 className="google-reviews-header">
-            Guest Reviews {reviews.length > 0 && <span style={{ fontWeight: 500, fontSize: "0.65em", color: "#64748b" }}>({reviews.length})</span>}
+            Client Reviews {reviews.length > 0 && <span style={{ fontWeight: 500, fontSize: "0.65em", color: "#64748b" }}>({reviews.length})</span>}
           </h2>
 
           {/* ── Overview — only when there are reviews ── */}
@@ -217,6 +222,28 @@ export default function PackageReviews({ packageId, packageName, destinationSlug
                     <span className="booked">Booked:</span> {r.packageName || packageName || "—"}
                   </p>
                   <p className="customer-review-text">{r.text}</p>
+                  {Array.isArray(r.images) && r.images.length > 0 && (
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 10 }}>
+                      {r.images.map((img, idx) => (
+                        <img
+                          key={idx}
+                          src={img.src}
+                          alt={img.alt || "Review photo"}
+                          style={{ width: 80, height: 80, objectFit: "cover", borderRadius: 8, border: "1px solid #e5e7eb", cursor: "pointer" }}
+                          onClick={() => window.open(img.src, "_blank")}
+                        />
+                      ))}
+                    </div>
+                  )}
+                  {r.adminNote && r.adminNote.trim() && (
+                    <div style={{ marginTop: 12, marginLeft: 16, borderLeft: "3px solid #EE4C49", background: "#fff7f7", borderRadius: "0 8px 8px 0", padding: "10px 14px" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 5 }}>
+                        <img src="/assets/images/favicon.png" alt="Tourwatchout" style={{ width: 22, height: 22, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
+                        <span style={{ fontSize: 12, fontWeight: 700, color: "#EE4C49" }}>Tourwatchout Team</span>
+                      </div>
+                      <p style={{ margin: 0, fontSize: 13, color: "#374151", lineHeight: 1.55 }}>{r.adminNote}</p>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -239,17 +266,17 @@ export default function PackageReviews({ packageId, packageName, destinationSlug
                     ? "Be the first to share your experience with this package!"
                     : "Share your experience with this package"}
                 </p>
-                {token ? (
-                  <button className="load-more-button interactive" style={{ margin: "0 auto" }}
-                    onClick={() => setShowForm(true)}>
-                    ✏ Write a Review
-                  </button>
-                ) : (
-                  <button className="load-more-button interactive" style={{ margin: "0 auto" }}
-                    onClick={() => router.push(`/login?redirect=${encodeURIComponent(router.asPath)}`)}>
-                    Login to Write a Review
-                  </button>
-                )}
+                <button className="load-more-button interactive" style={{ margin: "0 auto" }}
+                  onClick={() => {
+                    if (!token) {
+                      toast.error("Please login first to write a review.", { id: "rev-login" });
+                      router.push(`/login?redirect=${encodeURIComponent(router.asPath)}`);
+                      return;
+                    }
+                    setShowForm(true);
+                  }}>
+                  ✏ Write a Review
+                </button>
               </div>
             )}
 
@@ -271,7 +298,7 @@ export default function PackageReviews({ packageId, packageName, destinationSlug
                     <div style={{ fontSize: 12, color: "#64748b" }}>Posting as you</div>
                   </div>
                   <button
-                    onClick={() => { setShowForm(false); setRating(0); setTitle(""); setText(""); }}
+                    onClick={() => { setShowForm(false); setRating(0); setTitle(""); setText(""); setReviewImages([]); }}
                     style={{ marginLeft: "auto", background: "none", border: "none", fontSize: 20, color: "#94a3b8", cursor: "pointer", lineHeight: 1, padding: 4 }}
                   >✕</button>
                 </div>
@@ -311,6 +338,55 @@ export default function PackageReviews({ packageId, packageName, destinationSlug
                     </div>
                   </div>
 
+                  {/* Review photos */}
+                  <div style={{ marginBottom: 18 }}>
+                    <div style={labelSt}>Add Photos</div>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
+                      {reviewImages.map((img, idx) => (
+                        <div key={idx} style={{ position: "relative", width: 72, height: 72, borderRadius: 8, overflow: "hidden", border: "1.5px solid #e5e7eb", background: "#f1f5f9" }}>
+                          {img.uploading
+                            ? <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, color: "#94a3b8" }}>…</div>
+                            : <img src={img.src} alt={img.alt} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                          }
+                          <button type="button"
+                            onClick={() => setReviewImages(p => p.filter((_, i) => i !== idx))}
+                            style={{ position: "absolute", top: 2, right: 2, width: 18, height: 18, borderRadius: "50%", background: "rgba(0,0,0,0.55)", border: "none", color: "#fff", fontSize: 11, lineHeight: 1, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", padding: 0 }}>✕</button>
+                        </div>
+                      ))}
+                      {reviewImages.length < 6 && (
+                        <button type="button"
+                          onClick={() => reviewImgRef.current?.click()}
+                          style={{ width: 72, height: 72, borderRadius: 8, border: "1.5px dashed #cbd5e1", background: "#f8fafc", color: "#64748b", fontSize: 11, fontWeight: 600, cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 3 }}>
+                          <span style={{ fontSize: 22, lineHeight: 1 }}>+</span>Photo
+                        </button>
+                      )}
+                    </div>
+                    <input ref={reviewImgRef} type="file" accept="image/*" multiple style={{ display: "none" }}
+                      onChange={async e => {
+                        const files = Array.from(e.target.files || []);
+                        e.target.value = "";
+                        const slots = files.slice(0, 6 - reviewImages.length);
+                        const placeholders = slots.map(() => ({ src: "", alt: "", uploading: true }));
+                        setReviewImages(p => [...p, ...placeholders]);
+                        const startIdx = reviewImages.length;
+                        slots.forEach(async (file, i) => {
+                          const reader = new FileReader();
+                          reader.onload = async ev => {
+                            try {
+                              const r = await fetch("/api/dashboard/packages/upload-image", {
+                                method: "POST", headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ base64: ev.target.result, name: file.name }),
+                              });
+                              const { url } = await r.json();
+                              setReviewImages(p => { const next = [...p]; next[startIdx + i] = { src: url, alt: file.name }; return next; });
+                            } catch { setReviewImages(p => p.filter((_, idx2) => idx2 !== startIdx + i)); }
+                          };
+                          reader.readAsDataURL(file);
+                        });
+                      }}
+                    />
+                  </div>
+
                   {/* Actions */}
                   <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
                     <button
@@ -325,7 +401,7 @@ export default function PackageReviews({ packageId, packageName, destinationSlug
                       type="button"
                       className="load-more-button interactive"
                       style={{ margin: 0 }}
-                      onClick={() => { setShowForm(false); setRating(0); setTitle(""); setText(""); }}
+                      onClick={() => { setShowForm(false); setRating(0); setTitle(""); setText(""); setReviewImages([]); }}
                     >
                       Cancel
                     </button>

@@ -386,7 +386,7 @@ export default function CreateVoucher() {
   async function handleWhatsApp() {
     await handleDownload(); // handleDownload already calls saveVoucher
     const msg = encodeURIComponent(
-      `Hello ${form.name || ""},\n\nYour travel voucher is ready! ✈️\n\nVoucher No: ${form.voucherNo || "—"}\nTrip ID: ${form.tripId || "—"}\nDestination: ${form.destination || "—"}\nTravel Date: ${form.travelDate || "—"}\n\nPlease find the attached PDF voucher.\nContact us at sales1@tourwatchout.com for any query.\n\n— Team TourWatchOut`
+      `Hello ${form.name || ""},\n\nYour travel voucher is ready! ✈️\n\nVoucher No: ${form.voucherNo || "—"}\nTrip ID: ${form.tripId || "—"}\nDestination: ${form.destination || "—"}\nTravel Date: ${form.travelDate || "—"}\n\nPlease find the attached PDF voucher.\nContact us at sales1@tourwatchout.com for any query.\n\n— Team Tourwatchout`
     );
     window.open(`https://web.whatsapp.com/send?text=${msg}`, "_blank");
   }
@@ -399,11 +399,11 @@ export default function CreateVoucher() {
       if (!pdf) throw new Error("PDF generation failed");
       const pdfBase64 = pdf.output("datauristring").split(",")[1];
       const fileName = `voucher-${form.voucherNo || form.tripId || "tw"}.pdf`;
-      const emailBody = `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto"><div style="background:#e84949;padding:20px;text-align:center"><h2 style="color:#fff;margin:0">TourWatchOut — Travel Voucher</h2></div><div style="padding:24px;background:#fff;border:1px solid #eee"><p>Dear <strong>${form.name || "Guest"}</strong>,</p><p>Your travel voucher is ready. Please find the PDF attached to this email.</p><table style="width:100%;border-collapse:collapse;margin:16px 0"><tr><td style="padding:8px;font-weight:bold;color:#555;width:140px">Voucher No.</td><td style="padding:8px;color:#222">${form.voucherNo || "—"}</td></tr><tr style="background:#f9f9f9"><td style="padding:8px;font-weight:bold;color:#555">Trip ID</td><td style="padding:8px;color:#222">${form.tripId || "—"}</td></tr><tr><td style="padding:8px;font-weight:bold;color:#555">Destination</td><td style="padding:8px;color:#222">${form.destination || "—"}</td></tr><tr style="background:#f9f9f9"><td style="padding:8px;font-weight:bold;color:#555">Travel Date</td><td style="padding:8px;color:#222">${form.travelDate || "—"}</td></tr><tr><td style="padding:8px;font-weight:bold;color:#555">Pax</td><td style="padding:8px;color:#222">${form.pax || "—"}</td></tr></table><p style="font-size:13px;color:#888">For any queries, contact us at <a href="mailto:sales1@tourwatchout.com">sales1@tourwatchout.com</a></p></div><div style="background:#fff5f5;padding:12px;text-align:center;font-size:12px;color:#888;border-top:2px solid #e84949">Team TourWatchOut &nbsp;|&nbsp; sales1@tourwatchout.com</div></div>`;
+      const emailBody = `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto"><div style="background:#e84949;padding:20px;text-align:center"><h2 style="color:#fff;margin:0">Tourwatchout — Travel Voucher</h2></div><div style="padding:24px;background:#fff;border:1px solid #eee"><p>Dear <strong>${form.name || "Guest"}</strong>,</p><p>Your travel voucher is ready. Please find the PDF attached to this email.</p><table style="width:100%;border-collapse:collapse;margin:16px 0"><tr><td style="padding:8px;font-weight:bold;color:#555;width:140px">Voucher No.</td><td style="padding:8px;color:#222">${form.voucherNo || "—"}</td></tr><tr style="background:#f9f9f9"><td style="padding:8px;font-weight:bold;color:#555">Trip ID</td><td style="padding:8px;color:#222">${form.tripId || "—"}</td></tr><tr><td style="padding:8px;font-weight:bold;color:#555">Destination</td><td style="padding:8px;color:#222">${form.destination || "—"}</td></tr><tr style="background:#f9f9f9"><td style="padding:8px;font-weight:bold;color:#555">Travel Date</td><td style="padding:8px;color:#222">${form.travelDate || "—"}</td></tr><tr><td style="padding:8px;font-weight:bold;color:#555">Pax</td><td style="padding:8px;color:#222">${form.pax || "—"}</td></tr></table><p style="font-size:13px;color:#888">For any queries, contact us at <a href="mailto:sales1@tourwatchout.com">sales1@tourwatchout.com</a></p></div><div style="background:#fff5f5;padding:12px;text-align:center;font-size:12px;color:#888;border-top:2px solid #e84949">Team Tourwatchout &nbsp;|&nbsp; sales1@tourwatchout.com</div></div>`;
       const res = await fetch("/api/dashboard/send-voucher", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ to: emailTo, subject: `Travel Voucher — ${form.destination || "TourWatchOut"} (${form.voucherNo || form.tripId})`, html: emailBody, pdfBase64, fileName }),
+        body: JSON.stringify({ to: emailTo, subject: `Travel Voucher — ${form.destination || "Tourwatchout"} (${form.voucherNo || form.tripId})`, html: emailBody, pdfBase64, fileName }),
       });
       if (!res.ok) { const err = await res.json().catch(() => ({})); throw new Error(err.message || "Email sending failed"); }
       setEmailDone(true);
@@ -418,7 +418,7 @@ export default function CreateVoucher() {
 
   return (
     <>
-      <Head><title>{editId ? "Edit" : "New"} Voucher — TourWatchOut</title></Head>
+      <Head><title>{editId ? "Edit" : "New"} Voucher — Tourwatchout</title></Head>
 
       <header className="bk-header">
         <div className="bk-header-left">

@@ -75,6 +75,7 @@ const PackageSchema = new mongoose.Schema(
     packageType:          { type: String, required: true },
     packageSubtype:       { type: String, required: true },
     packageName:          String,
+    slug:                 { type: String, default: "", index: true },
     duration:             String,
     basePrice:            String,
     finalPrice:           String,

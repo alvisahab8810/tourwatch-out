@@ -85,7 +85,7 @@ export default function UsersPage() {
 
   return (
     <>
-      <Head><title>Users — TourWatchOut</title></Head>
+      <Head><title>Users — Tourwatchout</title></Head>
 
       {/* Header */}
       <header className="bk-header">

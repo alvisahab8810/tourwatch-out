@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Head from "next/head";
 import {
   MdSearch, MdRefresh, MdDelete, MdEdit, MdCheckCircle, MdCancel, MdStar,
@@ -80,7 +80,9 @@ export default function ReviewsPage() {
   /* Edit modal */
   const [editId,    setEditId]    = useState(null);
   const [editData,  setEditData]  = useState({});
+  const [editMeta,  setEditMeta]  = useState({}); // read-only reviewer info
   const [saving,    setSaving]    = useState(false);
+  const editImgRef = useRef(null);
 
   /* Delete confirm */
   const [confirmId, setConfirmId] = useState(null);
@@ -150,7 +152,8 @@ export default function ReviewsPage() {
 
   function openEdit(r) {
     setEditId(r._id);
-    setEditData({ status: r.status, title: r.title || "", text: r.text, adminNote: r.adminNote || "" });
+    setEditData({ status: r.status, title: r.title || "", text: r.text, adminNote: r.adminNote || "", images: Array.isArray(r.images) ? [...r.images] : [] });
+    setEditMeta({ userName: r.userName, userEmail: r.userEmail || "", rating: r.rating, packageName: r.packageName || "", createdAt: r.createdAt });
   }
 
   async function saveEdit() {
@@ -202,7 +205,7 @@ export default function ReviewsPage() {
 
   return (
     <DashboardLayout active="Reviews">
-      <Head><title>Reviews — TourWatchOut</title></Head>
+      <Head><title>Reviews — Tourwatchout</title></Head>
 
       <div style={{ padding: "28px 24px" }}>
         <style>{`
@@ -280,8 +283,19 @@ export default function ReviewsPage() {
                 <tr key={r._id} style={{ background: i % 2 === 0 ? "#fff" : "#f8fafc" }}>
                   <TD>{(safePage - 1) * perPage + i + 1}</TD>
                   <TD>
-                    <div style={{ fontWeight: 600, color: "#0f172a", maxWidth: 180, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }} title={r.packageName}>{r.packageName || <span style={{ color: "#94a3b8" }}>—</span>}</div>
-                    {r.destinationSlug && <div style={{ fontSize: 11, color: "#94a3b8" }}>{r.destinationSlug}</div>}
+                    {r.packageId ? (
+                      <a href={`/dashboard/packages/create?id=${r.packageId}`} target="_blank" rel="noreferrer"
+                        style={{ fontWeight: 600, color: "#2563eb", maxWidth: 180, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", display: "block", textDecoration: "none" }}
+                        title={`Edit: ${r.packageName}`}>{r.packageName || "—"} ↗</a>
+                    ) : (
+                      <div style={{ fontWeight: 600, color: "#0f172a" }}>{r.packageName || <span style={{ color: "#94a3b8" }}>—</span>}</div>
+                    )}
+                    {r.destinationSlug && r.packageId && (
+                      <a href={`/destination/${r.destinationSlug}/package/${r.packageId}`} target="_blank" rel="noreferrer"
+                        style={{ fontSize: 11, color: "#EE4C49", textDecoration: "none", display: "block" }}
+                        title="View live package page">{r.destinationSlug} · View live ↗</a>
+                    )}
+                    {!r.packageId && r.destinationSlug && <div style={{ fontSize: 11, color: "#94a3b8" }}>{r.destinationSlug}</div>}
                   </TD>
                   <TD>
                     <div style={{ fontWeight: 600, color: "#0f172a", whiteSpace: "nowrap" }}>{r.userName}</div>
@@ -435,22 +449,102 @@ export default function ReviewsPage() {
       {/* ════════════════ EDIT MODAL ════════════════ */}
       {editId && (
         <div style={M.overlay} onClick={e => { if (e.target === e.currentTarget) setEditId(null); }}>
-          <div style={{ ...M.box, maxWidth: 520 }}>
+          <div style={{ ...M.box, maxWidth: 560 }}>
             <div style={M.head}>
               <h3 style={M.hTitle}>Edit Review</h3>
               <button style={M.close} onClick={() => setEditId(null)}>✕</button>
             </div>
-            <div style={{ padding: "4px 24px 20px" }}>
+            <div style={{ padding: "4px 24px 20px", maxHeight: "74vh", overflowY: "auto" }}>
+
+              {/* Reviewer info — read-only */}
+              <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 10, padding: "12px 14px", marginTop: 12, marginBottom: 4 }}>
+                <div style={{ display: "flex", gap: 14, flexWrap: "wrap", alignItems: "flex-start" }}>
+                  <div style={{ flex: 1, minWidth: 120 }}>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 2 }}>Reviewer</div>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: "#0f172a" }}>{editMeta.userName}</div>
+                    {editMeta.userEmail && <div style={{ fontSize: 12, color: "#64748b" }}>{editMeta.userEmail}</div>}
+                  </div>
+                  <div style={{ flex: 1, minWidth: 100 }}>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 2 }}>Package</div>
+                    <div style={{ fontSize: 13, color: "#374151" }}>{editMeta.packageName || "—"}</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 4 }}>Rating</div>
+                    <div style={{ display: "flex", gap: 2 }}>
+                      {[1,2,3,4,5].map(n => <span key={n} style={{ fontSize: 16, color: n <= editMeta.rating ? "#f5a623" : "#d1d5db" }}>★</span>)}
+                    </div>
+                  </div>
+                  {editMeta.createdAt && (
+                    <div>
+                      <div style={{ fontSize: 10, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 2 }}>Date</div>
+                      <div style={{ fontSize: 12, color: "#374151" }}>{fmtDate(editMeta.createdAt)}</div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
               <Label>Status</Label>
               <select style={{ ...M.input, cursor: "pointer" }} value={editData.status} onChange={e => setEditData(p => ({ ...p, status: e.target.value }))}>
                 <option value="pending">Pending</option>
                 <option value="approved">Approved</option>
                 <option value="rejected">Rejected</option>
               </select>
+
               <Label>Review Title</Label>
               <input style={M.input} value={editData.title} onChange={e => setEditData(p => ({ ...p, title: e.target.value }))} placeholder="Review title…" />
+
               <Label>Review Text</Label>
               <textarea style={{ ...M.input, resize: "vertical", minHeight: 100 }} value={editData.text} onChange={e => setEditData(p => ({ ...p, text: e.target.value }))} />
+
+              {/* Photos */}
+              <Label>Review Photos</Label>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center", marginBottom: 4 }}>
+                {(editData.images || []).map((img, idx) => (
+                  <div key={idx} style={{ position: "relative", width: 72, height: 72, borderRadius: 8, overflow: "hidden", border: "1.5px solid #e2e8f0", background: "#f1f5f9", flexShrink: 0 }}>
+                    {img.uploading
+                      ? <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, color: "#94a3b8" }}>…</div>
+                      : <img src={img.src} alt={img.alt || ""} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                    }
+                    <button type="button"
+                      onClick={() => setEditData(p => ({ ...p, images: p.images.filter((_, i) => i !== idx) }))}
+                      title="Remove photo"
+                      style={{ position: "absolute", top: 2, right: 2, width: 18, height: 18, borderRadius: "50%", background: "rgba(220,38,38,0.85)", border: "none", color: "#fff", fontSize: 11, lineHeight: 1, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", padding: 0 }}>✕</button>
+                  </div>
+                ))}
+                {(editData.images || []).length < 6 && (
+                  <button type="button"
+                    onClick={() => editImgRef.current?.click()}
+                    style={{ width: 72, height: 72, borderRadius: 8, border: "1.5px dashed #cbd5e1", background: "#f8fafc", color: "#64748b", fontSize: 11, fontWeight: 600, cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 3, flexShrink: 0 }}>
+                    <span style={{ fontSize: 22, lineHeight: 1 }}>+</span>Add
+                  </button>
+                )}
+                {(editData.images || []).length === 0 && <span style={{ fontSize: 12, color: "#94a3b8", fontStyle: "italic" }}>No photos attached</span>}
+              </div>
+              <input ref={editImgRef} type="file" accept="image/*" multiple style={{ display: "none" }}
+                onChange={async e => {
+                  const files = Array.from(e.target.files || []);
+                  e.target.value = "";
+                  const slots = files.slice(0, 6 - (editData.images || []).length);
+                  const startIdx = (editData.images || []).length;
+                  const placeholders = slots.map(() => ({ src: "", alt: "", uploading: true }));
+                  setEditData(p => ({ ...p, images: [...(p.images || []), ...placeholders] }));
+                  slots.forEach(async (file, i) => {
+                    const reader = new FileReader();
+                    reader.onload = async ev => {
+                      try {
+                        const r = await fetch("/api/dashboard/packages/upload-image", {
+                          method: "POST", headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ base64: ev.target.result, name: file.name }),
+                        });
+                        const { url } = await r.json();
+                        setEditData(p => { const imgs = [...(p.images || [])]; imgs[startIdx + i] = { src: url, alt: file.name }; return { ...p, images: imgs }; });
+                      } catch { setEditData(p => ({ ...p, images: (p.images || []).filter((_, idx2) => idx2 !== startIdx + i) })); }
+                    };
+                    reader.readAsDataURL(file);
+                  });
+                }}
+              />
+
               <Label>Admin Note (internal)</Label>
               <input style={M.input} value={editData.adminNote} onChange={e => setEditData(p => ({ ...p, adminNote: e.target.value }))} placeholder="Internal note…" />
             </div>

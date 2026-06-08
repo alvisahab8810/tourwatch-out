@@ -8,7 +8,7 @@ export default async function handler(req, res) {
   // Use collection directly to bypass Mongoose strictQuery filtering on the popular field
   const raw = await Package.collection
     .find({ popular: true })
-    .project({ destination: 1, packageName: 1, packageSubtype: 1, duration: 1, basePrice: 1, finalPrice: 1, priceType: 1, destinationHighlights: 1, amenities: 1, featureImage: 1, webBanner: 1 })
+    .project({ destination: 1, packageName: 1, slug: 1, packageSubtype: 1, duration: 1, basePrice: 1, finalPrice: 1, priceType: 1, destinationHighlights: 1, amenities: 1, featureImage: 1, webBanner: 1 })
     .sort({ createdAt: -1 })
     .toArray();
 

@@ -62,7 +62,7 @@ export default function NationalDestinationPage({ destinations = [] }) {
               <h2 className="section-title">
                 Find Your perfect <span className="highlight">National </span> Destinations
               </h2>
-              <p className="section-subtitle">Plan your truly heartwarming or family getaways with TourWatchOut!</p>
+              <p className="section-subtitle">Plan your truly heartwarming or family getaways with Tourwatchout!</p>
             </div>
 
             {destinations.length > 0 ? (

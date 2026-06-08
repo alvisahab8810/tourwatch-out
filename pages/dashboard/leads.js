@@ -80,7 +80,7 @@ export default function LeadsPage() {
 
   return (
     <DashboardLayout active="Leads">
-      <Head><title>Leads — TourWatchOut</title></Head>
+      <Head><title>Leads — Tourwatchout</title></Head>
 
       <div style={S.page}>
 

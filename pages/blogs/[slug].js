@@ -165,7 +165,7 @@ export default function BlogDetail({ blog, related }) {
   return (
     <>
       <Head>
-        <title>{`${blog.metaTitle || blog.title} — TourWatchOut`}</title>
+        <title>{`${blog.metaTitle || blog.title} — Tourwatchout`}</title>
         <meta name="description" content={blog.metaDescription || blog.summary || ""} />
         {blog.metaRobots && <meta name="robots" content={blog.metaRobots} />}
         {blog.metaKeywords && <meta name="keywords" content={blog.metaKeywords} />}

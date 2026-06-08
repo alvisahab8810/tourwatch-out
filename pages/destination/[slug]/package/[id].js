@@ -43,6 +43,15 @@ const AMENITY_ICONS = {
   "DJ Night":       "/assets/images/icons/itinerary/icon8.svg",
 };
 
+function toSlug(str) {
+  return (str || '')
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, '')
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-');
+}
+
 export async function getServerSideProps({ params }) {
   const connectDB = require("../../../../utils/mongodb").default;
   const Package   = require("../../../../models/Package").default;
@@ -54,11 +63,25 @@ export async function getServerSideProps({ params }) {
   const dest = readDests().find(d => d.slug === slug && d.status === "Active");
   if (!dest) return { notFound: true };
 
-  const pkgDoc = await Package.findOne({
-    _id:    id,
-    status: { $regex: /^active$/i },
-  }).lean();
-  if (!pkgDoc) return { notFound: true };
+  // Try slug lookup first, fall back to _id (backward-compat with old UUID URLs)
+  let pkgDoc = await Package.findOne({ slug: id, status: { $regex: /^active$/i } }).lean();
+  if (!pkgDoc) {
+    pkgDoc = await Package.findOne({ _id: id, status: { $regex: /^active$/i } }).lean();
+    if (!pkgDoc) return { notFound: true };
+    // Auto-generate slug on first UUID visit and persist it
+    if (!pkgDoc.slug) {
+      const generated = toSlug(pkgDoc.packageName || 'package') + '-' + String(pkgDoc._id).slice(0, 8);
+      await Package.updateOne({ _id: pkgDoc._id }, { $set: { slug: generated } });
+      pkgDoc.slug = generated;
+    }
+    // Redirect UUID URLs to clean slug URL
+    return {
+      redirect: {
+        destination: `/destination/${slug}/package/${pkgDoc.slug}`,
+        permanent: true,
+      },
+    };
+  }
   const pkg = { ...pkgDoc, id: pkgDoc._id };
 
   // Fetch vendor data so the Inclusions section can show gallery + details
@@ -87,7 +110,7 @@ export async function getServerSideProps({ params }) {
 
 function fmtPrice(val) {
   const n = Number(val);
-  return n ? `₹${n.toLocaleString("en-IN")}` : null;
+  return n ? <><span className="rupee">₹</span>{n.toLocaleString("en-IN")}</> : null;
 }
 
 function AccordionSection({ title, open, onToggle, children }) {
@@ -279,7 +302,7 @@ export default function PackageDetailPage({ pkg, dest, vendorMap = {} }) {
   return (
     <>
       <Head>
-        <title>{pkg.metaTitle || pkg.packageName || destName} — TourWatchOut</title>
+        <title>{pkg.metaTitle || pkg.packageName || destName} — Tourwatchout</title>
         <meta name="description" content={pkg.metaDescription || `${destName} ${pkg.packageSubtype} package`} />
         {pkg.metaKeywords && <meta name="keywords" content={pkg.metaKeywords} />}
         {pkg.metaRobots   && <meta name="robots"   content={pkg.metaRobots} />}
@@ -293,14 +316,50 @@ export default function PackageDetailPage({ pkg, dest, vendorMap = {} }) {
         <Topbar />
         <Offcanvas />
 
-        {/* Mobile Hero */}
-        <div className="pdt-mob-hero desktop-none">
-          <img
-            src={pkg.mobileBanner?.src || pkg.webBanner?.src || dest.mainImage?.src || "/assets/images/dubai/itinerary/banner.png"}
-            alt={pkg.mobileBanner?.alt || pkg.webBanner?.alt || destName}
-            onError={e => { e.target.src = "/assets/images/dubai/itinerary/banner.png"; }}
-          />
-        </div>
+        {/* Mobile Hero Slider */}
+        {(() => {
+          const fallbackSrc = "/assets/images/dubai/itinerary/banner.png";
+          const mainSrc = pkg.mobileBanner?.src || pkg.webBanner?.src || dest.mainImage?.src || fallbackSrc;
+          const mainAlt = pkg.mobileBanner?.alt || pkg.webBanner?.alt || destName;
+
+          const gallerySlides = (pkg.gallery || []).filter(g => g?.src);
+          const allSlides = [
+            { src: mainSrc, alt: mainAlt },
+            ...gallerySlides.map(g => ({ src: g.src, alt: g.alt || destName })),
+          ];
+
+          if (allSlides.length <= 1) {
+            return (
+              <div className="pdt-mob-hero desktop-none">
+                <img src={mainSrc} alt={mainAlt}
+                  onError={e => { e.target.src = fallbackSrc; }} />
+              </div>
+            );
+          }
+
+          return (
+            <div className="pdt-mob-hero desktop-none">
+              <Swiper
+                modules={[Pagination, Autoplay]}
+                pagination={{ clickable: true }}
+                autoplay={{ delay: 3000, disableOnInteraction: false }}
+                loop
+                style={{ width: "100%", height: "100%" }}
+              >
+                {allSlides.map((slide, i) => (
+                  <SwiperSlide key={i}>
+                    <img
+                      src={slide.src}
+                      alt={slide.alt}
+                      style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                      onError={e => { e.target.src = fallbackSrc; }}
+                    />
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            </div>
+          );
+        })()}
 
         {/* Hero Gallery */}
         <div className="container mobile-none">
@@ -625,10 +684,10 @@ export default function PackageDetailPage({ pkg, dest, vendorMap = {} }) {
                                       </div>
                                     )}
                                     <div className="pkg-vendor-pricing-row">
-                                      {stay.price > 0 && <><span>₹{Number(stay.price).toLocaleString("en-IN")}/night</span><span className="pkg-x">×</span></>}
+                                      {stay.price > 0 && <><span><span className="rupee">₹</span>{Number(stay.price).toLocaleString("en-IN")}/night</span><span className="pkg-x">×</span></>}
                                       <span>{stay.nights}N</span>
                                       {stay.rooms > 1 && <><span className="pkg-x">×</span><span>{stay.rooms} rooms</span></>}
-                                      {stay.total > 0 && <span className="pkg-total">= ₹{Number(stay.total).toLocaleString("en-IN")}</span>}
+                                      {stay.total > 0 && <span className="pkg-total">= <span className="rupee">₹</span>{Number(stay.total).toLocaleString("en-IN")}</span>}
                                     </div>
                                   </div>
                                 </div>
@@ -660,9 +719,9 @@ export default function PackageDetailPage({ pkg, dest, vendorMap = {} }) {
                                       {tr.vehicleType && <span className="pkg-vendor-badge">{tr.vehicleType}</span>}
                                     </div>
                                     <div className="pkg-vendor-pricing-row">
-                                      {tr.pricePerDay > 0 && <><span>₹{Number(tr.pricePerDay).toLocaleString("en-IN")}/day</span><span className="pkg-x">×</span></>}
+                                      {tr.pricePerDay > 0 && <><span><span className="rupee">₹</span>{Number(tr.pricePerDay).toLocaleString("en-IN")}/day</span><span className="pkg-x">×</span></>}
                                       <span>{tr.days} day{tr.days > 1 ? "s" : ""}</span>
-                                      {tr.total > 0 && <span className="pkg-total">= ₹{Number(tr.total).toLocaleString("en-IN")}</span>}
+                                      {tr.total > 0 && <span className="pkg-total">= <span className="rupee">₹</span>{Number(tr.total).toLocaleString("en-IN")}</span>}
                                     </div>
                                     {(tr.inclusions || []).length > 0 && (
                                       <div className="pkg-vendor-inclusions">
@@ -699,9 +758,9 @@ export default function PackageDetailPage({ pkg, dest, vendorMap = {} }) {
                                       {ab.vendorName && <span className="pkg-vendor-badge">{ab.vendorName}</span>}
                                     </div>
                                     <div className="pkg-vendor-pricing-row">
-                                      {ab.pricePerPerson > 0 && <><span>₹{Number(ab.pricePerPerson).toLocaleString("en-IN")}/person</span><span className="pkg-x">×</span></>}
+                                      {ab.pricePerPerson > 0 && <><span><span className="rupee">₹</span>{Number(ab.pricePerPerson).toLocaleString("en-IN")}/person</span><span className="pkg-x">×</span></>}
                                       <span>{ab.persons} person{ab.persons > 1 ? "s" : ""}</span>
-                                      {ab.total > 0 && <span className="pkg-total">= ₹{Number(ab.total).toLocaleString("en-IN")}</span>}
+                                      {ab.total > 0 && <span className="pkg-total">= <span className="rupee">₹</span>{Number(ab.total).toLocaleString("en-IN")}</span>}
                                     </div>
                                   </div>
                                 </div>

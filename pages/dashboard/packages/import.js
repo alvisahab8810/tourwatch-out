@@ -76,7 +76,7 @@ export default function ImportPackages() {
 
   return (
     <>
-      <Head><title>Import Packages — TourWatchOut</title></Head>
+      <Head><title>Import Packages — Tourwatchout</title></Head>
 
       <header className="bk-header">
         <div className="bk-header-left">

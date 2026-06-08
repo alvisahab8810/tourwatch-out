@@ -691,7 +691,7 @@ export default function VendorsPage() {
 
   return (
     <>
-      <Head><title>Vendors — TourWatchOut</title></Head>
+      <Head><title>Vendors — Tourwatchout</title></Head>
 
       <header className="bk-header">
         <div className="bk-header-left">

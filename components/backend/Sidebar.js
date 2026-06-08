@@ -47,7 +47,7 @@ export default function Sidebar({ active, isOpen, onClose }) {
       <div className={`bk-overlay ${isOpen ? "open" : ""}`} onClick={onClose} />
       <aside className={`bk-sidebar ${isOpen ? "open" : ""}`}>
         <div className="bk-sidebar-logo">
-          <img src="/assets/images/dark-logo.svg" alt="TourWatchOut" />
+          <img src="/assets/images/dark-logo.svg" alt="Tourwatchout" />
         </div>
 
         <nav className="bk-sidebar-nav">

@@ -788,6 +788,7 @@ export default function Popup({ packageInfo, asDrawer, destination: destProp, au
         @media (max-width: 600px) {
           :global(.rop-dialog)       { max-width: 100%; }
           :global(.rop-form)         { padding: 14px 16px 18px; gap: 9px; }
+          :global(.rop-banner-title) { font-size: 23px; }
 
         .rop-input {
             padding: 10px 15px!important;

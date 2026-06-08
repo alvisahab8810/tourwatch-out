@@ -54,7 +54,7 @@ export default function VoucherList() {
 
   return (
     <>
-      <Head><title>All Vouchers — TourWatchOut</title></Head>
+      <Head><title>All Vouchers — Tourwatchout</title></Head>
 
       <header className="bk-header">
         <div className="bk-header-left">

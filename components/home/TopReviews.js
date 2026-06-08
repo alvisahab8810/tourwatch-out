@@ -108,7 +108,7 @@ export default function TopReviews() {
                       </div>
                     </div>
 
-                    <ReviewText text="We booked our honeymoon trip to the Andaman & Nicobar Islands with TourWatchOut, and it was an amazing experience! Everything was perfectly planned — from flights and hotels to local transfers and island activities. The team was professional, responsive, and made sure our trip was completely hassle-free. Special thanks to their local coordinators for smooth execution throughout. Thanks to TourWatchOut, we created beautiful memories that will last a lifetime. Highly recommended for a well-managed and memorable holiday!" />
+                    <ReviewText text="We booked our honeymoon trip to the Andaman & Nicobar Islands with Tourwatchout, and it was an amazing experience! Everything was perfectly planned — from flights and hotels to local transfers and island activities. The team was professional, responsive, and made sure our trip was completely hassle-free. Special thanks to their local coordinators for smooth execution throughout. Thanks to Tourwatchout, we created beautiful memories that will last a lifetime. Highly recommended for a well-managed and memorable holiday!" />
                   </div>
                 </SwiperSlide>
 
@@ -204,11 +204,11 @@ export default function TopReviews() {
 
                     <ReviewText
                       text="
-                    Our Goa trip organized by TourWatchOut was absolutely fantastic...! Everything was perfectly planned — from the travel arrangements and hotel stays to sightseeing and activities. The team made sure we had a smooth and stress-free experience throughout the tour.
+                    Our Goa trip organized by Tourwatchout was absolutely fantastic...! Everything was perfectly planned — from the travel arrangements and hotel stays to sightseeing and activities. The team made sure we had a smooth and stress-free experience throughout the tour.
 
 Their coordination, punctuality, and attention to detail truly made our trip special. We didn’t have to worry about a single thing — just enjoyed every moment!
 
-A big thank you to the TourWatchOut team for making our Goa tour so memorable. Highly recommended for anyone planning a fun, well-managed holiday!
+A big thank you to the Tourwatchout team for making our Goa tour so memorable. Highly recommended for anyone planning a fun, well-managed holiday!
                     "
                     />
                   </div>
@@ -241,11 +241,11 @@ A big thank you to the TourWatchOut team for making our Goa tour so memorable. H
 
                     <ReviewText
                       text="
-                    We recently went on our college trip to Goa with TourWatchOut, and it was an unforgettable experience! The whole tour was super well-organized — from travel to stay to all the fun activities. The team handled everything so smoothly and made sure we had the best time without any stress.
+                    We recently went on our college trip to Goa with Tourwatchout, and it was an unforgettable experience! The whole tour was super well-organized — from travel to stay to all the fun activities. The team handled everything so smoothly and made sure we had the best time without any stress.
 
                         The coordinators were really friendly, cooperative, and kept the vibe fun throughout the trip. Every moment was full of energy, laughter, and memories we’ll always cherish.
 
-                        Big thanks to TourWatchOut for making our college trip so special! 💫
+                        Big thanks to Tourwatchout for making our college trip so special! 💫
                         Highly recommend them for group and college tours!
                     "
                     />

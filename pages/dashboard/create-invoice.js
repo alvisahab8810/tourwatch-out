@@ -257,7 +257,7 @@ export default function CreateInvoice() {
   async function handleWhatsApp() {
     await handleDownload();
     const msg = encodeURIComponent(
-      `Hello ${form.clientName || ""},\n\nYour tax invoice is ready! 🧾\n\nInvoice No: ${form.invoiceNo || "—"}\nDate: ${form.invoiceDate || "—"}\nDestination: ${form.destination || "—"}\n\nPlease find the attached PDF invoice.\nContact us at sales@tourwatchout.com for any query.\n\n— Team TourWatchOut`
+      `Hello ${form.clientName || ""},\n\nYour tax invoice is ready! 🧾\n\nInvoice No: ${form.invoiceNo || "—"}\nDate: ${form.invoiceDate || "—"}\nDestination: ${form.destination || "—"}\n\nPlease find the attached PDF invoice.\nContact us at sales@tourwatchout.com for any query.\n\n— Team Tourwatchout`
     );
     window.open(`https://web.whatsapp.com/send?text=${msg}`, "_blank");
   }
@@ -284,7 +284,7 @@ export default function CreateInvoice() {
       const emailBody = `
 <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto">
   <div style="background:#e84949;padding:20px;text-align:center">
-    <h2 style="color:#fff;margin:0">Tax Invoice — TourWatchOut</h2>
+    <h2 style="color:#fff;margin:0">Tax Invoice — Tourwatchout</h2>
   </div>
   <div style="padding:24px;background:#fff;border:1px solid #eee">
     <p>Dear <strong>${form.clientName || "Customer"}</strong>,</p>
@@ -298,7 +298,7 @@ export default function CreateInvoice() {
     <p style="font-size:13px;color:#888">Contact us at <a href="mailto:sales@tourwatchout.com">sales@tourwatchout.com</a></p>
   </div>
   <div style="background:#fff5f5;padding:12px;text-align:center;font-size:12px;color:#888;border-top:2px solid #e84949">
-    Team TourWatchOut | Realization Customer Services Private Limited
+    Team Tourwatchout | Realization Customer Services Private Limited
   </div>
 </div>`;
 
@@ -307,7 +307,7 @@ export default function CreateInvoice() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           to: emailTo,
-          subject: `Tax Invoice ${form.invoiceNo || ""} — TourWatchOut`,
+          subject: `Tax Invoice ${form.invoiceNo || ""} — Tourwatchout`,
           html: emailBody, pdfBase64, fileName,
         }),
       });
@@ -334,7 +334,7 @@ export default function CreateInvoice() {
 
   return (
     <>
-      <Head><title>{editId ? "Edit" : "New"} Invoice — TourWatchOut</title></Head>
+      <Head><title>{editId ? "Edit" : "New"} Invoice — Tourwatchout</title></Head>
 
       <header className="bk-header">
         <div className="bk-header-left">

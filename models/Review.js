@@ -14,8 +14,11 @@ const ReviewSchema = new mongoose.Schema(
     text:            { type: String, required: true },
     status:          { type: String, enum: ["pending", "approved", "rejected"], default: "pending" },
     adminNote:       { type: String, default: "" },
+    images:          { type: [{ src: String, alt: { type: String, default: "" } }], default: [] },
   },
   { timestamps: true }
 );
 
-export default mongoose.models.Review || mongoose.model("Review", ReviewSchema);
+// Delete cached model so schema changes (like the images field) always apply
+if (mongoose.models.Review) delete mongoose.models.Review;
+export default mongoose.model("Review", ReviewSchema);

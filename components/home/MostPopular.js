@@ -79,7 +79,7 @@ const STATIC = [
 ];
 
 function fmt(n) {
-  return `₹${Number(n).toLocaleString("en-IN")}`;
+  return <><span className="rupee">₹</span>{Number(n).toLocaleString("en-IN")}</>;
 }
 
 function getCardHref(card) {
@@ -88,7 +88,7 @@ function getCardHref(card) {
     return `/dubai/dubai-family?tab=${(card.packageSubtype || "economy").toLowerCase()}`;
   }
   const slug = card.destSlug || card.destination?.toLowerCase().replace(/\s+/g, "-") || "";
-  return `/destination/${slug}/package/${card.id || card._id}`;
+  return `/destination/${slug}/package/${card.slug || card.id || card._id}`;
 }
 
 function PackageCard({ card }) {

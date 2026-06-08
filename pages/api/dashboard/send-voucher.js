@@ -34,10 +34,10 @@ export default async function handler(req, res) {
     });
 
     await transporter.sendMail({
-      from: `TourWatchOut <accounts@tourwatchout.com>`,
+      from: `Tourwatchout <accounts@tourwatchout.com>`,
       replyTo: "sales@tourwatchout.com",
       to,
-      subject: subject || "Your Travel Voucher — TourWatchOut",
+      subject: subject || "Your Travel Voucher — Tourwatchout",
       html,
       attachments: [
         {

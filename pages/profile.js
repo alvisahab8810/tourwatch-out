@@ -151,7 +151,7 @@ export default function ProfilePage() {
 
   return (
     <>
-      <Head><title>My Profile — TourWatchOut</title></Head>
+      <Head><title>My Profile — Tourwatchout</title></Head>
       <Topbar />
       <Offcanvas />
 

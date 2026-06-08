@@ -17,8 +17,8 @@ export default function FaqsPage({ faqs = [] }) {
   return (
     <>
       <Head>
-        <title>FAQs — TourWatchOut</title>
-        <meta name="description" content="Find answers to the most frequently asked questions about TourWatchOut travel packages." />
+        <title>FAQs — Tourwatchout</title>
+        <meta name="description" content="Find answers to the most frequently asked questions about Tourwatchout travel packages." />
       </Head>
 
       <Topbar />

@@ -28,13 +28,13 @@ export default function DashboardLogin() {
   return (
     <>
       <Head>
-        <title>Admin Login — TourWatchOut</title>
+        <title>Admin Login — Tourwatchout</title>
       </Head>
       <div style={styles.page}>
         <div style={styles.card}>
           {/* Logo */}
           <div style={styles.logoWrap}>
-            <img src="/assets/images/logo.png" alt="TourWatchOut" style={styles.logo} />
+            <img src="/assets/images/logo.png" alt="Tourwatchout" style={styles.logo} />
           </div>
           <h2 style={styles.title}>Admin Login</h2>
           <p style={styles.subtitle}>Sign in to manage vouchers</p>

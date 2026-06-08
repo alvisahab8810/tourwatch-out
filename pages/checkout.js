@@ -308,7 +308,7 @@ export default function CheckoutPage() {
 
   return (
     <>
-      <Head><title>Checkout — {pkg.packageName || pkg.destination} | TourWatchOut</title></Head>
+      <Head><title>Checkout — {pkg.packageName || pkg.destination} | Tourwatchout</title></Head>
       <Topbar />
       <Offcanvas />
 

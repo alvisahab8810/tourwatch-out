@@ -28,7 +28,7 @@ export default async function handler(req, res) {
     const user = await getAuthUser(req);
     if (!user) return res.status(401).json({ error: "Please login to submit a review." });
 
-    const { packageId, packageName, destinationSlug, rating, title, text } = req.body;
+    const { packageId, packageName, destinationSlug, rating, title, text, images } = req.body;
 
     if (!packageId)              return res.status(400).json({ error: "Package ID is required." });
     if (!rating || rating < 1 || rating > 5) return res.status(400).json({ error: "Rating must be 1–5." });
@@ -50,6 +50,7 @@ export default async function handler(req, res) {
       title:    title?.trim() || "",
       text:     text.trim(),
       status:   "approved",
+      images:   Array.isArray(images) ? images.filter(img => img?.src) : [],
     });
 
     return res.status(201).json({ ok: true, id: review._id });

@@ -25,7 +25,7 @@ export default function PrivacyPolicy() {
           <p className="mb-4">Last updated: 10 October 2025</p>
 
           <p className="mb-4">
-            At <strong>TourWatchOut</strong>, your privacy is extremely
+            At <strong>Tourwatchout</strong>, your privacy is extremely
             important to us. This Privacy Policy explains how we collect, use,
             share, and protect your personal information when you visit our
             website{" "}
@@ -181,7 +181,7 @@ export default function PrivacyPolicy() {
             or the handling of your personal information, contact us at:
           </p>
           <p className="mb-2">
-            <strong>TourWatchOut</strong>
+            <strong>Tourwatchout</strong>
             <br />
             Email:{" "}
             <a href="mailto:info@tourwatchout.com" className="text-blue-600">

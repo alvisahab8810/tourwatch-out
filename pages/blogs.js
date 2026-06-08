@@ -10,8 +10,8 @@ export default function BlogsPage() {
   return (
     <>
       <Head>
-        <title>Travel Blogs — TourWatchOut</title>
-        <meta name="description" content="Travel tips, stories and inspiration from TourWatchOut." />
+        <title>Travel Blogs — Tourwatchout</title>
+        <meta name="description" content="Travel tips, stories and inspiration from Tourwatchout." />
         <link rel="stylesheet" href="/assets/css/blogs.css" />
       </Head>
       <Topbar />

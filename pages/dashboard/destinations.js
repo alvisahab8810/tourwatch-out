@@ -83,7 +83,7 @@ export default function Destinations() {
 
   return (
     <>
-      <Head><title>Destinations — TourWatchOut</title></Head>
+      <Head><title>Destinations — Tourwatchout</title></Head>
 
       <header className="bk-header">
         <div className="bk-header-left">

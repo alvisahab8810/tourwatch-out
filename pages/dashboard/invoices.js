@@ -89,7 +89,7 @@ export default function InvoiceList() {
 
   return (
     <>
-      <Head><title>All Invoices — TourWatchOut</title></Head>
+      <Head><title>All Invoices — Tourwatchout</title></Head>
 
       <header className="bk-header">
         <div className="bk-header-left">

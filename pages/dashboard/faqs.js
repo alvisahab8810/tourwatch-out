@@ -132,7 +132,7 @@ export default function FaqsDashboard() {
     <>
       <Toaster position="top-right" />
       <Head>
-        <title>FAQs — TourWatchOut</title>
+        <title>FAQs — Tourwatchout</title>
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
         <link rel="stylesheet" href="/assets/css/backend.css" />
       </Head>

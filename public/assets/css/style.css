@@ -2,6 +2,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
 
 @import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+
+.rupee {
+  font-family: 'Inter', sans-serif;
+  font-style: normal;
+}
 /* // <uniquifier>: Use a unique and descriptive class name */
 /* // <weight>: Use a value from 400 to 900 */
 
@@ -1019,7 +1024,7 @@ h2.ml-2 {
         }
         .stat-item p {
             margin: 0;
-            color: #6c757d;
+            color: #fff!important;
         }
 
         .featur div span{
@@ -5000,15 +5005,23 @@ section.blogs-list-section.ptb-80 {
 /* â”€â”€â”€ Package detail mobile hero â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .pdt-mob-hero {
     width: 100%;
+    height: 260px;
     overflow: hidden;
 }
 
 .pdt-mob-hero img {
     width: 100%;
+    height: 100%;
     display: block;
     object-fit: cover;
-    max-height: 260px;
 }
+
+.pdt-mob-hero .swiper,
+.pdt-mob-hero .swiper-slide {
+    width: 100%;
+    height: 100%;
+}
+
 
 
 .contact-hero-title {
@@ -6821,4 +6834,9 @@ h3.contact-hero-subtitle {
 
 .exclusion-head{
     color: #B91C21!important;
+}
+
+
+span.rupee {
+    font-family: 'Inter'!important;
 }

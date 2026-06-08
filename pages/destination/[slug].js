@@ -23,7 +23,7 @@ const PKG_TYPES = ["Family", "Couple"];
 const SUBTYPES  = ["Economy", "Deluxe", "Premium"];
 
 function fmt(n) {
-  return `₹${Number(n).toLocaleString("en-IN")}`;
+  return <><span className="rupee">₹</span>{Number(n).toLocaleString("en-IN")}</>;
 }
 
 // ── Static paths — enumerate all active destinations at build time ────────────
@@ -143,7 +143,7 @@ export default function DestinationPage({ dest, packages }) {
   return (
     <div className="dyna-destination-pages">
       <Head>
-        <title>{name} Packages — TourWatchOut</title>
+        <title>{name} Packages — Tourwatchout</title>
         <meta name="description" content={`Explore ${name} packages — Economy, Deluxe and Premium options for Family and Couple travel.`} />
 
         {/* ── Critical CSS — inline before anything renders ── */}

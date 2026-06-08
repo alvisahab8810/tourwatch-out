@@ -40,7 +40,7 @@ export default function BookingConfirmPage({ booking }) {
   return (
     <>
       <Head>
-        <title>Booking Confirmed — {booking.bookingId} | TourWatchOut</title>
+        <title>Booking Confirmed — {booking.bookingId} | Tourwatchout</title>
       </Head>
       <Topbar />
       <Offcanvas />
@@ -57,7 +57,7 @@ export default function BookingConfirmPage({ booking }) {
                 </svg>
               </div>
               <h1 className="bc-confirmed-title">Booking Confirmed!</h1>
-              <p className="bc-confirmed-sub">Thank you for choosing TourWatchOut. We can&apos;t wait to take you there.</p>
+              <p className="bc-confirmed-sub">Thank you for choosing Tourwatchout. We can&apos;t wait to take you there.</p>
               <div className="bc-booking-id-row">
                 <div className="bc-bid-label">Booking ID</div>
                 <div className="bc-bid-value">{booking.bookingId}</div>

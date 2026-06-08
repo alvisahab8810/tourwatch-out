@@ -5,14 +5,15 @@ export default async function handler(req, res) {
   await connectDB();
   const { id } = req.query;
 
-  /* ── PUT — update status / text / adminNote ── */
+  /* ── PUT — update status / text / adminNote / images ── */
   if (req.method === "PUT") {
-    const { status, title, text, adminNote } = req.body;
+    const { status, title, text, adminNote, images } = req.body;
     const update = {};
     if (status)    update.status    = status;
     if (title !== undefined) update.title = title;
     if (text)      update.text      = text;
     if (adminNote !== undefined) update.adminNote = adminNote;
+    if (images !== undefined) update.images = Array.isArray(images) ? images.filter(img => img?.src) : [];
 
     const review = await Review.findByIdAndUpdate(id, update, { new: true }).lean();
     if (!review) return res.status(404).json({ error: "Not found" });

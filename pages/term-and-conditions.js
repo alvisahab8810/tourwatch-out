@@ -25,7 +25,7 @@ export default function TermsAndConditions() {
           <p className="mb-4">Last updated: 10 October 2025</p>
 
           <p className="mb-4">
-            Welcome to <strong>TourWatchOut</strong>. These Terms and Conditions
+            Welcome to <strong>Tourwatchout</strong>. These Terms and Conditions
             govern your use of our website
             <a href="https://tourwatchout.com" className="text-blue-600">
               {" "}
@@ -39,7 +39,7 @@ export default function TermsAndConditions() {
           <ul className="list-disc ml-6 mb-4">
             <li>
               No booking has been confirmed until written confirmation is
-              received from TourWatchOut.
+              received from Tourwatchout.
             </li>
             <li>
               Rooms and rates are subject to availability at the time of booking
@@ -84,7 +84,7 @@ export default function TermsAndConditions() {
             </li>
             <li>
               Bedding and room preferences are also subject to availability at
-              the time of check-in. TourWatchOut can only forward special
+              the time of check-in. Tourwatchout can only forward special
               requests to hotels.
             </li>
           </ul>
@@ -92,7 +92,7 @@ export default function TermsAndConditions() {
           <h2 className=" mb-2">4. Flights and Transportation</h2>
           <ul className="list-disc ml-6 mb-4">
             <li>
-              TourWatchOut is not liable for any airline rescheduling, delays,
+              Tourwatchout is not liable for any airline rescheduling, delays,
               or cancellations affecting your tour package.
             </li>
             <li>
@@ -110,7 +110,7 @@ export default function TermsAndConditions() {
 
           <h2 className=" mb-2">5. Travel Insurance</h2>
           <p className="mb-4">
-            Travel insurance is not included in any TourWatchOut package unless
+            Travel insurance is not included in any Tourwatchout package unless
             explicitly mentioned. It is highly recommended that all travelers
             obtain comprehensive travel insurance to cover trip cancellations,
             medical emergencies, and other unforeseen events.
@@ -138,11 +138,11 @@ export default function TermsAndConditions() {
           </ul>
 
           <h2 className=" mb-2">
-            7. Changes and Cancellations by TourWatchOut
+            7. Changes and Cancellations by Tourwatchout
           </h2>
           <ul className="list-disc ml-6 mb-4">
             <li>
-              TourWatchOut reserves the right to amend, cancel, or reschedule
+              Tourwatchout reserves the right to amend, cancel, or reschedule
               tours due to unforeseen circumstances such as weather conditions,
               operational issues, or government restrictions.
             </li>
@@ -155,7 +155,7 @@ export default function TermsAndConditions() {
           <h2 className=" mb-2">8. Liability Disclaimer</h2>
           <ul className="list-disc ml-6 mb-4">
             <li>
-              TourWatchOut acts only as an intermediary between travelers and
+              Tourwatchout acts only as an intermediary between travelers and
               third-party service providers such as airlines, hotels, transport
               operators, and travel partners.
             </li>
@@ -199,7 +199,7 @@ export default function TermsAndConditions() {
             contact:
           </p>
           <p>
-            <strong>TourWatchOut</strong>
+            <strong>Tourwatchout</strong>
             <br />
             Email:{" "}
             <a href="mailto:info@tourwatchout.com" className="text-blue-600">

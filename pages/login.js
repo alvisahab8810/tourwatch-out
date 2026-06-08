@@ -103,9 +103,9 @@ function BackBtn({ onClick }) {
 function GetStarted({ onLogin, onSignup }) {
   return (
     <>
-      <img src="/assets/images/dark-logo.svg" alt="TourWatchOut" style={s.logo} />
+      <img src="/assets/images/dark-logo.svg" alt="Tourwatchout" style={s.logo} />
       <h1 style={s.title}>Let's Get Started</h1><br/>
-      <p style={s.subtitle}>Welcome to TourWatchOut! Sign in or create an account to plan your next adventure.</p>
+      <p style={s.subtitle}>Welcome to Tourwatchout! Sign in or create an account to plan your next adventure.</p>
       <SocialRow />
       <Divider label="or continue with email" />
       <button style={s.primaryBtn} onClick={onLogin}>Log in</button>
@@ -162,7 +162,7 @@ function LoginForm({ onSignup, onForgot, onBack, onSuccess }) {
   return (
     <>
       <BackBtn onClick={onBack} />
-      <img src="/assets/images/dark-logo.svg" alt="TourWatchOut" style={s.logo} />
+      <img src="/assets/images/dark-logo.svg" alt="Tourwatchout" style={s.logo} />
       <h1 style={s.title}>Log In To Your Account</h1>
       <p style={s.subtitle}>Welcome back! Please enter your details to continue.</p>
       <form onSubmit={handleSubmit} style={s.form} noValidate>
@@ -245,9 +245,9 @@ function SignupForm({ onLogin, onBack, onOtp }) {
   return (
     <>
       <BackBtn onClick={onBack} />
-      <img src="/assets/images/dark-logo.svg" alt="TourWatchOut" style={s.logo} />
+      <img src="/assets/images/dark-logo.svg" alt="Tourwatchout" style={s.logo} />
       <h1 style={s.title}>Create Your Account</h1>
-      <p style={s.subtitle}>Join TourWatchOut and discover your next unforgettable journey.</p>
+      <p style={s.subtitle}>Join Tourwatchout and discover your next unforgettable journey.</p>
       <form onSubmit={handleSubmit} style={s.form} noValidate>
         <div style={s.field}>
           <label style={s.label}>Full Name</label>
@@ -339,7 +339,7 @@ function OtpForm({ email, name, onBack, onSuccess }) {
       if (!res.ok) { setError(data.error || "Verification failed."); return; }
 
       saveSession(data.token, data.user);
-      toast.success(`Welcome to TourWatchOut, ${data.user.name}! 🎉`);
+      toast.success(`Welcome to Tourwatchout, ${data.user.name}! 🎉`);
       onSuccess();
     } catch {
       setError("Something went wrong. Please try again.");
@@ -373,7 +373,7 @@ function OtpForm({ email, name, onBack, onSuccess }) {
   return (
     <>
       <BackBtn onClick={onBack} />
-      <img src="/assets/images/dark-logo.svg" alt="TourWatchOut" style={s.logo} />
+      <img src="/assets/images/dark-logo.svg" alt="Tourwatchout" style={s.logo} />
 
       {/* Email icon */}
       <div style={{ display: "flex", justifyContent: "center", marginBottom: 14 }}>
@@ -485,7 +485,7 @@ function ForgotForm({ onBack }) {
   return (
     <>
       <BackBtn onClick={onBack} />
-      <img src="/assets/images/dark-logo.svg" alt="TourWatchOut" style={s.logo} />
+      <img src="/assets/images/dark-logo.svg" alt="Tourwatchout" style={s.logo} />
       <h1 style={s.title}>Forgot Password?</h1>
       <p style={s.subtitle}>Enter your registered email and we'll send you reset instructions.</p>
       {sent ? (
@@ -540,7 +540,7 @@ export default function LoginPage() {
 
   return (
     <>
-      <Head><title>Login — TourWatchOut</title></Head>
+      <Head><title>Login — Tourwatchout</title></Head>
 
       <div className="login-page-area">
         <div className="login-row">

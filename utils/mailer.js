@@ -9,7 +9,7 @@ export async function sendLeadConfirmationEmail({ name, email, phone, destinatio
   });
 
   await transporter.sendMail({
-    from:    `TourWatchOut <${process.env.SMTP_FROM}>`,
+    from:    `Tourwatchout <${process.env.SMTP_FROM}>`,
     to:      email,
     subject: `We've received your travel request, ${name}`,
     html: `
@@ -29,7 +29,7 @@ export async function sendLeadConfirmationEmail({ name, email, phone, destinatio
     <div style="padding:32px 32px 24px">
       <p style="margin:0 0 6px;font-size:16px;color:#0f172a">Hi <strong>${name}</strong>,</p>
       <p style="margin:0 0 28px;font-size:14px;color:#64748b;line-height:1.7">
-        Thank you for reaching out to <strong>TourWatchOut</strong>. We have received your travel enquiry and our expert will be in touch with you shortly to craft the perfect itinerary.
+        Thank you for reaching out to <strong>Tourwatchout</strong>. We have received your travel enquiry and our expert will be in touch with you shortly to craft the perfect itinerary.
       </p>
 
       <!-- Details card -->
@@ -87,7 +87,7 @@ export async function sendLeadConfirmationEmail({ name, email, phone, destinatio
 
     <!-- Footer -->
     <div style="background:#f8fafc;padding:20px 32px;text-align:center;border-top:1px solid #f1f5f9">
-      <p style="margin:0 0 6px;font-size:12px;color:#94a3b8">© ${new Date().getFullYear()} TourWatchOut. All rights reserved.</p>
+      <p style="margin:0 0 6px;font-size:12px;color:#94a3b8">© ${new Date().getFullYear()} Tourwatchout. All rights reserved.</p>
       <p style="margin:0;font-size:11px;color:#cbd5e1">If you did not make this request, please ignore this email.</p>
     </div>
 

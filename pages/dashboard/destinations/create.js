@@ -221,7 +221,7 @@ export default function CreateDestination() {
   return (
     <>
       <Head>
-        <title>{isEdit ? "Edit" : "Add"} Destination — TourWatchOut</title>
+        <title>{isEdit ? "Edit" : "Add"} Destination — Tourwatchout</title>
       </Head>
 
           <header className="bk-header">

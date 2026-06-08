@@ -76,7 +76,7 @@ export default function CommentsPage() {
 
   return (
     <>
-      <Head><title>Comments — TourWatchOut</title></Head>
+      <Head><title>Comments — Tourwatchout</title></Head>
 
       <header className="bk-header">
         <div className="bk-header-left">
