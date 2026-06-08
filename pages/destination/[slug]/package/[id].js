@@ -896,7 +896,7 @@ export default function PackageDetailPage({ pkg, dest, vendorMap = {} }) {
                             min={new Date().toISOString().split("T")[0]}
                             style={{ flex:1, border:"1px solid #e5e7eb", borderRadius:6, padding:"10px 10px", fontSize:13, color: qForm.travelDate ? "#0c141d" : "#9ca3af", outline:"none", background:"#fff" }}
                           />
-                          <input type="number" name="pax" placeholder="Travellers" value={qForm.pax} onChange={handleQChange}
+                          <input type="number" name="pax" placeholder="No. of Traveller" value={qForm.pax} onChange={handleQChange}
                             min="1" max="50" inputMode="numeric"
                             style={{ flex:1, border:"1px solid #e5e7eb", borderRadius:6, padding:"10px 10px", fontSize:13, outline:"none", background:"#fff" }}
                           />

@@ -220,9 +220,6 @@ export default function ReviewsPage() {
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20, gap: 12, flexWrap: "wrap" }}>
           <h1 style={{ fontSize: 22, fontWeight: 800, color: "#0f172a", margin: 0 }}>Package Reviews</h1>
           <div style={{ display: "flex", gap: 10 }}>
-            <button onClick={openAddModal} style={{ display: "flex", alignItems: "center", gap: 6, background: "#EE4C49", color: "#fff", border: "none", borderRadius: 8, padding: "9px 18px", fontSize: 14, fontWeight: 700, cursor: "pointer" }}>
-              <MdAdd size={18} /> Add Review
-            </button>
             <button onClick={fetchReviews} style={{ background: "#f1f5f9", border: "none", borderRadius: 8, width: 38, height: 38, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }} title="Refresh">
               <MdRefresh size={18} />
             </button>

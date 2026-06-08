@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
 
-export async function sendLeadConfirmationEmail({ name, email, phone, destination }) {
+export async function sendLeadConfirmationEmail({ name, email, phone, destination, travelDate, pax, message }) {
   const transporter = nodemailer.createTransport({
     host:   process.env.SMTP_HOST,
     port:   Number(process.env.SMTP_PORT) || 587,
@@ -38,19 +38,38 @@ export async function sendLeadConfirmationEmail({ name, email, phone, destinatio
           <p style="margin:0;font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.08em">Your Enquiry Details</p>
         </div>
         <table style="width:100%;border-collapse:collapse">
+          <tr>
+            <td style="padding:13px 18px;width:120px;font-size:12px;color:#94a3b8;font-weight:600;border-bottom:1px solid #f1f5f9">Name</td>
+            <td style="padding:13px 18px;font-size:13px;font-weight:600;color:#0f172a;border-bottom:1px solid #f1f5f9">${name}</td>
+          </tr>
           ${destination ? `
           <tr>
-            <td style="padding:13px 18px;width:110px;font-size:12px;color:#94a3b8;font-weight:600;border-bottom:1px solid #f1f5f9">Destination</td>
+            <td style="padding:13px 18px;width:120px;font-size:12px;color:#94a3b8;font-weight:600;border-bottom:1px solid #f1f5f9">Destination</td>
             <td style="padding:13px 18px;font-size:13px;font-weight:600;color:#0f172a;border-bottom:1px solid #f1f5f9">${destination}</td>
           </tr>` : ""}
           <tr>
-            <td style="padding:13px 18px;width:110px;font-size:12px;color:#94a3b8;font-weight:600;border-bottom:1px solid #f1f5f9">Mobile</td>
+            <td style="padding:13px 18px;width:120px;font-size:12px;color:#94a3b8;font-weight:600;border-bottom:1px solid #f1f5f9">Mobile</td>
             <td style="padding:13px 18px;font-size:13px;font-weight:600;color:#0f172a;border-bottom:1px solid #f1f5f9">${phone}</td>
           </tr>
           <tr>
-            <td style="padding:13px 18px;width:110px;font-size:12px;color:#94a3b8;font-weight:600">Email</td>
-            <td style="padding:13px 18px;font-size:13px;font-weight:600;color:#0f172a">${email}</td>
+            <td style="padding:13px 18px;width:120px;font-size:12px;color:#94a3b8;font-weight:600;border-bottom:1px solid #f1f5f9">Email</td>
+            <td style="padding:13px 18px;font-size:13px;font-weight:600;color:#0f172a;border-bottom:1px solid #f1f5f9">${email}</td>
           </tr>
+          ${travelDate ? `
+          <tr>
+            <td style="padding:13px 18px;width:120px;font-size:12px;color:#94a3b8;font-weight:600;border-bottom:1px solid #f1f5f9">Travel Date</td>
+            <td style="padding:13px 18px;font-size:13px;font-weight:600;color:#0f172a;border-bottom:1px solid #f1f5f9">${travelDate}</td>
+          </tr>` : ""}
+          ${pax ? `
+          <tr>
+            <td style="padding:13px 18px;width:120px;font-size:12px;color:#94a3b8;font-weight:600;border-bottom:1px solid #f1f5f9">Travellers</td>
+            <td style="padding:13px 18px;font-size:13px;font-weight:600;color:#0f172a;border-bottom:1px solid #f1f5f9">${pax}</td>
+          </tr>` : ""}
+          ${message ? `
+          <tr>
+            <td style="padding:13px 18px;width:120px;font-size:12px;color:#94a3b8;font-weight:600">Message</td>
+            <td style="padding:13px 18px;font-size:13px;color:#374151;line-height:1.6">${message}</td>
+          </tr>` : ""}
         </table>
       </div>
 

@@ -123,6 +123,7 @@ export default function Dashboard() {
   const [pkgStat,  setPkgStat]  = useState({ total: 0, active: 0 });
   const [blogStat, setBlogStat] = useState({ total: 0, published: 0 });
   const [faqStat,  setFaqStat]  = useState({ total: 0, published: 0 });
+  const [leadStat, setLeadStat] = useState({ total: 0, today: 0 });
 
   useEffect(() => {
     Promise.all([
@@ -130,7 +131,8 @@ export default function Dashboard() {
       fetch("/api/dashboard/packages").then(r => r.json()),
       fetch("/api/dashboard/blogs").then(r => r.json()),
       fetch("/api/dashboard/faqs").then(r => r.json()),
-    ]).then(([dests, pkgs, blogsRes, faqsRes]) => {
+      fetch("/api/dashboard/leads").then(r => r.json()),
+    ]).then(([dests, pkgs, blogsRes, faqsRes, leadsRes]) => {
       const d = Array.isArray(dests) ? dests : [];
       const p = Array.isArray(pkgs)  ? pkgs  : [];
       setDestStat({ total: d.length, active: d.filter(x => x.status === "Active").length });
@@ -142,6 +144,10 @@ export default function Dashboard() {
       });
       const fStats = faqsRes?.stats || {};
       setFaqStat({ total: fStats.total || 0, published: fStats.published || 0 });
+      const leads = Array.isArray(leadsRes) ? leadsRes : [];
+      const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0);
+      const todayCount = leads.filter(l => new Date(l.createdAt) >= todayStart).length;
+      setLeadStat({ total: leads.length, today: todayCount });
     }).catch(() => {});
   }, []);
 
@@ -216,15 +222,15 @@ export default function Dashboard() {
                   </div>
                 </div>
               </div>
-              {/* Static: Leads */}
-              <div className="bk-stat-card">
+              {/* Live: Leads */}
+              <div className="bk-stat-card" style={{ cursor: "pointer" }} onClick={() => router.push("/dashboard/leads")}>
                 <MdCallMade className="bk-stat-arrow-icon" size={17} />
                 <div className="bk-stat-title">Leads</div>
                 <div className="bk-stat-row">
-                  <div className="bk-stat-number">0</div>
+                  <div className="bk-stat-number">{leadStat.total}</div>
                   <div className="bk-stat-sub">
-                    <div className="bk-stat-sub-num bk-clr-red">0</div>
-                    <div className="bk-stat-sub-label">Pending</div>
+                    <div className="bk-stat-sub-num bk-clr-green">{leadStat.today}</div>
+                    <div className="bk-stat-sub-label">Today</div>
                   </div>
                 </div>
               </div>

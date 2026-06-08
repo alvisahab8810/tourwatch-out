@@ -347,7 +347,7 @@ export default function Popup({ packageInfo, asDrawer, destination: destProp, au
                   type="number"
                   name="pax"
                   className="rop-input"
-                  placeholder="Traveller Count*"
+                  placeholder="No. of Traveller*"
                   value={formData.pax}
                   onChange={handleChange}
                   min="1"

@@ -110,6 +110,9 @@ export default async function handler(req, res) {
       email:       emailNorm,
       phone:       phone.trim(),
       destination: destination?.trim() || "",
+      travelDate:  travelDate?.trim() || "",
+      pax:         pax?.trim() || "",
+      message:     message?.trim() || "",
     }).catch(() => {});
 
     return res.status(201).json({ ok: true, id: lead._id });
