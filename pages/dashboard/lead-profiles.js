@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import DashboardLayout from "../../components/backend/DashboardLayout";
 
 /* ── helpers ── */
@@ -188,6 +189,7 @@ const STATUS_STYLE = {
 };
 
 export default function LeadProfilesPage() {
+  const router = useRouter();
   const [leads,      setLeads]      = useState([]);
   const [quotations, setQuotations] = useState([]);
   const [invoices,   setInvoices]   = useState([]);
@@ -208,15 +210,32 @@ export default function LeadProfilesPage() {
       setQuotations(Array.isArray(q) ? q : []);
       setInvoices(Array.isArray(inv) ? inv : []);
       setVouchers(Array.isArray(v) ? v : []);
-      if (ll.length > 0) setSelectedId(String(ll[0]._id));
+      /* pre-select from URL param, fallback to first lead */
+      const paramId = typeof window !== "undefined"
+        ? new URLSearchParams(window.location.search).get("lead")
+        : null;
+      if (paramId) setSelectedId(String(paramId));
+      else if (ll.length > 0) setSelectedId(String(ll[0]._id));
     }).finally(() => setLoading(false));
   }, []);
+
+  /* also react if router query changes (client-side nav) */
+  useEffect(() => {
+    if (router.query.lead) setSelectedId(String(router.query.lead));
+  }, [router.query.lead]);
+
+  /* scroll the selected lead into view in the left panel */
+  useEffect(() => {
+    if (!selectedId) return;
+    const el = document.getElementById(`lp-item-${selectedId}`);
+    if (el) el.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }, [selectedId]);
 
   /* Assign display IDs in createdAt-ascending order */
   const leadsWithId = useMemo(() => {
     return [...leads]
       .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
-      .map((l, i) => ({ ...l, leadDisplayId: `TWO-L-${1001 + i}` }));
+      .map((l, i) => ({ ...l, leadDisplayId: `TWO-L-${String(i + 1).padStart(4, "0")}` }));
   }, [leads]);
 
   const filteredLeads = useMemo(() => {
@@ -280,6 +299,7 @@ export default function LeadProfilesPage() {
               return (
                 <div
                   key={String(l._id)}
+                  id={`lp-item-${String(l._id)}`}
                   onClick={() => setSelectedId(String(l._id))}
                   style={{
                     padding: "11px 14px", cursor: "pointer",

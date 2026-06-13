@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import DashboardLayout from "../../components/backend/DashboardLayout";
 import QuotationBuilder, { calcQ, inrFmt } from "../../components/backend/QuotationBuilder";
 
@@ -32,6 +33,7 @@ function Yn({ v }) {
 }
 
 export default function BrrPage() {
+  const router = useRouter();
   const [leads,       setLeads]       = useState([]);
   const [salespeople, setSalespeople] = useState([]);
   const [quotes,      setQuotes]      = useState([]);
@@ -164,7 +166,15 @@ export default function BrrPage() {
                   const existQ  = quoteByLead[l._id];
                   return (
                     <tr key={l._id} style={{ opacity: updatingId === l._id ? 0.6 : 1, transition: "opacity .15s" }}>
-                      <td style={S.td}><span style={{ color: "#2563EB", fontWeight: 700, fontSize: 13 }}>{leadIdMap[l._id]}</span></td>
+                      <td style={S.td}>
+                        <span
+                          style={{ color: "#2563EB", fontWeight: 700, fontSize: 13, cursor: "pointer", textDecoration: "underline", textUnderlineOffset: 2 }}
+                          title="View lead profile"
+                          onClick={() => router.push(`/dashboard/lead-profiles?lead=${l._id}`)}
+                        >
+                          {leadIdMap[l._id]}
+                        </span>
+                      </td>
                       <td style={S.td}>
                         <span style={{ fontWeight: 700, color: "#0F1B33", display: "block" }}>{l.name}</span>
                         <span style={{ fontSize: 11, color: "#94A3B8" }}>{l.phone}</span>

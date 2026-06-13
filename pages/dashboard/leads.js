@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import { MdSearch, MdPeople, MdAdd, MdDelete, MdWarning, MdRefresh, MdFilterAlt } from "react-icons/md";
 import DashboardLayout from "../../components/backend/DashboardLayout";
 
@@ -60,6 +61,7 @@ function Toggle({ checked, onChange }) {
 }
 
 export default function LeadsPage() {
+  const router = useRouter();
   const [leads,       setLeads]       = useState([]);
   const [salespeople, setSalespeople] = useState([]);
   const [loading,     setLoading]     = useState(true);
@@ -273,7 +275,11 @@ export default function LeadsPage() {
                     <tr key={l._id} style={{ opacity: disabled ? 0.6 : 1, transition: "opacity .15s" }}>
                       {/* Lead ID */}
                       <td style={S.td}>
-                        <span style={{ color: "#2563EB", fontWeight: 700, fontSize: 13 }}>
+                        <span
+                          style={{ color: "#2563EB", fontWeight: 700, fontSize: 13, cursor: "pointer", textDecoration: "underline", textUnderlineOffset: 2 }}
+                          title="View lead profile"
+                          onClick={() => router.push(`/dashboard/lead-profiles?lead=${l._id}`)}
+                        >
                           {leadIdMap[l._id]}
                         </span>
                       </td>

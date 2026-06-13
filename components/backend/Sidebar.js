@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   MdDashboard, MdLocationOn, MdApps, MdArticle, MdHelpOutline,
   MdPeople, MdAutorenew, MdNotificationsNone, MdStore,
@@ -43,6 +43,14 @@ const BUSINESS = [
 export default function Sidebar({ active, isOpen, onClose }) {
   const router = useRouter();
   const [newLeadsCount, setNewLeadsCount] = useState(0);
+  const navRef = useRef(null);
+
+  /* Scroll the active menu item into view whenever the active page changes */
+  useEffect(() => {
+    if (!navRef.current) return;
+    const activeEl = navRef.current.querySelector(".bk-nav-item.active");
+    if (activeEl) activeEl.scrollIntoView({ block: "center", behavior: "smooth" });
+  }, [active]);
 
   useEffect(() => {
     fetch("/api/dashboard/leads")
@@ -73,7 +81,7 @@ export default function Sidebar({ active, isOpen, onClose }) {
           <img src="/assets/images/dark-logo.svg" alt="Tourwatchout" />
         </div>
 
-        <nav className="bk-sidebar-nav">
+        <nav className="bk-sidebar-nav" ref={navRef}>
           {NAV.map(({ label, Icon, href }) => (
             <div
               key={label}
