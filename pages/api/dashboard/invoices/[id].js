@@ -44,6 +44,22 @@ export default async function handler(req, res) {
     } catch (e) { return res.status(500).json({ error: e.message }); }
   }
 
+  if (req.method === "PATCH") {
+    try {
+      const body = { ...req.body };
+      STRIP.forEach(k => delete body[k]);
+      body.updatedAt = new Date();
+      const result = await Invoice.collection.findOneAndUpdate(
+        idFilter(id),
+        { $set: body },
+        { returnDocument: "after" }
+      );
+      const inv = result?.value ?? result;
+      if (!inv) return res.status(404).json({ error: "Not found" });
+      return res.status(200).json({ ...inv, id: String(inv._id) });
+    } catch (e) { return res.status(500).json({ error: e.message }); }
+  }
+
   if (req.method === "DELETE") {
     try {
       await Invoice.collection.deleteOne(idFilter(id));

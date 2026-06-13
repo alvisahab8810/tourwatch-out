@@ -160,7 +160,7 @@ export default function LeadsPage() {
   }
   async function saveBrr() {
     setSavingBrr(true);
-    try { await patchLead(brrModal, { brr: { ...brrForm, collectedOn: todayISO() } }); setBrrModal(null); } finally { setSavingBrr(false); }
+    try { await patchLead(brrModal, { brr: { ...brrForm, adults: +brrForm.adults || 1, children: +brrForm.children || 0, collectedOn: todayISO() } }); setBrrModal(null); } finally { setSavingBrr(false); }
   }
 
   /* lead display ID (TWO-L-XXXX based on createdAt order) */
@@ -511,8 +511,8 @@ export default function LeadsPage() {
                 <div style={S.brrHead}>Requirement</div>
                 <div style={S.brrBody}>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, marginBottom: 12 }}>
-                    <Field label="Adults"><input type="number" style={S.inp} value={brrForm.adults} min={1} onChange={e => setBrrForm(f => ({ ...f, adults: +e.target.value || 1 }))} /></Field>
-                    <Field label="Children"><input type="number" style={S.inp} value={brrForm.children} min={0} onChange={e => setBrrForm(f => ({ ...f, children: +e.target.value || 0 }))} /></Field>
+                    <Field label="Adults"><input type="number" style={S.inp} value={brrForm.adults} min={1} onChange={e => setBrrForm(f => ({ ...f, adults: e.target.value }))} /></Field>
+                    <Field label="Children"><input type="number" style={S.inp} value={brrForm.children} min={0} onChange={e => setBrrForm(f => ({ ...f, children: e.target.value }))} /></Field>
                     <Field label="Duration"><input style={S.inp} placeholder="4 N 5 D" value={brrForm.duration} onChange={e => setBrrForm(f => ({ ...f, duration: e.target.value }))} /></Field>
                     <Field label="Child 1 Age"><input style={S.inp} placeholder="10 years" value={brrForm.childAge1} onChange={e => setBrrForm(f => ({ ...f, childAge1: e.target.value }))} /></Field>
                     <Field label="Child 2 Age"><input style={S.inp} placeholder="5 years" value={brrForm.childAge2} onChange={e => setBrrForm(f => ({ ...f, childAge2: e.target.value }))} /></Field>

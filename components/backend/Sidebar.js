@@ -5,6 +5,7 @@ import {
   MdPeople, MdAutorenew, MdNotificationsNone, MdStore,
   MdConfirmationNumber, MdReceipt, MdLogout, MdSmartButton, MdComment, MdStar, MdRateReview,
   MdManageAccounts, MdSupervisedUserCircle, MdAssignment, MdRequestQuote,
+  MdAccountBalance, MdBarChart, MdFlight, MdPersonSearch,
 } from "react-icons/md";
 import { logout } from "../../utils/voucherAuth";
 
@@ -24,12 +25,19 @@ const CRM = [
   { label: "Leads",       Icon: MdPeople,                 href: "/dashboard/leads" },
   { label: "BRR",         Icon: MdAssignment,             href: "/dashboard/brr" },
   { label: "Quotation",   Icon: MdRequestQuote,           href: "/dashboard/quotations" },
-  { label: "Sales Team",  Icon: MdSupervisedUserCircle,   href: "/dashboard/sales-team" },
-  { label: "Follow Up",   Icon: MdAutorenew,              href: "#" },
-  { label: "Reminder",    Icon: MdNotificationsNone,      href: "#" },
-  { label: "Vendors",     Icon: MdStore,                  href: "/dashboard/vendors" },
-  { label: "Voucher",     Icon: MdConfirmationNumber,     href: "/dashboard/vouchers" },
   { label: "Invoice",     Icon: MdReceipt,                href: "/dashboard/invoices" },
+  { label: "Voucher",     Icon: MdConfirmationNumber,     href: "/dashboard/vouchers" },
+  { label: "Reminder",    Icon: MdNotificationsNone,      href: "/dashboard/reminders" },
+  { label: "Sales Team",  Icon: MdSupervisedUserCircle,   href: "/dashboard/sales-team" },
+  // { label: "Follow Up",   Icon: MdAutorenew,              href: "#" },
+  { label: "Vendors",     Icon: MdStore,                  href: "/dashboard/vendors" },
+];
+
+const BUSINESS = [
+  { label: "Financials",    Icon: MdAccountBalance, href: "/dashboard/financials" },
+  { label: "Reports",       Icon: MdBarChart,       href: "/dashboard/reports" },
+  { label: "Trip Records",  Icon: MdFlight,         href: "/dashboard/trip-records" },
+  { label: "Lead Profiles", Icon: MdPersonSearch,   href: "/dashboard/lead-profiles" },
 ];
 
 export default function Sidebar({ active, isOpen, onClose }) {
@@ -107,6 +115,19 @@ export default function Sidebar({ active, isOpen, onClose }) {
                   {newLeadsCount}
                 </span>
               )}
+            </div>
+          ))}
+
+          <div className="bk-nav-section">Business</div>
+
+          {BUSINESS.map(({ label, Icon, href }) => (
+            <div
+              key={label}
+              className={`bk-nav-item ${active === label ? "active" : ""}`}
+              onClick={() => go(href)}
+            >
+              <Icon size={18} />
+              {label}
             </div>
           ))}
         </nav>

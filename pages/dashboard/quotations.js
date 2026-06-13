@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import Head from "next/head";
 import DashboardLayout from "../../components/backend/DashboardLayout";
 import QuotationBuilder, { calcQ, gradeColor, inrFmt } from "../../components/backend/QuotationBuilder";
+import InvoiceBuilder from "../../components/backend/InvoiceBuilder";
 
 /* ── helpers ── */
 function fmtDate(v) {
@@ -40,15 +41,19 @@ export default function QuotationsPage() {
 
   const [newStep, setNewStep]         = useState(null); // {leadId, type, pkgMode}
   const [openBuilder, setOpenBuilder] = useState(null); // {quote|null, isNew, lead}
+  const [invoices,    setInvoices]    = useState([]);
+  const [invBuilder,  setInvBuilder]  = useState(null); // { prefill, invoiceData, isNew }
 
   const [fuModal, setFuModal] = useState(null);
   const [fuNote, setFuNote]   = useState("");
   const [fuDate, setFuDate]   = useState(todayISO());
 
-  const [remModal, setRemModal] = useState(null);
-  const [remNote, setRemNote]   = useState("");
-  const [remDate, setRemDate]   = useState(todayISO());
-  const [remType, setRemType]   = useState("Follow-up Call");
+  const [remModal,   setRemModal]   = useState(null);
+  const [remNote,    setRemNote]    = useState("");
+  const [remDate,    setRemDate]    = useState(todayISO());
+  const [remType,    setRemType]    = useState("Follow-up Call");
+  const [allReminders, setAllReminders] = useState([]);
+  const [remSaving,  setRemSaving]  = useState(false);
 
   const [verModal, setVerModal]   = useState(null);
   const [lostInput, setLostInput] = useState({});
@@ -61,10 +66,19 @@ export default function QuotationsPage() {
       fetch("/api/dashboard/quotations").then(r => r.json()),
       fetch("/api/dashboard/leads").then(r => r.json()),
       fetch("/api/dashboard/salesperson").then(r => r.json()),
-    ]).then(([q, l, sp]) => {
-      setQuotes(Array.isArray(q) ? q : []);
+      fetch("/api/dashboard/invoices").then(r => r.json()).catch(() => []),
+      fetch("/api/dashboard/reminders").then(r => r.json()).catch(() => []),
+    ]).then(([q, l, sp, inv, rems]) => {
+      const qs = Array.isArray(q) ? q : [];
+      setQuotes(qs);
       setLeads(Array.isArray(l) ? l : []);
       setSalespeople(Array.isArray(sp) ? sp : []);
+      setInvoices(Array.isArray(inv) ? inv : []);
+      setAllReminders(Array.isArray(rems) ? rems : []);
+      // Restore saved New Selling Prices
+      const init = {};
+      qs.forEach(x => { if (x.newSellingPrice) init[x._id] = x.newSellingPrice; });
+      setNewSP(init);
     }).finally(() => setLoading(false));
   }, []);
 
@@ -72,6 +86,26 @@ export default function QuotationsPage() {
     const sorted = [...leads].sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
     return Object.fromEntries(sorted.map((l, i) => [l._id, `TWO-L-${String(i + 1).padStart(4, "0")}`]));
   }, [leads]);
+
+  /* quotationId (MongoDB _id string) → existing invoice */
+  const invByQuote = useMemo(() => {
+    const m = {};
+    invoices.forEach(inv => { if (inv.quotationId) m[inv.quotationId] = inv; });
+    return m;
+  }, [invoices]);
+
+  function openInvoice(q) {
+    const lead       = leads.find(l => l._id === (q.leadId?._id || q.leadId));
+    const existingInv = invByQuote[q._id];
+    const lDispId    = leadIdMap[lead?._id] || "";
+    const qDispId_   = q.quotationNo || `TWO-Q-${(lDispId?.split("-")[2]) || "????"}`;
+
+    if (existingInv) {
+      setInvBuilder({ invoiceData: existingInv, isNew: false, prefill: { lead, quotation: q, leadDisplayId: lDispId, quotationDisplayId: qDispId_ } });
+    } else {
+      setInvBuilder({ invoiceData: null, isNew: true, prefill: { lead, quotation: q, leadDisplayId: lDispId, quotationDisplayId: qDispId_ } });
+    }
+  }
 
   function qDispId(q) {
     return q.quotationNo || `TWO-Q-${(leadIdMap[q.leadId?._id || q.leadId]?.split("-")[2]) || "????"}`;
@@ -102,8 +136,57 @@ export default function QuotationsPage() {
 
   async function addReminder(q) {
     if (!remNote.trim()) return;
-    await patchQuote(q._id, { reminders: [...(q.reminders || []), { date: remDate, type: remType, note: remNote.trim() }] });
-    setRemModal(null); setRemNote(""); setRemDate(todayISO());
+    setRemSaving(true);
+    try {
+      const r = await fetch("/api/dashboard/reminders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          quotationId:   q._id,
+          leadId:        q.leadId?._id || q.leadId || undefined,
+          salespersonId: q.assignedTo?._id || q.assignedTo || undefined,
+          dueDate:       remDate,
+          type:          remType,
+          note:          remNote.trim(),
+        }),
+      });
+      if (r.ok) {
+        const created = await r.json();
+        setAllReminders(prev => [created, ...prev]);
+        setRemNote(""); setRemDate(todayISO());
+      }
+    } finally { setRemSaving(false); }
+  }
+
+  async function markReminderDone(remId) {
+    const r = await fetch(`/api/dashboard/reminders/${remId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: "Done" }),
+    });
+    if (r.ok) {
+      const updated = await r.json();
+      setAllReminders(prev => prev.map(x => x._id === remId ? updated : x));
+    }
+  }
+
+  async function undoReminderDone(remId) {
+    const r = await fetch(`/api/dashboard/reminders/${remId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: "Upcoming" }),
+    });
+    if (r.ok) {
+      const updated = await r.json();
+      setAllReminders(prev => prev.map(x => x._id === remId ? updated : x));
+    }
+  }
+
+  async function saveNewSP(q) {
+    const raw = newSP[q._id];
+    const v = +raw;
+    if (!raw || isNaN(v) || v <= 0) return;
+    await patchQuote(q._id, { newSellingPrice: v });
   }
 
   async function saveExpense(q) {
@@ -121,6 +204,15 @@ export default function QuotationsPage() {
     await patchQuote(q._id, { lostReason: lostInput[q._id] || "" });
     setLostInput(p => { const n = { ...p }; delete n[q._id]; return n; });
   }
+
+  const remsByQuote = useMemo(() => {
+    const m = {};
+    allReminders.forEach(r => {
+      const qid = r.quotationId?._id || String(r.quotationId || "");
+      if (qid) { if (!m[qid]) m[qid] = []; m[qid].push(r); }
+    });
+    return m;
+  }, [allReminders]);
 
   const qualifiedLeads = useMemo(() => leads.filter(l => l.status === "Qualified"), [leads]);
 
@@ -160,7 +252,7 @@ export default function QuotationsPage() {
       </div>
 
       {/* Toolbar */}
-      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16, flexWrap: "wrap" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
         <input style={S.searchInp} placeholder="Search by name, destination, quote ID…" value={search} onChange={e => setSearch(e.target.value)} />
         <select style={S.filterSel} value={filterStatus} onChange={e => setFilterStatus(e.target.value)}>
           <option value="">All Statuses</option>
@@ -168,8 +260,7 @@ export default function QuotationsPage() {
           <option value="Won">Won</option>
           <option value="Lost">Lost</option>
         </select>
-        <div style={{ flex: 1 }} />
-        <button style={S.newBtn} onClick={() => setNewStep({ leadId: qualifiedLeads[0]?._id || "", type: "Domestic", pkgMode: "Complete Package" })}>
+        <button style={{ ...S.newBtn, marginLeft: "auto", whiteSpace: "nowrap" }} onClick={() => setNewStep({ leadId: qualifiedLeads[0]?._id || "", type: "Domestic", pkgMode: "Complete Package" })}>
           ＋ New Quotation
         </button>
       </div>
@@ -245,7 +336,15 @@ export default function QuotationsPage() {
                     </td>
 
                     <td style={S.td}>
-                      <input type="number" style={{ ...S.inlineInp, width: 110 }} placeholder="Enter price…" value={spVal ?? ""} onChange={e => setNewSP(p => ({ ...p, [q._id]: e.target.value }))} />
+                      <input
+                        type="number"
+                        style={{ ...S.inlineInp, width: 110 }}
+                        placeholder="Enter price…"
+                        value={spVal ?? ""}
+                        onChange={e => setNewSP(p => ({ ...p, [q._id]: e.target.value }))}
+                        onBlur={() => saveNewSP(q)}
+                        onKeyDown={e => { if (e.key === "Enter") { e.target.blur(); } }}
+                      />
                     </td>
 
                     <td style={S.td}>
@@ -313,7 +412,9 @@ export default function QuotationsPage() {
                     </td>
 
                     <td style={S.td}>
-                      <button style={S.linkBtn} onClick={() => setRemModal(q)}>{q.reminders?.length || 0} rem</button>
+                      <button style={S.linkBtn} onClick={() => setRemModal(q)}>
+                        {remsByQuote[q._id]?.length || 0} rem
+                      </button>
                     </td>
 
                     <td style={S.td}>
@@ -330,7 +431,15 @@ export default function QuotationsPage() {
                     </td>
 
                     <td style={S.td}>
-                      <button style={{ ...S.linkBtn, fontSize: 11, color: "#94A3B8" }}>Invoice</button>
+                      {invByQuote[q._id] ? (
+                        <button style={{ ...S.linkBtn, fontSize: 12, color: "#15803D", fontWeight: 700 }} onClick={() => openInvoice(q)}>
+                          🧾 {invByQuote[q._id].invoiceNo}
+                        </button>
+                      ) : (
+                        <button style={{ ...S.linkBtn, fontSize: 12, color: "#2563EB", fontWeight: 700 }} onClick={() => openInvoice(q)}>
+                          + Invoice
+                        </button>
+                      )}
                     </td>
                   </tr>
                 );
@@ -427,16 +536,16 @@ export default function QuotationsPage() {
 
       {/* ── Reminder Modal ── */}
       {remModal && (() => {
-        const rems = remModal.reminders || [];
+        const rems     = remsByQuote[remModal._id] || [];
         const leadName = remModal.leadId?.name || "—";
         return (
-          <Ov onClick={e => { if (e.target === e.currentTarget) setRemModal(null); }}>
-            <div style={{ ...S.modal, maxWidth: 640 }}>
+          <Ov onClick={e => { if (e.target === e.currentTarget) { setRemModal(null); setRemNote(""); setRemDate(todayISO()); } }}>
+            <div style={{ ...S.modal, maxWidth: 740 }}>
               {/* Header */}
               <div style={{ ...S.mHead, flexDirection: "column", alignItems: "flex-start", gap: 3 }}>
                 <div style={{ display: "flex", width: "100%", alignItems: "center" }}>
                   <span style={{ color: "#fff", fontWeight: 800, fontSize: 15 }}>Reminders · {qDispId(remModal)}</span>
-                  <button style={{ ...S.mx, marginLeft: "auto" }} onClick={() => setRemModal(null)}>✕</button>
+                  <button style={{ ...S.mx, marginLeft: "auto" }} onClick={() => { setRemModal(null); setRemNote(""); setRemDate(todayISO()); }}>✕</button>
                 </div>
                 <div style={{ fontSize: 12, color: "#BFD3FE" }}>{leadName} · multiple reminders can be attached to one quotation</div>
               </div>
@@ -446,26 +555,26 @@ export default function QuotationsPage() {
                 {rems.length === 0 && (
                   <p style={{ color: "#94A3B8", fontSize: 13, textAlign: "center", padding: "16px 0" }}>No reminders yet</p>
                 )}
-                {rems.map((r, i) => (
-                  <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 16px", background: r.done ? "#F8FAFD" : "#fff", border: "1px solid #E4E9F2", borderRadius: 10, marginBottom: 10 }}>
-                    <div>
-                      <div style={{ fontWeight: 700, color: r.done ? "#94A3B8" : "#0F1B33", fontSize: 14, textDecoration: r.done ? "line-through" : "none", marginBottom: 3 }}>{r.note}</div>
-                      <div style={{ fontSize: 12, color: "#6B7A99" }}>{r.type} · due {fmtDate(r.date)}</div>
+                {rems.map(r => {
+                  const done = r.status === "Done";
+                  return (
+                    <div key={r._id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 16px", background: done ? "#F8FAFD" : "#fff", border: "1px solid #E4E9F2", borderRadius: 10, marginBottom: 10 }}>
+                      <div>
+                        <div style={{ fontWeight: 700, color: done ? "#94A3B8" : "#0F1B33", fontSize: 14, textDecoration: done ? "line-through" : "none", marginBottom: 3 }}>{r.note}</div>
+                        <div style={{ fontSize: 12, color: "#6B7A99" }}>{r.type} · due {fmtDate(r.dueDate)}</div>
+                      </div>
+                      {done ? (
+                        <button onClick={() => undoReminderDone(r._id)} style={{ background: "none", border: "1px solid #CBD5E1", borderRadius: 7, color: "#6B7A99", fontSize: 12, fontWeight: 700, padding: "4px 12px", cursor: "pointer" }}>
+                          ↩ Undo
+                        </button>
+                      ) : (
+                        <button onClick={() => markReminderDone(r._id)} style={{ background: "none", border: "1px solid #FECACA", borderRadius: 7, color: "#E8364A", fontSize: 12, fontWeight: 700, padding: "4px 12px", cursor: "pointer" }}>
+                          Done ✓
+                        </button>
+                      )}
                     </div>
-                    {r.done ? (
-                      <span style={{ fontSize: 12, fontWeight: 800, color: "#15803D" }}>Done ✓</span>
-                    ) : (
-                      <button onClick={async () => {
-                        const updated = rems.map((x, j) => j === i ? { ...x, done: true } : x);
-                        await patchQuote(remModal._id, { reminders: updated });
-                        setRemModal(prev => ({ ...prev, reminders: updated }));
-                        setQuotes(prev => prev.map(q => q._id === remModal._id ? { ...q, reminders: updated } : q));
-                      }} style={{ background: "none", border: "1px solid #FECACA", borderRadius: 7, color: "#E8364A", fontSize: 12, fontWeight: 700, padding: "4px 12px", cursor: "pointer" }}>
-                        Done ✓
-                      </button>
-                    )}
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
               {/* New Reminder form */}
@@ -475,7 +584,7 @@ export default function QuotationsPage() {
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
                     <div>
                       <label style={S.lbl}>Date</label>
-                      <input type="date" style={S.inp} value={remDate} onChange={e => setRemDate(e.target.value)} />
+                      <input type="date" style={{ ...S.inp, colorScheme: "light" }} value={remDate} onChange={e => setRemDate(e.target.value)} />
                     </div>
                     <div>
                       <label style={S.lbl}>Type</label>
@@ -493,8 +602,10 @@ export default function QuotationsPage() {
 
               {/* Footer */}
               <div style={{ ...S.mFoot, justifyContent: "flex-end", gap: 10, marginTop: 16 }}>
-                <button style={S.fb} onClick={() => setRemModal(null)}>Close</button>
-                <button style={{ ...S.sb, padding: "9px 22px" }} onClick={() => addReminder(remModal)}>Add Reminder</button>
+                <button style={S.fb} onClick={() => { setRemModal(null); setRemNote(""); setRemDate(todayISO()); }}>Close</button>
+                <button style={{ ...S.sb, padding: "9px 22px", opacity: remSaving ? 0.7 : 1 }} disabled={remSaving} onClick={() => addReminder(remModal)}>
+                  {remSaving ? "Saving…" : "Add Reminder"}
+                </button>
               </div>
             </div>
           </Ov>
@@ -507,7 +618,7 @@ export default function QuotationsPage() {
         const leadName = verModal.leadId?.name || "—";
         return (
           <Ov onClick={e => { if (e.target === e.currentTarget) setVerModal(null); }}>
-            <div style={{ ...S.modal, maxWidth: 760 }}>
+            <div style={{ ...S.modal, maxWidth: 860 }}>
               {/* Header */}
               <div style={{ ...S.mHead, flexDirection: "column", alignItems: "flex-start", gap: 4 }}>
                 <div style={{ display: "flex", width: "100%", alignItems: "center" }}>
@@ -579,6 +690,24 @@ export default function QuotationsPage() {
 
       {fuOpen && <div style={{ position: "fixed", inset: 0, zIndex: 30 }} onClick={() => setFuOpen(null)} />}
       </div>{/* end page wrapper */}
+
+      {/* ── Invoice Builder Modal ── */}
+      {invBuilder && (
+        <InvoiceBuilder
+          prefill={invBuilder.prefill}
+          invoiceData={invBuilder.invoiceData}
+          isNew={invBuilder.isNew}
+          onClose={() => setInvBuilder(null)}
+          onSaved={saved => {
+            setInvoices(prev => {
+              const idx = prev.findIndex(i => i.id === saved.id || i._id === saved._id);
+              if (idx >= 0) { const n = [...prev]; n[idx] = saved; return n; }
+              return [saved, ...prev];
+            });
+            setInvBuilder(null);
+          }}
+        />
+      )}
     </DashboardLayout>
   );
 }

@@ -52,6 +52,11 @@ export default async function handler(req, res) {
         }));
       }
 
+      // Auto-generate TWO-INV-XXXX if not provided or using old format
+      if (!body.invoiceNo || !body.invoiceNo.startsWith("TWO-INV-")) {
+        const count = await c.countDocuments({});
+        body.invoiceNo = `TWO-INV-${String(count + 1).padStart(4, "0")}`;
+      }
       const newId = uuidv4();
       const now = new Date();
       const doc = { ...body, _id: newId, createdAt: now, updatedAt: now };

@@ -32,6 +32,16 @@ export default async function handler(req, res) {
     } catch (e) { return res.status(500).json({ error: e.message }); }
   }
 
+  if (req.method === "PATCH") {
+    try {
+      const { _id, id: _id2, __v, createdAt, updatedAt, ...body } = req.body || {};
+      const now = new Date();
+      await c.updateOne({ _id: id }, { $set: { ...body, updatedAt: now } });
+      const updated = await c.findOne({ _id: id });
+      return res.status(200).json({ ...updated, id: String(updated._id) });
+    } catch (e) { return res.status(500).json({ error: e.message }); }
+  }
+
   if (req.method === "DELETE") {
     try {
       await c.deleteOne({ _id: id });
