@@ -1,9 +1,10 @@
 import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 import {
   MdDashboard, MdLocationOn, MdApps, MdArticle, MdHelpOutline,
   MdPeople, MdAutorenew, MdNotificationsNone, MdStore,
   MdConfirmationNumber, MdReceipt, MdLogout, MdSmartButton, MdComment, MdStar, MdRateReview,
-  MdManageAccounts,
+  MdManageAccounts, MdSupervisedUserCircle, MdAssignment, MdRequestQuote,
 } from "react-icons/md";
 import { logout } from "../../utils/voucherAuth";
 
@@ -15,22 +16,36 @@ const NAV = [
   { label: "Comments",    Icon: MdComment,            href: "/dashboard/comments" },
   { label: "Reviews",     Icon: MdRateReview,        href: "/dashboard/reviews" },
   { label: "Most Popular", Icon: MdStar,              href: "/dashboard/popular" },
-  // { label: "Robot.txt",   Icon: MdSmartButton,        href: "/dashboard/robots" },
   { label: "Faq's",       Icon: MdHelpOutline,        href: "/dashboard/faqs" },
   { label: "Users",       Icon: MdManageAccounts,     href: "/dashboard/users" },
 ];
 
 const CRM = [
-  { label: "Leads",      Icon: MdPeople,             href: "/dashboard/leads" },
-  { label: "Follow Up",  Icon: MdAutorenew,          href: "#" },
-  { label: "Reminder",   Icon: MdNotificationsNone,  href: "#" },
-  { label: "Vendors",    Icon: MdStore,              href: "/dashboard/vendors" },
-  { label: "Voucher",    Icon: MdConfirmationNumber, href: "/dashboard/vouchers" },
-  { label: "Invoice",    Icon: MdReceipt,            href: "/dashboard/invoices" },
+  { label: "Leads",       Icon: MdPeople,                 href: "/dashboard/leads" },
+  { label: "BRR",         Icon: MdAssignment,             href: "/dashboard/brr" },
+  { label: "Quotation",   Icon: MdRequestQuote,           href: "/dashboard/quotations" },
+  { label: "Sales Team",  Icon: MdSupervisedUserCircle,   href: "/dashboard/sales-team" },
+  { label: "Follow Up",   Icon: MdAutorenew,              href: "#" },
+  { label: "Reminder",    Icon: MdNotificationsNone,      href: "#" },
+  { label: "Vendors",     Icon: MdStore,                  href: "/dashboard/vendors" },
+  { label: "Voucher",     Icon: MdConfirmationNumber,     href: "/dashboard/vouchers" },
+  { label: "Invoice",     Icon: MdReceipt,                href: "/dashboard/invoices" },
 ];
 
 export default function Sidebar({ active, isOpen, onClose }) {
   const router = useRouter();
+  const [newLeadsCount, setNewLeadsCount] = useState(0);
+
+  useEffect(() => {
+    fetch("/api/dashboard/leads")
+      .then(r => r.ok ? r.json() : [])
+      .then(data => {
+        if (Array.isArray(data)) {
+          setNewLeadsCount(data.filter(l => l.status === "New").length);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   function go(href) {
     if (onClose) onClose();
@@ -69,9 +84,29 @@ export default function Sidebar({ active, isOpen, onClose }) {
               key={label}
               className={`bk-nav-item ${active === label ? "active" : ""}`}
               onClick={() => go(href)}
+              style={{ position: "relative" }}
             >
               <Icon size={18} />
               {label}
+              {label === "Leads" && newLeadsCount > 0 && (
+                <span style={{
+                  marginLeft: "auto",
+                  background: "#E8364A",
+                  color: "#fff",
+                  fontSize: 10,
+                  fontWeight: 800,
+                  borderRadius: 99,
+                  minWidth: 18,
+                  height: 18,
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  padding: "0 5px",
+                  lineHeight: 1,
+                }}>
+                  {newLeadsCount}
+                </span>
+              )}
             </div>
           ))}
         </nav>

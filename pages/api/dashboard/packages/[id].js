@@ -52,11 +52,12 @@ export default async function handler(req, res) {
   }
 
   if (req.method === "PATCH") {
-    // strict: false bypasses Mongoose model-cache stripping unknown fields
-    await Package.collection.updateOne(
-      { _id: id },
-      { $set: { popular: Boolean(req.body.popular) } }
-    );
+    const set = {};
+    if ("popular" in req.body) set.popular = Boolean(req.body.popular);
+    if ("packageName" in req.body) set.packageName = req.body.packageName;
+    if ("slug" in req.body) set.slug = req.body.slug;
+    if ("status" in req.body) set.status = req.body.status;
+    await Package.collection.updateOne({ _id: id }, { $set: set });
     const updated = await Package.findById(id).lean();
     if (!updated) return res.status(404).json({ error: "Not found" });
     return res.status(200).json({ ...updated, id: updated._id });

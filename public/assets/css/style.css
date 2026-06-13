@@ -3721,12 +3721,12 @@ span.font-bold {
   margin-bottom: 4px;
 }
 .pkg-old-price {
-    font-size: 9.78px;
+    font-size: 10px;
     color: #1C1C1C;
     text-decoration: line-through;
 }
 .pkg-disc-badge {
-    font-size: 9.78px;
+    font-size: 10px;
     font-weight: bold;
     color: #fff;
     background: linear-gradient(90deg, #F74C4D 0%, #F42627 100%);
@@ -3763,7 +3763,7 @@ span.font-bold {
     line-height: 1;
 }
 .pkg-total-line {
-    font-size: 9.78px;
+    font-size: 10px;
     color: #1C1C1C;
     margin: 5px 0 0;
     line-height: 1.4;
@@ -3788,7 +3788,7 @@ span.font-bold {
 .pkg-view-btn:hover { background: #e04040; }
 
 .pkg-price-type-line {
-    font-size: 9.78px;
+    font-size: 10px;
     color: #1C1C1C;
     padding-top: 16px;
     line-height: 15.6px;

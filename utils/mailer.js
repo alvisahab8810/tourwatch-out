@@ -127,6 +127,67 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+export async function sendSalesPersonInviteEmail({ name, email, username, password }) {
+  const transporter = nodemailer.createTransport({
+    host:   process.env.SMTP_HOST,
+    port:   Number(process.env.SMTP_PORT) || 587,
+    secure: false,
+    auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
+  });
+
+  await transporter.sendMail({
+    from:    `Tourwatchout <${process.env.SMTP_FROM}>`,
+    to:      email,
+    subject: `You've been invited to Tourwatchout Sales Dashboard`,
+    html: `
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f0f4f8;font-family:'Segoe UI',Arial,sans-serif">
+  <div style="max-width:520px;margin:32px auto;background:#ffffff;border-radius:20px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,0.10)">
+    <div style="background:#EE4C49;padding:36px 32px 28px;text-align:center">
+      <h1 style="margin:0 0 6px;color:#fff;font-size:24px;font-weight:800">Welcome to the Sales Team!</h1>
+      <p style="margin:0;color:rgba(255,255,255,0.85);font-size:14px">Your dashboard access is ready</p>
+    </div>
+    <div style="padding:32px 32px 24px">
+      <p style="margin:0 0 6px;font-size:16px;color:#0f172a">Hi <strong>${name}</strong>,</p>
+      <p style="margin:0 0 28px;font-size:14px;color:#64748b;line-height:1.7">
+        You have been invited to join the <strong>Tourwatchout Sales Dashboard</strong>. Use the credentials below to log in and start managing your assigned leads.
+      </p>
+      <div style="border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;margin-bottom:28px">
+        <div style="background:#f8fafc;padding:12px 18px;border-bottom:1px solid #e2e8f0">
+          <p style="margin:0;font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.08em">Your Login Credentials</p>
+        </div>
+        <table style="width:100%;border-collapse:collapse">
+          <tr>
+            <td style="padding:13px 18px;width:110px;font-size:12px;color:#94a3b8;font-weight:600;border-bottom:1px solid #f1f5f9">Username</td>
+            <td style="padding:13px 18px;font-size:14px;font-weight:700;color:#0f172a;border-bottom:1px solid #f1f5f9;font-family:monospace">${username}</td>
+          </tr>
+          <tr>
+            <td style="padding:13px 18px;width:110px;font-size:12px;color:#94a3b8;font-weight:600">Password</td>
+            <td style="padding:13px 18px;font-size:14px;font-weight:700;color:#EE4C49;font-family:monospace">${password}</td>
+          </tr>
+        </table>
+      </div>
+      <p style="margin:0 0 20px;font-size:13px;color:#64748b;line-height:1.6">
+        Please change your password after logging in for the first time. Keep your credentials safe and do not share them with anyone.
+      </p>
+      <div style="text-align:center">
+        <a href="${process.env.NEXT_PUBLIC_SITE_URL || "https://tourwatchout.com"}/salesperson/login"
+           style="display:inline-block;background:#EE4C49;color:#fff;text-decoration:none;padding:14px 36px;border-radius:50px;font-size:14px;font-weight:700">
+          Login to Dashboard
+        </a>
+      </div>
+    </div>
+    <div style="background:#f8fafc;padding:20px 32px;text-align:center;border-top:1px solid #f1f5f9">
+      <p style="margin:0;font-size:12px;color:#94a3b8">© ${new Date().getFullYear()} Tourwatchout. All rights reserved.</p>
+    </div>
+  </div>
+</body>
+</html>`,
+  });
+}
+
 export async function sendOtpEmail(to, name, otp) {
   await transporter.sendMail({
     from:    process.env.SMTP_FROM,

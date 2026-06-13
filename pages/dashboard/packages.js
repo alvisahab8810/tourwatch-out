@@ -14,6 +14,7 @@ const LIST_STATE_KEY = "pkgListState";
 
 const norm = (s) => (s || "").toLowerCase().replace(/\s+/g, " ").trim();
 const dupKey = (p) => `${norm(p.packageName)}|${norm(p.destination)}|${norm(p.packageType)}|${norm(p.packageSubtype)}`;
+const toSlug = (s) => (s || "").toLowerCase().trim().replace(/[^a-z0-9\s-]/g, "").replace(/\s+/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "");
 
 export default function PackagesList() {
   const router = useRouter();
@@ -26,6 +27,8 @@ export default function PackagesList() {
   const [showHasReviews,    setShowHasReviews]    = useState(false);
   const [reviewCounts,      setReviewCounts]      = useState({}); // { packageId: count }
   const [inactivating,      setInactivating]      = useState(false);
+  const [quickEdit,         setQuickEdit]         = useState(null); // { id, packageName, slug, destination, slugManual }
+  const [qeSaving,          setQeSaving]          = useState(false);
 
   const saved = (() => {
     if (typeof window === "undefined") return null;
@@ -66,6 +69,23 @@ export default function PackagesList() {
     if (!confirm("Delete this package?")) return;
     setPackages(prev => prev.filter(p => p.id !== id));
     await fetch(`/api/dashboard/packages/${id}`, { method: "DELETE" });
+  }
+
+  async function saveQuickEdit() {
+    if (!quickEdit) return;
+    setQeSaving(true);
+    try {
+      const r = await fetch(`/api/dashboard/packages/${quickEdit.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ packageName: quickEdit.packageName, slug: quickEdit.slug }),
+      });
+      if (r.ok) {
+        const updated = await r.json();
+        setPackages(prev => prev.map(p => p.id === quickEdit.id ? { ...p, packageName: updated.packageName, slug: updated.slug } : p));
+        setQuickEdit(null);
+      }
+    } finally { setQeSaving(false); }
   }
 
   // Compute duplicate IDs across ALL packages (not just filtered view)
@@ -517,10 +537,8 @@ export default function PackagesList() {
                       <div className="bk-action-btns">
                         <button
                           className="bk-edit-btn"
-                          onClick={() => {
-                            sessionStorage.setItem(LIST_STATE_KEY, JSON.stringify({ page, tab, destFilter, subtypeFilter, statusFilter, perPage }));
-                            router.push(`/dashboard/packages/create?id=${p.id}`);
-                          }}
+                          title="Quick Edit title & URL"
+                          onClick={() => setQuickEdit({ id: p.id, packageName: p.packageName || "", slug: p.slug || toSlug(p.packageName), destination: p.destination, slugManual: false })}
                         >
                           <MdEdit size={15} />
                         </button>
@@ -563,6 +581,72 @@ export default function PackagesList() {
           </div>
         </div>
       </div>
+
+      {/* ── Quick Edit Modal ── */}
+      {quickEdit && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(10,18,38,.5)", backdropFilter: "blur(3px)", zIndex: 999, display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}
+          onClick={e => { if (e.target === e.currentTarget) setQuickEdit(null); }}>
+          <div style={{ background: "#fff", borderRadius: 16, width: "100%", maxWidth: 560, boxShadow: "0 10px 40px rgba(0,0,0,.18)", overflow: "hidden" }}>
+            {/* Header */}
+            <div style={{ background: "#2563EB", padding: "14px 20px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <div>
+                <div style={{ color: "#fff", fontWeight: 800, fontSize: 15 }}>Quick Edit</div>
+                <div style={{ color: "#BFD3FE", fontSize: 12, marginTop: 2 }}>{quickEdit.destination} · Edit title and URL slug</div>
+              </div>
+              <button onClick={() => setQuickEdit(null)} style={{ background: "rgba(255,255,255,.18)", border: "none", color: "#fff", width: 30, height: 30, borderRadius: 8, fontSize: 16, fontWeight: 800, cursor: "pointer" }}>✕</button>
+            </div>
+
+            {/* Body */}
+            <div style={{ padding: "22px 24px" }}>
+              {/* Title */}
+              <label style={QS.lbl}>Package Title</label>
+              <input style={QS.inp} value={quickEdit.packageName}
+                onChange={e => {
+                  const name = e.target.value;
+                  setQuickEdit(prev => ({
+                    ...prev,
+                    packageName: name,
+                    slug: prev.slugManual ? prev.slug : toSlug(name),
+                  }));
+                }}
+                placeholder="e.g. The Valley Collection" />
+
+              {/* Slug */}
+              <label style={{ ...QS.lbl, marginTop: 16 }}>URL Slug</label>
+              <div style={{ display: "flex", alignItems: "center", gap: 0, border: "1.5px solid #E4E9F2", borderRadius: 9, overflow: "hidden", background: "#F8FAFD" }}>
+                <span style={{ fontSize: 12, color: "#94A3B8", whiteSpace: "nowrap", padding: "10px 10px", borderRight: "1px solid #E4E9F2", background: "#F1F4F9" }}>
+                  /destination/{toSlug(quickEdit.destination)}/package/
+                </span>
+                <input style={{ flex: 1, border: "none", outline: "none", padding: "10px 12px", fontSize: 14, color: "#0F1B33", background: "transparent", fontFamily: "inherit" }}
+                  value={quickEdit.slug}
+                  onChange={e => setQuickEdit(prev => ({ ...prev, slug: e.target.value, slugManual: true }))}
+                  placeholder="the-valley-collection" />
+              </div>
+              <div style={{ fontSize: 11, color: "#94A3B8", marginTop: 5 }}>Auto-generated from title · edit manually to override</div>
+
+              {/* View on frontend */}
+              {quickEdit.slug && (
+                <a href={`/destination/${toSlug(quickEdit.destination)}/package/${quickEdit.slug}`} target="_blank" rel="noreferrer"
+                  style={{ display: "inline-flex", alignItems: "center", gap: 6, marginTop: 14, fontSize: 12, color: "#2563EB", fontWeight: 600, textDecoration: "none", background: "#EFF4FF", border: "1px solid #BFD3FE", borderRadius: 8, padding: "7px 12px", wordBreak: "break-all" }}>
+                  🔗 /destination/{toSlug(quickEdit.destination)}/package/{quickEdit.slug} ↗
+                </a>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", padding: "14px 24px", borderTop: "1px solid #E4E9F2", background: "#F8FAFD" }}>
+              <button onClick={() => setQuickEdit(null)} style={{ padding: "9px 20px", border: "1px solid #E4E9F2", borderRadius: 9, background: "#fff", color: "#36415A", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Cancel</button>
+              <button onClick={() => {
+                sessionStorage.setItem(LIST_STATE_KEY, JSON.stringify({ page, tab, destFilter, subtypeFilter, statusFilter, perPage }));
+                router.push(`/dashboard/packages/create?id=${quickEdit.id}`);
+              }} style={{ padding: "9px 20px", border: "1px solid #E4E9F2", borderRadius: 9, background: "#fff", color: "#2563EB", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Full Edit</button>
+              <button onClick={saveQuickEdit} disabled={qeSaving} style={{ padding: "9px 22px", border: "none", borderRadius: 9, background: "#2563EB", color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer", opacity: qeSaving ? 0.7 : 1 }}>
+                {qeSaving ? "Saving…" : "Save Changes"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
@@ -575,4 +659,9 @@ const selStyle = {
   border:"1.5px solid #e5e7eb", borderRadius:8, padding:"8px 14px",
   fontSize:13, fontWeight:500, background:"#fff", color:"#374151",
   outline:"none", cursor:"pointer", boxShadow:"0 1px 3px rgba(0,0,0,0.06)",
+};
+
+const QS = {
+  lbl: { display: "block", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".05em", color: "#6B7A99", marginBottom: 6 },
+  inp: { width: "100%", boxSizing: "border-box", border: "1.5px solid #E4E9F2", borderRadius: 9, padding: "10px 13px", fontSize: 14, color: "#0F1B33", outline: "none", background: "#F8FAFD", fontFamily: "inherit" },
 };
