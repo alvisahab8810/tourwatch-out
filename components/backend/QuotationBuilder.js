@@ -58,7 +58,7 @@ function initItin(initialData) {
 }
 
 const DEF_HOTEL    = { name: "", roomCat: "Deluxe", nights: "", rooms: "", price: "" };
-const DEF_FLIGHT   = { from: "", to: "", date: "", pax: "", price: "" };
+const DEF_FLIGHT   = { from: "", to: "", date: "", pax: "", price: "", roundTrip: false, returnPrice: "" };
 const DEF_TRANSFER = { cab: "", perDay: "", days: "" };
 
 const toN = (v, d = 0) => (v === "" || v === undefined || v === null) ? d : (+v || d);
@@ -307,7 +307,7 @@ export default function QuotationBuilder({
 
   /* ── sub-totals ── */
   const hotelTotal    = hotels.reduce((s, h) => s + (+h.price || 0) * (+h.nights || 0) * (+h.rooms || 0), 0);
-  const flightTotal   = flights.reduce((s, f) => s + (+f.price || 0) * (+f.pax || 0), 0);
+  const flightTotal   = flights.reduce((s, f) => s + ((+f.price || 0) + (f.roundTrip ? (+f.returnPrice || 0) : 0)) * (+f.pax || 0), 0);
   const transferTotal = transfers.reduce((s, t) => s + (+t.perDay || 0) * (+t.days || 0), 0);
 
   /* ── shared body builder (used by manual save + auto-save) ── */
@@ -317,7 +317,7 @@ export default function QuotationBuilder({
       assignedTo: form.assignedTo || null, // empty string can't be cast to ObjectId — send null instead
       cost: toN(form.cost), margin: toN(form.margin), gstPct: toN(form.gstPct, 5), tcsPct: toN(form.tcsPct),
       hotels: hotels.map(h => ({ name: h.name, roomCat: h.roomCat, nights: toN(h.nights), rooms: toN(h.rooms, 1), price: toN(h.price) })),
-      flights: flights.map(f => ({ from: f.from, to: f.to, date: f.date, pax: toN(f.pax), price: toN(f.price) })),
+      flights: flights.map(f => ({ from: f.from, to: f.to, date: f.date, pax: toN(f.pax), price: toN(f.price), roundTrip: !!f.roundTrip, returnPrice: toN(f.returnPrice) })),
       transfers: transfers.map(t => ({ cab: t.cab, perDay: toN(t.perDay), days: toN(t.days) })),
       itinerary: itin.map(({ _k, ...rest }) => rest),
     };
@@ -470,50 +470,47 @@ export default function QuotationBuilder({
             {/* ── Itinerary ── */}
             <Sec label="📅  Day-wise Itinerary">
               {itin.map((d, i) => (
-                <div key={d._k} style={{ ...QS.rowBox, padding: "12px 40px 12px 12px" }}>
-                  {itin.length > 1 && <button style={QS.remBtn} onClick={() => setItin(p => p.filter((_, j) => j !== i))}>✕</button>}
-                  <div style={{ fontSize: 11, fontWeight: 800, color: "#2563EB", textTransform: "uppercase", letterSpacing: ".05em", marginBottom: 8 }}>📅 Day {i + 1}</div>
-                  <div style={{ ...G2, marginBottom: 10 }}>
-                    <Fl l="Date">
-                      <input type="date" style={{ ...QS.inp, colorScheme: "light" }} value={d.date || ""}
-                        onChange={e => setItin(p => p.map((x, j) => j === i ? { ...x, date: e.target.value } : x))} />
-                    </Fl>
-                    <Fl l="Itinerary Title">
-                      <input style={QS.inp} placeholder="e.g. Arrival & City Tour" value={d.title}
-                        onChange={e => setItin(p => p.map((x, j) => j === i ? { ...x, title: e.target.value } : x))} />
-                    </Fl>
+                <div key={d._k} style={{ marginBottom: 8 }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+                    <div style={{ fontSize: 12, fontWeight: 800, color: "#2563EB", textTransform: "uppercase", letterSpacing: ".05em" }}>📅 Day {i + 1}</div>
+                    {itin.length > 1 && <button style={{ ...QS.remBtn, position: "static" }} onClick={() => setItin(p => p.filter((_, j) => j !== i))}>✕</button>}
                   </div>
-                  <div style={{ ...G2, marginBottom: 10 }}>
-                    <Fl l="Tour / Activity">
-                      <input style={QS.inp} placeholder="e.g. Airport Pick-up" value={d.tour || ""}
-                        onChange={e => setItin(p => p.map((x, j) => j === i ? { ...x, tour: e.target.value } : x))} />
-                    </Fl>
-                    <Fl l={i === 0 ? "Transfer Type (Cab — synced with Cab Details below)" : "Transfer Type"}>
-                      <input style={QS.inp} placeholder="e.g. PVT / NA" value={d.transfer || ""}
-                        onChange={e => i === 0
-                          ? setSharedCab(e.target.value)
-                          : setItin(p => p.map((x, j) => j === i ? { ...x, transfer: e.target.value } : x))} />
-                    </Fl>
-                  </div>
-                  <Fl l="Pick-up Time">
-                    <input style={QS.inp} placeholder="e.g. 1:30 AM" value={d.pickup_time || ""}
-                      onChange={e => setItin(p => p.map((x, j) => j === i ? { ...x, pickup_time: e.target.value } : x))} />
-                  </Fl>
-                  <div style={{ marginTop: 10 }}>
-                    <Fl l="Itinerary Details">
-                      <RTE
-                        value={toRichText(d.itinerary || "")}
-                        onChange={v => setItin(p => p.map((x, j) => j === i ? { ...x, itinerary: v } : x))}
-                        placeholder="Describe what happens this day…"
-                      />
-                    </Fl>
+                  <div style={{ ...QS.rowBox, marginBottom: 0 }}>
+                    <div style={{ ...G2, marginBottom: 10 }}>
+                      <Fl l="Date">
+                        <input type="date" style={{ ...QS.inp, colorScheme: "light" }} value={d.date || ""}
+                          onChange={e => setItin(p => p.map((x, j) => j === i ? { ...x, date: e.target.value } : x))} />
+                      </Fl>
+                      <Fl l="Itinerary Title">
+                        <input style={QS.inp} placeholder="e.g. Arrival & City Tour" value={d.title}
+                          onChange={e => setItin(p => p.map((x, j) => j === i ? { ...x, title: e.target.value } : x))} />
+                      </Fl>
+                    </div>
+                    <div style={{ marginBottom: 10 }}>
+                      <Fl l={i === 0 ? "Transfer Type (Cab — synced with Cab Details below)" : "Transfer Type"}>
+                        <input style={QS.inp} placeholder="e.g. PVT / NA" value={d.transfer || ""}
+                          onChange={e => i === 0
+                            ? setSharedCab(e.target.value)
+                            : setItin(p => p.map((x, j) => j === i ? { ...x, transfer: e.target.value } : x))} />
+                      </Fl>
+                    </div>
+                    <div>
+                      <Fl l="Itinerary Details">
+                        <RTE
+                          value={toRichText(d.itinerary || "")}
+                          onChange={v => setItin(p => p.map((x, j) => j === i ? { ...x, itinerary: v } : x))}
+                          placeholder="Describe what happens this day…"
+                          minHeight={200}
+                        />
+                      </Fl>
+                    </div>
                   </div>
                 </div>
               ))}
               <button
                 onClick={() => setItin(p => [...p, { ...DEF_ITIN(), transfer: p[0]?.transfer || "" }])}
                 style={QS.addBtnBottom}
-              >+ Add Another Day</button>
+              >+ Add Day {itin.length + 1}</button>
             </Sec>
 
             {/* ── Hotels ── */}
@@ -573,7 +570,7 @@ export default function QuotationBuilder({
                   {transfers.length > 1 && <button style={QS.remBtn} onClick={() => remRow(setTransfers, i)}>✕</button>}
                   {transfers.length > 1 && <div style={QS.rowLabel}>Transfer {i + 1}</div>}
                   <div style={G4}>
-                    <Fl l={i === 0 ? "Cab Type (synced with Day 1 Itinerary)" : "Cab Type"}>
+                    <Fl l="Cab Type">
                       <input style={QS.inp} placeholder="Innova Crysta" value={t.cab}
                         onChange={e => i === 0
                           ? setSharedCab(e.target.value)
@@ -598,7 +595,14 @@ export default function QuotationBuilder({
                 </div>
               )}
               {transfers.length < 3 && (
-                <button onClick={() => addRow(setTransfers, DEF_TRANSFER)} style={QS.addBtnBottom}>+ Add Transfer</button>
+                <button
+                  onClick={() => {
+                    const idx = transfers.length;
+                    const prefillCab = itin[idx]?.transfer || transfers[0]?.cab || itin[0]?.transfer || "";
+                    setTransfers(p => [...p, { ...DEF_TRANSFER, cab: prefillCab }]);
+                  }}
+                  style={QS.addBtnBottom}
+                >+ Add Transfer</button>
               )}
             </Sec>
 
@@ -608,6 +612,7 @@ export default function QuotationBuilder({
                 <div key={i} style={QS.rowBox}>
                   {flights.length > 1 && <button style={QS.remBtn} onClick={() => remRow(setFlights, i)}>✕</button>}
                   {flights.length > 1 && <div style={QS.rowLabel}>Flight {i + 1}</div>}
+                  <TripTypeToggle value={!!f.roundTrip} onChange={v => updArr(setFlights, i, "roundTrip", v)} />
                   <div style={{ ...G3, marginBottom: 10 }}>
                     <Fl l="From">
                       <input style={QS.inp} placeholder="Delhi" value={f.from} onChange={e => updArr(setFlights, i, "from", e.target.value)} />
@@ -620,14 +625,42 @@ export default function QuotationBuilder({
                     </Fl>
                   </div>
                   <div style={G2}>
-                    <Fl l="Fare / Pax (₹)">
+                    <Fl l="Price Per Pax (₹)">
                       <input type="number" style={QS.inp} value={f.price} onChange={e => updArr(setFlights, i, "price", e.target.value)} />
                     </Fl>
                     <Fl l="Sub Total">
                       <input style={{ ...QS.inp, color: "#2563EB", fontWeight: 700 }}
-                        value={inr((+f.price || 0) * (+f.pax || 0))} disabled />
+                        value={f.price === "" ? "" : inr((+f.price || 0) * (+f.pax || 0))} disabled />
                     </Fl>
                   </div>
+
+                  {f.roundTrip && (
+                    <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px dashed #E4E9F2" }}>
+                      <div style={{ ...G3, marginBottom: 10 }}>
+                        <Fl l="Return From">
+                          <input style={QS.inp} placeholder={f.to || "Srinagar"} value={f.to} disabled />
+                        </Fl>
+                        <Fl l="Return To">
+                          <input style={QS.inp} placeholder={f.from || "Delhi"} value={f.from} disabled />
+                        </Fl>
+                        <Fl l="Pax">
+                          <input style={{ ...QS.inp, color: "#94A3B8" }} value={f.pax} disabled />
+                        </Fl>
+                      </div>
+                      <div style={G2}>
+                        <Fl l="Return Price Per Pax (₹)">
+                          <input type="number" style={QS.inp} value={f.returnPrice} onChange={e => updArr(setFlights, i, "returnPrice", e.target.value)} />
+                        </Fl>
+                        <Fl l="Return Sub Total">
+                          <input style={{ ...QS.inp, color: "#2563EB", fontWeight: 700 }}
+                            value={f.returnPrice === "" ? "" : inr((+f.returnPrice || 0) * (+f.pax || 0))} disabled />
+                        </Fl>
+                      </div>
+                      <div style={{ textAlign: "right", fontSize: 13, fontWeight: 800, color: "#1D4ED8", marginTop: 8 }}>
+                        Total Amount (Onward + Return): {inr(((+f.price || 0) + (+f.returnPrice || 0)) * (+f.pax || 0))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))}
               {flights.length > 1 && (
@@ -640,9 +673,15 @@ export default function QuotationBuilder({
               )}
             </Sec>
 
+            {/* ── Combined Cost (Hotel + Flight + Transfer) ── */}
+            <div style={{ background: "#EFF4FF", border: "1px solid #BFD3FE", borderRadius: 12, padding: "12px 16px", marginBottom: 14, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
+              <span style={{ fontSize: 13, fontWeight: 700, color: "#1D4ED8" }}>💰 Combined Trip Cost (Hotel + Flight + Transfer)</span>
+              <span style={{ fontSize: 18, fontWeight: 800, color: "#1D4ED8" }}>{inr(hotelTotal + flightTotal + transferTotal)}</span>
+            </div>
+
             {/* ── Inclusions / Exclusions / Notes ── */}
             <Sec label="📝  Inclusions, Exclusions and Notes">
-              <div style={{ ...G2, marginBottom: 12 }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 12 }}>
                 <Fl l="Inclusions">
                   <RTE
                     value={toRichText(form.inclusions || "")}
@@ -668,29 +707,32 @@ export default function QuotationBuilder({
               label="📜  Terms, Booking & Cancellation Policy"
               right={<span style={{ fontSize: 12, opacity: 0.85, fontWeight: 600 }}>Customer side · shown on quote PDF</span>}
             >
-              <Fl l="Terms & Conditions">
-                <RTE
-                  value={toRichText(form.termsConditions || "")}
-                  onChange={v => upd("termsConditions", v)}
-                  placeholder="Terms & conditions…"
-                />
-              </Fl>
-              <div style={{ height: 12 }} />
-              <Fl l="Booking Policy">
+              <div>
+                <div style={QS.policyLabel}>Booking Policy</div>
                 <RTE
                   value={toRichText(form.bookingPolicy || "")}
                   onChange={v => upd("bookingPolicy", v)}
                   placeholder="Booking / payment policy…"
                 />
-              </Fl>
+              </div>
               <div style={{ height: 12 }} />
-              <Fl l="Cancellation Policy">
+              <div>
+                <div style={QS.policyLabel}>Cancellation Policy</div>
                 <RTE
                   value={toRichText(form.cancellationPolicy || "")}
                   onChange={v => upd("cancellationPolicy", v)}
                   placeholder="Cancellation policy…"
                 />
-              </Fl>
+              </div>
+              <div style={{ height: 12 }} />
+              <div>
+                <div style={QS.policyLabel}>Terms & Conditions</div>
+                <RTE
+                  value={toRichText(form.termsConditions || "")}
+                  onChange={v => upd("termsConditions", v)}
+                  placeholder="Terms & conditions…"
+                />
+              </div>
             </Sec>
 
             {/* ── Company Side ── */}
@@ -851,10 +893,34 @@ function RoomCatSelect({ value, extra = [], onChange, onAdd, onDelete }) {
     </div>
   );
 }
+function TripTypeToggle({ value, onChange }) {
+  return (
+    <div style={{ display: "inline-flex", border: "1px solid #BFD3FE", borderRadius: 999, padding: 3, background: "#F8FAFD", marginBottom: 12 }}>
+      <button
+        type="button"
+        onClick={() => onChange(false)}
+        style={{
+          padding: "5px 16px", borderRadius: 999, border: "none", cursor: "pointer",
+          fontSize: 12.5, fontWeight: 700, fontFamily: "inherit",
+          background: !value ? "#2563EB" : "transparent", color: !value ? "#fff" : "#6B7A99",
+        }}
+      >One Way</button>
+      <button
+        type="button"
+        onClick={() => onChange(true)}
+        style={{
+          padding: "5px 16px", borderRadius: 999, border: "none", cursor: "pointer",
+          fontSize: 12.5, fontWeight: 700, fontFamily: "inherit",
+          background: value ? "#2563EB" : "transparent", color: value ? "#fff" : "#6B7A99",
+        }}
+      >Round Trip</button>
+    </div>
+  );
+}
 function CR({ l, v, vc }) {
   return <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, padding: "6px 2px", borderBottom: "1px dashed #E4E9F2" }}><span style={{ color: "#36415A" }}>{l}</span><b style={{ color: vc || "#0F1B33" }}>{v}</b></div>;
 }
-function RTE({ value, onChange, placeholder }) {
+function RTE({ value, onChange, placeholder, minHeight }) {
   const ref = useRef(null);
   useEffect(() => { if (ref.current) ref.current.innerHTML = value || ""; }, []);
   const exec = cmd => { document.execCommand(cmd, false, null); if (ref.current) onChange(ref.current.innerHTML); ref.current?.focus(); };
@@ -871,7 +937,7 @@ function RTE({ value, onChange, placeholder }) {
       <div style={{ position: "relative" }}>
         {isEmpty && <div style={{ position: "absolute", top: 9, left: 11, fontSize: 13, color: "#9ca3af", pointerEvents: "none", userSelect: "none" }}>{placeholder || "Type here…"}</div>}
         <div ref={ref} contentEditable suppressContentEditableWarning onInput={() => { if (ref.current) onChange(ref.current.innerHTML); }}
-          style={{ minHeight: 80, padding: "9px 11px", fontSize: 13, color: "#0F1B33", outline: "none", lineHeight: 1.7, fontFamily: "inherit" }} />
+          style={{ minHeight: minHeight || 80, padding: "9px 11px", fontSize: 13, color: "#0F1B33", outline: "none", lineHeight: 1.7, fontFamily: "inherit" }} />
       </div>
     </div>
   );
@@ -895,6 +961,7 @@ const QS = {
   addRowBtn: { background: "rgba(255,255,255,.18)", border: "1px solid rgba(255,255,255,.3)", color: "#fff", borderRadius: 8, padding: "4px 11px", fontSize: 12, fontWeight: 700, cursor: "pointer" },
   addBtnBottom: { width: "100%", background: "#EFF4FF", border: "1.5px dashed #2563EB", color: "#2563EB", borderRadius: 9, padding: "9px 12px", fontSize: 13, fontWeight: 700, cursor: "pointer", marginTop: 6, fontFamily: "inherit" },
   rteBtn:    { background: "#fff", border: "1px solid #D1D5DB", borderRadius: 4, padding: "3px 8px", fontSize: 11.5, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", color: "#374151" },
+  policyLabel: { fontSize: 14, fontWeight: 700, textAlign: "center", textTransform: "uppercase", letterSpacing: ".05em", color: "#111", marginBottom: 10 },
 };
 
 export { calcQ, gradeColor, inr as inrFmt };

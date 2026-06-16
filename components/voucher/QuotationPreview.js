@@ -209,15 +209,17 @@ export default function QuotationPreview({ data, id }) {
                 <Th>To</Th>
                 <Th>Date</Th>
                 <Th>Pax</Th>
+                <Th>Trip</Th>
               </tr>
             </thead>
             <tbody>
               {flights.filter(f => f.from || f.to || f.date || f.pax || f.price).map((f, i) => (
                 <tr key={i} style={{ background: i % 2 === 0 ? "#fff" : "#fafafa" }}>
                   <Td>{f.from}</Td>
-                  <Td>{f.to}</Td>
+                  <Td>{f.roundTrip ? `${f.to || "—"} ⇄ ${f.from || "—"}` : f.to}</Td>
                   <Td>{fmtDate(f.date)}</Td>
                   <Td>{f.pax}</Td>
+                  <Td>{f.roundTrip ? "Round Trip" : "One-way"}</Td>
                 </tr>
               ))}
             </tbody>
@@ -256,13 +258,6 @@ export default function QuotationPreview({ data, id }) {
         </div>
       </div>
 
-      {/* ══════════ TERMS & CONDITIONS ══════════ */}
-      {form.termsConditions && (
-        <RedSection title="Terms & Conditions">
-          <RichContent html={form.termsConditions} style={{ fontSize: 11, lineHeight: 1.7 }} />
-        </RedSection>
-      )}
-
       {/* ══════════ BOOKING POLICY ══════════ */}
       {form.bookingPolicy && (
         <RedSection title="Booking Policy">
@@ -274,6 +269,13 @@ export default function QuotationPreview({ data, id }) {
       {form.cancellationPolicy && (
         <RedSection title="Cancellation Policy">
           <RichContent html={form.cancellationPolicy} style={{ fontSize: 11, lineHeight: 1.7 }} />
+        </RedSection>
+      )}
+
+      {/* ══════════ TERMS & CONDITIONS ══════════ */}
+      {form.termsConditions && (
+        <RedSection title="Terms & Conditions">
+          <RichContent html={form.termsConditions} style={{ fontSize: 11, lineHeight: 1.7 }} />
         </RedSection>
       )}
 
