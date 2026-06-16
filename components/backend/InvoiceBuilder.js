@@ -23,11 +23,26 @@ function isoToDisplay(iso) {
 function todayStr() {
   return new Date().toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
 }
-/* "YYYY-MM" for an invoice-date display string — used to detect a month change
-   so the auto-generated invoice number can be refreshed. */
-function monthOf(displayDate) {
+/* A real Date for an invoice-date display string, falling back to "now" if blank/unparsable. */
+function dateOf(displayDate) {
   const iso = parseToISO(displayDate);
-  return iso ? iso.slice(0, 7) : "";
+  const d = iso ? new Date(iso + "T00:00:00") : new Date();
+  return isNaN(d) ? new Date() : d;
+}
+
+/* ─── Invoice No auto-generation — same RCSPL/<FY>/<seq> ledger used in
+   create-invoice.js, so both flows continue one shared numbering sequence
+   instead of forking off into a separate "TWO-INV-XXXX" scheme. ─── */
+function getInvoiceFY(d) {
+  const dt = d instanceof Date && !isNaN(d) ? d : new Date();
+  const y = dt.getFullYear(), m = dt.getMonth() + 1;
+  return m >= 4 ? `${y}-${String(y + 1).slice(2)}` : `${y - 1}-${String(y).slice(2)}`;
+}
+function buildInvoiceNo(allInvoices, forDate) {
+  const fy = getInvoiceFY(forDate);
+  const prefix = `RCSPL/${fy}/`;
+  const count = (allInvoices || []).filter(i => i.invoiceNo?.startsWith(prefix)).length;
+  return `${prefix}${String(count + 1).padStart(3, "0")}`;
 }
 const uid = () => Date.now() + Math.random();
 const EMPTY_ITEM = () => ({ id: uid(), particulars: "", hsn: "9985", qty: "1", rate: "", amount: "" });
@@ -92,20 +107,19 @@ export default function InvoiceBuilder({ prefill, invoiceData, isNew, onClose, o
   const [emailDone,      setEmailDone]     = useState(false);
   const [emailError,     setEmailError]    = useState("");
 
-  /* Auto-generate invoice number — and re-generate it whenever the user changes
-     the Invoice Date to a different calendar month, so the number always
-     reflects the latest available sequence for that month's invoice. */
-  const invNoMonthRef = useRef(monthOf(form.invoiceDate));
+  /* Auto-generate invoice number on the RCSPL/<FY>/<seq> ledger — and
+     re-generate it whenever the user changes the Invoice Date across a
+     financial-year boundary (1 Apr), so the FY portion and sequence stay correct. */
+  const invNoFyRef = useRef(getInvoiceFY(dateOf(form.invoiceDate)));
   useEffect(() => {
     if (!isNew) return;
-    const month = monthOf(form.invoiceDate);
-    if (month === invNoMonthRef.current && form.invoiceNo) return; // unchanged month, already numbered
-    invNoMonthRef.current = month;
+    const fy = getInvoiceFY(dateOf(form.invoiceDate));
+    if (fy === invNoFyRef.current && form.invoiceNo) return; // same FY, already numbered
+    invNoFyRef.current = fy;
     fetch("/api/dashboard/invoices")
       .then(r => r.json())
       .then(all => {
-        const count = Array.isArray(all) ? all.length : 0;
-        setForm(f => ({ ...f, invoiceNo: `TWO-INV-${String(count + 1).padStart(4, "0")}` }));
+        setForm(f => ({ ...f, invoiceNo: buildInvoiceNo(Array.isArray(all) ? all : [], dateOf(f.invoiceDate)) }));
       })
       .catch(() => {});
   }, [isNew, form.invoiceDate]);
@@ -244,7 +258,7 @@ export default function InvoiceBuilder({ prefill, invoiceData, isNew, onClose, o
   const grandTotal = afterGst + tcsAmt;
   const fmt = n => Number(n || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 });
 
-  const invId   = form.invoiceNo || "TWO-INV-????";
+  const invId   = form.invoiceNo || "RCSPL/????/???";
   const chainTxt = [prefill?.quotationDisplayId || form.quotationNo, prefill?.leadDisplayId || form.leadDisplayId].filter(Boolean).join(" and ");
 
   return (
@@ -279,7 +293,7 @@ export default function InvoiceBuilder({ prefill, invoiceData, isNew, onClose, o
             {/* ── Invoice Info ── */}
             <FormSec title="Invoice Information" icon={<MdReceipt />}>
               <div style={g3}>
-                <Fld label="Invoice Number" value={form.invoiceNo} onChange={v => set("invoiceNo", v)} placeholder="TWO-INV-0001" />
+                <Fld label="Invoice Number" value={form.invoiceNo} onChange={v => set("invoiceNo", v)} placeholder="RCSPL/2026-27/001" />
                 <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                   <label style={s.lbl}>Invoice Date</label>
                   <input type="date" style={s.inp} value={parseToISO(form.invoiceDate)} onChange={e => set("invoiceDate", isoToDisplay(e.target.value))} />

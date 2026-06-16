@@ -6,6 +6,21 @@ export const config = { api: { bodyParser: { sizeLimit: "2mb" } } };
 
 let indexCleaned = false;
 
+/* ─── Invoice No auto-generation — RCSPL/<FY>/<seq> ledger, matching the
+   convention used since this business's first invoices (and create-invoice.js's
+   client-side generator). Only used as a fallback when no invoiceNo is supplied. */
+function getInvoiceFY(d) {
+  const dt = d instanceof Date && !isNaN(d) ? d : new Date();
+  const y = dt.getFullYear(), m = dt.getMonth() + 1;
+  return m >= 4 ? `${y}-${String(y + 1).slice(2)}` : `${y - 1}-${String(y).slice(2)}`;
+}
+async function buildInvoiceNo(c, forDate) {
+  const fy = getInvoiceFY(forDate);
+  const prefix = `RCSPL/${fy}/`;
+  const count = await c.countDocuments({ invoiceNo: { $regex: `^${prefix.replace(/\//g, "\\/")}` } });
+  return `${prefix}${String(count + 1).padStart(3, "0")}`;
+}
+
 async function col() {
   await connectDB();
   const c = mongoose.connection.db.collection("invoices");
@@ -52,10 +67,12 @@ export default async function handler(req, res) {
         }));
       }
 
-      // Auto-generate TWO-INV-XXXX if not provided or using old format
-      if (!body.invoiceNo || !body.invoiceNo.startsWith("TWO-INV-")) {
-        const count = await c.countDocuments({});
-        body.invoiceNo = `TWO-INV-${String(count + 1).padStart(4, "0")}`;
+      // Auto-generate RCSPL/<FY>/<seq> if not provided (or it's a stale
+      // "TWO-INV-XXXX" suggestion left over from an unfixed caller)
+      const looksStale = typeof body.invoiceNo === "string" && /^TWO-INV-\d+$/.test(body.invoiceNo.trim());
+      if (!body.invoiceNo || !String(body.invoiceNo).trim() || looksStale) {
+        const d = body.invoiceDate ? new Date(body.invoiceDate) : new Date();
+        body.invoiceNo = await buildInvoiceNo(c, isNaN(d) ? new Date() : d);
       }
       const newId = uuidv4();
       const now = new Date();

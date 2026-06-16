@@ -100,7 +100,7 @@ function PaymentModal({ invoice, siblings, onClose, onUpdated, onCreated }) {
         delete clone._id; delete clone.id; delete clone.createdAt; delete clone.updatedAt;
         const body = {
           ...clone,
-          invoiceNo: "", // server auto-assigns the next TWO-INV-XXXX
+          invoiceNo: "", // server auto-assigns the next RCSPL/<FY>/<seq>
           invoiceDate: (parseAnyDate(date) || new Date()).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" }),
           payments: [{ date, amount: +amount, mode, note }],
         };
