@@ -54,9 +54,9 @@ export default function Popup({ packageInfo, asDrawer, destination: destProp, au
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    // Phone: only allow digits, spaces, +, -, ()
+    // Phone: digits only, max 10 (country code is shown separately as +91)
     if (name === "phone") {
-      const cleaned = value.replace(/[^\d\s+\-()]/g, "");
+      const cleaned = value.replace(/\D/g, "").slice(0, 10);
       setFormData(p => ({ ...p, phone: cleaned }));
       return;
     }
@@ -68,7 +68,7 @@ export default function Popup({ packageInfo, asDrawer, destination: destProp, au
 
     /* ── Client-side validation ── */
     const digits = formData.phone.replace(/\D/g, "");
-    if (digits.length < 10) {
+    if (digits.length !== 10) {
       toast.error("Please enter a valid 10-digit mobile number.", { id: "form-err" });
       return;
     }
@@ -102,17 +102,6 @@ export default function Popup({ packageInfo, asDrawer, destination: destProp, au
       });
 
       /* ── Handle specific error codes ── */
-      if (apiRes.status === 409) {
-        const data = await apiRes.json().catch(() => ({}));
-        if (data.field === "phone") {
-          toast.error("This mobile number is already registered with us. Our team will reach out to you soon!", { id: "form-err", duration: 6000 });
-        } else {
-          toast.error("This email is already registered with us. Our team will reach out to you soon!", { id: "form-err", duration: 6000 });
-        }
-        setLoading(false);
-        return;
-      }
-
       if (apiRes.status === 429) {
         toast.error("Too many attempts. Please try again after some time.", { id: "form-err" });
         setLoading(false);
@@ -300,7 +289,7 @@ export default function Popup({ packageInfo, asDrawer, destination: destProp, au
                   value={formData.phone}
                   onChange={handleChange}
                   inputMode="numeric"
-                  maxLength={15}
+                  maxLength={10}
                   required
                 />
               </div>

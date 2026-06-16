@@ -60,21 +60,9 @@ export default async function handler(req, res) {
     if (!validEmail(email)) return res.status(400).json({ error: "validation", message: "Invalid email address." });
     if (!validPhone(phone)) return res.status(400).json({ error: "validation", message: "Invalid phone number." });
 
-    /* Duplicate check — skip for admin creates since admin may re-enter known contacts */
-    if (!adminCreate) {
-      const phoneDigits = phone.replace(/\D/g, "");
-      const emailNorm   = email.trim().toLowerCase();
-      const existing = await Lead.findOne({
-        $or: [
-          { email: { $regex: new RegExp(`^${emailNorm}$`, "i") } },
-          { phone: { $regex: phoneDigits.slice(-10) } },
-        ],
-      }).lean();
-      if (existing) {
-        const field = existing.email?.toLowerCase() === emailNorm ? "email" : "phone";
-        return res.status(409).json({ error: "duplicate", field });
-      }
-    }
+    // Note: intentionally no duplicate email/phone block here — the same
+    // person is allowed to submit the enquiry form again (e.g. for a
+    // different trip), so every valid submission is saved as a new lead.
 
     const lead = await Lead.create({
       name:          name.trim(),
