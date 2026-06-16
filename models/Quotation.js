@@ -45,6 +45,11 @@ const QuotationSchema = new mongoose.Schema({
   exclusions: { type: String, default: "" },
   notes:      { type: String, default: "This is an initial quote based on our most popular holiday package to your chosen destination." },
 
+  // Policies (prefilled defaults, editable per quotation)
+  termsConditions:   { type: String, default: "" },
+  bookingPolicy:     { type: String, default: "" },
+  cancellationPolicy: { type: String, default: "" },
+
   // Company (internal)
   cost:            { type: Number, default: 0 },
   margin:          { type: Number, default: 0 },

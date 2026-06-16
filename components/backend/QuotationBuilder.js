@@ -33,6 +33,14 @@ function toRichText(text) {
   return text.replace(/\n/g, "<br>");
 }
 
+/* true if rich-text HTML has no real visible content (covers "", null, and editor
+   leftovers like "<p><br></p>" / "<div><br></div>" after a user clears the field) */
+function isBlankRichText(html) {
+  if (!html) return true;
+  const text = html.replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ").trim();
+  return !text;
+}
+
 const uid = () => Math.random().toString(36).slice(2);
 const DEF_ITIN = () => ({ _k: uid(), date: "", title: "", tour: "", transfer: "", pickup_time: "", itinerary: "" });
 
@@ -55,11 +63,105 @@ const DEF_TRANSFER = { cab: "", perDay: "", days: "" };
 
 const toN = (v, d = 0) => (v === "" || v === undefined || v === null) ? d : (+v || d);
 
+/* ── default policy content (prefilled, fully editable per-quotation) ── */
+const DEFAULT_TERMS = `
+<p><strong>1. Applicability</strong></p>
+<ul>
+<li>These terms apply to all Kashmir holiday packages booked with Tourwatchout. Package cost applies from Srinagar pickup/drop only; pickups from Jammu or Udhampur may incur extra charges.</li>
+</ul>
+<p><strong>2. Itinerary &amp; Changes</strong></p>
+<ul>
+<li>Itineraries are indicative and may change due to weather, road conditions, government orders, security restrictions, force majeure, strikes, festivals, overbooking, or operational reasons.</li>
+<li>Tourwatchout may modify arrangements; additional costs arising from such events must be borne by guests. No liability for refunds/compensation beyond available remedies.</li>
+</ul>
+<p><strong>3. Safety &amp; Operational Limits</strong></p>
+<ul>
+<li>Vehicles will operate only where permitted by local/union regulations. Outside vehicles are restricted to designated parking points in many areas.</li>
+<li>During heavy snowfall or road closure, vehicle movement may stop per government/admin orders; only chained vehicles or snow jeeps may operate.</li>
+<li>Guests should remain in regular contact with Tourwatchout representatives and avoid unnecessary engagement with unknown locals.</li>
+</ul>
+<p><strong>4. Payments &amp; Direct Charges</strong></p>
+<ul>
+<li>Many local services and activities are payable directly by guests (union taxis, ponies, chained vehicles, ATVs, snow bikes, gondola, shikara, etc.). Tourwatchout can assist with arrangements but charges are direct unless otherwise stated.</li>
+<li>If a paid activity is non-operational due to unforeseen reasons, refunds will be processed and should reach the guest within 30 days of processing. No refunds for complimentary activities not charged by Tourwatchout.</li>
+</ul>
+<p><strong>5. Refunds &amp; Non-Refundable Cases</strong></p>
+<ul>
+<li>No refunds will be provided for missed sightseeing due to natural or unavoidable circumstances (heavy snowfall, landslides, roadblocks, traffic, security restrictions).</li>
+<li>Gondola and Shikara rides are weather-dependent; cancellations due to weather or maintenance do not warrant refunds.</li>
+</ul>
+<p><strong>6. Accommodation &amp; Houseboats</strong></p>
+<ul>
+<li>Standard hotel check-in: 2:00 PM; check-out: 11:00 AM. Early check-in / late check-out subject to hotel discretion and availability.</li>
+<li>Hotels may require government-approved photo ID at check-in.</li>
+<li>If listed hotels are unavailable, similar-standard alternatives will be provided.</li>
+<li>Houseboats: basic, experiential accommodation. Expect intermittent power/hot water, limited menu, no transport between houseboat and land. Bukhari (traditional heater) and extra houseboat services charged directly.</li>
+<li>Room heaters are subject to availability and may be charged directly by the property.</li>
+</ul>
+<p><strong>7. Destination-Specific Notes</strong></p>
+<ul>
+<li><strong>Gulmarg:</strong> Tangmarg–Gulmarg transfers during heavy snow may require chained vehicles, charges payable directly by guest. Gondola rides subject to availability and weather; pre-book recommended. Skiing/snow activities are optional and payable locally.</li>
+<li><strong>Pahalgam:</strong> Sightseeing at Aru Valley, Chandanwari, Betaab Valley is through local union taxis, payable directly. Pony rides and adventure activities are optional and payable locally.</li>
+<li><strong>Sonamarg:</strong> Thajiwas Glacier visits (summer) usually via pony ride; Zero Point via union taxi or ATV — both payable directly. In winter, vehicles may operate only up to Gagangir; transfers beyond are by local union taxi at guests' expense. Guests are taken to the taxi stand for onward sightseeing via local union cabs/ponies.</li>
+</ul>
+<p><strong>8. Vehicle Use Policy</strong></p>
+<ul>
+<li>Vehicles operate as per the itinerary and schedule and are for point-to-point transfers and listed sightseeing only.</li>
+<li>AC/heating use during uphill drives or certain times may be restricted at driver discretion.</li>
+</ul>
+<p><strong>9. Extra Charges &amp; Peak Season</strong></p>
+<ul>
+<li>Package price excludes special/mandatory hotel charges during events (Christmas, New Year, festivals). Tourwatchout will attempt to inform guests but may not always have prior notice.</li>
+</ul>
+<p><strong>10. Liability Exclusions</strong></p>
+<ul>
+<li>Tourwatchout is not responsible for disruptions due to flight cancellations/delays, political disturbances, VIP movements, road closures, or natural calamities.</li>
+</ul>
+<p><strong>11. Indicative Supplement Rates</strong> <em>(payable directly; rates indicative and subject to change)</em></p>
+<ul>
+<li>Sonamarg: Pony per horse ₹2,500–3,500; Taxi to Zero Point up to ₹5,500 (return).</li>
+<li>Gulmarg: Gondola Phase 1 ~₹950; Phase 2 ~₹1,250 (per person, incl. service charges). Snow-bike/ETV ~₹3,500 per round. Chained vehicle Tangmarg–Gulmarg return ~₹4,500 per vehicle (max 6–7 pax).</li>
+<li>Pahalgam: Union cab sightseeing from ~₹3,000; Pony for Baisaran ~₹2,500 per pony.</li>
+<li>All additional activities and equipment rentals are payable locally. Pony/horse rates are generally negotiable.</li>
+</ul>
+<p><strong>12. Contact &amp; Assistance</strong></p>
+<ul>
+<li>For revised costing, special requests, or clarifications (pickup point changes, additional services), contact your Tourwatchout travel expert before confirming the booking.</li>
+</ul>
+`.trim();
+
+const DEFAULT_BOOKING_POLICY = `
+<ul>
+<li>For land arrangements, 50% of the total package cost is required as booking amount. Payment can be made via Bank Transfer, UPI, Net Banking, or Payment Gateway (2.5% gateway charges extra on Credit/Debit Card payments).</li>
+<li>Full payment is required for flight bookings as airfares are dynamic and subject to change until ticket issuance.</li>
+<li>Remaining 50% balance payment must be cleared 10 days prior to arrival/travel date via Bank Transfer, Net Banking, UPI, or Cash Deposit. Payment in instalments can also be considered.</li>
+<li>For urgent bookings made within 15 days of travel, 80% advance payment of the total package cost is mandatory.</li>
+<li>Payment invoices, confirmations, and travel vouchers will be shared via E-mail/WhatsApp. Vouchers are generally issued within 2 days of booking confirmation.</li>
+</ul>
+`.trim();
+
+/* placeholder — standard slab-based policy, intended to be reviewed/edited per quotation */
+const DEFAULT_CANCELLATION_POLICY = `
+<ul>
+<li>Cancellations must be communicated in writing (email/WhatsApp) to your Tourwatchout travel expert.</li>
+<li>30+ days before travel: 10% of the total package cost will be deducted as cancellation charges.</li>
+<li>15–29 days before travel: 25% of the total package cost will be deducted.</li>
+<li>7–14 days before travel: 50% of the total package cost will be deducted.</li>
+<li>Less than 7 days before travel / no-show: 100% of the total package cost is non-refundable.</li>
+<li>Houseboat, hotel and flight bookings already confirmed/ticketed may carry separate, non-refundable cancellation charges levied by the respective service provider, irrespective of the slabs above.</li>
+<li>Eligible refunds (if any) will be processed within 30 days to the original mode of payment.</li>
+<li>Date change / postponement requests will be treated as a fresh booking and are subject to availability and price revision.</li>
+</ul>
+`.trim();
+
 const DEF_FORM = {
   type: "Domestic", pkgMode: "Complete Package",
   days: "", travelDate: "", assignedTo: "",
   inclusions: "", exclusions: "",
   notes: "This is an initial quote based on our most popular holiday package to your chosen destination.",
+  termsConditions: DEFAULT_TERMS,
+  bookingPolicy: DEFAULT_BOOKING_POLICY,
+  cancellationPolicy: DEFAULT_CANCELLATION_POLICY,
   cost: "", margin: "", gstPct: 5, tcsPct: 0, tripExpense: 0,
 };
 
@@ -98,7 +200,16 @@ export default function QuotationBuilder({
   const brr = lead?.brr || {};
 
   const baseForm = initialData
-    ? { ...DEF_FORM, ...initialData, assignedTo: initialData.assignedTo?._id || initialData.assignedTo || "" }
+    ? {
+        ...DEF_FORM, ...initialData,
+        assignedTo: initialData.assignedTo?._id || initialData.assignedTo || "",
+        // older/existing quotations saved before these policy fields existed have them
+        // missing, "" or just leftover empty markup (e.g. "<p><br></p>" from a cleared
+        // editor) — in all of those cases fall back to the standard prefilled text
+        termsConditions:     isBlankRichText(initialData.termsConditions)    ? DEFAULT_TERMS             : initialData.termsConditions,
+        bookingPolicy:       isBlankRichText(initialData.bookingPolicy)      ? DEFAULT_BOOKING_POLICY    : initialData.bookingPolicy,
+        cancellationPolicy:  isBlankRichText(initialData.cancellationPolicy) ? DEFAULT_CANCELLATION_POLICY : initialData.cancellationPolicy,
+      }
     : {
         ...DEF_FORM,
         travelDate: brr.tripDate || lead?.travelDate || "",
@@ -115,7 +226,72 @@ export default function QuotationBuilder({
   const [itin,       setItin]       = useState(() => initItin(initialData));
   const [saving,     setSaving]     = useState(false);
   const [pdfLoading, setPdfLoading] = useState(false);
+  const [extraRoomCats, setExtraRoomCats] = useState([]);
   const [preview,    setPreview]    = useState(false);
+
+  /* ── auto-save ── */
+  const [savedId,   setSavedId]   = useState(initialData?._id || null);
+  const [autoState, setAutoState] = useState(""); // "" | "saving" | "saved"
+  const skipFirstAuto = useRef(true);
+  const autoTimer     = useRef(null);
+
+  /* ── shared cab/transfer detail: Day 1 itinerary's "Transfer Type" is the source for ──
+     (a) every other itinerary day (unless that day was customised), and
+     (b) the Cab Details section's "Cab Type" field — both stay editable, just kept in sync. */
+  const prevSharedCab = useRef(itin[0]?.transfer || arrInit.transfers[0]?.cab || "");
+  function setSharedCab(val) {
+    const old = prevSharedCab.current;
+    setItin(p => p.map((x, j) => {
+      if (j === 0) return { ...x, transfer: val };
+      // only auto-sync days that still match the old shared value (i.e. haven't been customised)
+      if (!x.transfer || x.transfer === old) return { ...x, transfer: val };
+      return x;
+    }));
+    setTransfers(p => p.map((t, j) => j === 0 ? { ...t, cab: val } : t));
+    prevSharedCab.current = val;
+  }
+
+  /* on first mount, Day 1 itinerary's transfer value (if set) wins over a stale Cab Type */
+  useEffect(() => {
+    if (itin[0]?.transfer) {
+      setTransfers(p => p.length ? p.map((t, j) => j === 0 ? { ...t, cab: itin[0].transfer } : t) : p);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  /* ── room categories: load any custom categories saved previously so they show up in everyone's dropdown ── */
+  useEffect(() => {
+    fetch("/api/dashboard/room-categories")
+      .then(r => r.ok ? r.json() : [])
+      .then(list => Array.isArray(list) && setExtraRoomCats(list.filter(n => !ROOM_CATS.includes(n))))
+      .catch(() => {});
+  }, []);
+
+  async function addRoomCategory(name) {
+    const clean = String(name || "").trim();
+    if (!clean) return;
+    setExtraRoomCats(p => p.includes(clean) ? p : [...p, clean]); // optimistic
+    try {
+      const res = await fetch("/api/dashboard/room-categories", {
+        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: clean }),
+      });
+      if (res.ok) {
+        const list = await res.json();
+        if (Array.isArray(list)) setExtraRoomCats(list.filter(n => !ROOM_CATS.includes(n)));
+      }
+    } catch {}
+  }
+
+  async function removeRoomCategory(name) {
+    setExtraRoomCats(p => p.filter(n => n !== name)); // optimistic
+    try {
+      const res = await fetch(`/api/dashboard/room-categories?name=${encodeURIComponent(name)}`, { method: "DELETE" });
+      if (res.ok) {
+        const list = await res.json();
+        if (Array.isArray(list)) setExtraRoomCats(list.filter(n => !ROOM_CATS.includes(n)));
+      }
+    } catch {}
+  }
 
   const upd = (k, v) => setForm(f => ({ ...f, [k]: v }));
   const c    = calcQ(form);
@@ -131,31 +307,75 @@ export default function QuotationBuilder({
 
   /* ── sub-totals ── */
   const hotelTotal    = hotels.reduce((s, h) => s + (+h.price || 0) * (+h.nights || 0) * (+h.rooms || 0), 0);
-  const flightTotal   = flights.reduce((s, f) => s + (+f.price || 0), 0);
+  const flightTotal   = flights.reduce((s, f) => s + (+f.price || 0) * (+f.pax || 0), 0);
   const transferTotal = transfers.reduce((s, t) => s + (+t.perDay || 0) * (+t.days || 0), 0);
 
-  /* ── save ── */
+  /* ── shared body builder (used by manual save + auto-save) ── */
+  function buildBody() {
+    return {
+      ...form,
+      assignedTo: form.assignedTo || null, // empty string can't be cast to ObjectId — send null instead
+      cost: toN(form.cost), margin: toN(form.margin), gstPct: toN(form.gstPct, 5), tcsPct: toN(form.tcsPct),
+      hotels: hotels.map(h => ({ name: h.name, roomCat: h.roomCat, nights: toN(h.nights), rooms: toN(h.rooms, 1), price: toN(h.price) })),
+      flights: flights.map(f => ({ from: f.from, to: f.to, date: f.date, pax: toN(f.pax), price: toN(f.price) })),
+      transfers: transfers.map(t => ({ cab: t.cab, perDay: toN(t.perDay), days: toN(t.days) })),
+      itinerary: itin.map(({ _k, ...rest }) => rest),
+    };
+  }
+
+  /* ── auto-save while editing (debounced, silent) ── */
+  useEffect(() => {
+    if (skipFirstAuto.current) { skipFirstAuto.current = false; return; }
+    if (!lead?._id) return;
+    setAutoState("");
+    if (autoTimer.current) clearTimeout(autoTimer.current);
+    autoTimer.current = setTimeout(async () => {
+      setAutoState("saving");
+      try {
+        const body = buildBody();
+        let res;
+        if (!savedId) {
+          res = await fetch("/api/dashboard/quotations", {
+            method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ ...body, leadId: lead._id }),
+          });
+        } else {
+          res = await fetch(`/api/dashboard/quotations/${savedId}`, {
+            method: "PATCH", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+          });
+        }
+        if (res.ok) {
+          const data = await res.json();
+          if (!savedId) setSavedId(data._id);
+          setAutoState("saved");
+        } else {
+          setAutoState("");
+        }
+      } catch { setAutoState(""); }
+    }, 1200);
+    return () => clearTimeout(autoTimer.current);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form, hotels, flights, transfers, itin]);
+
+  /* ── save (explicit, creates a new version) ── */
   async function save() {
     setSaving(true);
     try {
-      const newVer = { v: (initialData?.versions?.length || 0) + 1, date: todayISO(), cost: toN(form.cost), margin: toN(form.margin), note: isNew ? "First quote created" : "Quote revised" };
-      const body = {
-        ...form,
-        cost: toN(form.cost), margin: toN(form.margin), gstPct: toN(form.gstPct, 5), tcsPct: toN(form.tcsPct),
-        hotels: hotels.map(h => ({ name: h.name, roomCat: h.roomCat, nights: toN(h.nights), rooms: toN(h.rooms, 1), price: toN(h.price) })),
-        flights: flights.map(f => ({ from: f.from, to: f.to, date: f.date, pax: toN(f.pax), price: toN(f.price) })),
-        transfers: transfers.map(t => ({ cab: t.cab, perDay: toN(t.perDay), days: toN(t.days) })),
-        itinerary: itin.map(({ _k, ...rest }) => rest),
-        versions: [...(initialData?.versions || []), newVer],
-      };
+      const newVer = { v: (initialData?.versions?.length || 0) + 1, date: todayISO(), cost: toN(form.cost), margin: toN(form.margin), note: (initialData?.versions?.length || 0) === 0 ? "First quote created" : "Quote revised" };
+      const body = { ...buildBody(), versions: [...(initialData?.versions || []), newVer] };
       let res;
-      if (isNew) {
+      if (!savedId) {
         body.leadId = lead._id;
         res = await fetch("/api/dashboard/quotations", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
       } else {
-        res = await fetch(`/api/dashboard/quotations/${initialData._id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+        res = await fetch(`/api/dashboard/quotations/${savedId}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
       }
-      if (res.ok) { onSaved?.(await res.json()); onClose(); }
+      if (res.ok) {
+        const data = await res.json();
+        setSavedId(data._id);
+        onSaved?.(data); onClose();
+      }
     } finally { setSaving(false); }
   }
 
@@ -221,7 +441,12 @@ export default function QuotationBuilder({
                 Linked to Lead {leadDisplayId} · {lead?.name} · {lead?.phone} · {lead?.destination}
               </div>
             </div>
-            <button style={QS.x} onClick={onClose}>✕</button>
+            {autoState && (
+              <div style={{ fontSize: 11.5, color: "#BFD3FE", fontWeight: 700, display: "flex", alignItems: "center", gap: 5, marginLeft: "auto" }}>
+                {autoState === "saving" ? "⏳ Saving…" : "✓ All changes auto-saved"}
+              </div>
+            )}
+            <button style={{ ...QS.x, marginLeft: autoState ? 14 : "auto" }} onClick={onClose}>✕</button>
           </div>
 
           {/* Body */}
@@ -242,18 +467,59 @@ export default function QuotationBuilder({
               </div>
             </Sec>
 
+            {/* ── Itinerary ── */}
+            <Sec label="📅  Day-wise Itinerary">
+              {itin.map((d, i) => (
+                <div key={d._k} style={{ ...QS.rowBox, padding: "12px 40px 12px 12px" }}>
+                  {itin.length > 1 && <button style={QS.remBtn} onClick={() => setItin(p => p.filter((_, j) => j !== i))}>✕</button>}
+                  <div style={{ fontSize: 11, fontWeight: 800, color: "#2563EB", textTransform: "uppercase", letterSpacing: ".05em", marginBottom: 8 }}>📅 Day {i + 1}</div>
+                  <div style={{ ...G2, marginBottom: 10 }}>
+                    <Fl l="Date">
+                      <input type="date" style={{ ...QS.inp, colorScheme: "light" }} value={d.date || ""}
+                        onChange={e => setItin(p => p.map((x, j) => j === i ? { ...x, date: e.target.value } : x))} />
+                    </Fl>
+                    <Fl l="Itinerary Title">
+                      <input style={QS.inp} placeholder="e.g. Arrival & City Tour" value={d.title}
+                        onChange={e => setItin(p => p.map((x, j) => j === i ? { ...x, title: e.target.value } : x))} />
+                    </Fl>
+                  </div>
+                  <div style={{ ...G2, marginBottom: 10 }}>
+                    <Fl l="Tour / Activity">
+                      <input style={QS.inp} placeholder="e.g. Airport Pick-up" value={d.tour || ""}
+                        onChange={e => setItin(p => p.map((x, j) => j === i ? { ...x, tour: e.target.value } : x))} />
+                    </Fl>
+                    <Fl l={i === 0 ? "Transfer Type (Cab — synced with Cab Details below)" : "Transfer Type"}>
+                      <input style={QS.inp} placeholder="e.g. PVT / NA" value={d.transfer || ""}
+                        onChange={e => i === 0
+                          ? setSharedCab(e.target.value)
+                          : setItin(p => p.map((x, j) => j === i ? { ...x, transfer: e.target.value } : x))} />
+                    </Fl>
+                  </div>
+                  <Fl l="Pick-up Time">
+                    <input style={QS.inp} placeholder="e.g. 1:30 AM" value={d.pickup_time || ""}
+                      onChange={e => setItin(p => p.map((x, j) => j === i ? { ...x, pickup_time: e.target.value } : x))} />
+                  </Fl>
+                  <div style={{ marginTop: 10 }}>
+                    <Fl l="Itinerary Details">
+                      <RTE
+                        value={toRichText(d.itinerary || "")}
+                        onChange={v => setItin(p => p.map((x, j) => j === i ? { ...x, itinerary: v } : x))}
+                        placeholder="Describe what happens this day…"
+                      />
+                    </Fl>
+                  </div>
+                </div>
+              ))}
+              <button
+                onClick={() => setItin(p => [...p, { ...DEF_ITIN(), transfer: p[0]?.transfer || "" }])}
+                style={QS.addBtnBottom}
+              >+ Add Another Day</button>
+            </Sec>
+
             {/* ── Hotels ── */}
             <Sec
               label="🏨  Hotel Details"
-              right={
-                <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                  <span style={{ fontSize: 12, opacity: 0.85, fontWeight: 600 }}>Customer side</span>
-                  {hotels.length < 3 && (
-                    <button onClick={() => addRow(setHotels, DEF_HOTEL)}
-                      style={QS.addRowBtn}>+ Add Hotel</button>
-                  )}
-                </div>
-              }
+              right={<span style={{ fontSize: 12, opacity: 0.85, fontWeight: 600 }}>Customer side</span>}
             >
               {hotels.map((h, i) => (
                 <div key={i} style={QS.rowBox}>
@@ -264,9 +530,13 @@ export default function QuotationBuilder({
                       <input style={QS.inp} placeholder="Hotel name, city" value={h.name} onChange={e => updArr(setHotels, i, "name", e.target.value)} />
                     </Fl>
                     <Fl l="Room Category">
-                      <select style={QS.inp} value={h.roomCat} onChange={e => updArr(setHotels, i, "roomCat", e.target.value)}>
-                        {ROOM_CATS.map(r => <option key={r}>{r}</option>)}
-                      </select>
+                      <RoomCatSelect
+                        value={h.roomCat}
+                        extra={extraRoomCats}
+                        onChange={v => updArr(setHotels, i, "roomCat", v)}
+                        onAdd={addRoomCategory}
+                        onDelete={removeRoomCategory}
+                      />
                     </Fl>
                     <Fl l="Price / Night (₹)">
                       <input type="number" style={QS.inp} value={h.price} onChange={e => updArr(setHotels, i, "price", e.target.value)} />
@@ -291,66 +561,33 @@ export default function QuotationBuilder({
                   Combined Hotel Total: {inr(hotelTotal)}
                 </div>
               )}
-            </Sec>
-
-            {/* ── Flights ── */}
-            <Sec
-              label="✈️  Flight Details"
-              right={
-                flights.length < 3 && (
-                  <button onClick={() => addRow(setFlights, DEF_FLIGHT)} style={QS.addRowBtn}>+ Add Flight</button>
-                )
-              }
-            >
-              {flights.map((f, i) => (
-                <div key={i} style={QS.rowBox}>
-                  {flights.length > 1 && <button style={QS.remBtn} onClick={() => remRow(setFlights, i)}>✕</button>}
-                  {flights.length > 1 && <div style={QS.rowLabel}>Flight {i + 1}</div>}
-                  <div style={G4}>
-                    <Fl l="From">
-                      <input style={QS.inp} placeholder="Delhi" value={f.from} onChange={e => updArr(setFlights, i, "from", e.target.value)} />
-                    </Fl>
-                    <Fl l="To">
-                      <input style={QS.inp} placeholder="Srinagar" value={f.to} onChange={e => updArr(setFlights, i, "to", e.target.value)} />
-                    </Fl>
-                    <Fl l="Pax">
-                      <input type="number" style={QS.inp} value={f.pax} onChange={e => updArr(setFlights, i, "pax", e.target.value)} />
-                    </Fl>
-                    <Fl l="Total Fare (₹)">
-                      <input type="number" style={QS.inp} value={f.price} onChange={e => updArr(setFlights, i, "price", e.target.value)} />
-                    </Fl>
-                  </div>
-                </div>
-              ))}
-              {flights.length > 1 && (
-                <div style={{ textAlign: "right", fontSize: 13, fontWeight: 700, color: "#2563EB", marginTop: 4 }}>
-                  Combined Flight Total: {inr(flightTotal)}
-                </div>
+              {hotels.length < 3 && (
+                <button onClick={() => addRow(setHotels, DEF_HOTEL)} style={QS.addBtnBottom}>+ Add Hotel</button>
               )}
             </Sec>
 
-            {/* ── Transfers ── */}
-            <Sec
-              label="🚐  Transfer"
-              right={
-                transfers.length < 3 && (
-                  <button onClick={() => addRow(setTransfers, DEF_TRANSFER)} style={QS.addRowBtn}>+ Add Transfer</button>
-                )
-              }
-            >
+            {/* ── Transfers (Cab) ── */}
+            <Sec label="🚐  Transfer">
               {transfers.map((t, i) => (
                 <div key={i} style={QS.rowBox}>
                   {transfers.length > 1 && <button style={QS.remBtn} onClick={() => remRow(setTransfers, i)}>✕</button>}
                   {transfers.length > 1 && <div style={QS.rowLabel}>Transfer {i + 1}</div>}
-                  <div style={G3}>
-                    <Fl l="Cab Type">
-                      <input style={QS.inp} placeholder="Innova Crysta" value={t.cab} onChange={e => updArr(setTransfers, i, "cab", e.target.value)} />
+                  <div style={G4}>
+                    <Fl l={i === 0 ? "Cab Type (synced with Day 1 Itinerary)" : "Cab Type"}>
+                      <input style={QS.inp} placeholder="Innova Crysta" value={t.cab}
+                        onChange={e => i === 0
+                          ? setSharedCab(e.target.value)
+                          : updArr(setTransfers, i, "cab", e.target.value)} />
                     </Fl>
                     <Fl l="Price / Day (₹)">
                       <input type="number" style={QS.inp} value={t.perDay} onChange={e => updArr(setTransfers, i, "perDay", e.target.value)} />
                     </Fl>
                     <Fl l="Days">
                       <input type="number" style={QS.inp} value={t.days} onChange={e => updArr(setTransfers, i, "days", e.target.value)} />
+                    </Fl>
+                    <Fl l="Sub Total">
+                      <input style={{ ...QS.inp, color: "#B45309", fontWeight: 700 }}
+                        value={inr((+t.perDay || 0) * (+t.days || 0))} disabled />
                     </Fl>
                   </div>
                 </div>
@@ -360,55 +597,47 @@ export default function QuotationBuilder({
                   Combined Transfer Total: {inr(transferTotal)}
                 </div>
               )}
+              {transfers.length < 3 && (
+                <button onClick={() => addRow(setTransfers, DEF_TRANSFER)} style={QS.addBtnBottom}>+ Add Transfer</button>
+              )}
             </Sec>
 
-            {/* ── Itinerary ── */}
-            <Sec
-              label="📅  Day-wise Itinerary"
-              right={
-                <button onClick={() => setItin(p => [...p, DEF_ITIN()])}
-                  style={QS.addRowBtn}>+ Add Another Day</button>
-              }
-            >
-              {itin.map((d, i) => (
-                <div key={d._k} style={{ ...QS.rowBox, padding: "12px 40px 12px 12px" }}>
-                  {itin.length > 1 && <button style={QS.remBtn} onClick={() => setItin(p => p.filter((_, j) => j !== i))}>✕</button>}
-                  <div style={{ fontSize: 11, fontWeight: 800, color: "#2563EB", textTransform: "uppercase", letterSpacing: ".05em", marginBottom: 8 }}>📅 Day {i + 1}</div>
-                  <div style={{ ...G2, marginBottom: 10 }}>
-                    <Fl l="Date">
-                      <input type="date" style={{ ...QS.inp, colorScheme: "light" }} value={d.date || ""}
-                        onChange={e => setItin(p => p.map((x, j) => j === i ? { ...x, date: e.target.value } : x))} />
+            {/* ── Flights ── */}
+            <Sec label="✈️  Flight Details">
+              {flights.map((f, i) => (
+                <div key={i} style={QS.rowBox}>
+                  {flights.length > 1 && <button style={QS.remBtn} onClick={() => remRow(setFlights, i)}>✕</button>}
+                  {flights.length > 1 && <div style={QS.rowLabel}>Flight {i + 1}</div>}
+                  <div style={{ ...G3, marginBottom: 10 }}>
+                    <Fl l="From">
+                      <input style={QS.inp} placeholder="Delhi" value={f.from} onChange={e => updArr(setFlights, i, "from", e.target.value)} />
                     </Fl>
-                    <Fl l="Itinerary Title">
-                      <input style={QS.inp} placeholder="e.g. Arrival & City Tour" value={d.title}
-                        onChange={e => setItin(p => p.map((x, j) => j === i ? { ...x, title: e.target.value } : x))} />
+                    <Fl l="To">
+                      <input style={QS.inp} placeholder="Srinagar" value={f.to} onChange={e => updArr(setFlights, i, "to", e.target.value)} />
+                    </Fl>
+                    <Fl l="Pax">
+                      <input type="number" style={QS.inp} value={f.pax} onChange={e => updArr(setFlights, i, "pax", e.target.value)} />
                     </Fl>
                   </div>
-                  <div style={{ ...G2, marginBottom: 10 }}>
-                    <Fl l="Tour / Activity">
-                      <input style={QS.inp} placeholder="e.g. Airport Pick-up" value={d.tour || ""}
-                        onChange={e => setItin(p => p.map((x, j) => j === i ? { ...x, tour: e.target.value } : x))} />
+                  <div style={G2}>
+                    <Fl l="Fare / Pax (₹)">
+                      <input type="number" style={QS.inp} value={f.price} onChange={e => updArr(setFlights, i, "price", e.target.value)} />
                     </Fl>
-                    <Fl l="Transfer Type">
-                      <input style={QS.inp} placeholder="e.g. PVT / NA" value={d.transfer || ""}
-                        onChange={e => setItin(p => p.map((x, j) => j === i ? { ...x, transfer: e.target.value } : x))} />
-                    </Fl>
-                  </div>
-                  <Fl l="Pick-up Time">
-                    <input style={QS.inp} placeholder="e.g. 1:30 AM" value={d.pickup_time || ""}
-                      onChange={e => setItin(p => p.map((x, j) => j === i ? { ...x, pickup_time: e.target.value } : x))} />
-                  </Fl>
-                  <div style={{ marginTop: 10 }}>
-                    <Fl l="Itinerary Details">
-                      <RTE
-                        value={toRichText(d.itinerary || "")}
-                        onChange={v => setItin(p => p.map((x, j) => j === i ? { ...x, itinerary: v } : x))}
-                        placeholder="Describe what happens this day…"
-                      />
+                    <Fl l="Sub Total">
+                      <input style={{ ...QS.inp, color: "#2563EB", fontWeight: 700 }}
+                        value={inr((+f.price || 0) * (+f.pax || 0))} disabled />
                     </Fl>
                   </div>
                 </div>
               ))}
+              {flights.length > 1 && (
+                <div style={{ textAlign: "right", fontSize: 13, fontWeight: 700, color: "#2563EB", marginTop: 4 }}>
+                  Combined Flight Total: {inr(flightTotal)}
+                </div>
+              )}
+              {flights.length < 3 && (
+                <button onClick={() => addRow(setFlights, DEF_FLIGHT)} style={QS.addBtnBottom}>+ Add Flight</button>
+              )}
             </Sec>
 
             {/* ── Inclusions / Exclusions / Notes ── */}
@@ -431,6 +660,36 @@ export default function QuotationBuilder({
               </div>
               <Fl l="Special Notes (shown on quote PDF)">
                 <textarea style={{ ...QS.inp, minHeight: 54, resize: "vertical" }} value={form.notes} onChange={e => upd("notes", e.target.value)} />
+              </Fl>
+            </Sec>
+
+            {/* ── Terms & Conditions / Booking Policy / Cancellation Policy ── */}
+            <Sec
+              label="📜  Terms, Booking & Cancellation Policy"
+              right={<span style={{ fontSize: 12, opacity: 0.85, fontWeight: 600 }}>Customer side · shown on quote PDF</span>}
+            >
+              <Fl l="Terms & Conditions">
+                <RTE
+                  value={toRichText(form.termsConditions || "")}
+                  onChange={v => upd("termsConditions", v)}
+                  placeholder="Terms & conditions…"
+                />
+              </Fl>
+              <div style={{ height: 12 }} />
+              <Fl l="Booking Policy">
+                <RTE
+                  value={toRichText(form.bookingPolicy || "")}
+                  onChange={v => upd("bookingPolicy", v)}
+                  placeholder="Booking / payment policy…"
+                />
+              </Fl>
+              <div style={{ height: 12 }} />
+              <Fl l="Cancellation Policy">
+                <RTE
+                  value={toRichText(form.cancellationPolicy || "")}
+                  onChange={v => upd("cancellationPolicy", v)}
+                  placeholder="Cancellation policy…"
+                />
               </Fl>
             </Sec>
 
@@ -540,6 +799,58 @@ function Sec({ label, children, slate, right }) {
 function Fl({ l, children }) {
   return <div style={{ display: "flex", flexDirection: "column", gap: 4 }}><label style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".05em", color: "#6B7A99" }}>{l}</label>{children}</div>;
 }
+const CUSTOM_OPT = "__custom__";
+function RoomCatSelect({ value, extra = [], onChange, onAdd, onDelete }) {
+  const [editing, setEditing] = useState(false);
+  const allKnown = [...ROOM_CATS, ...extra];
+  if (editing) {
+    const trimmed = (value || "").trim();
+    const alreadyKnown = allKnown.some(c => c.toLowerCase() === trimmed.toLowerCase());
+    return (
+      <div style={{ display: "flex", gap: 6 }}>
+        <input
+          style={QS.inp} autoFocus placeholder="Type new category…"
+          value={value === CUSTOM_OPT ? "" : value}
+          onChange={e => onChange(e.target.value)}
+        />
+        <button
+          type="button" title="Add this category" disabled={!trimmed}
+          onClick={() => { if (!trimmed) return; if (!alreadyKnown) onAdd?.(trimmed); setEditing(false); }}
+          style={{ background: "#2563EB", color: "#fff", border: "none", borderRadius: 9, padding: "8px 13px", fontSize: 13, fontWeight: 700, cursor: trimmed ? "pointer" : "not-allowed", opacity: trimmed ? 1 : 0.5, flexShrink: 0, fontFamily: "inherit", whiteSpace: "nowrap" }}
+        >+ Add</button>
+        <button type="button" title="Cancel" onClick={() => { setEditing(false); onChange(ROOM_CATS[0]); }}
+          style={{ ...QS.remBtn, position: "static", flexShrink: 0 }}>✕</button>
+      </div>
+    );
+  }
+  // if the current value is a custom category (e.g. set previously, or fetched from BRR)
+  // that isn't one of the known categories, surface it as a selectable option instead of forcing edit mode
+  const options = (!value || allKnown.includes(value)) ? allKnown : [value, ...allKnown];
+  const isCustomValue = value && extra.includes(value);
+  return (
+    <div style={{ display: "flex", gap: 6 }}>
+      <select style={QS.inp} value={value}
+        onChange={e => {
+          if (e.target.value === CUSTOM_OPT) { setEditing(true); onChange(""); }
+          else onChange(e.target.value);
+        }}>
+        {options.map(r => <option key={r} value={r}>{r}</option>)}
+        <option value={CUSTOM_OPT}>+ Add New Category…</option>
+      </select>
+      {isCustomValue && (
+        <button
+          type="button" title="Delete this category"
+          onClick={() => {
+            if (!window.confirm(`Delete the custom room category "${value}"? This removes it for everyone.`)) return;
+            onDelete?.(value);
+            onChange(ROOM_CATS[0]);
+          }}
+          style={{ ...QS.remBtn, position: "static", flexShrink: 0 }}
+        >✕</button>
+      )}
+    </div>
+  );
+}
 function CR({ l, v, vc }) {
   return <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, padding: "6px 2px", borderBottom: "1px dashed #E4E9F2" }}><span style={{ color: "#36415A" }}>{l}</span><b style={{ color: vc || "#0F1B33" }}>{v}</b></div>;
 }
@@ -582,6 +893,7 @@ const QS = {
   rowLabel:  { fontSize: 11, fontWeight: 800, color: "#6B7A99", textTransform: "uppercase", letterSpacing: ".05em", marginBottom: 8 },
   remBtn:    { position: "absolute", top: 8, right: 8, background: "#FEE2E2", border: "none", color: "#BE123C", borderRadius: 6, padding: "2px 8px", fontSize: 11, fontWeight: 700, cursor: "pointer" },
   addRowBtn: { background: "rgba(255,255,255,.18)", border: "1px solid rgba(255,255,255,.3)", color: "#fff", borderRadius: 8, padding: "4px 11px", fontSize: 12, fontWeight: 700, cursor: "pointer" },
+  addBtnBottom: { width: "100%", background: "#EFF4FF", border: "1.5px dashed #2563EB", color: "#2563EB", borderRadius: 9, padding: "9px 12px", fontSize: 13, fontWeight: 700, cursor: "pointer", marginTop: 6, fontFamily: "inherit" },
   rteBtn:    { background: "#fff", border: "1px solid #D1D5DB", borderRadius: 4, padding: "3px 8px", fontSize: 11.5, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", color: "#374151" },
 };
 

@@ -17,21 +17,45 @@ function calcGrand(inv) {
 }
 function calcPaid(inv)   { return (inv.payments || []).reduce((s, p) => s + (+p.amount || 0), 0); }
 function calcDue(inv)    { return Math.max(0, calcGrand(inv) - calcPaid(inv)); }
-function getStatus(inv) {
-  const paid = calcPaid(inv);
+function getStatus(paid, due) {
   if (paid === 0) return "Unpaid";
-  if (calcDue(inv) === 0) return "Paid";
+  if (due === 0) return "Paid";
   return "Partially Paid";
 }
 const inr = n => "₹" + Math.round(n || 0).toLocaleString("en-IN");
-function fmtDate(v) {
-  if (!v) return "—";
+function parseAnyDate(v) {
+  if (!v) return null;
   try {
     const d = /^\d{4}-\d{2}-\d{2}$/.test(v) ? new Date(v + "T00:00:00") : new Date(v);
-    if (isNaN(d)) return v;
-    return d.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
-  } catch { return v; }
+    return isNaN(d) ? null : d;
+  } catch { return null; }
 }
+function fmtDate(v) {
+  const d = parseAnyDate(v);
+  return d ? d.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" }) : (v || "—");
+}
+/* "YYYY-MM" key for grouping payments/invoices by calendar month */
+function monthKey(v) {
+  const d = parseAnyDate(v);
+  return d ? `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}` : "";
+}
+function monthLabel(key) {
+  if (!key) return "";
+  const [y, m] = key.split("-").map(Number);
+  return new Date(y, m - 1, 1).toLocaleDateString("en-IN", { month: "short", year: "numeric" });
+}
+/* The calendar month an invoice currently "belongs" to — its latest payment's
+   month if it has any, else the month it was raised in. Used only to order
+   sibling invoices (oldest → newest) within the same quotation, not to decide
+   whether to fork a new one (see PaymentModal). */
+function invoiceMonth(inv) {
+  const payments = inv.payments || [];
+  if (payments.length) return monthKey(payments[payments.length - 1].date) || monthKey(inv.invoiceDate);
+  return monthKey(inv.invoiceDate);
+}
+/* Invoices sharing a quotation are "siblings" — one per calendar billing month.
+   Standalone invoices (no quotationId) form their own single-invoice group. */
+const groupKey = inv => inv.quotationId ? `q:${inv.quotationId}` : `i:${inv.id || inv._id}`;
 const todayISO = () => new Date().toISOString().slice(0, 10);
 
 const STATUS_STYLE = {
@@ -43,29 +67,61 @@ const STATUS_STYLE = {
 const PAYMENT_MODES = ["Online", "Bank Transfer", "Cash", "UPI", "Cheque", "NEFT / RTGS"];
 
 /* ─── Payment Modal ────────────────────────────────────────────────────────── */
-function PaymentModal({ invoice, onClose, onUpdated }) {
+/* `siblings` = every invoice raised for the same quotation (one per billing
+   month, including `invoice` itself) — used to total up the real package due
+   across the whole booking, not just this one month's invoice. */
+function PaymentModal({ invoice, siblings, onClose, onUpdated, onCreated }) {
   const [date,   setDate]   = useState(todayISO());
   const [amount, setAmount] = useState("");
   const [mode,   setMode]   = useState("Online");
   const [note,   setNote]   = useState("");
   const [saving, setSaving] = useState(false);
 
-  const payments  = invoice.payments || [];
-  const total     = calcGrand(invoice);
-  const paid      = calcPaid(invoice);
-  const due       = calcDue(invoice);
+  const payments     = invoice.payments || [];
+  const total        = calcGrand(invoice);                                  // package price (same across siblings)
+  const groupPaid    = siblings.reduce((s, i) => s + calcPaid(i), 0);       // paid across ALL of this quotation's monthly invoices
+  const due          = Math.max(0, total - groupPaid);                      // quotation-level due
+  const others       = siblings.filter(s => (s.id || s._id) !== (invoice.id || invoice._id));
+
+  const lastPaymentMonth = payments.length ? monthKey(payments[payments.length - 1].date) : "";
+  const payMonth         = monthKey(date);
+  // Only fork once this invoice has already been used for an earlier month —
+  // the very first payment always lands on the invoice as-is.
+  const isNewMonth       = !!lastPaymentMonth && !!payMonth && payMonth !== lastPaymentMonth;
 
   async function addPayment() {
     if (!amount || +amount <= 0) return;
     setSaving(true);
     try {
-      const newPayments = [...payments, { date, amount: +amount, mode, note }];
-      const res = await fetch(`/api/dashboard/invoices/${invoice.id || invoice._id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ payments: newPayments }),
-      });
-      if (res.ok) { onUpdated(await res.json()); onClose(); }
+      if (isNewMonth) {
+        // New calendar month, balance still pending → raise a fresh invoice
+        // (new invoice number, same quotation/client/items) carrying this payment.
+        const clone = { ...invoice };
+        delete clone._id; delete clone.id; delete clone.createdAt; delete clone.updatedAt;
+        const body = {
+          ...clone,
+          invoiceNo: "", // server auto-assigns the next TWO-INV-XXXX
+          invoiceDate: (parseAnyDate(date) || new Date()).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" }),
+          payments: [{ date, amount: +amount, mode, note }],
+        };
+        const res = await fetch("/api/dashboard/invoices", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+        if (res.ok) {
+          onCreated(await res.json());
+          setAmount(""); setNote("");
+        }
+      } else {
+        const newPayments = [...payments, { date, amount: +amount, mode, note }];
+        const res = await fetch(`/api/dashboard/invoices/${invoice.id || invoice._id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ payments: newPayments }),
+        });
+        if (res.ok) { onUpdated(await res.json()); onClose(); }
+      }
     } finally { setSaving(false); }
   }
 
@@ -79,16 +135,31 @@ function PaymentModal({ invoice, onClose, onUpdated }) {
               Payments · {invoice.invoiceNo}
             </div>
             <div style={{ fontSize: 12, color: "#BFD3FE", marginTop: 3 }}>
-              {invoice.clientName} · Total {inr(total)} · Paid {inr(paid)} · Due {inr(due)}
+              {invoice.clientName} · Package {inr(total)} · Paid {inr(groupPaid)} · Due {inr(due)}
             </div>
           </div>
           <button style={P.x} onClick={onClose}>✕</button>
         </div>
 
         <div style={{ padding: "18px 20px", maxHeight: "64vh", overflowY: "auto" }}>
-          {/* Existing payments */}
+          {/* Other monthly invoices for this same booking */}
+          {others.length > 0 && (
+            <div style={{ background: "#F8FAFD", border: "1px solid #E4E9F2", borderRadius: 10, padding: "10px 12px", marginBottom: 12 }}>
+              <div style={{ fontSize: 11, fontWeight: 800, color: "#6B7A99", textTransform: "uppercase", letterSpacing: ".04em", marginBottom: 6 }}>
+                Other invoices for this booking
+              </div>
+              {others.map(o => (
+                <div key={o.id || o._id} style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#36415A", padding: "3px 0" }}>
+                  <span>{o.invoiceNo} <span style={{ color: "#94A3B8" }}>· {monthLabel(invoiceMonth(o))}</span></span>
+                  <span style={{ fontWeight: 700 }}>{inr(calcPaid(o))} paid</span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Existing payments on THIS invoice */}
           {payments.length === 0 ? (
-            <p style={{ color: "#94A3B8", fontSize: 13, textAlign: "center", padding: "12px 0" }}>No payments recorded yet</p>
+            <p style={{ color: "#94A3B8", fontSize: 13, textAlign: "center", padding: "12px 0" }}>No payments recorded yet on this invoice</p>
           ) : payments.map((p, i) => (
             <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 14px", background: "#F8FAFD", border: "1px solid #E4E9F2", borderRadius: 10, marginBottom: 8 }}>
               <div>
@@ -116,6 +187,12 @@ function PaymentModal({ invoice, onClose, onUpdated }) {
                 <Fl l="Note (optional)">
                   <input style={P.inp} value={note} onChange={e => setNote(e.target.value)} placeholder="NEFT ref, cheque no…" />
                 </Fl>
+
+                {isNewMonth && (
+                  <div style={{ marginTop: 12, background: "#FFFBEB", border: "1px solid #FDE68A", borderRadius: 9, padding: "9px 11px", fontSize: 12, color: "#92400E", lineHeight: 1.5 }}>
+                    📅 This date falls in <b>{monthLabel(payMonth)}</b> — a separate invoice with a <b>new invoice number</b> will be raised for this month's payment(s), since {invoice.invoiceNo} already covers {monthLabel(lastPaymentMonth)}.
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -127,8 +204,12 @@ function PaymentModal({ invoice, onClose, onUpdated }) {
         <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", padding: "14px 20px", borderTop: "1px solid #E4E9F2", background: "#fff", borderRadius: "0 0 16px 16px" }}>
           <button style={P.cancelBtn} onClick={onClose}>Close</button>
           {due > 0 && (
-            <button style={{ ...P.cancelBtn, background: "#2563EB", color: "#fff", border: "none", opacity: saving ? 0.7 : 1 }} onClick={addPayment} disabled={saving || !amount || +amount <= 0}>
-              {saving ? "Saving…" : "Save Payment"}
+            <button
+              style={{ ...P.cancelBtn, background: isNewMonth ? "#B45309" : "#2563EB", color: "#fff", border: "none", opacity: saving ? 0.7 : 1 }}
+              onClick={addPayment}
+              disabled={saving || !amount || +amount <= 0}
+            >
+              {saving ? "Saving…" : isNewMonth ? `🆕 Create ${monthLabel(payMonth)} Invoice & Save` : "Save Payment"}
             </button>
           )}
         </div>
@@ -204,6 +285,35 @@ export default function InvoicesPage() {
     );
   }, [invoices, search]);
 
+  /* Invoices raised against the same quotation are siblings — one per billing
+     month. "Amount Due" / "Send Final Invoice" are tracked at the quotation
+     level: package total minus payments across ALL of that quotation's
+     monthly invoices, not just this one row's. */
+  const siblingsByKey = useMemo(() => {
+    const m = {};
+    for (const inv of invoices) {
+      const k = groupKey(inv);
+      (m[k] = m[k] || []).push(inv);
+    }
+    return m;
+  }, [invoices]);
+
+  const groupAgg = useMemo(() => {
+    const out = {};
+    for (const [k, group] of Object.entries(siblingsByKey)) {
+      const packageTotal = calcGrand(group[0]); // identical across siblings (cloned items)
+      const paid = group.reduce((s, inv) => s + calcPaid(inv), 0);
+      const due  = Math.max(0, packageTotal - paid);
+      const latest = [...group].sort((a, b) => {
+        const ma = invoiceMonth(a), mb = invoiceMonth(b);
+        if (ma !== mb) return ma < mb ? 1 : -1;
+        return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+      })[0];
+      out[k] = { packageTotal, paid, due, latestKey: latest ? (latest.id || latest._id) : null };
+    }
+    return out;
+  }, [siblingsByKey]);
+
   return (
     <DashboardLayout active="Invoice">
       <Head><title>Invoices — Tourwatchout</title></Head>
@@ -211,7 +321,7 @@ export default function InvoicesPage() {
 
         {/* Banner */}
         <div style={{ background: "#EFF4FF", border: "1px solid #BFD3FE", borderRadius: 10, padding: "10px 16px", marginBottom: 16, fontSize: 13, color: "#1D4ED8", fontWeight: 600, lineHeight: 1.5 }}>
-          ⚡ <b>Part payments, handled:</b> record any number of parts with date, amount and mode. Balance due updates itself. When due hits zero the Final Invoice unlocks.
+          ⚡ <b>Part payments, handled:</b> parts recorded within the same month stay on one invoice. Once a new calendar month starts with balance still pending, the next part raises a fresh invoice number for that booking. Amount Due tracks the whole booking — Final Invoice unlocks once it hits zero.
         </div>
 
         {/* Toolbar */}
@@ -245,12 +355,17 @@ export default function InvoicesPage() {
                   <tr><td colSpan={11} style={S.empty}>No invoices yet — create one from the Quotations page or click "+ New Invoice"</td></tr>
                 )}
                 {filtered.map((inv, idx) => {
-                  const total  = calcGrand(inv);
-                  const paid   = calcPaid(inv);
-                  const due    = calcDue(inv);
-                  const status = getStatus(inv);
-                  const ss     = STATUS_STYLE[status];
-                  const parts  = (inv.payments || []).length;
+                  const k          = groupKey(inv);
+                  const siblings   = siblingsByKey[k] || [inv];
+                  const agg        = groupAgg[k] || { due: calcDue(inv), paid: calcPaid(inv), latestKey: inv.id || inv._id };
+                  const total      = calcGrand(inv);
+                  const paid       = calcPaid(inv);          // paid on THIS invoice only (shown on the Payments button)
+                  const due        = agg.due;                 // due across the whole booking
+                  const status     = getStatus(agg.paid, due); // status reflects the whole booking
+                  const ss         = STATUS_STYLE[status];
+                  const parts      = (inv.payments || []).length;
+                  const isLatest   = agg.latestKey === (inv.id || inv._id);
+                  const monthCount = siblings.length;
 
                   return (
                     <tr key={inv.id || inv._id} style={{ borderBottom: "1px solid #F1F5F9" }}>
@@ -279,6 +394,11 @@ export default function InvoicesPage() {
                           </button>
                         ) : (
                           <span style={{ color: "#CBD5E1", fontSize: 12 }}>—</span>
+                        )}
+                        {monthCount > 1 && (
+                          <div style={{ fontSize: 10, color: "#94A3B8", marginTop: 2 }}>
+                            {monthLabel(invoiceMonth(inv))} · {monthCount} monthly invoices
+                          </div>
                         )}
                       </td>
 
@@ -311,12 +431,14 @@ export default function InvoicesPage() {
                         </span>
                       </td>
 
-                      {/* Final Invoice */}
+                      {/* Final Invoice — only on the latest monthly invoice of a booking */}
                       <td style={S.td}>
-                        {due === 0 && total > 0 ? (
+                        {due === 0 && total > 0 && isLatest ? (
                           <button style={S.finalBtn} onClick={() => setBuilder({ invoice: inv, isNew: false, openPreview: true })}>
                             🧾 Send Final Invoice
                           </button>
+                        ) : due === 0 && total > 0 ? (
+                          <span style={{ fontSize: 11, color: "#94A3B8" }}>See latest invoice</span>
                         ) : (
                           <span style={{ fontSize: 11, color: "#CBD5E1" }}>Locked till due is ₹0</span>
                         )}
@@ -365,10 +487,15 @@ export default function InvoicesPage() {
       {payModal && (
         <PaymentModal
           invoice={payModal}
+          siblings={siblingsByKey[groupKey(payModal)] || [payModal]}
           onClose={() => setPayModal(null)}
           onUpdated={updated => {
             setInvoices(prev => prev.map(i => (i.id === updated.id || i._id === updated._id) ? { ...i, ...updated } : i));
             setPayModal(null);
+          }}
+          onCreated={created => {
+            setInvoices(prev => [created, ...prev]);
+            setPayModal(created); // keep the modal open, now scoped to the freshly-raised monthly invoice
           }}
         />
       )}

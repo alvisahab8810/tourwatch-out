@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   MdReceipt, MdPerson, MdSave, MdVisibility, MdAdd,
   MdDelete, MdClose, MdDownload, MdPrint, MdEmail, MdSend,
@@ -23,8 +23,25 @@ function isoToDisplay(iso) {
 function todayStr() {
   return new Date().toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
 }
+/* "YYYY-MM" for an invoice-date display string — used to detect a month change
+   so the auto-generated invoice number can be refreshed. */
+function monthOf(displayDate) {
+  const iso = parseToISO(displayDate);
+  return iso ? iso.slice(0, 7) : "";
+}
 const uid = () => Date.now() + Math.random();
 const EMPTY_ITEM = () => ({ id: uid(), particulars: "", hsn: "9985", qty: "1", rate: "", amount: "" });
+
+/* No. of pax — taken from the quotation's flight headcount first (most likely to be
+   up to date), falling back to the lead's BRR adults+children, else blank/1 */
+function derivePax(lead, quotation) {
+  const fromQuote = quotation?.flights?.[0]?.pax;
+  if (fromQuote) return String(fromQuote);
+  const brr = lead?.brr || {};
+  const fromBrr = (brr.adults || 0) + (brr.children || 0);
+  if (fromBrr) return String(fromBrr);
+  return "1";
+}
 
 /* Build pre-fill from quotation + lead */
 function buildDefault(prefill) {
@@ -32,9 +49,12 @@ function buildDefault(prefill) {
   const q = quotation ? calcQ(quotation) : null;
   const isIntl = quotation?.type === "International";
   const gstHalf = quotation?.gstPct ? String(quotation.gstPct / 2) : "";
+  const pax = derivePax(lead, quotation);
 
+  // Rate is intentionally left blank (not auto-filled) — Amount is the fixed package
+  // price and does not get recalculated off Qty/Rate (see updateItem below).
   const items = q
-    ? [{ id: uid(), particulars: `${lead?.destination || quotation?.destination || "Tour"} Package`, hsn: "9985", qty: "1", rate: String(Math.round(q.base)), amount: String(Math.round(q.base)) }]
+    ? [{ id: uid(), particulars: `${lead?.destination || quotation?.destination || "Tour"} Package`, hsn: "9985", qty: pax, rate: "", amount: String(Math.round(q.base)) }]
     : [EMPTY_ITEM()];
 
   return {
@@ -72,9 +92,15 @@ export default function InvoiceBuilder({ prefill, invoiceData, isNew, onClose, o
   const [emailDone,      setEmailDone]     = useState(false);
   const [emailError,     setEmailError]    = useState("");
 
-  /* Auto-generate invoice number */
+  /* Auto-generate invoice number — and re-generate it whenever the user changes
+     the Invoice Date to a different calendar month, so the number always
+     reflects the latest available sequence for that month's invoice. */
+  const invNoMonthRef = useRef(monthOf(form.invoiceDate));
   useEffect(() => {
     if (!isNew) return;
+    const month = monthOf(form.invoiceDate);
+    if (month === invNoMonthRef.current && form.invoiceNo) return; // unchanged month, already numbered
+    invNoMonthRef.current = month;
     fetch("/api/dashboard/invoices")
       .then(r => r.json())
       .then(all => {
@@ -82,24 +108,17 @@ export default function InvoiceBuilder({ prefill, invoiceData, isNew, onClose, o
         setForm(f => ({ ...f, invoiceNo: `TWO-INV-${String(count + 1).padStart(4, "0")}` }));
       })
       .catch(() => {});
-  }, []);
+  }, [isNew, form.invoiceDate]);
 
   const set = (k, v) => { setForm(f => ({ ...f, [k]: v })); setSaved(false); };
 
-  /* Items */
+  /* Items — Qty, Rate and Amount are independent, manually-controlled fields.
+     Amount is the fixed package price and is never recalculated off Qty/Rate, so
+     changing the pax count (Qty) never bumps the price. */
   function updateItem(id, key, val) {
     setForm(f => ({
       ...f,
-      items: f.items.map(item => {
-        if (item.id !== id) return item;
-        const next = { ...item, [key]: val };
-        if (key === "qty" || key === "rate") {
-          const q = parseFloat(key === "qty" ? val : next.qty) || 0;
-          const r = parseFloat(key === "rate" ? val : next.rate) || 0;
-          if (q && r) next.amount = String((q * r).toFixed(2));
-        }
-        return next;
-      }),
+      items: f.items.map(item => item.id === id ? { ...item, [key]: val } : item),
     }));
     setSaved(false);
   }
@@ -306,7 +325,7 @@ export default function InvoiceBuilder({ prefill, invoiceData, isNew, onClose, o
                   <div style={{ flex: 3 }}><input value={item.particulars} onChange={e => updateItem(item.id, "particulars", e.target.value)} placeholder="Tour Package" style={s.itmInp} /></div>
                   <div style={{ flex: 1 }}><input value={item.hsn} onChange={e => updateItem(item.id, "hsn", e.target.value)} placeholder="9985" style={{ ...s.itmInp, textAlign: "center" }} /></div>
                   <div style={{ flex: 1 }}><input type="number" value={item.qty} onChange={e => updateItem(item.id, "qty", e.target.value)} placeholder="1" style={{ ...s.itmInp, textAlign: "center" }} /></div>
-                  <div style={{ flex: 1.5 }}><input type="number" value={item.rate} onChange={e => updateItem(item.id, "rate", e.target.value)} placeholder="0" style={{ ...s.itmInp, textAlign: "right" }} /></div>
+                  <div style={{ flex: 1.5 }}><input type="number" value={item.rate} onChange={e => updateItem(item.id, "rate", e.target.value)} placeholder="-" style={{ ...s.itmInp, textAlign: "right" }} /></div>
                   <div style={{ flex: 1.5 }}><input type="number" value={item.amount} onChange={e => updateItem(item.id, "amount", e.target.value)} placeholder="0.00" style={{ ...s.itmInp, textAlign: "right", fontWeight: 700 }} /></div>
                   <div style={{ width: 32 }}>
                     {form.items.length > 1 && (

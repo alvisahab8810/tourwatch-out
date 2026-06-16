@@ -126,82 +126,14 @@ export default function QuotationPreview({ data, id }) {
         </div>
       </div>
 
-      {/* ══════════ HOTEL DETAILS ══════════ */}
-      {hotels.filter(h => h.name).length > 0 && (
-        <RedSection title="Hotel Details">
-          {hotels.filter(h => h.name).map((h, idx) => (
-            <div key={idx} data-pdf-section="true"
-              style={idx > 0 ? { marginTop: 14, borderTop: "1px dashed #e0e0e0", paddingTop: 12 } : {}}>
-              <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
-                <span style={{ fontSize: 14 }}>🏨</span>
-                <span style={{ fontSize: 15, fontWeight: 700, color: DARK }}>{h.name}</span>
-                {h.roomCat && <span style={{ fontSize: 12, color: "#6b7280" }}>— {h.roomCat}</span>}
-              </div>
-              <div style={{ display: "flex", gap: 24, flexWrap: "wrap", fontSize: 12, color: "#374151" }}>
-                {h.nights && <span><b>Nights:</b> {h.nights}</span>}
-                {h.rooms  && <span><b>Rooms:</b> {h.rooms}</span>}
-              </div>
-            </div>
-          ))}
-        </RedSection>
-      )}
-
-      {/* ══════════ FLIGHT DETAILS ══════════ */}
-      {flights.filter(f => f.from).length > 0 && (
-        <RedSection title="Flight Details">
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
-            <thead>
-              <tr>
-                <Th>From</Th>
-                <Th>To</Th>
-                <Th>Date</Th>
-                <Th>Pax</Th>
-              </tr>
-            </thead>
-            <tbody>
-              {flights.filter(f => f.from).map((f, i) => (
-                <tr key={i} style={{ background: i % 2 === 0 ? "#fff" : "#fafafa" }}>
-                  <Td>{f.from}</Td>
-                  <Td>{f.to}</Td>
-                  <Td>{fmtDate(f.date)}</Td>
-                  <Td>{f.pax}</Td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </RedSection>
-      )}
-
-      {/* ══════════ TRANSPORTATION ══════════ */}
-      {transfers.filter(t => t.cab).length > 0 && (
-        <RedSection title="Transportation Details">
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
-            <thead>
-              <tr>
-                <Th>Cab Type</Th>
-                <Th>Days</Th>
-              </tr>
-            </thead>
-            <tbody>
-              {transfers.filter(t => t.cab).map((t, i) => (
-                <tr key={i} style={{ background: i % 2 === 0 ? "#fff" : "#fafafa" }}>
-                  <Td>{t.cab}</Td>
-                  <Td>{t.days}</Td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </RedSection>
-      )}
-
       {/* ══════════ DAY-WISE ITINERARY ══════════ */}
-      {itin.some(d => d.title || d.itinerary) && (
+      {itin.some(d => d.title || d.itinerary || d.date || d.tour || d.transfer || d.pickup_time) && (
         <RedSection title="Day-wise Itinerary">
-          {itin.filter(d => d.title || d.itinerary).map((item, i) => (
+          {itin.filter(d => d.title || d.itinerary || d.date || d.tour || d.transfer || d.pickup_time).map((item, i, arr) => (
             <div key={i} data-pdf-section="true" style={{
-              marginBottom: i < itin.length - 1 ? 18 : 0,
-              paddingBottom: i < itin.length - 1 ? 16 : 0,
-              borderBottom: i < itin.length - 1 ? "1px dashed #e0e0e0" : "none",
+              marginBottom: i < arr.length - 1 ? 18 : 0,
+              paddingBottom: i < arr.length - 1 ? 16 : 0,
+              borderBottom: i < arr.length - 1 ? "1px dashed #e0e0e0" : "none",
             }}>
               <div style={q.dayHeader}>
                 <div style={q.dayBadge}>Day {i + 1}</div>
@@ -222,6 +154,74 @@ export default function QuotationPreview({ data, id }) {
               )}
             </div>
           ))}
+        </RedSection>
+      )}
+
+      {/* ══════════ HOTEL DETAILS ══════════ */}
+      {hotels.filter(h => h.name).length > 0 && (
+        <RedSection title="Hotel Details">
+          {hotels.filter(h => h.name).map((h, idx) => (
+            <div key={idx} data-pdf-section="true"
+              style={idx > 0 ? { marginTop: 14, borderTop: "1px dashed #e0e0e0", paddingTop: 12 } : {}}>
+              <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
+                <span style={{ fontSize: 14 }}>🏨</span>
+                <span style={{ fontSize: 15, fontWeight: 700, color: DARK }}>{h.name}</span>
+                {h.roomCat && <span style={{ fontSize: 12, color: "#6b7280" }}>— {h.roomCat}</span>}
+              </div>
+              <div style={{ display: "flex", gap: 24, flexWrap: "wrap", fontSize: 12, color: "#374151" }}>
+                {h.nights && <span><b>Nights:</b> {h.nights}</span>}
+                {h.rooms  && <span><b>Rooms:</b> {h.rooms}</span>}
+              </div>
+            </div>
+          ))}
+        </RedSection>
+      )}
+
+      {/* ══════════ TRANSPORTATION (CAB) ══════════ */}
+      {transfers.filter(t => t.cab || t.perDay || t.days).length > 0 && (
+        <RedSection title="Transportation Details">
+          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <thead>
+              <tr>
+                <Th>Cab Type</Th>
+                <Th>Days</Th>
+              </tr>
+            </thead>
+            <tbody>
+              {transfers.filter(t => t.cab || t.perDay || t.days).map((t, i) => (
+                <tr key={i} style={{ background: i % 2 === 0 ? "#fff" : "#fafafa" }}>
+                  <Td>{t.cab}</Td>
+                  <Td>{t.days}</Td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </RedSection>
+      )}
+
+      {/* ══════════ FLIGHT DETAILS ══════════ */}
+      {flights.filter(f => f.from || f.to || f.date || f.pax || f.price).length > 0 && (
+        <RedSection title="Flight Details">
+          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <thead>
+              <tr>
+                <Th>From</Th>
+                <Th>To</Th>
+                <Th>Date</Th>
+                <Th>Pax</Th>
+              </tr>
+            </thead>
+            <tbody>
+              {flights.filter(f => f.from || f.to || f.date || f.pax || f.price).map((f, i) => (
+                <tr key={i} style={{ background: i % 2 === 0 ? "#fff" : "#fafafa" }}>
+                  <Td>{f.from}</Td>
+                  <Td>{f.to}</Td>
+                  <Td>{fmtDate(f.date)}</Td>
+                  <Td>{f.pax}</Td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </RedSection>
       )}
 
@@ -255,6 +255,27 @@ export default function QuotationPreview({ data, id }) {
           )}
         </div>
       </div>
+
+      {/* ══════════ TERMS & CONDITIONS ══════════ */}
+      {form.termsConditions && (
+        <RedSection title="Terms & Conditions">
+          <RichContent html={form.termsConditions} style={{ fontSize: 11, lineHeight: 1.7 }} />
+        </RedSection>
+      )}
+
+      {/* ══════════ BOOKING POLICY ══════════ */}
+      {form.bookingPolicy && (
+        <RedSection title="Booking Policy">
+          <RichContent html={form.bookingPolicy} style={{ fontSize: 11, lineHeight: 1.7 }} />
+        </RedSection>
+      )}
+
+      {/* ══════════ CANCELLATION POLICY ══════════ */}
+      {form.cancellationPolicy && (
+        <RedSection title="Cancellation Policy">
+          <RichContent html={form.cancellationPolicy} style={{ fontSize: 11, lineHeight: 1.7 }} />
+        </RedSection>
+      )}
 
       {/* ══════════ FOOTER ══════════ */}
       <div style={q.footer}>

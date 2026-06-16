@@ -133,19 +133,21 @@ function MyApp({ Component, pageProps }) {
 
 
         <title>Tourwatchout</title>
+      </Head>
 
-        {/* Google Tag Manager */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+      {/* Google Tag Manager — must live outside next/head's <Head>, next/script handles injection itself */}
+      <Script
+        id="gtm-script"
+        strategy="afterInteractive"
+        dangerouslySetInnerHTML={{
+          __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
 })(window,document,'script','dataLayer','GTM-WF5WRLK3');`,
-          }}
-        />
-        {/* End Google Tag Manager */}
-      </Head>
+        }}
+      />
+      {/* End Google Tag Manager */}
 
       {/* Scripts */}
       <Script src="/assets/js/jquery.min.js" strategy="afterInteractive" />

@@ -39,6 +39,17 @@ function fmtTravelDate(v) { if (!v) return "—"; try { return new Date(v + "T00
 
 function waUrl(phone, name, dest) { const d = String(phone || "").replace(/\D/g, ""); const n = d.length > 10 ? d : `91${d.slice(-10)}`; return `https://wa.me/${n}?text=${encodeURIComponent(`Hi ${name || ""}, this is Tourwatchout regarding your ${dest || ""} enquiry.`)}`; }
 
+/* Display a stored number with a "+91" country code — most leads are saved as
+   bare 10-digit numbers, so prefix +91 unless one is already present. */
+function fmtPhone(phone) {
+  if (!phone) return "—";
+  const raw = String(phone).trim();
+  if (raw.startsWith("+")) return raw;
+  const digits = raw.replace(/\D/g, "");
+  if (!digits) return raw;
+  return `+91 ${digits.slice(-10)}`;
+}
+
 function formTypeBadge(ft) {
   const s = ft === "Manual" ? { bg: "#EAF7EF", color: "#15803D" } : ft === "Query Form" ? { bg: "#EFF4FF", color: "#1D4ED8" } : { bg: "#F3EEFD", color: "#7C3AED" };
   return s;
@@ -132,14 +143,14 @@ export default function LeadsPage() {
   async function saveNewLead() {
     setAddError("");
     if (!addForm.name.trim()) return setAddError("Name is required.");
-    if (!addForm.phone.trim()) return setAddError("Phone is required.");
+    if (addForm.phone.replace(/\D/g, "").length < 10) return setAddError("Enter a valid phone number.");
     if (!addForm.email.trim()) return setAddError("Email is required.");
     setAddSaving(true);
     try {
       const r = await fetch("/api/dashboard/leads", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...addForm, adminCreate: true }) });
       const data = await r.json();
       if (!r.ok) return setAddError(data.message || data.error || "Failed.");
-      setLeads(p => [data.lead, ...p]); setShowAdd(false); setAddForm(EMPTY_LEAD);
+      setLeads(p => [data.lead, ...p]); setShowAdd(false); setAddForm({ ...EMPTY_LEAD, phone: "+91 " });
     } finally { setAddSaving(false); }
   }
 
@@ -215,7 +226,7 @@ export default function LeadsPage() {
           </div>
           <div style={{ marginLeft: "auto", display: "flex", gap: 8, alignItems: "center" }}>
             <button style={S.iconBtn} onClick={fetchLeads} title="Refresh"><MdRefresh size={17} /></button>
-            <button style={S.addBtn} onClick={() => { setAddForm(EMPTY_LEAD); setAddError(""); setModalCustomBudget(false); setShowAdd(true); }}>
+            <button style={S.addBtn} onClick={() => { setAddForm({ ...EMPTY_LEAD, phone: "+91 " }); setAddError(""); setModalCustomBudget(false); setShowAdd(true); }}>
               <MdAdd size={16} /> Add Lead
             </button>
           </div>
@@ -303,7 +314,7 @@ export default function LeadsPage() {
                       {/* Mobile */}
                       <td style={S.td}>
                         <span style={{ display: "flex", alignItems: "center", gap: 6, whiteSpace: "nowrap" }}>
-                          {l.phone}
+                          {fmtPhone(l.phone)}
                           <a href={waUrl(l.phone, l.name, l.destination)} target="_blank" rel="noreferrer" title="WhatsApp" style={{ textDecoration: "none", fontSize: 15, lineHeight: 1 }}>💬</a>
                         </span>
                       </td>
@@ -443,7 +454,10 @@ export default function LeadsPage() {
             <div style={S.modalBody}>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 14 }}>
                 <Field label="Full Name *"><input style={S.inp} placeholder="Rajesh Kumar" value={addForm.name} onChange={e => setAddForm(f => ({ ...f, name: e.target.value }))} /></Field>
-                <Field label="Phone *"><input style={S.inp} placeholder="+91 98765 43210" value={addForm.phone} onChange={e => setAddForm(f => ({ ...f, phone: e.target.value }))} /></Field>
+                <Field label="Phone *">
+                  <input style={S.inp} placeholder="+91 98765 43210" value={addForm.phone}
+                    onChange={e => { const v = e.target.value; setAddForm(f => ({ ...f, phone: v.startsWith("+91") ? v : `+91 ${v.replace(/^\+?91\s*/, "")}` })); }} />
+                </Field>
                 <Field label="Email *"><input style={S.inp} placeholder="email@example.com" value={addForm.email} onChange={e => setAddForm(f => ({ ...f, email: e.target.value }))} /></Field>
                 <Field label="Destination"><input style={S.inp} placeholder="Kashmir" value={addForm.destination} onChange={e => setAddForm(f => ({ ...f, destination: e.target.value }))} /></Field>
                 <Field label="Travel Date"><input type="date" style={S.inp} value={addForm.travelDate} onChange={e => setAddForm(f => ({ ...f, travelDate: e.target.value }))} /></Field>
