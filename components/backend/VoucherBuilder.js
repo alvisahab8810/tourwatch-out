@@ -49,13 +49,15 @@ function buildTripId(all) {
 }
 
 // ─── Options & Factories ──────────────────────────────────────────────────────
-const MEAL_OPTS = ["EPAI - Room Only","CPAI - Room & Breakfast","MAPAI - Breakfast & Lunch","MAPAI - Breakfast & Dinner","APAI - Breakfast, Lunch & Dinner"];
+const MEAL_OPTS   = ["EPAI - Room Only","CPAI - Room & Breakfast","MAPAI - Breakfast & Lunch","MAPAI - Breakfast & Dinner","APAI - Breakfast, Lunch & Dinner"];
 const NIGHTS_OPTS = ["1N/2D","2N/3D","3N/4D","4N/5D","5N/6D","6N/7D","7N/8D","8N/9D","9N/10D","10N/11D","11N/12D"];
+const RTE_FONTS   = ["DM Sans","Arial","Times New Roman","Georgia","Verdana","Courier New","Trebuchet MS"];
+const RTE_SIZES   = ["10px","11px","12px","13px","14px","15px","16px","18px","20px","22px","24px","28px","32px","36px"];
 const uid = () => Date.now() + Math.random();
 const EMPTY_FLIGHT    = () => ({ id: uid(), pnr: "", flight_no: "", from_city: "", from_code: "", from_date: "", from_time: "", to_city: "", to_code: "", to_date: "", to_time: "" });
 const EMPTY_TRANSPORT = () => ({ id: uid(), vehicle_type: "", driver_name: "", driver_contact: "" });
 const EMPTY_ITINERARY = () => ({ id: uid(), date: "", title: "", tour: "", transfer: "", pickup_time: "", itinerary: "" });
-const EMPTY_HOTEL     = () => ({ id: uid(), place: "", hotelName: "", hotelAddress: "", hotelConfirmNo: "", units: "", roomType: "", mealPlan: "", checkinDate: "", checkinTime: "2:00 PM", checkoutDate: "", checkoutTime: "10:00 AM", nights: "" });
+const EMPTY_HOTEL     = () => ({ id: uid(), place: "", hotelName: "", hotelAddress: "", hotelConfirmNo: "", units: "", roomType: "", mealPlan: "", mealPlan2: "", checkinDate: "", checkinTime: "2:00 PM", checkoutDate: "", checkoutTime: "10:00 AM", nights: "" });
 
 const DEFAULT_HOTEL_NOTE = `Kindly note, early check-in is subject to availability of the rooms or hotel may charge directly to the guest.\n• For early check-in, extra bed and airport pickups contact the hotel directly.\n• Passport, Driving License and Aadhaar are accepted as ID proof(s).`;
 const DEFAULT_TC = `We request to the guest that at the time of arrival, kindly purchase a local SIM, so we can communicate easily. Pick-up & drop timings are only indicative & might change, exact timings will be informed by the operations team.`;
@@ -181,7 +183,26 @@ export default function VoucherBuilder({ prefill, voucherData, isNew, onClose, o
       const footerEl = document.getElementById("vb-pdf-footer");
       if (!wrapEl) return null;
       const SCALE = 2;
-      const patch = (doc) => { const s = doc.createElement("style"); s.textContent = "* { font-family: Arial, Helvetica, sans-serif !important; }"; doc.head.appendChild(s); };
+
+      // Collect section boundaries in onclone so we can snap page breaks to them.
+      let pageBoundaries = [];
+      const patchStyles = (doc) => {
+        const st = doc.createElement("style");
+        st.textContent = "* { font-family: Arial, Helvetica, sans-serif !important; }";
+        doc.head.appendChild(st);
+      };
+      const patch = (doc, clonedEl) => {
+        patchStyles(doc);
+        if (clonedEl && pageBoundaries.length === 0) {
+          try {
+            const r = clonedEl.getBoundingClientRect();
+            pageBoundaries = Array.from(clonedEl.querySelectorAll('[data-pdf-section="true"]'))
+              .map(el => (el.getBoundingClientRect().top - r.top) * SCALE)
+              .filter(y => y > 10)
+              .sort((a, b) => a - b);
+          } catch (_) {}
+        }
+      };
 
       let mainCanvas;
       if (footerEl) {
@@ -193,7 +214,7 @@ export default function VoucherBuilder({ prefill, voucherData, isNew, onClose, o
         mainCanvas = await html2canvas(wrapEl, { scale: SCALE, useCORS: true, backgroundColor: "#fff", logging: false, height: wrapEl.scrollHeight, windowHeight: wrapEl.scrollHeight, onclone: patch });
       }
 
-      const footerCanvas = footerEl ? await html2canvas(footerEl, { scale: SCALE, useCORS: true, backgroundColor: "#fff5f5", logging: false, onclone: patch }) : null;
+      const footerCanvas = footerEl ? await html2canvas(footerEl, { scale: SCALE, useCORS: true, backgroundColor: "#fff5f5", logging: false, onclone: patchStyles }) : null;
 
       const pdf = new jsPDF("p", "mm", "a4");
       const pageW = pdf.internal.pageSize.getWidth(), pageH = pdf.internal.pageSize.getHeight();
@@ -204,11 +225,21 @@ export default function VoucherBuilder({ prefill, voucherData, isNew, onClose, o
       while (yPx < totalPx) {
         if (!firstPage) pdf.addPage();
         firstPage = false;
-        const slicePx = Math.min(pagePx, totalPx - yPx);
+
+        // Snap page break to the nearest section boundary found in the last 30% of
+        // the page so that section headers are never orphaned from their content.
+        let pageEnd = yPx + pagePx;
+        if (pageEnd < totalPx && pageBoundaries.length) {
+          const snapZone = yPx + pagePx * 0.7;
+          const snap = pageBoundaries.find(b => b >= snapZone && b < pageEnd);
+          if (snap !== undefined) pageEnd = snap;
+        }
+
+        const slicePx = Math.min(pageEnd - yPx, totalPx - yPx);
         const sl = document.createElement("canvas"); sl.width = mainCanvas.width; sl.height = slicePx;
         sl.getContext("2d").drawImage(mainCanvas, 0, yPx, mainCanvas.width, slicePx, 0, 0, mainCanvas.width, slicePx);
         pdf.addImage(sl.toDataURL("image/png"), "PNG", 0, 0, pageW, slicePx / pxPerMm);
-        yPx += pagePx;
+        yPx = pageEnd;
       }
       if (footerCanvas) {
         const fh = (footerCanvas.height / footerCanvas.width) * pageW;
@@ -310,7 +341,10 @@ export default function VoucherBuilder({ prefill, voucherData, isNew, onClose, o
                   <TC><F label="Hotel Name" value={h.hotelName} onChange={v => updateHotel(h.id,"hotelName",v)} placeholder="e.g. Wescott Hotel" /><F label="Place" value={h.place||""} onChange={v => updateHotel(h.id,"place",v)} placeholder="e.g. Dubai Marina" /></TC>
                   <TC><F label="Hotel Address" value={h.hotelAddress} onChange={v => updateHotel(h.id,"hotelAddress",v)} placeholder="Hotel city / full address" /><F label="Confirmation No." value={h.hotelConfirmNo} onChange={v => updateHotel(h.id,"hotelConfirmNo",v)} placeholder="e.g. 27685" /></TC>
                   <TC><F label="Units / Rooms" value={h.units} onChange={v => updateHotel(h.id,"units",v)} placeholder="e.g. 1" /><F label="Room Type" value={h.roomType} onChange={v => updateHotel(h.id,"roomType",v)} placeholder="e.g. Deluxe Room" /></TC>
-                  <SF label="Meal Plan" value={h.mealPlan} onChange={v => updateHotel(h.id,"mealPlan",v)} options={MEAL_OPTS} allowEmpty />
+                  <TC>
+                    <SF label="Meal Plan" value={h.mealPlan} onChange={v => updateHotel(h.id,"mealPlan",v)} options={MEAL_OPTS} allowEmpty />
+                    <SF label="Meal Plan 2 (Optional)" value={h.mealPlan2||""} onChange={v => updateHotel(h.id,"mealPlan2",v)} options={MEAL_OPTS} allowEmpty />
+                  </TC>
                   <div style={s.divider} /><div style={s.subHead}>Check-in / Check-out</div>
                   <TC><DF label="Check-in Date" value={h.checkinDate} onChange={v => updateHotel(h.id,"checkinDate",v)} /><F label="Check-in Time" value={h.checkinTime} onChange={v => updateHotel(h.id,"checkinTime",v)} placeholder="2:00 PM" /></TC>
                   <TC><DF label="Check-out Date" value={h.checkoutDate} onChange={v => updateHotel(h.id,"checkoutDate",v)} /><F label="Check-out Time" value={h.checkoutTime} onChange={v => updateHotel(h.id,"checkoutTime",v)} placeholder="10:00 AM" /></TC>
@@ -402,7 +436,10 @@ export default function VoucherBuilder({ prefill, voucherData, isNew, onClose, o
             <FS title="Extras & Notes" icon={<MdInfo />}>
               <F label="Value Addition" value={form.valueAddition||""} onChange={v => set("valueAddition",v)} placeholder="e.g. Water, Cake, GTB - N/A" full />
               <div style={s.divider} />
-              <F label="Special Instructions" value={form.specialInstructions} onChange={v => set("specialInstructions",v)} placeholder="Any special instructions…" textarea rows={4} full />
+              <div>
+                <label style={s.label}>Special Instructions</label>
+                <RTE key={`si-${formKey}`} value={toRichText(form.specialInstructions||"")} onChange={v => set("specialInstructions",v)} placeholder="Any special instructions…" />
+              </div>
               <div style={s.divider} />
               <div>
                 <label style={s.label}>T&amp;C</label>
@@ -540,22 +577,83 @@ function DF({ label, value, onChange, fmt = "long" }) {
   );
 }
 function RTE({ value, onChange, placeholder }) {
-  const ref = useRef(null);
+  const ref      = useRef(null);
+  const savedSel = useRef(null);
+
   useEffect(() => { if (ref.current) ref.current.innerHTML = value || ""; }, []);
-  const exec = cmd => { document.execCommand(cmd, false, null); if (ref.current) onChange(ref.current.innerHTML); ref.current?.focus(); };
-  const isEmpty = !(value ? value.replace(/<[^>]*>/g,"").trim() : "");
+
+  function saveSelection() {
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount > 0 && ref.current?.contains(sel.anchorNode)) {
+      savedSel.current = sel.getRangeAt(0).cloneRange();
+    }
+  }
+  function restoreSelection() {
+    if (!savedSel.current) return;
+    try { const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(savedSel.current); } catch (_) {}
+  }
+
+  const exec = cmd => {
+    restoreSelection();
+    document.execCommand(cmd, false, null);
+    if (ref.current) onChange(ref.current.innerHTML);
+    ref.current?.focus();
+  };
+  function applyFontFamily(family) {
+    restoreSelection();
+    document.execCommand("fontName", false, family);
+    if (ref.current) onChange(ref.current.innerHTML);
+    ref.current?.focus();
+  }
+  function applyFontSize(size) {
+    restoreSelection();
+    // execCommand fontSize only accepts 1–7; apply "7" then replace <font size="7"> with a span
+    document.execCommand("fontSize", false, "7");
+    if (ref.current) {
+      ref.current.querySelectorAll('font[size="7"]').forEach(f => {
+        const span = document.createElement("span");
+        span.style.fontSize = size;
+        span.innerHTML = f.innerHTML;
+        f.parentNode.replaceChild(span, f);
+      });
+      onChange(ref.current.innerHTML);
+    }
+    ref.current?.focus();
+  }
+
+  const isEmpty = !(value ? value.replace(/<[^>]*>/g, "").trim() : "");
   return (
     <div style={s.richEditor}>
-      <div style={s.richToolbar}>
-        <button type="button" onMouseDown={e => { e.preventDefault(); exec("bold"); }} style={s.richBtn}><b>B</b></button>
-        <button type="button" onMouseDown={e => { e.preventDefault(); exec("italic"); }} style={s.richBtn}><i>I</i></button>
-        <button type="button" onMouseDown={e => { e.preventDefault(); exec("insertUnorderedList"); }} style={s.richBtn}>• List</button>
-        <button type="button" onMouseDown={e => { e.preventDefault(); exec("insertOrderedList"); }} style={s.richBtn}>1. List</button>
-        <button type="button" onMouseDown={e => { e.preventDefault(); exec("removeFormat"); }} style={{ ...s.richBtn, color: "#e84949" }}>Clear</button>
+      <div style={{ ...s.richToolbar, flexWrap: "nowrap", alignItems: "center", overflowX: "auto" }}>
+        <button type="button" onMouseDown={e => { e.preventDefault(); exec("bold"); }} style={{ ...s.richBtn, flexShrink: 0 }}><b>B</b></button>
+        <button type="button" onMouseDown={e => { e.preventDefault(); exec("italic"); }} style={{ ...s.richBtn, flexShrink: 0 }}><i>I</i></button>
+
+        {/* Font family — fixed width so it never expands to longest option text */}
+        <select defaultValue="" style={{ ...s.richBtn, padding: "2px 4px", cursor: "pointer", width: 100, flexShrink: 0 }}
+          onMouseDown={saveSelection}
+          onChange={e => { if (e.target.value) { applyFontFamily(e.target.value); e.target.value = ""; } }}>
+          <option value="" disabled>Font</option>
+          {RTE_FONTS.map(f => <option key={f} value={f}>{f}</option>)}
+        </select>
+
+        {/* Font size */}
+        <select defaultValue="" style={{ ...s.richBtn, padding: "2px 4px", cursor: "pointer", width: 65, flexShrink: 0 }}
+          onMouseDown={saveSelection}
+          onChange={e => { if (e.target.value) { applyFontSize(e.target.value); e.target.value = ""; } }}>
+          <option value="" disabled>Size</option>
+          {RTE_SIZES.map(sz => <option key={sz} value={sz}>{sz}</option>)}
+        </select>
+
+        <button type="button" onMouseDown={e => { e.preventDefault(); exec("insertUnorderedList"); }} style={{ ...s.richBtn, flexShrink: 0 }}>• List</button>
+        <button type="button" onMouseDown={e => { e.preventDefault(); exec("insertOrderedList"); }} style={{ ...s.richBtn, flexShrink: 0 }}>1. List</button>
+        <button type="button" onMouseDown={e => { e.preventDefault(); exec("removeFormat"); }} style={{ ...s.richBtn, color: "#e84949", flexShrink: 0 }}>Clear</button>
       </div>
       <div style={{ position: "relative" }}>
         {isEmpty && <div style={s.richPlaceholder}>{placeholder || "Type here…"}</div>}
-        <div ref={ref} contentEditable suppressContentEditableWarning onInput={() => { if (ref.current) onChange(ref.current.innerHTML); }} style={s.richContent} />
+        <div ref={ref} contentEditable suppressContentEditableWarning
+          onInput={() => { if (ref.current) onChange(ref.current.innerHTML); }}
+          onKeyUp={saveSelection} onMouseUp={saveSelection}
+          style={s.richContent} />
       </div>
     </div>
   );

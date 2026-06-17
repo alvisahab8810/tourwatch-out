@@ -7,7 +7,8 @@ const RED = "#e84949";
 const DARK = "#1a1a2e";
 const LIGHT_PINK = "#fff5f5";
 
-// Convert <ol>/<ul> to div-based layout so html2canvas doesn't need CSS counters/::marker
+// Convert <ol>/<ul> to div-based layout so html2canvas doesn't need CSS counters/::marker.
+// Each item gets data-pdf-section="true" so the PDF generator can snap page breaks to them.
 function flattenLists(html) {
   let out = html;
   // ordered lists
@@ -15,13 +16,13 @@ function flattenLists(html) {
     let n = 0;
     return inner.replace(/<li[^>]*>([\s\S]*?)<\/li>/gi, (__, content) => {
       n++;
-      return `<div style="display:flex;align-items:flex-start;gap:5px;margin-bottom:3px"><span style="min-width:18px;font-weight:bold;flex-shrink:0">${n}.</span><span>${content.trim()}</span></div>`;
+      return `<div data-pdf-section="true" style="display:flex;align-items:flex-start;gap:5px;margin-bottom:3px"><span style="min-width:18px;font-weight:bold;flex-shrink:0">${n}.</span><span>${content.trim()}</span></div>`;
     });
   });
   // unordered lists
   out = out.replace(/<ul[^>]*>([\s\S]*?)<\/ul>/gi, (_, inner) =>
     inner.replace(/<li[^>]*>([\s\S]*?)<\/li>/gi, (__, content) =>
-      `<div style="display:flex;align-items:flex-start;gap:5px;margin-bottom:3px"><span style="min-width:18px;flex-shrink:0">•</span><span>${content.trim()}</span></div>`
+      `<div data-pdf-section="true" style="display:flex;align-items:flex-start;gap:5px;margin-bottom:3px"><span style="min-width:18px;flex-shrink:0">•</span><span>${content.trim()}</span></div>`
     )
   );
   return out;
@@ -111,7 +112,7 @@ export default function VoucherPreview({ data }) {
           d.hotels && d.hotels.length > 0
             ? d.hotels
             : d.hotelName
-            ? [{ id: 0, hotelName: d.hotelName, hotelAddress: d.hotelAddress, place: d.place, hotelConfirmNo: d.hotelConfirmNo, units: d.units, roomType: d.roomType, mealPlan: d.mealPlan, checkinDate: d.checkinDate, checkinTime: d.checkinTime, checkoutDate: d.checkoutDate, checkoutTime: d.checkoutTime, nights: d.nights }]
+            ? [{ id: 0, hotelName: d.hotelName, hotelAddress: d.hotelAddress, place: d.place, hotelConfirmNo: d.hotelConfirmNo, units: d.units, roomType: d.roomType, mealPlan: d.mealPlan, mealPlan2: d.mealPlan2 || "", checkinDate: d.checkinDate, checkinTime: d.checkinTime, checkoutDate: d.checkoutDate, checkoutTime: d.checkoutTime, nights: d.nights }]
             : [];
         if (hotels.length === 0) return null;
         const hotelNote = d.hotelNote || hotels[0]?.hotelNote || "";
@@ -135,7 +136,7 @@ export default function VoucherPreview({ data }) {
                     <HotelRow label="Hotel Confirmation No." value={h.hotelConfirmNo} />
                     <HotelRow label="Units"                  value={h.units} />
                     <HotelRow label="Room Type"              value={h.roomType} />
-                    <HotelRow label="Meal Plan"              value={h.mealPlan} />
+                    <HotelRow label="Meal Plan"              value={[h.mealPlan, h.mealPlan2].filter(Boolean).join(" + ") || "—"} />
                   </div>
                   <div style={v.hotelRight}>
                     <div style={v.dateCard}>

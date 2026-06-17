@@ -153,6 +153,11 @@ function buildSchemaJson(type, form) {
   const coverSrc = form.coverImage?.src;
   const imageUrl = coverSrc && !coverSrc.startsWith("data:")
     ? (coverSrc.startsWith("http") ? coverSrc : `${BASE_URL}${coverSrc}`) : null;
+  const imageObj = imageUrl ? {
+    "@type": "ImageObject",
+    "url": imageUrl,
+    "description": form.coverImage?.alt || form.title || "",
+  } : null;
 
   if (type === "BreadcrumbList") {
     return {
@@ -175,6 +180,105 @@ function buildSchemaJson(type, form) {
     };
   }
 
+  if (type === "HowTo") {
+    return {
+      "@context": "https://schema.org", "@type": "HowTo",
+      "name": form.title || "",
+      "description": form.metaDescription || form.summary || "",
+      ...(imageObj ? { "image": imageObj } : {}),
+      "step": (form.faqs || []).filter(f => f.question).map((f, i) => ({
+        "@type": "HowToStep",
+        "position": i + 1,
+        "name": f.question,
+        "text": f.answer || "",
+      })),
+    };
+  }
+
+  if (type === "WebPage") {
+    return {
+      "@context": "https://schema.org", "@type": "WebPage",
+      "name": form.title || "",
+      "description": form.metaDescription || form.summary || "",
+      "url": postUrl,
+      ...(imageObj ? { "primaryImageOfPage": imageObj } : {}),
+      "author": { "@type": "Person", "name": form.authorName || "Tourwatchout" },
+      "datePublished": form.publishDate || new Date().toISOString().slice(0, 10),
+      "dateModified":  new Date().toISOString().slice(0, 10),
+    };
+  }
+
+  if (type === "Organization") {
+    return {
+      "@context": "https://schema.org", "@type": "Organization",
+      "name": "Tourwatchout",
+      "url": BASE_URL,
+      "logo": { "@type": "ImageObject", "url": `${BASE_URL}/assets/images/logo.png` },
+      "description": form.metaDescription || form.summary || "",
+      "sameAs": [],
+    };
+  }
+
+  if (type === "Person") {
+    return {
+      "@context": "https://schema.org", "@type": "Person",
+      "name": form.authorName || "Tourwatchout",
+      "url": BASE_URL,
+      "description": form.metaDescription || form.summary || "",
+    };
+  }
+
+  if (type === "TouristAttraction") {
+    return {
+      "@context": "https://schema.org", "@type": "TouristAttraction",
+      "name": form.title || "",
+      "description": form.metaDescription || form.summary || "",
+      "url": postUrl,
+      ...(imageObj ? { "image": imageObj } : {}),
+      "touristType": form.categories || "",
+    };
+  }
+
+  if (type === "Event") {
+    return {
+      "@context": "https://schema.org", "@type": "Event",
+      "name": form.title || "",
+      "description": form.metaDescription || form.summary || "",
+      "url": postUrl,
+      ...(imageObj ? { "image": imageObj } : {}),
+      "startDate": form.publishDate || new Date().toISOString().slice(0, 10),
+      "endDate": form.publishDate || new Date().toISOString().slice(0, 10),
+      "location": { "@type": "Place", "name": form.categories || "" },
+      "organizer": { "@type": "Organization", "name": "Tourwatchout", "url": BASE_URL },
+      "eventStatus": "https://schema.org/EventScheduled",
+      "eventAttendanceMode": "https://schema.org/OnlineEventAttendanceMode",
+    };
+  }
+
+  if (type === "Product") {
+    return {
+      "@context": "https://schema.org", "@type": "Product",
+      "name": form.title || "",
+      "description": form.metaDescription || form.summary || "",
+      "url": postUrl,
+      ...(imageObj ? { "image": imageObj } : {}),
+      "brand": { "@type": "Brand", "name": "Tourwatchout" },
+    };
+  }
+
+  if (type === "LocalBusiness" || type === "Hotel" || type === "Restaurant") {
+    return {
+      "@context": "https://schema.org", "@type": type,
+      "name": form.title || "Tourwatchout",
+      "description": form.metaDescription || form.summary || "",
+      "url": postUrl,
+      ...(imageObj ? { "image": imageObj } : {}),
+      "address": { "@type": "PostalAddress", "addressCountry": "IN" },
+    };
+  }
+
+  // BlogPosting, Article, NewsArticle
+  // FAQs are intentionally excluded here — use FAQPage schema type for FAQ markup.
   const schema = {
     "@context": "https://schema.org",
     "@type": type,
@@ -191,20 +295,7 @@ function buildSchemaJson(type, form) {
     "dateModified":  new Date().toISOString().slice(0, 10),
   };
 
-  if (imageUrl) {
-    schema.image = {
-      "@type": "ImageObject",
-      "url": imageUrl,
-      "description": form.coverImage?.alt || form.title || "",
-    };
-  }
-
-  if (form.faqs?.filter(f => f.question).length > 0) {
-    schema.mainEntity = form.faqs.filter(f => f.question).map(f => ({
-      "@type": "Question", "name": f.question,
-      "acceptedAnswer": { "@type": "Answer", "text": f.answer || "" },
-    }));
-  }
+  if (imageObj) schema.image = imageObj;
 
   return schema;
 }
@@ -282,6 +373,7 @@ export default function CreateBlog() {
   const [aiTopic,      setAiTopic]      = useState("");
   const [aiFillMeta,   setAiFillMeta]   = useState(true);
   const [aiGenerating, setAiGenerating] = useState(false);
+  const [linkModal,    setLinkModal]    = useState(null); // null | { text, url, selStart, selEnd }
 
   const contentRef   = useRef(null);
   const imgInsertRef = useRef(null);
@@ -354,6 +446,26 @@ export default function CreateBlog() {
     e.target.value = "";
   }
   function applyColor(color) { insertSpan(contentRef.current, setContent, `color:${color}`); setShowColors(false); }
+
+  function openLinkModal() {
+    const el = contentRef.current;
+    if (!el) return;
+    const selStart = el.selectionStart, selEnd = el.selectionEnd;
+    setLinkModal({ text: el.value.slice(selStart, selEnd), url: "", selStart, selEnd });
+  }
+  function insertLink() {
+    if (!linkModal) return;
+    const el  = contentRef.current;
+    const txt = linkModal.text.trim() || "link text";
+    const url = linkModal.url.trim()  || "https://";
+    const md  = `[${txt}](${url})`;
+    if (el) {
+      const v = el.value;
+      setContent(v.slice(0, linkModal.selStart) + md + v.slice(linkModal.selEnd));
+      setTimeout(() => { el.focus(); el.setSelectionRange(linkModal.selStart + md.length, linkModal.selStart + md.length); }, 0);
+    }
+    setLinkModal(null);
+  }
 
   async function handleInsertImage(e) {
     const file = e.target.files[0]; if (!file) return;
@@ -654,7 +766,7 @@ export default function CreateBlog() {
                     <span style={s.tbGroup}>
                       <button style={s.toolBtn} title="Bullet list"   onClick={() => tb("\n- ")}       ><MdFormatListBulleted  size={17} /></button>
                       <button style={s.toolBtn} title="Numbered list" onClick={() => tb("\n1. ")}      ><MdFormatListNumbered  size={17} /></button>
-                      <button style={s.toolBtn} title="Link"          onClick={() => tb("[", "](url)")}><MdLink                size={17} /></button>
+                      <button style={s.toolBtn} title="Insert link"   onClick={openLinkModal}            ><MdLink                size={17} /></button>
                       <button style={s.toolBtn} title="Blockquote"    onClick={() => tb("\n> ")}       ><MdFormatQuote         size={17} /></button>
                     </span>
                     <span style={s.tbDiv} />
@@ -667,6 +779,29 @@ export default function CreateBlog() {
                       </button>
                       <input ref={imgInsertRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handleInsertImage} onClick={e => { e.target.value = ""; }} />
                     </span>
+                  </div>
+                )}
+
+                {/* Link insert panel — shown when Link toolbar button is clicked */}
+                {linkModal !== null && (
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, background: "#eff6ff", border: "1.5px solid #bfdbfe", borderRadius: 8, padding: "8px 12px", marginBottom: 8, flexWrap: "wrap" }}>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: "#1d4ed8", flexShrink: 0 }}>🔗 Link</span>
+                    <input
+                      style={{ ...s.input, flex: 1, minWidth: 110, padding: "6px 10px", fontSize: 13, background: "#fff" }}
+                      placeholder="Link text"
+                      value={linkModal.text}
+                      onChange={e => setLinkModal(p => ({ ...p, text: e.target.value }))}
+                    />
+                    <input
+                      autoFocus
+                      style={{ ...s.input, flex: 2, minWidth: 180, padding: "6px 10px", fontSize: 13, background: "#fff" }}
+                      placeholder="https://..."
+                      value={linkModal.url}
+                      onChange={e => setLinkModal(p => ({ ...p, url: e.target.value }))}
+                      onKeyDown={e => e.key === "Enter" && insertLink()}
+                    />
+                    <button style={{ ...s.iconBtn, background: "#2563eb", color: "#fff", border: "none" }} onClick={insertLink}>Insert</button>
+                    <button style={s.iconBtn} onClick={() => setLinkModal(null)}>Cancel</button>
                   </div>
                 )}
 
@@ -699,15 +834,12 @@ export default function CreateBlog() {
 
               {/* ── FAQs ── */}
               <div style={s.card}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-                  <h2 style={{ ...s.cardTitle, margin: 0 }}>FAQs</h2>
-                  <button style={s.addSchemaBtn} onClick={addFaq}><MdAdd size={15} /> Add FAQ</button>
-                </div>
-                <p style={{ ...s.hint, marginBottom: 16 }}>Shown at the end of the post. Auto-included in FAQPage & BlogPosting schema generation.</p>
+                <h2 style={s.cardTitle}>FAQs</h2>
+                <p style={{ ...s.hint, marginBottom: 16 }}>Shown at the end of the post. Use the FAQPage schema type to generate FAQ structured data.</p>
 
                 {form.faqs.length === 0 ? (
                   <div style={{ background: "#f9fafb", borderRadius: 8, padding: "22px", textAlign: "center", color: "#9ca3af", fontSize: 13 }}>
-                    No FAQs yet — click <strong>"Add FAQ"</strong> to add your first question
+                    No FAQs yet — click <strong>"+ Add FAQ"</strong> below to add your first question
                   </div>
                 ) : form.faqs.map((faq, i) => (
                   <div key={i} style={{ marginTop: i === 0 ? 0 : 16, paddingTop: i === 0 ? 0 : 16, borderTop: i === 0 ? "none" : "1.5px solid #f3f4f6" }}>
@@ -719,14 +851,13 @@ export default function CreateBlog() {
                     <textarea style={{ ...s.editor, minHeight: 80, marginTop: 8 }} placeholder="Answer…" value={faq.answer} onChange={e => updateFaq(i, "answer", e.target.value)} />
                   </div>
                 ))}
+
+                <button style={{ ...s.addSchemaBtn, marginTop: 16, width: "100%", justifyContent: "center" }} onClick={addFaq}><MdAdd size={15} /> Add FAQ</button>
               </div>
 
               {/* ── Multiple Schemas ── */}
               <div style={s.card}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-                  <h2 style={{ ...s.cardTitle, margin: 0 }}>Schema (JSON-LD)</h2>
-                  <button style={s.addSchemaBtn} onClick={addSchema}><MdAdd size={15} /> Add Schema</button>
-                </div>
+                <h2 style={s.cardTitle}>Schema (JSON-LD)</h2>
 
                 {form.schemas.map((sc, i) => (
                   <div key={i} style={{ ...s.schemaBlock, marginTop: i > 0 ? 16 : 0 }}>
@@ -750,6 +881,8 @@ export default function CreateBlog() {
                     />
                   </div>
                 ))}
+
+                <button style={{ ...s.addSchemaBtn, marginTop: 16, width: "100%", justifyContent: "center" }} onClick={addSchema}><MdAdd size={15} /> Add Schema</button>
               </div>
 
             </div>
