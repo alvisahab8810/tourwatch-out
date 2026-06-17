@@ -180,7 +180,7 @@ export default function VoucherBuilder({ prefill, voucherData, isNew, onClose, o
       const { default: html2canvas } = await import("html2canvas");
       const { jsPDF } = await import("jspdf");
       const wrapEl   = document.getElementById("vb-pdf-target");
-      const footerEl = document.getElementById("vb-pdf-footer");
+      const footerEl = wrapEl ? wrapEl.querySelector("#voucher-pdf-footer") : null;
       if (!wrapEl) return null;
       const SCALE = 2;
 
@@ -188,7 +188,10 @@ export default function VoucherBuilder({ prefill, voucherData, isNew, onClose, o
       let pageBoundaries = [];
       const patchStyles = (doc) => {
         const st = doc.createElement("style");
-        st.textContent = "* { font-family: Arial, Helvetica, sans-serif !important; }";
+        st.textContent = `
+          * { font-family: Arial, Helvetica, sans-serif !important; }
+          p { margin: 8px 0 !important; }
+        `;
         doc.head.appendChild(st);
       };
       const patch = (doc, clonedEl) => {
@@ -226,11 +229,11 @@ export default function VoucherBuilder({ prefill, voucherData, isNew, onClose, o
         if (!firstPage) pdf.addPage();
         firstPage = false;
 
-        // Snap page break to the nearest section boundary found in the last 30% of
-        // the page so that section headers are never orphaned from their content.
+        // Snap page break to the nearest section boundary in the last 12% of the page.
+        // Keeping the zone narrow avoids large whitespace gaps when content is short.
         let pageEnd = yPx + pagePx;
         if (pageEnd < totalPx && pageBoundaries.length) {
-          const snapZone = yPx + pagePx * 0.7;
+          const snapZone = yPx + pagePx * 0.88;
           const snap = pageBoundaries.find(b => b >= snapZone && b < pageEnd);
           if (snap !== undefined) pageEnd = snap;
         }

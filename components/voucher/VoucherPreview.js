@@ -8,9 +8,14 @@ const DARK = "#1a1a2e";
 const LIGHT_PINK = "#fff5f5";
 
 // Convert <ol>/<ul> to div-based layout so html2canvas doesn't need CSS counters/::marker.
-// Each item gets data-pdf-section="true" so the PDF generator can snap page breaks to them.
+// Also mark <p> tags and list items as pdf-section snap points so page breaks never
+// land mid-bullet or mid-paragraph. The snap zone is only 12% so whitespace gaps stay small.
 function flattenLists(html) {
   let out = html;
+  // Mark every <p> as a snap point (catches bold section headings like "2. Itinerary & Changes")
+  out = out.replace(/<p\b([^>]*)>/gi, (_, attrs) =>
+    attrs.includes("data-pdf-section") ? `<p${attrs}>` : `<p data-pdf-section="true"${attrs}>`
+  );
   // ordered lists
   out = out.replace(/<ol[^>]*>([\s\S]*?)<\/ol>/gi, (_, inner) => {
     let n = 0;
@@ -99,10 +104,10 @@ export default function VoucherPreview({ data }) {
         </div>
         <div style={v.metaDivider} />
         <div style={v.metaRight}>
-          <InfoPair label="Destination" value={d.destination} right />
-          <InfoPair label="Email"       value={d.email}       right />
-          <InfoPair label="Contact No." value={d.contactNo}   right />
-          <InfoPair label="Address"     value={d.address}     right />
+          <InfoPair label="Destination" value={d.destination} />
+          <InfoPair label="Email"       value={d.email}       />
+          <InfoPair label="Contact No." value={d.contactNo}   />
+          <InfoPair label="Address"     value={d.address}     />
         </div>
       </div>
 
@@ -198,7 +203,12 @@ export default function VoucherPreview({ data }) {
                 </div>
                 <div style={v.flightMid}>
                   <div style={v.flightNo}>{fl.flight_no}</div>
-                  <div style={v.flightArrow}>✈ ──────→</div>
+                  <div style={v.flightArrow}>
+                    {/* CSS-only arrow — no emoji so html2canvas renders it reliably */}
+                    <div style={{ width: 8, height: 8, borderRadius: "50%", background: RED, flexShrink: 0 }} />
+                    <div style={{ flex: 1, height: 2, background: RED }} />
+                    <div style={{ width: 0, height: 0, borderTop: "5px solid transparent", borderBottom: "5px solid transparent", borderLeft: `8px solid ${RED}`, flexShrink: 0 }} />
+                  </div>
                 </div>
                 <div style={{ ...v.flightSide, textAlign: "right" }}>
                   <div style={v.flightCity}>{fl.to_city || "—"}</div>
@@ -347,9 +357,9 @@ function HRow({ label, value }) {
   );
 }
 
-function InfoPair({ label, value, right }) {
+function InfoPair({ label, value }) {
   return (
-    <div style={{ display: "flex", justifyContent: right ? "flex-end" : "flex-start", gap: 5, marginBottom: 5, fontSize: 12 }}>
+    <div style={{ display: "flex", gap: 5, marginBottom: 5, fontSize: 12 }}>
       <span style={{ fontWeight: 700, color: "#444", whiteSpace: "nowrap", flexShrink: 0 }}>{label}:</span>
       <span style={{ color: "#222" }}>{value || "—"}</span>
     </div>
@@ -484,7 +494,7 @@ const v = {
   metaRight: { flex: 1 },
 
   // Hotel
-  hotelBlock: { display: "flex", gap: 18, alignItems: "flex-start" },
+  hotelBlock: { display: "flex", gap: 18, alignItems: "center" },
   hotelLeft: { flex: 1, minWidth: 0 },
   hotelNameRow: { display: "flex", alignItems: "center", gap: 6, marginBottom: 3, flexWrap: "wrap" },
   hotelIcon: { fontSize: 14, flexShrink: 0 },
@@ -535,7 +545,7 @@ const v = {
   flightTime: { fontSize: 12, fontWeight: 700, color: RED, marginTop: 2 },
   flightMid: { flex: 1, textAlign: "center", padding: "0 8px" },
   flightNo: { fontSize: 11, fontWeight: 600, color: "#555", marginBottom: 4 },
-  flightArrow: { fontSize: 12, color: RED, letterSpacing: -1 },
+  flightArrow: { display: "flex", alignItems: "center", width: "100%", padding: "3px 0" },
 
   // Table
   table: { width: "100%", borderCollapse: "collapse" },
