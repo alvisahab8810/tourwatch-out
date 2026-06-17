@@ -373,7 +373,7 @@ export default function Popup({ packageInfo, asDrawer, destination: destProp, au
 
       {/* ── Success Popup ── */}
       {showPopup && (
-        <div className="rop-overlay" onClick={e => { if (e.target === e.currentTarget) setShowPopup(false); }}>
+        <div id="enquiry-success-popup" className="rop-overlay" onClick={e => { if (e.target === e.currentTarget) setShowPopup(false); }}>
           <div className="rop-success-card">
 
             {/* top banner */}
