@@ -67,6 +67,10 @@ export default function Popup({ packageInfo, asDrawer, destination: destProp, au
     e.preventDefault();
 
     /* ── Client-side validation ── */
+    if (!formData.destination?.trim()) {
+      toast.error("Please enter your destination.", { id: "form-err" });
+      return;
+    }
     const digits = formData.phone.replace(/\D/g, "");
     if (digits.length !== 10) {
       toast.error("Please enter a valid 10-digit mobile number.", { id: "form-err" });
@@ -259,9 +263,10 @@ export default function Popup({ packageInfo, asDrawer, destination: destProp, au
                 type="text"
                 name="destination"
                 className="rop-input"
-                placeholder="Destination (e.g. Kashmir, Goa…)"
+                placeholder="Destination (e.g. Kashmir, Goa…)*"
                 value={formData.destination}
                 onChange={handleChange}
+                required
               />
 
               <input

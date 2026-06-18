@@ -143,10 +143,11 @@ export default function PackageDetailPage({ pkg, dest, vendorMap = {} }) {
     name: "", destination: dest?.name || dest?.title || "", phone: "",
     email: "", travelDate: "", pax: "", message: "",
   });
-  const [qLoading, setQLoading] = useState(false);
-  const [qDone,    setQDone]    = useState(false);
+  const [qLoading,      setQLoading]      = useState(false);
+  const [qShowSuccess,  setQShowSuccess]  = useState(false);
   const [qHoneypot, setQHoneypot] = useState("");
   const qLoadTime = useRef(Date.now());
+  const qDateRef  = useRef(null);
 
   const [qUtm, setQUtm] = useState({});
   useEffect(() => {
@@ -161,7 +162,7 @@ export default function PackageDetailPage({ pkg, dest, vendorMap = {} }) {
   function handleQChange(e) {
     const { name, value } = e.target;
     if (name === "phone") {
-      setQForm(p => ({ ...p, phone: value.replace(/[^\d\s+\-()]/g, "") }));
+      setQForm(p => ({ ...p, phone: value.replace(/\D/g, "").slice(0, 10) }));
       return;
     }
     setQForm(p => ({ ...p, [name]: value }));
@@ -183,14 +184,11 @@ export default function PackageDetailPage({ pkg, dest, vendorMap = {} }) {
           _hp: qHoneypot, _t: qLoadTime.current,
         }),
       });
-      if (res.status === 409) {
-        const d = await res.json().catch(() => ({}));
-        toast.error(d.field === "phone" ? "This mobile is already registered." : "This email is already registered.", { id: "qf-err", duration: 5000 });
-        return;
-      }
       if (res.status === 429) { toast.error("Too many attempts. Please try again later.", { id: "qf-err" }); return; }
       if (!res.ok) { const d = await res.json().catch(() => ({})); toast.error(d.message || "Failed to submit.", { id: "qf-err" }); return; }
-      setQDone(true);
+      setQShowSuccess(true);
+      setQForm({ name: "", destination: dest?.name || dest?.title || "", phone: "", email: "", travelDate: "", pax: "", message: "" });
+      qLoadTime.current = Date.now();
     } catch { toast.error("Network error. Please try again.", { id: "qf-err" }); }
     finally { setQLoading(false); }
   }
@@ -876,39 +874,46 @@ export default function PackageDetailPage({ pkg, dest, vendorMap = {} }) {
                       <input type="text" name="_qhp" value={qHoneypot} onChange={e => setQHoneypot(e.target.value)} tabIndex={-1} autoComplete="nope" />
                     </div>
 
-                    {qDone ? (
-                      <div style={{ textAlign:"center", padding:"28px 12px" }}>
-                        <div style={{ fontSize:36, marginBottom:8 }}>✓</div>
-                        <div style={{ fontWeight:700, color:"#16a34a", fontSize:15, marginBottom:6 }}>Request Received!</div>
-                        <div style={{ fontSize:13, color:"#64748b" }}>Our travel expert will call you shortly.</div>
+                    <form className="enq-form" onSubmit={handleQuerySubmit} autoComplete="off">
+                      <input type="text" name="name" placeholder="Full Name *" value={qForm.name} onChange={handleQChange} required />
+                      <input type="text" name="destination" placeholder="Destination" value={qForm.destination} onChange={handleQChange} />
+                      <div className="enq-phone">
+                        <select><option value="+91">+91</option></select>
+                        <input type="tel" name="phone" placeholder="0000 0000 00" value={qForm.phone} onChange={handleQChange} inputMode="numeric" maxLength={10} required />
                       </div>
-                    ) : (
-                      <form className="enq-form" onSubmit={handleQuerySubmit} autoComplete="off">
-                        <input type="text" name="name" placeholder="Full Name *" value={qForm.name} onChange={handleQChange} required />
-                        <input type="text" name="destination" placeholder="Destination" value={qForm.destination} onChange={handleQChange} />
-                        <div className="enq-phone">
-                          <select><option value="+91">+91</option></select>
-                          <input type="tel" name="phone" placeholder="0000 0000 00" value={qForm.phone} onChange={handleQChange} inputMode="numeric" maxLength={15} required />
-                        </div>
-                        <input type="email" name="email" placeholder="Email *" value={qForm.email} onChange={handleQChange} required />
-                        <div style={{ display:"flex", gap:8 }}>
-                          <input type="date" name="travelDate" value={qForm.travelDate} onChange={handleQChange}
+                      <input type="email" name="email" placeholder="Email *" value={qForm.email} onChange={handleQChange} required />
+                      <div style={{ display:"flex", gap:8 }}>
+                        {/* Date — styled display + transparent overlay input, same as home popup */}
+                        <div style={{ position:"relative", flex:1 }}
+                          onClick={() => { try { qDateRef.current?.showPicker(); } catch {} }}>
+                          <div style={{
+                            border:"1px solid #e5e7eb", borderRadius:6, padding:"10px 10px",
+                            fontSize:13, background:"#fff", cursor:"pointer",
+                            pointerEvents:"none", userSelect:"none",
+                            color: qForm.travelDate ? "#0c141d" : "#9ca3af",
+                          }}>
+                            {qForm.travelDate
+                              ? new Date(qForm.travelDate + "T00:00:00").toLocaleDateString("en-IN", { day:"2-digit", month:"long", year:"numeric" })
+                              : "Travel Date*"}
+                          </div>
+                          <input ref={qDateRef} type="date" name="travelDate"
+                            value={qForm.travelDate} onChange={handleQChange}
                             min={new Date().toISOString().split("T")[0]}
-                            style={{ flex:1, border:"1px solid #e5e7eb", borderRadius:6, padding:"10px 10px", fontSize:13, color: qForm.travelDate ? "#0c141d" : "#9ca3af", outline:"none", background:"#fff" }}
-                          />
-                          <input type="number" name="pax" placeholder="No. of Traveller" value={qForm.pax} onChange={handleQChange}
-                            min="1" max="50" inputMode="numeric"
-                            style={{ flex:1, border:"1px solid #e5e7eb", borderRadius:6, padding:"10px 10px", fontSize:13, outline:"none", background:"#fff" }}
+                            style={{ position:"absolute", inset:0, width:"100%", height:"100%", opacity:0, cursor:"pointer" }}
                           />
                         </div>
-                        <textarea name="message" placeholder="Message (optional)" value={qForm.message} onChange={handleQChange}
-                          rows={2} style={{ width:"100%", border:"1px solid #e5e7eb", borderRadius:6, padding:"10px 12px", fontSize:13, outline:"none", resize:"none", background:"#fff", boxSizing:"border-box", fontFamily:"inherit" }}
+                        <input type="number" name="pax" placeholder="No. of Traveller" value={qForm.pax} onChange={handleQChange}
+                          min="1" max="50" inputMode="numeric"
+                          style={{ flex:1, border:"1px solid #e5e7eb", borderRadius:6, padding:"10px 10px", fontSize:13, outline:"none", background:"#fff" }}
                         />
-                        <button className="enq-submit" type="submit" disabled={qLoading}>
-                          {qLoading ? "Sending…" : "Request Callback"}
-                        </button>
-                      </form>
-                    )}
+                      </div>
+                      <textarea name="message" placeholder="Message (optional)" value={qForm.message} onChange={handleQChange}
+                        rows={2} style={{ width:"100%", border:"1px solid #e5e7eb", borderRadius:6, padding:"10px 12px", fontSize:13, outline:"none", resize:"none", background:"#fff", boxSizing:"border-box", fontFamily:"inherit" }}
+                      />
+                      <button id="popup-submit-btn" className="enq-submit" type="submit" disabled={qLoading}>
+                        {qLoading ? "Sending…" : "Request Callback"}
+                      </button>
+                    </form>
                   </div>
                 </aside>
 
@@ -935,6 +940,37 @@ export default function PackageDetailPage({ pkg, dest, vendorMap = {} }) {
         }} />
         <NewFooter />
       </div>
+
+      {/* ── Sidebar form success popup — same design & IDs as home popup for unified ad tracking ── */}
+      {qShowSuccess && (
+        <div id="enquiry-success-popup" style={{ position:"fixed", inset:0, background:"rgba(10,15,30,0.65)", backdropFilter:"blur(4px)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:11000, padding:16 }}
+          onClick={e => { if (e.target === e.currentTarget) setQShowSuccess(false); }}>
+          <div style={{ background:"#fff", borderRadius:20, width:"100%", maxWidth:420, overflow:"hidden", boxShadow:"0 24px 60px rgba(0,0,0,0.28)" }}>
+            <div style={{ background:"linear-gradient(135deg,#EE4C49 0%,#c0392b 100%)", padding:"36px 24px 28px", display:"flex", flexDirection:"column", alignItems:"center", position:"relative" }}>
+              <svg style={{ width:72, height:72, position:"relative", zIndex:1 }} viewBox="0 0 52 52" fill="none">
+                <circle cx="26" cy="26" r="25" stroke="white" strokeWidth="2"/>
+                <path d="M14 26L22 34L38 18" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+            <div style={{ padding:"28px 28px 30px", textAlign:"center" }}>
+              <h3 style={{ fontSize:22, fontWeight:900, color:"#0c141d", margin:"0 0 6px" }}>Request Received!</h3>
+              <p style={{ fontSize:14, color:"#667085", margin:"0 0 22px", lineHeight:1.55 }}>Our travel expert will reach out to you shortly.</p>
+              <div style={{ display:"flex", flexDirection:"column", gap:10, marginBottom:24, textAlign:"left" }}>
+                {["Our expert reviews your details", "We call you within 24 hours", "Get your custom travel plan ✈️"].map((step, i) => (
+                  <div key={i} style={{ display:"flex", alignItems:"center", gap:12, fontSize:13.5, color:"#374151", background:"#fef2f2", borderRadius:10, padding:"10px 14px" }}>
+                    <span style={{ width:24, height:24, borderRadius:"50%", background:"#EE4C49", color:"#fff", fontSize:12, fontWeight:800, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{i+1}</span>
+                    <span>{step}</span>
+                  </div>
+                ))}
+              </div>
+              <button onClick={() => setQShowSuccess(false)}
+                style={{ width:"100%", background:"linear-gradient(135deg,#EE4C49 0%,#c0392b 100%)", color:"#fff", border:"none", padding:"14px 20px", borderRadius:50, fontSize:15, fontWeight:700, cursor:"pointer" }}>
+                Got It, Thanks!
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </>
   );

@@ -172,7 +172,7 @@ export default function DestinationPage({ dest, packages }) {
               <p className="hero-subtitle">Your Dream Destination Just One Click Away</p>
               <h1 className="hero-title">
                 <span className="highlight">{name}</span>
-                {dest.state ? ` — ${dest.state}, ` : " — "}{dest.country}
+                {" — Tour Packages"}
               </h1>
               <img src="/assets/images/hero/horizontal.svg" className="mobile-none" alt="" />
               <button
