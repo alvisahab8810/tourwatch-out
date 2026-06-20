@@ -162,7 +162,7 @@ const DEF_FORM = {
   termsConditions: DEFAULT_TERMS,
   bookingPolicy: DEFAULT_BOOKING_POLICY,
   cancellationPolicy: DEFAULT_CANCELLATION_POLICY,
-  cost: "", margin: "", gstPct: 5, tcsPct: 0, tripExpense: 0,
+  cost: "", margin: "", gstPct: 5, tcsPct: 2, tripExpense: 0,
 };
 
 /* Build initial hotels/flights/transfers from BRR or existing data */
@@ -449,8 +449,82 @@ export default function QuotationBuilder({
             <button style={{ ...QS.x, marginLeft: autoState ? 14 : "auto" }} onClick={onClose}>✕</button>
           </div>
 
-          {/* Body */}
-          <div style={QS.body}>
+          {/* Body — two columns: sticky price panel left + scrollable form right */}
+          <div style={{ display: "flex", maxHeight: "70vh", overflow: "hidden" }}>
+
+          {/* ── LEFT: live price preview ── */}
+          <div style={{ width: 210, flexShrink: 0, overflowY: "auto", background: "#fff", borderRight: "1px solid #E4E9F2", padding: "14px 12px", display: "flex", flexDirection: "column", gap: 10 }}>
+            <div style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: ".06em", color: "#6B7A99", marginBottom: 2 }}>💰 Price Preview</div>
+
+            {/* Hotels */}
+            {hotels.some(h => +h.price > 0) && (
+              <div style={{ background: "#F0FDF4", border: "1px solid #86EFAC", borderRadius: 8, padding: "8px 10px" }}>
+                <div style={{ fontSize: 10, fontWeight: 800, color: "#15803D", textTransform: "uppercase", letterSpacing: ".05em", marginBottom: 5 }}>🏨 Hotels</div>
+                {hotels.map((h, i) => +h.price > 0 && (
+                  <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 4, fontSize: 11, marginBottom: 3 }}>
+                    <span style={{ color: "#374151", flexShrink: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{h.name || `Hotel ${i + 1}`}</span>
+                    <span style={{ fontWeight: 700, color: "#15803D", flexShrink: 0 }}>{inr((+h.price || 0) * (+h.nights || 0) * (+h.rooms || 0))}</span>
+                  </div>
+                ))}
+                {hotels.length > 1 && <div style={{ fontSize: 11, fontWeight: 800, color: "#15803D", borderTop: "1px dashed #86EFAC", paddingTop: 4, marginTop: 2, display: "flex", justifyContent: "space-between" }}><span>Total</span><span>{inr(hotelTotal)}</span></div>}
+              </div>
+            )}
+
+            {/* Flights */}
+            {flights.some(f => +f.price > 0) && (
+              <div style={{ background: "#EFF4FF", border: "1px solid #93C5FD", borderRadius: 8, padding: "8px 10px" }}>
+                <div style={{ fontSize: 10, fontWeight: 800, color: "#1D4ED8", textTransform: "uppercase", letterSpacing: ".05em", marginBottom: 5 }}>✈️ Flights</div>
+                {flights.map((f, i) => +f.price > 0 && (
+                  <div key={i} style={{ fontSize: 11, marginBottom: 3 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", gap: 4 }}>
+                      <span style={{ color: "#374151" }}>{f.from || "—"} → {f.to || "—"}</span>
+                      <span style={{ fontWeight: 700, color: "#2563EB", flexShrink: 0 }}>{inr((+f.price || 0) * (+f.pax || 0))}</span>
+                    </div>
+                    {f.roundTrip && +f.returnPrice > 0 && (
+                      <div style={{ display: "flex", justifyContent: "space-between", gap: 4, color: "#6B7A99" }}>
+                        <span>↩ Return</span>
+                        <span style={{ fontWeight: 700, flexShrink: 0 }}>{inr((+f.returnPrice || 0) * (+f.pax || 0))}</span>
+                      </div>
+                    )}
+                  </div>
+                ))}
+                {flights.length > 1 && <div style={{ fontSize: 11, fontWeight: 800, color: "#1D4ED8", borderTop: "1px dashed #93C5FD", paddingTop: 4, marginTop: 2, display: "flex", justifyContent: "space-between" }}><span>Total</span><span>{inr(flightTotal)}</span></div>}
+              </div>
+            )}
+
+            {/* Transfers */}
+            {transfers.some(t => +t.perDay > 0) && (
+              <div style={{ background: "#FFFBEB", border: "1px solid #FCD34D", borderRadius: 8, padding: "8px 10px" }}>
+                <div style={{ fontSize: 10, fontWeight: 800, color: "#B45309", textTransform: "uppercase", letterSpacing: ".05em", marginBottom: 5 }}>🚐 Transfers</div>
+                {transfers.map((t, i) => +t.perDay > 0 && (
+                  <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 4, fontSize: 11, marginBottom: 3 }}>
+                    <span style={{ color: "#374151", flexShrink: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{t.cab || `Transfer ${i + 1}`}</span>
+                    <span style={{ fontWeight: 700, color: "#B45309", flexShrink: 0 }}>{inr((+t.perDay || 0) * (+t.days || 0))}</span>
+                  </div>
+                ))}
+                {transfers.length > 1 && <div style={{ fontSize: 11, fontWeight: 800, color: "#B45309", borderTop: "1px dashed #FCD34D", paddingTop: 4, marginTop: 2, display: "flex", justifyContent: "space-between" }}><span>Total</span><span>{inr(transferTotal)}</span></div>}
+              </div>
+            )}
+
+            {/* Grand total */}
+            {(hotelTotal + flightTotal + transferTotal) > 0 && (
+              <div style={{ background: "#EFF4FF", border: "2px solid #2563EB", borderRadius: 8, padding: "8px 10px", marginTop: 2 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <span style={{ fontSize: 11, fontWeight: 800, color: "#1D4ED8" }}>Grand Total</span>
+                  <span style={{ fontSize: 14, fontWeight: 900, color: "#1D4ED8" }}>{inr(hotelTotal + flightTotal + transferTotal)}</span>
+                </div>
+              </div>
+            )}
+
+            {(hotelTotal + flightTotal + transferTotal) === 0 && (
+              <div style={{ fontSize: 11, color: "#9CA3AF", textAlign: "center", marginTop: 20, lineHeight: 1.6 }}>
+                Enter prices in Hotels, Flights or Transfers to see live preview here.
+              </div>
+            )}
+          </div>
+
+          {/* ── RIGHT: scrollable form ── */}
+          <div style={{ flex: 1, overflowY: "auto", padding: "18px 20px" }}>
 
             {/* ── Trip Basics ── */}
             <Sec label="Trip Basics" slate>
@@ -471,11 +545,11 @@ export default function QuotationBuilder({
             <Sec label="📅  Day-wise Itinerary">
               {itin.map((d, i) => (
                 <div key={d._k} style={{ marginBottom: 8 }}>
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
-                    <div style={{ fontSize: 12, fontWeight: 800, color: "#2563EB", textTransform: "uppercase", letterSpacing: ".05em" }}>📅 Day {i + 1}</div>
-                    {itin.length > 1 && <button style={{ ...QS.remBtn, position: "static" }} onClick={() => setItin(p => p.filter((_, j) => j !== i))}>✕</button>}
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 15, position: "relative" }}>
+                    <div style={{ fontSize: 16, fontWeight: 800, color: "#2563EB", textTransform: "uppercase", letterSpacing: "0.05em", textAlign: "center" }}>📅 Day {i + 1}</div>
+                    {itin.length > 1 && <button style={{ ...QS.remBtn, position: "absolute", right: 0 }} onClick={() => setItin(p => p.filter((_, j) => j !== i))}>✕</button>}
                   </div>
-                  <div style={{ ...QS.rowBox, marginBottom: 0 }}>
+                  <div style={{ ...QS.rowBox, marginBottom: 15 }}>
                     <div style={{ ...G2, marginBottom: 10 }}>
                       <Fl l="Date">
                         <input type="date" style={{ ...QS.inp, colorScheme: "light" }} value={d.date || ""}
@@ -504,6 +578,7 @@ export default function QuotationBuilder({
                         />
                       </Fl>
                     </div>
+
                   </div>
                 </div>
               ))}
@@ -613,49 +688,55 @@ export default function QuotationBuilder({
                   {flights.length > 1 && <button style={QS.remBtn} onClick={() => remRow(setFlights, i)}>✕</button>}
                   {flights.length > 1 && <div style={QS.rowLabel}>Flight {i + 1}</div>}
                   <TripTypeToggle value={!!f.roundTrip} onChange={v => updArr(setFlights, i, "roundTrip", v)} />
-                  <div style={{ ...G3, marginBottom: 10 }}>
+                  {/* Row 1: From | To */}
+                  <div style={{ ...G2, marginBottom: 10 }}>
                     <Fl l="From">
                       <input style={QS.inp} placeholder="Delhi" value={f.from} onChange={e => updArr(setFlights, i, "from", e.target.value)} />
                     </Fl>
                     <Fl l="To">
                       <input style={QS.inp} placeholder="Srinagar" value={f.to} onChange={e => updArr(setFlights, i, "to", e.target.value)} />
                     </Fl>
+                  </div>
+                  {/* Row 2: Pax | Price Per Pax */}
+                  <div style={{ ...G2, marginBottom: 10 }}>
                     <Fl l="Pax">
                       <input type="number" style={QS.inp} value={f.pax} onChange={e => updArr(setFlights, i, "pax", e.target.value)} />
                     </Fl>
-                  </div>
-                  <div style={G2}>
                     <Fl l="Price Per Pax (₹)">
                       <input type="number" style={QS.inp} value={f.price} onChange={e => updArr(setFlights, i, "price", e.target.value)} />
                     </Fl>
-                    <Fl l="Sub Total">
-                      <input style={{ ...QS.inp, color: "#2563EB", fontWeight: 700 }}
-                        value={f.price === "" ? "" : inr((+f.price || 0) * (+f.pax || 0))} disabled />
-                    </Fl>
                   </div>
+                  {/* Row 3: Sub Total — full width */}
+                  <Fl l="Sub Total">
+                    <input style={{ ...QS.inp, color: "#2563EB", fontWeight: 700 }}
+                      value={f.price === "" ? "" : inr((+f.price || 0) * (+f.pax || 0))} disabled />
+                  </Fl>
 
                   {f.roundTrip && (
                     <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px dashed #E4E9F2" }}>
-                      <div style={{ ...G3, marginBottom: 10 }}>
+                      {/* Return Row 1: Return From | Return To */}
+                      <div style={{ ...G2, marginBottom: 10 }}>
                         <Fl l="Return From">
                           <input style={QS.inp} placeholder={f.to || "Srinagar"} value={f.to} disabled />
                         </Fl>
                         <Fl l="Return To">
                           <input style={QS.inp} placeholder={f.from || "Delhi"} value={f.from} disabled />
                         </Fl>
+                      </div>
+                      {/* Return Row 2: Pax | Return Price Per Pax */}
+                      <div style={{ ...G2, marginBottom: 10 }}>
                         <Fl l="Pax">
                           <input style={{ ...QS.inp, color: "#94A3B8" }} value={f.pax} disabled />
                         </Fl>
-                      </div>
-                      <div style={G2}>
                         <Fl l="Return Price Per Pax (₹)">
                           <input type="number" style={QS.inp} value={f.returnPrice} onChange={e => updArr(setFlights, i, "returnPrice", e.target.value)} />
                         </Fl>
-                        <Fl l="Return Sub Total">
-                          <input style={{ ...QS.inp, color: "#2563EB", fontWeight: 700 }}
-                            value={f.returnPrice === "" ? "" : inr((+f.returnPrice || 0) * (+f.pax || 0))} disabled />
-                        </Fl>
                       </div>
+                      {/* Return Row 3: Return Sub Total — full width */}
+                      <Fl l="Return Sub Total">
+                        <input style={{ ...QS.inp, color: "#2563EB", fontWeight: 700 }}
+                          value={f.returnPrice === "" ? "" : inr((+f.returnPrice || 0) * (+f.pax || 0))} disabled />
+                      </Fl>
                       <div style={{ textAlign: "right", fontSize: 13, fontWeight: 800, color: "#1D4ED8", marginTop: 8 }}>
                         Total Amount (Onward + Return): {inr(((+f.price || 0) + (+f.returnPrice || 0)) * (+f.pax || 0))}
                       </div>
@@ -687,6 +768,7 @@ export default function QuotationBuilder({
                     value={toRichText(form.inclusions || "")}
                     onChange={v => upd("inclusions", v)}
                     placeholder="List what's included in the package…"
+                    minHeight={350}
                   />
                 </Fl>
                 <Fl l="Exclusions">
@@ -694,6 +776,7 @@ export default function QuotationBuilder({
                     value={toRichText(form.exclusions || "")}
                     onChange={v => upd("exclusions", v)}
                     placeholder="List what's not included…"
+                    minHeight={350}
                   />
                 </Fl>
               </div>
@@ -748,7 +831,7 @@ export default function QuotationBuilder({
                   {intl && (
                     <Fl l="TCS % (Intl only)">
                       <select style={QS.inp} value={form.tcsPct} onChange={e => upd("tcsPct", +e.target.value)}>
-                        <option value={5}>5% (up to ₹7L)</option>
+                        <option value={2}>2% (up to ₹7L)</option>
                         <option value={20}>20% (above ₹7L)</option>
                       </select>
                     </Fl>
@@ -766,7 +849,8 @@ export default function QuotationBuilder({
                 </div>
               </div>
             </div>
-          </div>
+          </div>{/* end right scrollable form */}
+          </div>{/* end two-column body */}
 
           {/* Footer */}
           <div style={QS.foot}>

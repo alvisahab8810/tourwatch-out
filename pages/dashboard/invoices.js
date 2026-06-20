@@ -227,11 +227,14 @@ export default function InvoicesPage() {
   const [loading,     setLoading]     = useState(true);
   const [search,      setSearch]      = useState("");
 
-  const [vouchers,    setVouchers]    = useState([]);
-  const [builder,     setBuilder]     = useState(null);  // { invoice, isNew }
-  const [payModal,    setPayModal]     = useState(null);  // invoice doc
-  const [qBuilder,    setQBuilder]     = useState(null);  // { quote, lead }
-  const [vBuilder,    setVBuilder]     = useState(null);  // { voucher?, isNew, prefill? }
+  const [vouchers,     setVouchers]    = useState([]);
+  const [builder,      setBuilder]     = useState(null);
+  const [payModal,     setPayModal]    = useState(null);
+  const [qBuilder,     setQBuilder]    = useState(null);
+  const [vBuilder,     setVBuilder]    = useState(null);
+  const [fromMonth,    setFromMonth]   = useState("");
+  const [toMonth,      setToMonth]     = useState("");
+  const [filterStatus, setFilterStatus] = useState("");
 
   useEffect(() => {
     Promise.all([
@@ -275,15 +278,22 @@ export default function InvoicesPage() {
   }
 
   const filtered = useMemo(() => {
-    if (!search) return invoices;
-    const q = search.toLowerCase();
-    return invoices.filter(i =>
-      (i.invoiceNo   || "").toLowerCase().includes(q) ||
-      (i.clientName  || "").toLowerCase().includes(q) ||
-      (i.destination || "").toLowerCase().includes(q) ||
-      (i.quotationNo || "").toLowerCase().includes(q)
-    );
-  }, [invoices, search]);
+    return invoices.filter(inv => {
+      if (search) {
+        const q = search.toLowerCase();
+        if (![inv.invoiceNo, inv.clientName, inv.destination, inv.quotationNo].join(" ").toLowerCase().includes(q)) return false;
+      }
+      if (filterStatus) {
+        const paid = calcPaid(inv), due = calcDue(inv);
+        const st = getStatus(paid, due);
+        if (st !== filterStatus) return false;
+      }
+      const mk = monthKey(inv.invoiceDate);
+      if (fromMonth && mk && mk < fromMonth) return false;
+      if (toMonth   && mk && mk > toMonth)   return false;
+      return true;
+    });
+  }, [invoices, search, filterStatus, fromMonth, toMonth]);
 
   /* Invoices raised against the same quotation are siblings — one per billing
      month. "Amount Due" / "Send Final Invoice" are tracked at the quotation
@@ -325,16 +335,55 @@ export default function InvoicesPage() {
         </div>
 
         {/* Toolbar */}
-        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10, flexWrap: "wrap" }}>
           <input style={S.search} placeholder="Search by invoice no, client, destination, quote ID…" value={search} onChange={e => setSearch(e.target.value)} />
           <button style={{ ...S.newBtn, marginLeft: "auto" }} onClick={() => setBuilder({ invoice: null, isNew: true })}>
             ＋ New Invoice
           </button>
         </div>
 
-        {/* Count */}
-        <div style={{ fontSize: 13, color: "#6B7A99", fontWeight: 600, marginBottom: 10 }}>
-          {filtered.length} invoice{filtered.length !== 1 ? "s" : ""}
+        {/* Filter bar */}
+        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14, background: "#fff", border: "1px solid #E4E9F2", borderRadius: 10, padding: "10px 14px", overflowX: "auto" }}>
+          <span style={{ fontSize: 11, fontWeight: 800, color: "#6B7A99", textTransform: "uppercase", letterSpacing: ".05em", flexShrink: 0 }}>Filters:</span>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+            <span style={{ fontSize: 12, color: "#6B7A99", fontWeight: 600 }}>From</span>
+            <input type="month" style={S.monthInp} value={fromMonth} onChange={e => setFromMonth(e.target.value)} />
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+            <span style={{ fontSize: 12, color: "#6B7A99", fontWeight: 600 }}>To</span>
+            <input type="month" style={S.monthInp} value={toMonth} onChange={e => setToMonth(e.target.value)} />
+          </div>
+          <select style={S.filterSel} value={filterStatus} onChange={e => setFilterStatus(e.target.value)}>
+            <option value="">All Statuses</option>
+            <option value="Paid">Paid</option>
+            <option value="Partially Paid">Partially Paid</option>
+            <option value="Unpaid">Unpaid</option>
+          </select>
+          {(fromMonth || toMonth || filterStatus) && (
+            <button onClick={() => { setFromMonth(""); setToMonth(""); setFilterStatus(""); }}
+              style={{ background: "#FEE2E2", color: "#BE123C", border: "none", borderRadius: 7, padding: "4px 12px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
+              ✕ Clear
+            </button>
+          )}
+          <span style={{ marginLeft: "auto", fontSize: 12, color: "#6B7A99", fontWeight: 600 }}>
+            {filtered.length} invoice{filtered.length !== 1 ? "s" : ""}
+          </span>
+        </div>
+
+        {/* Count chips */}
+        <div style={{ display: "flex", gap: 10, marginBottom: 14, flexWrap: "wrap" }}>
+          {[
+            { l: "Total",          n: invoices.length,                                                             c: "#2563EB", bg: "#EFF4FF" },
+            { l: "Paid",           n: invoices.filter(i => getStatus(calcPaid(i), calcDue(i)) === "Paid").length,  c: "#15803D", bg: "#DCFCE7" },
+            { l: "Partially Paid", n: invoices.filter(i => getStatus(calcPaid(i), calcDue(i)) === "Partially Paid").length, c: "#B45309", bg: "#FEF3C7" },
+            { l: "Unpaid",         n: invoices.filter(i => getStatus(calcPaid(i), calcDue(i)) === "Unpaid").length, c: "#BE123C", bg: "#FEE2E2" },
+          ].map(({ l, n, c, bg }) => (
+            <div key={l} onClick={() => setFilterStatus(filterStatus === l ? "" : l)}
+              style={{ background: bg, borderRadius: 9, padding: "7px 16px", display: "flex", alignItems: "center", gap: 8, border: `1.5px solid ${c}22`, cursor: "pointer", opacity: filterStatus && filterStatus !== l ? 0.5 : 1 }}>
+              <span style={{ fontSize: 20, fontWeight: 800, color: c }}>{n}</span>
+              <span style={{ fontSize: 11, fontWeight: 700, color: c }}>{l}</span>
+            </div>
+          ))}
         </div>
 
         {/* Table */}
@@ -555,7 +604,9 @@ const P = {
 };
 
 const S = {
-  search:    { padding: "9px 14px", border: "1px solid #E4E9F2", borderRadius: 10, fontSize: 13, outline: "none", color: "#0F1B33", width: 320, fontFamily: "inherit", background: "#fff" },
+  search:    { padding: "9px 14px", border: "1px solid #E4E9F2", borderRadius: 10, fontSize: 13, outline: "none", color: "#0F1B33", width: 260, fontFamily: "inherit", background: "#fff" },
+  monthInp:  { padding: "6px 10px", border: "1px solid #E4E9F2", borderRadius: 8, fontSize: 13, outline: "none", color: "#0F1B33", fontFamily: "inherit", background: "#F8FAFD", colorScheme: "light", width: 160, flexShrink: 0 },
+  filterSel: { padding: "6px 10px", border: "1px solid #E4E9F2", borderRadius: 8, fontSize: 13, color: "#36415A", fontFamily: "inherit", outline: "none", background: "#F8FAFD", flexShrink: 0, width: 160 },
   newBtn:    { padding: "9px 18px", background: "#2563EB", color: "#fff", border: "none", borderRadius: 10, fontWeight: 700, fontSize: 13, cursor: "pointer", whiteSpace: "nowrap" },
   card:      { background: "#fff", borderRadius: 14, boxShadow: "0 2px 12px rgba(15,27,51,.07)", overflow: "hidden" },
   tbl:       { width: "100%", borderCollapse: "collapse", fontSize: ".84rem", minWidth: 1200 },

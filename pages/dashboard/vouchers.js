@@ -26,14 +26,27 @@ const INV_STYLE = {
   "Partially Paid": { background: "#FEF3C7", color: "#B45309" },
   "Unpaid":         { background: "#FEE2E2", color: "#BE123C" },
 };
+function voucherMonthKey(v) {
+  const raw = v.travelDate || v.travelDateFrom || v.createdAt || "";
+  if (!raw) return "";
+  try {
+    const d = /^\d{4}-\d{2}-\d{2}/.test(raw) ? new Date(raw + "T00:00:00") : new Date(raw);
+    if (isNaN(d)) return "";
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+  } catch { return ""; }
+}
 
 export default function VouchersPage() {
-  const [vouchers,  setVouchers]  = useState([]);
-  const [invoices,  setInvoices]  = useState([]);
-  const [leads,     setLeads]     = useState([]);
-  const [loading,   setLoading]   = useState(true);
-  const [search,    setSearch]    = useState("");
-  const [vBuilder,  setVBuilder]  = useState(null);
+  const [vouchers,    setVouchers]    = useState([]);
+  const [invoices,    setInvoices]    = useState([]);
+  const [leads,       setLeads]       = useState([]);
+  const [loading,     setLoading]     = useState(true);
+  const [search,      setSearch]      = useState("");
+  const [vBuilder,    setVBuilder]    = useState(null);
+  const [fromMonth,   setFromMonth]   = useState("");
+  const [toMonth,     setToMonth]     = useState("");
+  const [filterLock,  setFilterLock]  = useState("");
+  const [filterDest,  setFilterDest]  = useState("");
 
   useEffect(() => {
     Promise.all([
@@ -67,16 +80,26 @@ export default function VouchersPage() {
     setVBuilder(null);
   }
 
+  const destOptions = useMemo(() => {
+    const s = new Set(vouchers.map(v => v.destination).filter(Boolean));
+    return Array.from(s).sort();
+  }, [vouchers]);
+
   const filtered = useMemo(() => {
-    if (!search) return vouchers;
-    const q = search.toLowerCase();
-    return vouchers.filter(v =>
-      (v.voucherNo  || "").toLowerCase().includes(q) ||
-      (v.tripId     || "").toLowerCase().includes(q) ||
-      (v.name       || "").toLowerCase().includes(q) ||
-      (v.destination|| "").toLowerCase().includes(q)
-    );
-  }, [vouchers, search]);
+    return vouchers.filter(v => {
+      if (search) {
+        const q = search.toLowerCase();
+        if (![v.voucherNo, v.tripId, v.name, v.destination].join(" ").toLowerCase().includes(q)) return false;
+      }
+      if (filterDest && (v.destination || "") !== filterDest) return false;
+      if (filterLock === "locked"   && !isLocked(v)) return false;
+      if (filterLock === "editable" &&  isLocked(v)) return false;
+      const mk = voucherMonthKey(v);
+      if (fromMonth && mk && mk < fromMonth) return false;
+      if (toMonth   && mk && mk > toMonth)   return false;
+      return true;
+    });
+  }, [vouchers, search, filterDest, filterLock, fromMonth, toMonth]);
 
   return (
     <DashboardLayout active="Voucher">
@@ -84,7 +107,7 @@ export default function VouchersPage() {
       <div style={{ padding: "22px 26px 60px", background: "#F3F5FA", minHeight: "100vh" }}>
 
         {/* Toolbar */}
-        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10, flexWrap: "wrap" }}>
           <input style={S.search} placeholder="Search by trip ID, guest, destination…"
             value={search} onChange={e => setSearch(e.target.value)} />
           <button style={{ ...S.newBtn, marginLeft: "auto" }}
@@ -93,8 +116,50 @@ export default function VouchersPage() {
           </button>
         </div>
 
-        <div style={{ fontSize: 13, color: "#6B7A99", fontWeight: 600, marginBottom: 10 }}>
-          {filtered.length} voucher{filtered.length !== 1 ? "s" : ""}
+        {/* Filter bar */}
+        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14, background: "#fff", border: "1px solid #E4E9F2", borderRadius: 10, padding: "10px 14px", overflowX: "auto" }}>
+          <span style={{ fontSize: 11, fontWeight: 800, color: "#6B7A99", textTransform: "uppercase", letterSpacing: ".05em", flexShrink: 0 }}>Filters:</span>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+            <span style={{ fontSize: 12, color: "#6B7A99", fontWeight: 600 }}>From</span>
+            <input type="month" style={S.monthInp} value={fromMonth} onChange={e => setFromMonth(e.target.value)} />
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+            <span style={{ fontSize: 12, color: "#6B7A99", fontWeight: 600 }}>To</span>
+            <input type="month" style={S.monthInp} value={toMonth} onChange={e => setToMonth(e.target.value)} />
+          </div>
+          <select style={S.filterSel} value={filterDest} onChange={e => setFilterDest(e.target.value)}>
+            <option value="">All Destinations</option>
+            {destOptions.map(d => <option key={d} value={d}>{d}</option>)}
+          </select>
+          <select style={S.filterSel} value={filterLock} onChange={e => setFilterLock(e.target.value)}>
+            <option value="">All States</option>
+            <option value="editable">Editable</option>
+            <option value="locked">Locked</option>
+          </select>
+          {(fromMonth || toMonth || filterDest || filterLock) && (
+            <button onClick={() => { setFromMonth(""); setToMonth(""); setFilterDest(""); setFilterLock(""); }}
+              style={{ background: "#FEE2E2", color: "#BE123C", border: "none", borderRadius: 7, padding: "4px 12px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
+              ✕ Clear
+            </button>
+          )}
+          <span style={{ marginLeft: "auto", fontSize: 12, color: "#6B7A99", fontWeight: 600 }}>
+            {filtered.length} voucher{filtered.length !== 1 ? "s" : ""}
+          </span>
+        </div>
+
+        {/* Count chips */}
+        <div style={{ display: "flex", gap: 10, marginBottom: 14, flexWrap: "wrap" }}>
+          {[
+            { l: "Total",    n: vouchers.length,                         c: "#2563EB", bg: "#EFF4FF", f: "" },
+            { l: "Editable", n: vouchers.filter(v => !isLocked(v)).length, c: "#15803D", bg: "#DCFCE7", f: "editable" },
+            { l: "Locked",   n: vouchers.filter(v =>  isLocked(v)).length, c: "#B45309", bg: "#FEF3C7", f: "locked" },
+          ].map(({ l, n, c, bg, f }) => (
+            <div key={l} onClick={() => setFilterLock(filterLock === f ? "" : f)}
+              style={{ background: bg, borderRadius: 9, padding: "7px 16px", display: "flex", alignItems: "center", gap: 8, border: `1.5px solid ${c}22`, cursor: "pointer", opacity: filterLock && filterLock !== f && f !== "" ? 0.5 : 1 }}>
+              <span style={{ fontSize: 20, fontWeight: 800, color: c }}>{n}</span>
+              <span style={{ fontSize: 11, fontWeight: 700, color: c }}>{l}</span>
+            </div>
+          ))}
         </div>
 
         {/* Table */}
@@ -218,7 +283,9 @@ export default function VouchersPage() {
 }
 
 const S = {
-  search:  { padding: "9px 14px", border: "1px solid #E4E9F2", borderRadius: 10, fontSize: 13, outline: "none", color: "#0F1B33", width: 320, fontFamily: "inherit", background: "#fff" },
+  search:    { padding: "9px 14px", border: "1px solid #E4E9F2", borderRadius: 10, fontSize: 13, outline: "none", color: "#0F1B33", width: 260, fontFamily: "inherit", background: "#fff" },
+  monthInp:  { padding: "6px 10px", border: "1px solid #E4E9F2", borderRadius: 8, fontSize: 13, outline: "none", color: "#0F1B33", fontFamily: "inherit", background: "#F8FAFD", colorScheme: "light", width: 160, flexShrink: 0 },
+  filterSel: { padding: "6px 10px", border: "1px solid #E4E9F2", borderRadius: 8, fontSize: 13, color: "#36415A", fontFamily: "inherit", outline: "none", background: "#F8FAFD", flexShrink: 0, width: 160 },
   newBtn:  { padding: "9px 18px", background: "#2563EB", color: "#fff", border: "none", borderRadius: 10, fontWeight: 700, fontSize: 13, cursor: "pointer", whiteSpace: "nowrap" },
   card:    { background: "#fff", borderRadius: 14, boxShadow: "0 2px 12px rgba(15,27,51,.07)", overflow: "hidden" },
   tbl:     { width: "100%", borderCollapse: "collapse", fontSize: ".84rem", minWidth: 1050 },

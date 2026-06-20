@@ -1,8 +1,10 @@
 import { useState, useEffect, useMemo } from "react";
+import dynamic from "next/dynamic";
 import Head from "next/head";
 import DashboardLayout from "../../components/backend/DashboardLayout";
 import QuotationBuilder, { calcQ, gradeColor, inrFmt } from "../../components/backend/QuotationBuilder";
 import InvoiceBuilder from "../../components/backend/InvoiceBuilder";
+const QuotationPreview = dynamic(() => import("../../components/voucher/QuotationPreview"), { ssr: false });
 
 /* ── helpers ── */
 function fmtDate(v) {
@@ -56,6 +58,8 @@ export default function QuotationsPage() {
   const [remSaving,  setRemSaving]  = useState(false);
 
   const [verModal, setVerModal]   = useState(null);
+  const [pdfPreviewData, setPdfPreviewData] = useState(null);
+  const [pdfLoading,     setPdfLoading]     = useState(false);
   const [lostInput, setLostInput] = useState({});
   const [newSP, setNewSP]         = useState({});
   const [expEdit, setExpEdit]     = useState({});
@@ -193,6 +197,46 @@ export default function QuotationsPage() {
     const v = +expEdit[q._id]; if (isNaN(v)) return;
     await patchQuote(q._id, { tripExpense: v });
     setExpEdit(p => { const n = { ...p }; delete n[q._id]; return n; });
+  }
+
+  function openPdfPreview(q, v) {
+    const lead = q.leadId || {};
+    const selling = (v?.cost || 0) + (v?.margin || 0);
+    setPdfPreviewData({
+      quoteId:   qDispId(q),
+      lead,
+      form:      { ...q, cost: v?.cost ?? q.cost, margin: v?.margin ?? q.margin },
+      hotels:    q.hotels    || [],
+      flights:   q.flights   || [],
+      transfers: q.transfers || [],
+      itin:      q.itinerary || [],
+      selling:   selling || calcQ(q).selling,
+    });
+  }
+
+  async function downloadPreviewPDF() {
+    setPdfLoading(true);
+    try {
+      const { default: html2canvas } = await import("html2canvas");
+      const { jsPDF } = await import("jspdf");
+      const el = document.getElementById("qpv-pdf-target");
+      if (!el) return;
+      const patch = doc => { const st = doc.createElement("style"); st.textContent = "* { font-family: Arial, Helvetica, sans-serif !important; }"; doc.head.appendChild(st); };
+      const canvas = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: "#fff", logging: false, height: el.scrollHeight, windowHeight: el.scrollHeight, onclone: patch });
+      const pdf = new jsPDF("p", "mm", "a4");
+      const pageW = pdf.internal.pageSize.getWidth(), pageH = pdf.internal.pageSize.getHeight();
+      const pxPerMm = canvas.width / pageW, pagePx = pageH * pxPerMm;
+      let yPx = 0, first = true;
+      while (yPx < canvas.height) {
+        const slice = document.createElement("canvas");
+        slice.width = canvas.width; slice.height = Math.min(pagePx, canvas.height - yPx);
+        slice.getContext("2d").drawImage(canvas, 0, yPx, canvas.width, slice.height, 0, 0, canvas.width, slice.height);
+        if (!first) pdf.addPage();
+        pdf.addImage(slice.toDataURL("image/jpeg", 0.95), "JPEG", 0, 0, pageW, (slice.height / pxPerMm));
+        yPx += pagePx; first = false;
+      }
+      pdf.save(`quote-${pdfPreviewData?.quoteId || "tw"}.pdf`);
+    } finally { setPdfLoading(false); }
   }
 
   async function changeStatus(q, s) {
@@ -663,7 +707,8 @@ export default function QuotationsPage() {
                                 style={{ background: "#EFF4FF", color: "#2563EB", border: "1px solid #BFD3FE", borderRadius: 6, padding: "3px 10px", fontSize: 12, fontWeight: 700, cursor: "pointer", marginRight: 6 }}>
                                 ✎ Edit
                               </button>
-                              <button style={{ background: "#fff", color: "#36415A", border: "1px solid #E4E9F2", borderRadius: 6, padding: "3px 10px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
+                              <button onClick={() => openPdfPreview(verModal, v)}
+                                style={{ background: "#fff", color: "#36415A", border: "1px solid #E4E9F2", borderRadius: 6, padding: "3px 10px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
                                 PDF
                               </button>
                             </td>
@@ -690,6 +735,37 @@ export default function QuotationsPage() {
 
       {fuOpen && <div style={{ position: "fixed", inset: 0, zIndex: 30 }} onClick={() => setFuOpen(null)} />}
       </div>{/* end page wrapper */}
+
+      {/* ── PDF Preview Modal ── */}
+      {pdfPreviewData && (
+        <Ov onClick={e => { if (e.target === e.currentTarget) setPdfPreviewData(null); }}>
+          <div style={{ ...S.modal, maxWidth: 860, display: "flex", flexDirection: "column" }}>
+            {/* Header */}
+            <div style={{ ...S.mHead, flexShrink: 0 }}>
+              <div style={{ color: "#fff", fontWeight: 800, fontSize: 15 }}>Quote Preview · {pdfPreviewData.quoteId}</div>
+              <div style={{ marginLeft: "auto", display: "flex", gap: 8, alignItems: "center" }}>
+                <button style={{ ...S.fb, background: "#2563EB", color: "#fff", border: "none", opacity: pdfLoading ? 0.6 : 1 }}
+                  onClick={downloadPreviewPDF} disabled={pdfLoading}>
+                  ⬇ {pdfLoading ? "Generating…" : "Download PDF"}
+                </button>
+                <button style={{ ...S.mx }} onClick={() => setPdfPreviewData(null)}>✕</button>
+              </div>
+            </div>
+            {/* Preview */}
+            <div style={{ padding: 22, maxHeight: "76vh", overflowY: "auto", background: "#F3F5FA" }}>
+              <QuotationPreview id="qpv-pdf-target" data={pdfPreviewData} />
+            </div>
+            {/* Footer */}
+            <div style={{ ...S.mFoot, flexShrink: 0 }}>
+              <button style={S.fb} onClick={() => setPdfPreviewData(null)}>Close</button>
+              <button style={{ ...S.sb, padding: "9px 22px", opacity: pdfLoading ? 0.6 : 1 }}
+                onClick={downloadPreviewPDF} disabled={pdfLoading}>
+                ⬇ {pdfLoading ? "Generating…" : "Download PDF"}
+              </button>
+            </div>
+          </div>
+        </Ov>
+      )}
 
       {/* ── Invoice Builder Modal ── */}
       {invBuilder && (
