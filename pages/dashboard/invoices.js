@@ -235,6 +235,8 @@ export default function InvoicesPage() {
   const [fromMonth,    setFromMonth]   = useState("");
   const [toMonth,      setToMonth]     = useState("");
   const [filterStatus, setFilterStatus] = useState("");
+  const [confirmDel,   setConfirmDel]  = useState(null);
+  const [deleting,     setDeleting]    = useState(null);
 
   useEffect(() => {
     Promise.all([
@@ -267,6 +269,15 @@ export default function InvoicesPage() {
     if (!quote) return;
     const lead = leads.find(l => l._id === (quote.leadId?._id || quote.leadId));
     setQBuilder({ quote, lead });
+  }
+
+  async function deleteInvoice(id) {
+    setDeleting(id);
+    try {
+      await fetch(`/api/dashboard/invoices/${id}`, { method: "DELETE" });
+      setInvoices(prev => prev.filter(i => (i.id || i._id) !== id));
+      setConfirmDel(null);
+    } finally { setDeleting(null); }
   }
 
   function handleSaved(saved) {
@@ -393,7 +404,7 @@ export default function InvoicesPage() {
             <table style={S.tbl} className="tbl">
               <thead>
                 <tr style={{ background: "#F6F8FC" }}>
-                  {["S.No","Name","Invoice ID","Quotation","Total","Payments","Amount Due","Parts","Status","Final Invoice","Voucher"].map(h => (
+                  {["S.No","Name","Invoice ID","Quotation","Total","Payments","Amount Due","Parts","Status","Final Invoice","Voucher",""].map(h => (
                     <th key={h} style={S.th}>{h}</th>
                   ))}
                 </tr>
@@ -513,6 +524,21 @@ export default function InvoicesPage() {
                           );
                         })()}
                       </td>
+
+                      {/* Delete */}
+                      <td style={S.td}>
+                        {confirmDel === (inv.id || inv._id) ? (
+                          <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+                            <span style={{ fontSize: 11, color: "#BE123C", fontWeight: 700 }}>Sure?</span>
+                            <button style={S.delYes} onClick={() => deleteInvoice(inv.id || inv._id)} disabled={deleting === (inv.id || inv._id)}>
+                              {deleting === (inv.id || inv._id) ? "…" : "Yes"}
+                            </button>
+                            <button style={S.delNo} onClick={() => setConfirmDel(null)}>No</button>
+                          </span>
+                        ) : (
+                          <button style={S.delBtn} onClick={() => setConfirmDel(inv.id || inv._id)}>Delete</button>
+                        )}
+                      </td>
                     </tr>
                   );
                 })}
@@ -617,4 +643,7 @@ const S = {
   payBtn:    { background: "#2563EB", color: "#fff", border: "none", borderRadius: 7, padding: "5px 11px", fontSize: 12, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" },
   finalBtn:  { background: "#15803D", color: "#fff", border: "none", borderRadius: 7, padding: "5px 11px", fontSize: 12, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" },
   voucherBtn:{ background: "#EFF4FF", color: "#2563EB", border: "1px solid #BFD3FE", borderRadius: 7, padding: "5px 11px", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" },
+  delBtn:    { background: "#FEE2E2", color: "#BE123C", border: "none", borderRadius: 6, padding: "3px 9px", fontSize: 11, fontWeight: 700, cursor: "pointer" },
+  delYes:    { background: "#BE123C", color: "#fff", border: "none", borderRadius: 6, padding: "3px 8px", fontSize: 11, fontWeight: 700, cursor: "pointer" },
+  delNo:     { background: "#F1F5F9", color: "#36415A", border: "none", borderRadius: 6, padding: "3px 8px", fontSize: 11, fontWeight: 700, cursor: "pointer" },
 };

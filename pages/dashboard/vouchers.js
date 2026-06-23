@@ -47,6 +47,8 @@ export default function VouchersPage() {
   const [toMonth,     setToMonth]     = useState("");
   const [filterLock,  setFilterLock]  = useState("");
   const [filterDest,  setFilterDest]  = useState("");
+  const [confirmDel,  setConfirmDel]  = useState(null);
+  const [deleting,    setDeleting]    = useState(null);
 
   useEffect(() => {
     Promise.all([
@@ -69,6 +71,15 @@ export default function VouchersPage() {
     const inv = invMap[v.invoiceId];
     if (!inv) return false;
     return calcDue(inv) === 0 && calcGrand(inv) > 0;
+  }
+
+  async function deleteVoucher(id) {
+    setDeleting(id);
+    try {
+      await fetch(`/api/dashboard/vouchers/${id}`, { method: "DELETE" });
+      setVouchers(prev => prev.filter(v => (v.id || v._id) !== id));
+      setConfirmDel(null);
+    } finally { setDeleting(null); }
   }
 
   function handleSaved(saved) {
@@ -250,15 +261,24 @@ export default function VouchersPage() {
 
                       {/* Action */}
                       <td style={S.td}>
-                        {locked ? (
-                          <button style={S.viewBtn} onClick={() => setVBuilder({ voucher: v, isNew: false, prefill: null })}>
-                            View
-                          </button>
-                        ) : (
-                          <button style={S.editBtn} onClick={() => setVBuilder({ voucher: v, isNew: false, prefill: null })}>
-                            Open / Edit
-                          </button>
-                        )}
+                        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                          {locked ? (
+                            <button style={S.viewBtn} onClick={() => setVBuilder({ voucher: v, isNew: false, prefill: null })}>View</button>
+                          ) : (
+                            <button style={S.editBtn} onClick={() => setVBuilder({ voucher: v, isNew: false, prefill: null })}>Open / Edit</button>
+                          )}
+                          {confirmDel === (v.id || v._id) ? (
+                            <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+                              <span style={{ fontSize: 11, color: "#BE123C", fontWeight: 700 }}>Sure?</span>
+                              <button style={S.delYes} onClick={() => deleteVoucher(v.id || v._id)} disabled={deleting === (v.id || v._id)}>
+                                {deleting === (v.id || v._id) ? "…" : "Yes"}
+                              </button>
+                              <button style={S.delNo} onClick={() => setConfirmDel(null)}>No</button>
+                            </span>
+                          ) : (
+                            <button style={S.delBtn} onClick={() => setConfirmDel(v.id || v._id)}>Delete</button>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   );
@@ -294,4 +314,7 @@ const S = {
   empty:   { padding: 44, textAlign: "center", color: "#94A3B8", fontSize: 13, fontWeight: 600 },
   editBtn: { background: "#2563EB", color: "#fff", border: "none", borderRadius: 7, padding: "6px 13px", fontSize: 12, fontWeight: 700, cursor: "pointer" },
   viewBtn: { background: "#fff", color: "#2563EB", border: "1.5px solid #2563EB", borderRadius: 7, padding: "5px 13px", fontSize: 12, fontWeight: 700, cursor: "pointer" },
+  delBtn:  { background: "#FEE2E2", color: "#BE123C", border: "none", borderRadius: 6, padding: "3px 9px", fontSize: 11, fontWeight: 700, cursor: "pointer" },
+  delYes:  { background: "#BE123C", color: "#fff", border: "none", borderRadius: 6, padding: "3px 8px", fontSize: 11, fontWeight: 700, cursor: "pointer" },
+  delNo:   { background: "#F1F5F9", color: "#36415A", border: "none", borderRadius: 6, padding: "3px 8px", fontSize: 11, fontWeight: 700, cursor: "pointer" },
 };

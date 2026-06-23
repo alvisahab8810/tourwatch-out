@@ -61,6 +61,8 @@ export default function QuotationsPage() {
   const [pdfPreviewData, setPdfPreviewData] = useState(null);
   const [pdfLoading,     setPdfLoading]     = useState(false);
   const [lostInput, setLostInput] = useState({});
+  const [confirmDel, setConfirmDel] = useState(null);
+  const [deleting,   setDeleting]   = useState(null);
   const [newSP, setNewSP]         = useState({});
   const [expEdit, setExpEdit]     = useState({});
   const [fuOpen, setFuOpen]       = useState(null);
@@ -239,6 +241,15 @@ export default function QuotationsPage() {
     } finally { setPdfLoading(false); }
   }
 
+  async function deleteQuote(id) {
+    setDeleting(id);
+    try {
+      await fetch(`/api/dashboard/quotations/${id}`, { method: "DELETE" });
+      setQuotes(prev => prev.filter(q => q._id !== id));
+      setConfirmDel(null);
+    } finally { setDeleting(null); }
+  }
+
   async function changeStatus(q, s) {
     if (s === "Lost") setLostInput(p => ({ ...p, [q._id]: q.lostReason || "" }));
     await patchQuote(q._id, { status: s });
@@ -330,7 +341,7 @@ export default function QuotationsPage() {
           <table style={S.table}>
             <thead>
               <tr style={{ background: "#F3F5FA" }}>
-                {["S.No","Quote ID","Name","Mobile","Destination","Days","Date of Travel","Quoted Price","Margin %","New Selling Price","Live Margin %","Edits","Follow-ups","Status","Lost Reason","Reminders","Trip Expense","Invoice"].map(h => (
+                {["S.No","Quote ID","Name","Mobile","Destination","Days","Date of Travel","Quoted Price","Margin %","New Selling Price","Live Margin %","Edits","Follow-ups","Status","Lost Reason","Reminders","Trip Expense","Invoice",""].map(h => (
                   <th key={h} style={S.th}>{h}</th>
                 ))}
               </tr>
@@ -485,6 +496,21 @@ export default function QuotationsPage() {
                         </button>
                       )}
                     </td>
+
+                    {/* Delete */}
+                    <td style={S.td}>
+                      {confirmDel === q._id ? (
+                        <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+                          <span style={{ fontSize: 11, color: "#BE123C", fontWeight: 700 }}>Sure?</span>
+                          <button style={S.delYes} onClick={() => deleteQuote(q._id)} disabled={deleting === q._id}>
+                            {deleting === q._id ? "…" : "Yes"}
+                          </button>
+                          <button style={S.delNo} onClick={() => setConfirmDel(null)}>No</button>
+                        </span>
+                      ) : (
+                        <button style={S.delBtn} onClick={() => setConfirmDel(q._id)}>Delete</button>
+                      )}
+                    </td>
                   </tr>
                 );
               })}
@@ -510,7 +536,7 @@ export default function QuotationsPage() {
                 </select>
               </div>
               <label style={S.lbl}>Where is this trip going?</label>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 18 }}>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap:   12, marginBottom: 18 }}>
                 {["Domestic", "International"].map(t => (
                   <div key={t} onClick={() => setNewStep(p => ({ ...p, type: t }))}
                     style={{ border: `2px solid ${newStep.type === t ? "#2563EB" : "#E4E9F2"}`, borderRadius: 12, padding: "14px 16px", cursor: "pointer", background: newStep.type === t ? "#EFF4FF" : "#fff", textAlign: "center", fontWeight: 700, color: newStep.type === t ? "#2563EB" : "#6B7A99", fontSize: 14, transition: "all .15s" }}>
@@ -816,4 +842,7 @@ const S = {
   sb:        { padding: "8px 18px", border: "none", borderRadius: 9, background: "#2563EB", color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" },
   inp:       { border: "1px solid #E4E9F2", borderRadius: 9, padding: "8px 11px", fontSize: ".88rem", color: "#0F1B33", outline: "none", width: "100%", boxSizing: "border-box", background: "#F8FAFD", fontFamily: "inherit" },
   lbl:       { display: "block", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".05em", color: "#6B7A99", marginBottom: 5 },
+  delBtn:    { background: "#FEE2E2", color: "#BE123C", border: "none", borderRadius: 6, padding: "3px 9px", fontSize: 11, fontWeight: 700, cursor: "pointer" },
+  delYes:    { background: "#BE123C", color: "#fff", border: "none", borderRadius: 6, padding: "3px 8px", fontSize: 11, fontWeight: 700, cursor: "pointer" },
+  delNo:     { background: "#F1F5F9", color: "#36415A", border: "none", borderRadius: 6, padding: "3px 8px", fontSize: 11, fontWeight: 700, cursor: "pointer" },
 };
