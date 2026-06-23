@@ -122,18 +122,19 @@ export default function ReportsPage() {
 
   /* invoices linked to won leads in filtered set */
   const wonLeadIds = useMemo(() => new Set(wonQ.map(q => String(q.leadId?._id || q.leadId))), [wonQ]);
-  const wonInvoices = useMemo(() => invoices.filter(inv => {
-    if (!wonLeadIds.has(String(inv.leadId))) return false;
-    const d = inv.createdAt ? new Date(inv.createdAt).toISOString().slice(0, 10) : "";
+
+  /* ALL invoices within the date range — used for revenue/GST/TCS totals */
+  const allFilteredInvoices = useMemo(() => invoices.filter(inv => {
+    const d = (inv.invoiceDate || inv.createdAt) ? new Date(inv.invoiceDate || inv.createdAt).toISOString().slice(0, 10) : "";
     if (d && applied.dateFrom && d < applied.dateFrom) return false;
     if (d && applied.dateTo   && d > applied.dateTo)   return false;
     return true;
-  }), [invoices, wonLeadIds, applied]);
+  }), [invoices, applied]);
 
   /* summary numbers */
-  const totalRev   = useMemo(() => wonInvoices.reduce((s, i) => s + calcInv(i).grand, 0), [wonInvoices]);
-  const gstColl    = useMemo(() => wonInvoices.reduce((s, i) => s + calcInv(i).gst,   0), [wonInvoices]);
-  const tcsColl    = useMemo(() => wonInvoices.reduce((s, i) => s + calcInv(i).tcs,   0), [wonInvoices]);
+  const totalRev   = useMemo(() => allFilteredInvoices.reduce((s, i) => s + calcInv(i).grand, 0), [allFilteredInvoices]);
+  const gstColl    = useMemo(() => allFilteredInvoices.reduce((s, i) => s + calcInv(i).gst,   0), [allFilteredInvoices]);
+  const tcsColl    = useMemo(() => allFilteredInvoices.reduce((s, i) => s + calcInv(i).tcs,   0), [allFilteredInvoices]);
   const winRate    = useMemo(() => {
     const t = wonQ.length + lostQ.length;
     return t > 0 ? Math.round((wonQ.length / t) * 100) : 0;
@@ -162,11 +163,11 @@ export default function ReportsPage() {
   })), [months, filteredQ]);
 
   const revTrendData = useMemo(() => months.map(mo => {
-    const rev = wonInvoices
-      .filter(inv => { const d = inv.createdAt ? new Date(inv.createdAt) : null; return d && d.getFullYear() === mo.year && d.getMonth() === mo.month; })
+    const rev = allFilteredInvoices
+      .filter(inv => { const d = inv.invoiceDate || inv.createdAt ? new Date(inv.invoiceDate || inv.createdAt) : null; return d && d.getFullYear() === mo.year && d.getMonth() === mo.month; })
       .reduce((s, inv) => s + calcInv(inv).grand, 0);
     return { month: mo.label, revenue: Math.round(rev) };
-  }), [months, wonInvoices]);
+  }), [months, allFilteredInvoices]);
 
   const gradeDistData = useMemo(() => {
     const c = { A: 0, "B+": 0, B: 0, C: 0 };

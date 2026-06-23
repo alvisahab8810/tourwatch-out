@@ -7,6 +7,18 @@ import InvoiceBuilder from "../../components/backend/InvoiceBuilder";
 const QuotationPreview = dynamic(() => import("../../components/voucher/QuotationPreview"), { ssr: false });
 
 /* ── helpers ── */
+const MONTH_OPTS = (() => {
+  const y = new Date().getFullYear();
+  const opts = [];
+  for (let yr = y; yr >= y - 1; yr--)
+    for (let m = 12; m >= 1; m--)
+      opts.push({ key: `${yr}-${String(m).padStart(2, "0")}`, label: new Date(yr, m - 1, 1).toLocaleDateString("en-IN", { month: "short", year: "numeric" }) });
+  return opts;
+})();
+function qMonthKey(q) {
+  try { const d = new Date(q.createdAt); return isNaN(d) ? "" : `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`; } catch { return ""; }
+}
+
 function fmtDate(v) {
   if (!v) return "—";
   try { return new Date(v + "T00:00:00").toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" }); }
@@ -40,6 +52,8 @@ export default function QuotationsPage() {
   const [loading, setLoading]         = useState(true);
   const [search, setSearch]           = useState("");
   const [filterStatus, setFilterStatus] = useState("");
+  const [fromMonth,    setFromMonth]    = useState("");
+  const [toMonth,      setToMonth]      = useState("");
 
   const [newStep, setNewStep]         = useState(null); // {leadId, type, pkgMode}
   const [openBuilder, setOpenBuilder] = useState(null); // {quote|null, isNew, lead}
@@ -275,13 +289,16 @@ export default function QuotationsPage() {
     return quotes.filter(q => {
       const lead = q.leadId || {};
       if (filterStatus && q.status !== filterStatus) return false;
+      const mk = qMonthKey(q);
+      if (fromMonth && mk && mk < fromMonth) return false;
+      if (toMonth   && mk && mk > toMonth)   return false;
       if (search) {
         const s = search.toLowerCase();
         if (![lead.name || "", lead.destination || "", qDispId(q)].join(" ").toLowerCase().includes(s)) return false;
       }
       return true;
     });
-  }, [quotes, search, filterStatus, leadIdMap]);
+  }, [quotes, search, filterStatus, fromMonth, toMonth, leadIdMap]);
 
   async function startNewQuote() {
     if (!newStep?.leadId) return;
@@ -307,17 +324,40 @@ export default function QuotationsPage() {
       </div>
 
       {/* Toolbar */}
-      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
+      {/* Toolbar row */}
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
         <input style={S.searchInp} placeholder="Search by name, destination, quote ID…" value={search} onChange={e => setSearch(e.target.value)} />
-        <select style={S.filterSel} value={filterStatus} onChange={e => setFilterStatus(e.target.value)}>
-          <option value="">All Statuses</option>
+        <button style={{ ...S.newBtn, marginLeft: "auto", whiteSpace: "nowrap" }} onClick={() => setNewStep({ leadId: qualifiedLeads[0]?._id || "", type: "Domestic", pkgMode: "Complete Package" })}>
+          ＋ New Quotation
+        </button>
+      </div>
+
+      {/* Filter bar */}
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16, background: "#fff", border: "1px solid #E4E9F2", borderRadius: 10, padding: "10px 14px", overflowX: "auto" }}>
+        <span style={{ fontSize: 11, fontWeight: 800, color: "#6B7A99", textTransform: "uppercase", letterSpacing: ".05em", flexShrink: 0 }}>Filters:</span>
+        <select style={{ ...S.filterSel, width: 150, flexShrink: 0 }} value={fromMonth} onChange={e => setFromMonth(e.target.value)}>
+          <option value="">From Month</option>
+          {MONTH_OPTS.map(o => <option key={o.key} value={o.key}>{o.label}</option>)}
+        </select>
+        <select style={{ ...S.filterSel, width: 150, flexShrink: 0 }} value={toMonth} onChange={e => setToMonth(e.target.value)}>
+          <option value="">To Month</option>
+          {MONTH_OPTS.map(o => <option key={o.key} value={o.key}>{o.label}</option>)}
+        </select>
+        <select style={{ ...S.filterSel, width: 140, flexShrink: 0 }} value={filterStatus} onChange={e => setFilterStatus(e.target.value)}>
+          <option value="">All Status</option>
           <option value="Open">Open</option>
           <option value="Won">Won</option>
           <option value="Lost">Lost</option>
         </select>
-        <button style={{ ...S.newBtn, marginLeft: "auto", whiteSpace: "nowrap" }} onClick={() => setNewStep({ leadId: qualifiedLeads[0]?._id || "", type: "Domestic", pkgMode: "Complete Package" })}>
-          ＋ New Quotation
-        </button>
+        {(fromMonth || toMonth || filterStatus) && (
+          <button onClick={() => { setFromMonth(""); setToMonth(""); setFilterStatus(""); }}
+            style={{ background: "#FEE2E2", color: "#BE123C", border: "none", borderRadius: 7, padding: "4px 12px", fontSize: 12, fontWeight: 700, cursor: "pointer", flexShrink: 0 }}>
+            ✕ Clear
+          </button>
+        )}
+        <span style={{ marginLeft: "auto", fontSize: 12, color: "#6B7A99", fontWeight: 600, flexShrink: 0 }}>
+          {filtered.length} quotation{filtered.length !== 1 ? "s" : ""}
+        </span>
       </div>
 
       {/* Count chips */}

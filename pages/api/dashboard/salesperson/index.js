@@ -34,7 +34,7 @@ export default async function handler(req, res) {
 
   /* ── POST — invite a new salesperson ── */
   if (req.method === "POST") {
-    const { name, email, permissions } = req.body;
+    const { name, email, permissions, designation } = req.body;
     if (!name?.trim()) return res.status(400).json({ error: "Name is required." });
     if (!email?.trim()) return res.status(400).json({ error: "Email is required." });
 
@@ -49,6 +49,7 @@ export default async function handler(req, res) {
 
     const sp = await SalesPerson.create({
       name: name.trim(),
+      designation: (designation || "").trim(),
       email: emailNorm,
       username,
       passwordHash,
@@ -69,6 +70,7 @@ export default async function handler(req, res) {
       salesperson: {
         _id: sp._id,
         name: sp.name,
+        designation: sp.designation,
         email: sp.email,
         username: sp.username,
         permissions: sp.permissions,

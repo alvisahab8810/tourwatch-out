@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 const SalesPersonSchema = new mongoose.Schema(
   {
     name:         { type: String, required: true, trim: true },
+    designation:  { type: String, default: "", trim: true },
     email:        { type: String, required: true, unique: true, lowercase: true, trim: true },
     username:     { type: String, required: true, unique: true, lowercase: true, trim: true },
     passwordHash: { type: String, required: true },

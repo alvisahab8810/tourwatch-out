@@ -21,6 +21,15 @@ function getInvStatus(inv) {
   if (calcDue(inv) === 0 && grand > 0) return "Paid";
   return "Partially Paid";
 }
+const MONTH_OPTS = (() => {
+  const y = new Date().getFullYear();
+  const opts = [];
+  for (let yr = y; yr >= y - 1; yr--)
+    for (let m = 12; m >= 1; m--)
+      opts.push({ key: `${yr}-${String(m).padStart(2, "0")}`, label: new Date(yr, m - 1, 1).toLocaleDateString("en-IN", { month: "short", year: "numeric" }) });
+  return opts;
+})();
+
 const INV_STYLE = {
   "Paid":           { background: "#DCFCE7", color: "#15803D" },
   "Partially Paid": { background: "#FEF3C7", color: "#B45309" },
@@ -130,14 +139,14 @@ export default function VouchersPage() {
         {/* Filter bar */}
         <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14, background: "#fff", border: "1px solid #E4E9F2", borderRadius: 10, padding: "10px 14px", overflowX: "auto" }}>
           <span style={{ fontSize: 11, fontWeight: 800, color: "#6B7A99", textTransform: "uppercase", letterSpacing: ".05em", flexShrink: 0 }}>Filters:</span>
-          <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
-            <span style={{ fontSize: 12, color: "#6B7A99", fontWeight: 600 }}>From</span>
-            <input type="month" style={S.monthInp} value={fromMonth} onChange={e => setFromMonth(e.target.value)} />
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
-            <span style={{ fontSize: 12, color: "#6B7A99", fontWeight: 600 }}>To</span>
-            <input type="month" style={S.monthInp} value={toMonth} onChange={e => setToMonth(e.target.value)} />
-          </div>
+          <select style={S.filterSel} value={fromMonth} onChange={e => setFromMonth(e.target.value)}>
+            <option value="">From Month</option>
+            {MONTH_OPTS.map(o => <option key={o.key} value={o.key}>{o.label}</option>)}
+          </select>
+          <select style={S.filterSel} value={toMonth} onChange={e => setToMonth(e.target.value)}>
+            <option value="">To Month</option>
+            {MONTH_OPTS.map(o => <option key={o.key} value={o.key}>{o.label}</option>)}
+          </select>
           <select style={S.filterSel} value={filterDest} onChange={e => setFilterDest(e.target.value)}>
             <option value="">All Destinations</option>
             {destOptions.map(d => <option key={d} value={d}>{d}</option>)}

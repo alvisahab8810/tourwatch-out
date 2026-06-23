@@ -3,6 +3,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { MdSearch, MdPeople, MdAdd, MdDelete, MdWarning, MdRefresh, MdFilterAlt } from "react-icons/md";
 import DashboardLayout from "../../components/backend/DashboardLayout";
+import { getSalespersonData, isAdmin } from "../../utils/voucherAuth";
 
 /* ── constants ── */
 const STATUS_OPTIONS = ["New", "Contacted", "Follow Up", "Not Interested", "No Answer", "Qualified", "Not Qualified"];
@@ -73,6 +74,8 @@ function Toggle({ checked, onChange }) {
 
 export default function LeadsPage() {
   const router = useRouter();
+  const [isAdminUser, setIsAdminUser] = useState(true);
+  const [spId,        setSpId]        = useState(null);
   const [leads,       setLeads]       = useState([]);
   const [salespeople, setSalespeople] = useState([]);
   const [loading,     setLoading]     = useState(true);
@@ -108,7 +111,16 @@ export default function LeadsPage() {
   const [brrForm,   setBrrForm]   = useState(EMPTY_BRR);
   const [savingBrr, setSavingBrr] = useState(false);
 
-  useEffect(() => { fetchLeads(); fetchSalespeople(); }, []);
+  useEffect(() => {
+    const admin = isAdmin();
+    setIsAdminUser(admin);
+    if (!admin) {
+      const sp = getSalespersonData();
+      if (sp) setSpId(String(sp._id));
+    }
+    fetchLeads();
+    fetchSalespeople();
+  }, []);
 
   async function fetchLeads() {
     setLoading(true);
@@ -185,6 +197,10 @@ export default function LeadsPage() {
   /* filter + sort */
   const allSources = ["", ...Array.from(new Set(leads.map(l => l.source).filter(Boolean)))];
   let filtered = leads.filter(l => {
+    if (!isAdminUser && spId) {
+      const assignedId = String(l.assignedTo?._id || l.assignedTo || "");
+      if (assignedId !== spId) return false;
+    }
     const q = search.toLowerCase();
     const m = !q || [l.name, l.phone, l.email, l.destination, leadIdMap[l._id]].join(" ").toLowerCase().includes(q);
     return m && (!filterStatus || l.status === filterStatus) && (!filterSource || l.source === filterSource);
@@ -266,16 +282,16 @@ export default function LeadsPage() {
             <table style={S.tbl}>
               <thead>
                 <tr style={{ background: "#F6F8FC" }}>
-                  {["Lead ID","Name","Assigned To","Mobile","Email","Destination","Travel Date","Pax","Message","Form Type","Date · Time","Source","Medium","Campaign","Campaign ID","Adset","Ad Content","Connects","Status","BRR","Lead Score",""].map((h,i) => (
+                  {["Lead ID","Name",...(isAdminUser?["Assigned To"]:[]),"Mobile","Email","Destination","Travel Date","Pax","Message","Form Type","Date · Time","Source","Medium","Campaign","Campaign ID","Adset","Ad Content","Connects","Status","BRR","Lead Score",...(isAdminUser?[""]:[])].map((h,i) => (
                     <th key={i} style={{ ...S.th, ...(h === "Message" ? { minWidth: 190 } : h === "Name" ? { minWidth: 130 } : h === "Assigned To" ? { minWidth: 140 } : h === "Email" ? { minWidth: 150 } : h === "Campaign" ? { minWidth: 150 } : h === "Status" ? { minWidth: 130 } : {}) }}>{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
-                  <tr><td colSpan={23} style={S.emptyCell}>Loading…</td></tr>
+                  <tr><td colSpan={isAdminUser ? 23 : 21} style={S.emptyCell}>Loading…</td></tr>
                 ) : slice.length === 0 ? (
-                  <tr><td colSpan={23} style={S.emptyCell}><MdPeople size={38} color="#CBD5E1" /><div style={{ marginTop: 8, fontSize: 13 }}>No leads match the filters.</div></td></tr>
+                  <tr><td colSpan={isAdminUser ? 23 : 21} style={S.emptyCell}><MdPeople size={38} color="#CBD5E1" /><div style={{ marginTop: 8, fontSize: 13 }}>{isAdminUser ? "No leads match the filters." : "No leads assigned to you yet."}</div></td></tr>
                 ) : slice.map(l => {
                   const ss = STATUS_STYLE[l.status] || STATUS_STYLE.New;
                   const ftBadge = formTypeBadge(l.formType);
@@ -300,16 +316,18 @@ export default function LeadsPage() {
                         <span style={{ fontWeight: 700, color: "#0F1B33" }}>{l.name}</span>
                       </td>
 
-                      {/* Assigned To */}
-                      <td style={S.td}>
-                        <select className="mini-sel" disabled={disabled}
-                          value={l.assignedTo?._id || l.assignedTo || ""}
-                          onChange={e => { const v = e.target.value; setLeads(p => p.map(x => x._id === l._id ? { ...x, assignedTo: salespeople.find(sp => sp._id === v) || null } : x)); patchLead(l._id, { assignedTo: v || null }); }}
-                          style={{ color: l.assignedTo ? "#2563EB" : "#94A3B8", minWidth: 120 }}>
-                          <option value="">Unassigned</option>
-                          {salespeople.map(sp => <option key={sp._id} value={sp._id}>{sp.name}</option>)}
-                        </select>
-                      </td>
+                      {/* Assigned To — admin only */}
+                      {isAdminUser && (
+                        <td style={S.td}>
+                          <select className="mini-sel" disabled={disabled}
+                            value={l.assignedTo?._id || l.assignedTo || ""}
+                            onChange={e => { const v = e.target.value; setLeads(p => p.map(x => x._id === l._id ? { ...x, assignedTo: salespeople.find(sp => sp._id === v) || null } : x)); patchLead(l._id, { assignedTo: v || null }); }}
+                            style={{ color: l.assignedTo ? "#2563EB" : "#94A3B8", minWidth: 120 }}>
+                            <option value="">Unassigned</option>
+                            {salespeople.map(sp => <option key={sp._id} value={sp._id}>{sp.name}</option>)}
+                          </select>
+                        </td>
+                      )}
 
                       {/* Mobile */}
                       <td style={S.td}>
@@ -406,12 +424,14 @@ export default function LeadsPage() {
                         )}
                       </td>
 
-                      {/* Delete */}
-                      <td style={S.td}>
-                        <button style={S.delBtn} onClick={() => setConfirmId(l._id)} title="Delete">
-                          <MdDelete size={14} />
-                        </button>
-                      </td>
+                      {/* Delete — admin only */}
+                      {isAdminUser && (
+                        <td style={S.td}>
+                          <button style={S.delBtn} onClick={() => setConfirmId(l._id)} title="Delete">
+                            <MdDelete size={14} />
+                          </button>
+                        </td>
+                      )}
                     </tr>
                   );
                 })}

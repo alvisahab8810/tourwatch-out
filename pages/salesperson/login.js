@@ -18,7 +18,7 @@ export default function SalesPersonLogin() {
       const raw = localStorage.getItem(SP_AUTH_KEY);
       if (raw) {
         const d = JSON.parse(raw);
-        if (d.token && d.salesperson) router.replace("/salesperson/dashboard");
+        if (d.token && d.salesperson) router.replace("/dashboard");
       }
     } catch {}
   }, []);
@@ -37,7 +37,7 @@ export default function SalesPersonLogin() {
       const data = await res.json();
       if (!res.ok) return setError(data.error || "Login failed.");
       localStorage.setItem(SP_AUTH_KEY, JSON.stringify({ token: data.token, salesperson: data.salesperson }));
-      router.replace("/salesperson/dashboard");
+      router.replace("/dashboard");
     } finally { setLoading(false); }
   }
 

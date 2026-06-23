@@ -33,7 +33,7 @@ const ALL_PERMISSIONS = [
 
 const DEFAULT_PERMS = Object.fromEntries(ALL_PERMISSIONS.map(p => [p.key, p.key === "leads"]));
 
-const EMPTY_FORM = { name: "", email: "", permissions: { ...DEFAULT_PERMS } };
+const EMPTY_FORM = { name: "", email: "", designation: "", permissions: { ...DEFAULT_PERMS } };
 
 function fmtDate(iso) {
   return new Date(iso).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
@@ -70,7 +70,7 @@ export default function SalesTeamPage() {
       const res = await fetch("/api/dashboard/salesperson", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: form.name.trim(), email: form.email.trim(), permissions: form.permissions }),
+        body: JSON.stringify({ name: form.name.trim(), email: form.email.trim(), designation: form.designation.trim(), permissions: form.permissions }),
       });
       const data = await res.json();
       if (!res.ok) return setFormError(data.error || "Failed to invite salesperson.");
@@ -98,7 +98,7 @@ export default function SalesTeamPage() {
       const res = await fetch(`/api/dashboard/salesperson/${editSp._id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ permissions: editSp.permissions }),
+        body: JSON.stringify({ permissions: editSp.permissions, designation: editSp.designation || "" }),
       });
       if (res.ok) {
         const updated = await res.json();
@@ -175,6 +175,9 @@ export default function SalesTeamPage() {
                     </div>
                     <div>
                       <div style={{ fontWeight: 700, color: "#0f172a", fontSize: 15 }}>{sp.name}</div>
+                      {sp.designation && (
+                        <div style={{ fontSize: 12, fontWeight: 600, color: "#EE4C49", marginBottom: 1 }}>{sp.designation}</div>
+                      )}
                       <div style={{ fontSize: 12, color: "#64748b" }}>{sp.email}</div>
                       <div style={{ fontSize: 11, color: "#94a3b8", fontFamily: "monospace" }}>@{sp.username}</div>
                     </div>
@@ -239,7 +242,7 @@ export default function SalesTeamPage() {
               <button style={S.modalClose} onClick={() => !saving && setShowInvite(false)}>×</button>
             </div>
             <div style={S.modalBody}>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 20 }}>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
                 <Field label="Full Name *">
                   <input style={S.input} placeholder="e.g. Priya Sharma" value={form.name}
                     onChange={e => setForm(f => ({ ...f, name: e.target.value }))} />
@@ -247,6 +250,12 @@ export default function SalesTeamPage() {
                 <Field label="Email Address *">
                   <input style={S.input} placeholder="priya@example.com" value={form.email}
                     onChange={e => setForm(f => ({ ...f, email: e.target.value }))} />
+                </Field>
+              </div>
+              <div style={{ marginBottom: 20 }}>
+                <Field label="Designation">
+                  <input style={S.input} placeholder="e.g. Sales Executive, Senior Manager…" value={form.designation}
+                    onChange={e => setForm(f => ({ ...f, designation: e.target.value }))} />
                 </Field>
               </div>
 
@@ -295,6 +304,12 @@ export default function SalesTeamPage() {
               <button style={S.modalClose} onClick={() => !saving && setEditSp(null)}>×</button>
             </div>
             <div style={S.modalBody}>
+              <div style={{ marginBottom: 16 }}>
+                <Field label="Designation">
+                  <input style={S.input} placeholder="e.g. Sales Executive" value={editSp.designation || ""}
+                    onChange={e => setEditSp(sp => ({ ...sp, designation: e.target.value }))} />
+                </Field>
+              </div>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 8 }}>
                 {ALL_PERMISSIONS.map(p => (
                   <label key={p.key} style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", padding: "8px 10px", borderRadius: 8, border: `1px solid ${editSp.permissions?.[p.key] ? "#bfdbfe" : "#e2e8f0"}`, background: editSp.permissions?.[p.key] ? "#eff6ff" : "#fff", fontSize: 13, fontWeight: 600, color: editSp.permissions?.[p.key] ? "#2563eb" : "#374151", userSelect: "none" }}>

@@ -14,12 +14,13 @@ export default async function handler(req, res) {
     return res.status(200).json({ ok: true });
   }
 
-  /* ── PATCH — update permissions or active status ── */
+  /* ── PATCH — update permissions, active status or designation ── */
   if (req.method === "PATCH") {
-    const { permissions, isActive } = req.body;
+    const { permissions, isActive, designation } = req.body;
     const update = {};
-    if (permissions !== undefined) update.permissions = permissions;
-    if (isActive !== undefined)    update.isActive    = isActive;
+    if (permissions  !== undefined) update.permissions  = permissions;
+    if (isActive     !== undefined) update.isActive     = isActive;
+    if (designation  !== undefined) update.designation  = (designation || "").trim();
     const sp = await SalesPerson.findByIdAndUpdate(id, { $set: update }, { new: true })
       .select("-passwordHash -salt -sessionToken")
       .lean();
