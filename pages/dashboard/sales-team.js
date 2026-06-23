@@ -7,18 +7,28 @@ import {
 import DashboardLayout from "../../components/backend/DashboardLayout";
 
 const ALL_PERMISSIONS = [
+  // Sales CRM
   { key: "leads",        label: "Leads" },
-  { key: "followUp",     label: "Follow Up" },
-  { key: "reminders",    label: "Reminders" },
+  { key: "brr",          label: "BRR" },
+  { key: "quotation",    label: "Quotation" },
+  { key: "invoice",      label: "Invoice" },
+  { key: "voucher",      label: "Voucher" },
+  { key: "reminders",    label: "Reminder" },
+  { key: "vendors",      label: "Vendors" },
+  // Content
   { key: "destinations", label: "Destinations" },
-  { key: "packages",     label: "Packages" },
+  { key: "packages",     label: "All Packages" },
   { key: "blogs",        label: "Blogs" },
   { key: "comments",     label: "Comments" },
   { key: "reviews",      label: "Reviews" },
+  { key: "mostPopular",  label: "Most Popular" },
   { key: "faqs",         label: "FAQs" },
   { key: "users",        label: "Users" },
-  { key: "vendors",      label: "Vendors" },
-  { key: "voucher",      label: "Voucher" },
+  // Business
+  { key: "financials",   label: "Financials" },
+  { key: "reports",      label: "Reports" },
+  { key: "tripRecords",  label: "Trip Records" },
+  { key: "leadProfiles", label: "Lead Profiles" },
 ];
 
 const DEFAULT_PERMS = Object.fromEntries(ALL_PERMISSIONS.map(p => [p.key, p.key === "leads"]));

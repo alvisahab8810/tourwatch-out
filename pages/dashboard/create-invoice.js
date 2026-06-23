@@ -38,8 +38,14 @@ function getInvoiceFY() {
 function buildInvoiceNo(allInvoices) {
   const fy = getInvoiceFY();
   const prefix = `RCSPL/${fy}/`;
-  const count = allInvoices.filter((i) => i.invoiceNo?.startsWith(prefix)).length;
-  return `${prefix}${String(count + 1).padStart(3, "0")}`;
+  let maxSeq = 0;
+  (allInvoices || []).forEach(i => {
+    if (i.invoiceNo?.startsWith(prefix)) {
+      const seq = parseInt(String(i.invoiceNo).slice(prefix.length), 10);
+      if (!isNaN(seq) && seq > maxSeq) maxSeq = seq;
+    }
+  });
+  return `${prefix}${String(maxSeq + 1).padStart(3, "0")}`;
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────

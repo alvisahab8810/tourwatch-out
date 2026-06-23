@@ -2,10 +2,11 @@ import { useState, useEffect } from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import {
-  MdDashboard, MdPeople, MdAutorenew, MdNotificationsNone, MdStore,
+  MdDashboard, MdPeople, MdNotificationsNone, MdStore,
   MdConfirmationNumber, MdReceipt, MdLocationOn, MdApps, MdArticle,
   MdHelpOutline, MdRateReview, MdComment, MdManageAccounts,
-  MdLogout, MdMenu,
+  MdLogout, MdMenu, MdDescription, MdBarChart, MdAttachMoney,
+  MdFlight, MdPersonSearch, MdStar, MdAssessment,
 } from "react-icons/md";
 
 const SP_AUTH_KEY = "tw_sp_auth";
@@ -20,22 +21,31 @@ const NAV_ITEMS = [
 ];
 
 const CRM_ITEMS = [
-  { label: "Leads",     Icon: MdPeople,             href: "/salesperson/dashboard",  permKey: "leads",     built: true },
-  { label: "Follow Up", Icon: MdAutorenew,          href: "/salesperson/follow-up",  permKey: "followUp",  built: false },
-  { label: "Reminders", Icon: MdNotificationsNone,  href: "/salesperson/reminders",  permKey: "reminders", built: false },
-  { label: "Vendors",   Icon: MdStore,              href: "/salesperson/vendors",    permKey: "vendors",   built: true },
-  { label: "Voucher",   Icon: MdConfirmationNumber, href: "/salesperson/vouchers",   permKey: "voucher",   built: true },
-  { label: "Invoice",   Icon: MdReceipt,            href: "/salesperson/invoices",   permKey: "voucher",   built: true },
+  { label: "Leads",      Icon: MdPeople,             href: "/salesperson/dashboard",   permKey: "leads",     built: true },
+  { label: "BRR",        Icon: MdAssessment,         href: "/salesperson/brr",         permKey: "brr",       built: false },
+  { label: "Quotation",  Icon: MdDescription,        href: "/salesperson/quotations",  permKey: "quotation", built: true },
+  { label: "Invoice",    Icon: MdReceipt,            href: "/salesperson/invoices",    permKey: "invoice",   built: true },
+  { label: "Voucher",    Icon: MdConfirmationNumber, href: "/salesperson/vouchers",    permKey: "voucher",   built: true },
+  { label: "Reminder",   Icon: MdNotificationsNone,  href: "/salesperson/reminders",   permKey: "reminders", built: false },
+  { label: "Vendors",    Icon: MdStore,              href: "/salesperson/vendors",     permKey: "vendors",   built: true },
 ];
 
 const OTHER_ITEMS = [
-  { label: "Destinations", Icon: MdLocationOn,    href: "/salesperson/destinations", permKey: "destinations", built: true },
-  { label: "Packages",     Icon: MdApps,          href: "/salesperson/packages",     permKey: "packages",     built: true },
-  { label: "Blogs",        Icon: MdArticle,       href: "/salesperson/blogs",        permKey: "blogs",        built: true },
-  { label: "Comments",     Icon: MdComment,       href: "/salesperson/comments",     permKey: "comments",     built: true },
-  { label: "Reviews",      Icon: MdRateReview,    href: "/salesperson/reviews",      permKey: "reviews",      built: true },
-  { label: "FAQs",         Icon: MdHelpOutline,   href: "/salesperson/faqs",         permKey: "faqs",         built: true },
-  { label: "Users",        Icon: MdManageAccounts,href: "/salesperson/users",        permKey: "users",        built: true },
+  { label: "Destinations", Icon: MdLocationOn,     href: "/salesperson/destinations",  permKey: "destinations", built: true },
+  { label: "All Packages",  Icon: MdApps,           href: "/salesperson/packages",      permKey: "packages",     built: true },
+  { label: "Blogs",         Icon: MdArticle,        href: "/salesperson/blogs",         permKey: "blogs",        built: true },
+  { label: "Comments",      Icon: MdComment,        href: "/salesperson/comments",      permKey: "comments",     built: true },
+  { label: "Reviews",       Icon: MdRateReview,     href: "/salesperson/reviews",       permKey: "reviews",      built: true },
+  { label: "Most Popular",  Icon: MdStar,           href: "/salesperson/most-popular",  permKey: "mostPopular",  built: false },
+  { label: "FAQs",          Icon: MdHelpOutline,    href: "/salesperson/faqs",          permKey: "faqs",         built: true },
+  { label: "Users",         Icon: MdManageAccounts, href: "/salesperson/users",         permKey: "users",        built: true },
+];
+
+const BUSINESS_ITEMS = [
+  { label: "Financials",    Icon: MdAttachMoney,    href: "/salesperson/financials",    permKey: "financials",   built: false },
+  { label: "Reports",       Icon: MdBarChart,       href: "/salesperson/reports",       permKey: "reports",      built: false },
+  { label: "Trip Records",  Icon: MdFlight,         href: "/salesperson/trip-records",  permKey: "tripRecords",  built: false },
+  { label: "Lead Profiles", Icon: MdPersonSearch,   href: "/salesperson/lead-profiles", permKey: "leadProfiles", built: false },
 ];
 
 export default function SPLayout({ children, active, spData, onLogout }) {
@@ -69,8 +79,9 @@ export default function SPLayout({ children, active, spData, onLogout }) {
     if (target !== "#") router.push(target);
   }
 
-  const visibleCRM   = CRM_ITEMS.filter(i => !i.permKey || perms[i.permKey]);
-  const visibleOther = OTHER_ITEMS.filter(i => !i.permKey || perms[i.permKey]);
+  const visibleCRM      = CRM_ITEMS.filter(i => !i.permKey || perms[i.permKey]);
+  const visibleOther    = OTHER_ITEMS.filter(i => !i.permKey || perms[i.permKey]);
+  const visibleBusiness = BUSINESS_ITEMS.filter(i => !i.permKey || perms[i.permKey]);
 
   return (
     <>
@@ -142,6 +153,19 @@ export default function SPLayout({ children, active, spData, onLogout }) {
             <>
               <div className="sp-section">Content</div>
               {visibleOther.map(item => (
+                <div key={item.label} className={`sp-nav-item${active === item.label ? " active" : ""}${!item.built ? " soon" : ""}`} onClick={() => go(item)}>
+                  <item.Icon size={17} />
+                  {item.label}
+                  {!item.built && <span className="sp-soon-chip">SOON</span>}
+                </div>
+              ))}
+            </>
+          )}
+
+          {visibleBusiness.length > 0 && (
+            <>
+              <div className="sp-section">Business</div>
+              {visibleBusiness.map(item => (
                 <div key={item.label} className={`sp-nav-item${active === item.label ? " active" : ""}${!item.built ? " soon" : ""}`} onClick={() => go(item)}>
                   <item.Icon size={17} />
                   {item.label}

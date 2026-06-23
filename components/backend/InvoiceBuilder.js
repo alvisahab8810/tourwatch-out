@@ -41,8 +41,14 @@ function getInvoiceFY(d) {
 function buildInvoiceNo(allInvoices, forDate) {
   const fy = getInvoiceFY(forDate);
   const prefix = `RCSPL/${fy}/`;
-  const count = (allInvoices || []).filter(i => i.invoiceNo?.startsWith(prefix)).length;
-  return `${prefix}${String(count + 1).padStart(3, "0")}`;
+  let maxSeq = 0;
+  (allInvoices || []).forEach(i => {
+    if (i.invoiceNo?.startsWith(prefix)) {
+      const seq = parseInt(String(i.invoiceNo).slice(prefix.length), 10);
+      if (!isNaN(seq) && seq > maxSeq) maxSeq = seq;
+    }
+  });
+  return `${prefix}${String(maxSeq + 1).padStart(3, "0")}`;
 }
 const uid = () => Date.now() + Math.random();
 const EMPTY_ITEM = () => ({ id: uid(), particulars: "", hsn: "9985", qty: "1", rate: "", amount: "" });

@@ -17,8 +17,16 @@ function getInvoiceFY(d) {
 async function buildInvoiceNo(c, forDate) {
   const fy = getInvoiceFY(forDate);
   const prefix = `RCSPL/${fy}/`;
-  const count = await c.countDocuments({ invoiceNo: { $regex: `^${prefix.replace(/\//g, "\\/")}` } });
-  return `${prefix}${String(count + 1).padStart(3, "0")}`;
+  const docs = await c.find(
+    { invoiceNo: { $regex: `^${prefix.replace(/\//g, "\\/")}` } },
+    { projection: { invoiceNo: 1 } }
+  ).toArray();
+  let maxSeq = 0;
+  for (const doc of docs) {
+    const seq = parseInt(String(doc.invoiceNo || "").slice(prefix.length), 10);
+    if (!isNaN(seq) && seq > maxSeq) maxSeq = seq;
+  }
+  return `${prefix}${String(maxSeq + 1).padStart(3, "0")}`;
 }
 
 async function col() {

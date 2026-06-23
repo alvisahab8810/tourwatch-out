@@ -39,13 +39,26 @@ function getFinancialYear() {
 function getMonthPad() { return String(new Date().getMonth() + 1).padStart(2, "0"); }
 function buildVoucherNo(all) {
   const fy = getFinancialYear(), mm = getMonthPad(), prefix = `TWO/${fy}/${mm}/`;
-  const count = all.filter(v => v.voucherNo?.startsWith(prefix)).length;
-  return `${prefix}${String(count + 1).padStart(3, "0")}`;
+  let maxSeq = 0;
+  all.forEach(v => {
+    if (v.voucherNo?.startsWith(prefix)) {
+      const seq = parseInt(v.voucherNo.slice(prefix.length), 10);
+      if (!isNaN(seq) && seq > maxSeq) maxSeq = seq;
+    }
+  });
+  return `${prefix}${String(maxSeq + 1).padStart(3, "0")}`;
 }
 function buildTripId(all) {
   const fy = getFinancialYear(), mm = getMonthPad(), prefix = `TWO/${fy}/${mm}/`;
-  const yearCount = all.filter(v => v.tripId?.startsWith(`TWO/${fy}/`)).length;
-  return `${prefix}${String(26 + yearCount + 1).padStart(3, "0")}`;
+  let maxSeq = 26; // floor so IDs start at 027 minimum
+  all.forEach(v => {
+    if (v.tripId?.startsWith(`TWO/${fy}/`)) {
+      const parts = v.tripId.split("/");
+      const seq = parseInt(parts[parts.length - 1], 10);
+      if (!isNaN(seq) && seq > maxSeq) maxSeq = seq;
+    }
+  });
+  return `${prefix}${String(maxSeq + 1).padStart(3, "0")}`;
 }
 
 // ─── Options & Factories ──────────────────────────────────────────────────────
