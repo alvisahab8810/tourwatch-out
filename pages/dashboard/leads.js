@@ -29,8 +29,20 @@ const SCORE_QS = [
   "Did the customer respond on call or WhatsApp within 24 hours?",
   "Has the customer shared specific requirements like hotel category, pax or sightseeing?",
 ];
-const EMPTY_BRR = { adults: 2, children: 0, childAge1: "", childAge2: "", duration: "", tripDate: "", mealPlan: "C.P.", flight: false, train: false, transfers: false, sightseeing: false, hotelCategory: "Deluxe", budgetRange: "" };
+const EMPTY_BRR = { adults: 1, children: 0, childAge1: "", childAge2: "", duration: "", tripDate: "", mealPlan: "C.P.", flight: false, train: false, transfers: false, sightseeing: false, hotelCategory: "Deluxe", budgetRange: "" };
 const EMPTY_LEAD = { name: "", phone: "", email: "", destination: "", travelDate: "", pax: "", message: "", budgetBracket: "", source: "" };
+
+function parsePax(pax = "") {
+  const adultM  = pax.match(/(\d+)\s*(?:adult|adults)/i);
+  const childM  = pax.match(/(\d+)\s*(?:child|children|kid|kids)/i);
+  const first   = parseInt(pax);
+  const adults   = adultM ? +adultM[1] : (!isNaN(first) && first > 0 ? first : null);
+  const children = childM ? +childM[1] : null;
+  const out = {};
+  if (adults   != null) out.adults   = adults;
+  if (children != null) out.children = children;
+  return out;
+}
 
 /* ── helpers ── */
 function todayISO() { return new Date().toISOString().slice(0, 10); }
@@ -179,8 +191,14 @@ export default function LeadsPage() {
   }
 
   function openBrr(leadId) {
-    const l = leads.find(x => x._id === leadId);
-    setBrrForm({ ...EMPTY_BRR, tripDate: l?.travelDate || "", ...(l?.brr || {}) });
+    const l   = leads.find(x => x._id === leadId);
+    const brr = l?.brr || {};
+    setBrrForm({
+      ...EMPTY_BRR,
+      ...parsePax(l?.pax || ""),        // adults/children from lead.pax
+      ...brr,                            // saved BRR overrides all (keeps edited values)
+      tripDate: brr.tripDate || l?.travelDate || "", // saved tripDate → fall back to lead date
+    });
     setBrrModal(leadId);
   }
   async function saveBrr() {
@@ -197,10 +215,6 @@ export default function LeadsPage() {
   /* filter + sort */
   const allSources = ["", ...Array.from(new Set(leads.map(l => l.source).filter(Boolean)))];
   let filtered = leads.filter(l => {
-    if (!isAdminUser && spId) {
-      const assignedId = String(l.assignedTo?._id || l.assignedTo || "");
-      if (assignedId !== spId) return false;
-    }
     const q = search.toLowerCase();
     const m = !q || [l.name, l.phone, l.email, l.destination, leadIdMap[l._id]].join(" ").toLowerCase().includes(q);
     return m && (!filterStatus || l.status === filterStatus) && (!filterSource || l.source === filterSource);
@@ -282,16 +296,16 @@ export default function LeadsPage() {
             <table style={S.tbl}>
               <thead>
                 <tr style={{ background: "#F6F8FC" }}>
-                  {["Lead ID","Name",...(isAdminUser?["Assigned To"]:[]),"Mobile","Email","Destination","Travel Date","Pax","Message","Form Type","Date · Time","Source","Medium","Campaign","Campaign ID","Adset","Ad Content","Connects","Status","BRR","Lead Score",...(isAdminUser?[""]:[])].map((h,i) => (
+                  {["Lead ID","Name","Assigned To","Mobile","Email","Destination","Travel Date","Pax","Message","Form Type","Date · Time","Source","Medium","Campaign","Campaign ID","Adset","Ad Content","Connects","Status","BRR","Lead Score",...(isAdminUser?[""]:[])].map((h,i) => (
                     <th key={i} style={{ ...S.th, ...(h === "Message" ? { minWidth: 190 } : h === "Name" ? { minWidth: 130 } : h === "Assigned To" ? { minWidth: 140 } : h === "Email" ? { minWidth: 150 } : h === "Campaign" ? { minWidth: 150 } : h === "Status" ? { minWidth: 130 } : {}) }}>{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
-                  <tr><td colSpan={isAdminUser ? 23 : 21} style={S.emptyCell}>Loading…</td></tr>
+                  <tr><td colSpan={isAdminUser ? 23 : 22} style={S.emptyCell}>Loading…</td></tr>
                 ) : slice.length === 0 ? (
-                  <tr><td colSpan={isAdminUser ? 23 : 21} style={S.emptyCell}><MdPeople size={38} color="#CBD5E1" /><div style={{ marginTop: 8, fontSize: 13 }}>{isAdminUser ? "No leads match the filters." : "No leads assigned to you yet."}</div></td></tr>
+                  <tr><td colSpan={isAdminUser ? 23 : 22} style={S.emptyCell}><MdPeople size={38} color="#CBD5E1" /><div style={{ marginTop: 8, fontSize: 13 }}>No leads match the filters.</div></td></tr>
                 ) : slice.map(l => {
                   const ss = STATUS_STYLE[l.status] || STATUS_STYLE.New;
                   const ftBadge = formTypeBadge(l.formType);
@@ -316,9 +330,9 @@ export default function LeadsPage() {
                         <span style={{ fontWeight: 700, color: "#0F1B33" }}>{l.name}</span>
                       </td>
 
-                      {/* Assigned To — admin only */}
-                      {isAdminUser && (
-                        <td style={S.td}>
+                      {/* Assigned To */}
+                      <td style={S.td}>
+                        {isAdminUser ? (
                           <select className="mini-sel" disabled={disabled}
                             value={l.assignedTo?._id || l.assignedTo || ""}
                             onChange={e => { const v = e.target.value; setLeads(p => p.map(x => x._id === l._id ? { ...x, assignedTo: salespeople.find(sp => sp._id === v) || null } : x)); patchLead(l._id, { assignedTo: v || null }); }}
@@ -326,8 +340,12 @@ export default function LeadsPage() {
                             <option value="">Unassigned</option>
                             {salespeople.map(sp => <option key={sp._id} value={sp._id}>{sp.name}</option>)}
                           </select>
-                        </td>
-                      )}
+                        ) : (
+                          <span style={{ fontSize: 12, fontWeight: 700, color: l.assignedTo ? "#2563EB" : "#94A3B8" }}>
+                            {l.assignedTo?.name || (typeof l.assignedTo === "string" ? salespeople.find(s => s._id === l.assignedTo)?.name : "") || "Unassigned"}
+                          </span>
+                        )}
+                      </td>
 
                       {/* Mobile */}
                       <td style={S.td}>

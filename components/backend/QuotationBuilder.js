@@ -182,7 +182,18 @@ function initArrays(initialData, lead) {
     flights = [...initialData.flights];
   } else {
     const brr = lead?.brr || {};
-    const pax = (brr.adults || 0) + (brr.children || 0);
+    let pax;
+    if (brr.adults != null) {
+      pax = brr.adults + (brr.children || 0);
+    } else {
+      const rawPax = lead?.pax || "";
+      const adultM = rawPax.match(/(\d+)\s*(?:adult|adults)/i);
+      const childM = rawPax.match(/(\d+)\s*(?:child|children|kid|kids)/i);
+      const first  = parseInt(rawPax);
+      const a = adultM ? +adultM[1] : (!isNaN(first) && first > 0 ? first : 0);
+      const c = childM ? +childM[1] : 0;
+      pax = a + c;
+    }
     flights = [{ ...DEF_FLIGHT, pax: pax || 0, date: brr.tripDate || lead?.travelDate || "" }];
   }
 

@@ -22,11 +22,13 @@ const QuotationSchema = new mongoose.Schema({
   // Flights (array — outbound + return + any extra legs)
   flights: [{
     _id: false,
-    from:  { type: String, default: "" },
-    to:    { type: String, default: "" },
-    date:  { type: String, default: "" },
-    pax:   { type: Number, default: 0 },
-    price: { type: Number, default: 0 },
+    from:        { type: String,  default: "" },
+    to:          { type: String,  default: "" },
+    date:        { type: String,  default: "" },
+    pax:         { type: Number,  default: 0 },
+    price:       { type: Number,  default: 0 },
+    roundTrip:   { type: Boolean, default: false },
+    returnPrice: { type: Number,  default: 0 },
   }],
 
   // Transfers (array — multiple cab arrangements)
@@ -38,7 +40,16 @@ const QuotationSchema = new mongoose.Schema({
   }],
 
   // Itinerary
-  itinerary: [{ _id: false, title: String, description: String }],
+  itinerary: [{
+    _id: false,
+    date:        { type: String, default: "" },
+    title:       { type: String, default: "" },
+    tour:        { type: String, default: "" },
+    transfer:    { type: String, default: "" },
+    pickup_time: { type: String, default: "" },
+    itinerary:   { type: String, default: "" },  // rich-text HTML (new field name)
+    description: { type: String, default: "" },  // legacy plain-text fallback
+  }],
 
   // Content
   inclusions: { type: String, default: "" },

@@ -21,14 +21,11 @@ function getInvStatus(inv) {
   if (calcDue(inv) === 0 && grand > 0) return "Paid";
   return "Partially Paid";
 }
-const MONTH_OPTS = (() => {
-  const y = new Date().getFullYear();
-  const opts = [];
-  for (let yr = y; yr >= y - 1; yr--)
-    for (let m = 12; m >= 1; m--)
-      opts.push({ key: `${yr}-${String(m).padStart(2, "0")}`, label: new Date(yr, m - 1, 1).toLocaleDateString("en-IN", { month: "short", year: "numeric" }) });
-  return opts;
-})();
+const CUR_YEAR = new Date().getFullYear();
+const MONTH_CHIPS = Array.from({ length: 12 }, (_, i) => ({
+  key: `${CUR_YEAR}-${String(i + 1).padStart(2, "0")}`,
+  label: new Date(CUR_YEAR, i, 1).toLocaleDateString("en-IN", { month: "short" }),
+}));
 
 const INV_STYLE = {
   "Paid":           { background: "#DCFCE7", color: "#15803D" },
@@ -52,8 +49,7 @@ export default function VouchersPage() {
   const [loading,     setLoading]     = useState(true);
   const [search,      setSearch]      = useState("");
   const [vBuilder,    setVBuilder]    = useState(null);
-  const [fromMonth,   setFromMonth]   = useState("");
-  const [toMonth,     setToMonth]     = useState("");
+  const [filterMonth, setFilterMonth]  = useState("");
   const [filterLock,  setFilterLock]  = useState("");
   const [filterDest,  setFilterDest]  = useState("");
   const [confirmDel,  setConfirmDel]  = useState(null);
@@ -115,11 +111,10 @@ export default function VouchersPage() {
       if (filterLock === "locked"   && !isLocked(v)) return false;
       if (filterLock === "editable" &&  isLocked(v)) return false;
       const mk = voucherMonthKey(v);
-      if (fromMonth && mk && mk < fromMonth) return false;
-      if (toMonth   && mk && mk > toMonth)   return false;
+      if (filterMonth && mk !== filterMonth) return false;
       return true;
     });
-  }, [vouchers, search, filterDest, filterLock, fromMonth, toMonth]);
+  }, [vouchers, search, filterDest, filterLock, filterMonth]);
 
   return (
     <DashboardLayout active="Voucher">
@@ -139,14 +134,12 @@ export default function VouchersPage() {
         {/* Filter bar */}
         <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14, background: "#fff", border: "1px solid #E4E9F2", borderRadius: 10, padding: "10px 14px", overflowX: "auto" }}>
           <span style={{ fontSize: 11, fontWeight: 800, color: "#6B7A99", textTransform: "uppercase", letterSpacing: ".05em", flexShrink: 0 }}>Filters:</span>
-          <select style={S.filterSel} value={fromMonth} onChange={e => setFromMonth(e.target.value)}>
-            <option value="">From Month</option>
-            {MONTH_OPTS.map(o => <option key={o.key} value={o.key}>{o.label}</option>)}
-          </select>
-          <select style={S.filterSel} value={toMonth} onChange={e => setToMonth(e.target.value)}>
-            <option value="">To Month</option>
-            {MONTH_OPTS.map(o => <option key={o.key} value={o.key}>{o.label}</option>)}
-          </select>
+          {MONTH_CHIPS.map(m => (
+            <button key={m.key} onClick={() => setFilterMonth(filterMonth === m.key ? "" : m.key)}
+              style={{ padding: "4px 10px", borderRadius: 20, fontSize: 11, fontWeight: 700, cursor: "pointer", border: `1.5px solid ${filterMonth === m.key ? "#2563EB" : "#E4E9F2"}`, background: filterMonth === m.key ? "#2563EB" : "#fff", color: filterMonth === m.key ? "#fff" : "#6B7A99", whiteSpace: "nowrap", flexShrink: 0 }}>
+              {m.label}
+            </button>
+          ))}
           <select style={S.filterSel} value={filterDest} onChange={e => setFilterDest(e.target.value)}>
             <option value="">All Destinations</option>
             {destOptions.map(d => <option key={d} value={d}>{d}</option>)}
@@ -156,8 +149,8 @@ export default function VouchersPage() {
             <option value="editable">Editable</option>
             <option value="locked">Locked</option>
           </select>
-          {(fromMonth || toMonth || filterDest || filterLock) && (
-            <button onClick={() => { setFromMonth(""); setToMonth(""); setFilterDest(""); setFilterLock(""); }}
+          {(filterMonth || filterDest || filterLock) && (
+            <button onClick={() => { setFilterMonth(""); setFilterDest(""); setFilterLock(""); }}
               style={{ background: "#FEE2E2", color: "#BE123C", border: "none", borderRadius: 7, padding: "4px 12px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
               ✕ Clear
             </button>

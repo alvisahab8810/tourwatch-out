@@ -18,11 +18,11 @@ function calcGrand(inv) {
 function calcPaid(inv)   { return (inv.payments || []).reduce((s, p) => s + (+p.amount || 0), 0); }
 function calcDue(inv)    { return Math.max(0, calcGrand(inv) - calcPaid(inv)); }
 function getStatus(paid, due) {
-  if (paid === 0) return "Unpaid";
-  if (due === 0) return "Paid";
+  if (paid < 0.01) return "Unpaid";
+  if (due < 0.01) return "Paid";
   return "Partially Paid";
 }
-const inr = n => "₹" + Math.round(n || 0).toLocaleString("en-IN");
+const inr = n => "₹" + (+(n || 0).toFixed(2)).toLocaleString("en-IN", { minimumFractionDigits: 0, maximumFractionDigits: 2 });
 function parseAnyDate(v) {
   if (!v) return null;
   try {
@@ -66,14 +66,11 @@ const STATUS_STYLE = {
 
 const PAYMENT_MODES = ["Online", "Bank Transfer", "Cash", "UPI", "Cheque", "NEFT / RTGS"];
 
-const MONTH_OPTS = (() => {
-  const y = new Date().getFullYear();
-  const opts = [];
-  for (let yr = y; yr >= y - 1; yr--)
-    for (let m = 12; m >= 1; m--)
-      opts.push({ key: `${yr}-${String(m).padStart(2, "0")}`, label: new Date(yr, m - 1, 1).toLocaleDateString("en-IN", { month: "short", year: "numeric" }) });
-  return opts;
-})();
+const CUR_YEAR = new Date().getFullYear();
+const MONTH_CHIPS = Array.from({ length: 12 }, (_, i) => ({
+  key: `${CUR_YEAR}-${String(i + 1).padStart(2, "0")}`,
+  label: new Date(CUR_YEAR, i, 1).toLocaleDateString("en-IN", { month: "short" }),
+}));
 
 /* ─── Payment Modal ────────────────────────────────────────────────────────── */
 /* `siblings` = every invoice raised for the same quotation (one per billing
@@ -241,8 +238,7 @@ export default function InvoicesPage() {
   const [payModal,     setPayModal]    = useState(null);
   const [qBuilder,     setQBuilder]    = useState(null);
   const [vBuilder,     setVBuilder]    = useState(null);
-  const [fromMonth,    setFromMonth]   = useState("");
-  const [toMonth,      setToMonth]     = useState("");
+  const [filterMonth,  setFilterMonth]  = useState("");
   const [filterStatus, setFilterStatus] = useState("");
   const [confirmDel,   setConfirmDel]  = useState(null);
   const [deleting,     setDeleting]    = useState(null);
@@ -309,11 +305,10 @@ export default function InvoicesPage() {
         if (st !== filterStatus) return false;
       }
       const mk = monthKey(inv.invoiceDate);
-      if (fromMonth && mk && mk < fromMonth) return false;
-      if (toMonth   && mk && mk > toMonth)   return false;
+      if (filterMonth && mk !== filterMonth) return false;
       return true;
     });
-  }, [invoices, search, filterStatus, fromMonth, toMonth]);
+  }, [invoices, search, filterStatus, filterMonth]);
 
   /* Invoices raised against the same quotation are siblings — one per billing
      month. "Amount Due" / "Send Final Invoice" are tracked at the quotation
@@ -365,22 +360,21 @@ export default function InvoicesPage() {
         {/* Filter bar */}
         <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14, background: "#fff", border: "1px solid #E4E9F2", borderRadius: 10, padding: "10px 14px", overflowX: "auto" }}>
           <span style={{ fontSize: 11, fontWeight: 800, color: "#6B7A99", textTransform: "uppercase", letterSpacing: ".05em", flexShrink: 0 }}>Filters:</span>
-          <select style={S.filterSel} value={fromMonth} onChange={e => setFromMonth(e.target.value)}>
-            <option value="">From Month</option>
-            {MONTH_OPTS.map(o => <option key={o.key} value={o.key}>{o.label}</option>)}
-          </select>
-          <select style={S.filterSel} value={toMonth} onChange={e => setToMonth(e.target.value)}>
-            <option value="">To Month</option>
-            {MONTH_OPTS.map(o => <option key={o.key} value={o.key}>{o.label}</option>)}
-          </select>
-          <select style={S.filterSel} value={filterStatus} onChange={e => setFilterStatus(e.target.value)}>
+          {MONTH_CHIPS.map(m => (
+            <button key={m.key} onClick={() => setFilterMonth(filterMonth === m.key ? "" : m.key)}
+              style={{ padding: "4px 10px", borderRadius: 20, fontSize: 11, fontWeight: 700, cursor: "pointer", border: `1.5px solid ${filterMonth === m.key ? "#2563EB" : "#E4E9F2"}`, background: filterMonth === m.key ? "#2563EB" : "#fff", color: filterMonth === m.key ? "#fff" : "#6B7A99", whiteSpace: "nowrap", flexShrink: 0 }}>
+              {m.label}
+            </button>
+          ))}
+          <div style={{ width: 1, background: "#E4E9F2", alignSelf: "stretch", flexShrink: 0 }} />
+          <select style={{ ...S.filterSel, width: 140, flexShrink: 0 }} value={filterStatus} onChange={e => setFilterStatus(e.target.value)}>
             <option value="">All Status</option>
             <option value="Paid">Paid</option>
             <option value="Partially Paid">Partially Paid</option>
             <option value="Unpaid">Unpaid</option>
           </select>
-          {(fromMonth || toMonth || filterStatus) && (
-            <button onClick={() => { setFromMonth(""); setToMonth(""); setFilterStatus(""); }}
+          {(filterMonth || filterStatus) && (
+            <button onClick={() => { setFilterMonth(""); setFilterStatus(""); }}
               style={{ background: "#FEE2E2", color: "#BE123C", border: "none", borderRadius: 7, padding: "4px 12px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
               ✕ Clear
             </button>
@@ -413,7 +407,7 @@ export default function InvoicesPage() {
             <table style={S.tbl} className="tbl">
               <thead>
                 <tr style={{ background: "#F6F8FC" }}>
-                  {["S.No","Name","Invoice ID","Quotation","Total","Payments","Amount Due","Parts","Status","Final Invoice","Voucher",""].map(h => (
+                  {["S.No","Name","Invoice ID","Quotation","Total","Payments","Parts","Status","Final Invoice","Voucher",""].map(h => (
                     <th key={h} style={S.th}>{h}</th>
                   ))}
                 </tr>
@@ -421,7 +415,7 @@ export default function InvoicesPage() {
               <tbody>
                 {loading && <tr><td colSpan={11} style={S.empty}>Loading…</td></tr>}
                 {!loading && filtered.length === 0 && (
-                  <tr><td colSpan={11} style={S.empty}>No invoices yet — create one from the Quotations page or click "+ New Invoice"</td></tr>
+                  <tr><td colSpan={10} style={S.empty}>No invoices yet — create one from the Quotations page or click "+ New Invoice"</td></tr>
                 )}
                 {filtered.map((inv, idx) => {
                   const k          = groupKey(inv);
@@ -476,16 +470,11 @@ export default function InvoicesPage() {
                         <b style={{ color: "#0F1B33", fontSize: 13 }}>{inr(total)}</b>
                       </td>
 
-                      {/* Payments Record/View */}
+                      {/* Payments Record */}
                       <td style={S.td}>
                         <button style={S.payBtn} onClick={() => setPayModal(inv)}>
-                          ≡ Record / View{paid > 0 ? ` (${inr(paid)} paid)` : ""}
+                          Record{paid > 0 ? ` (${inr(paid)} paid)` : ""}{due >= 0.01 ? ` · ₹${(+due.toFixed(2)).toLocaleString("en-IN", { minimumFractionDigits: 0, maximumFractionDigits: 2 })} due` : ""}
                         </button>
-                      </td>
-
-                      {/* Amount Due */}
-                      <td style={S.td}>
-                        <b style={{ color: due === 0 ? "#15803D" : "#BE123C", fontSize: 13 }}>{inr(due)}</b>
                       </td>
 
                       {/* Parts */}
