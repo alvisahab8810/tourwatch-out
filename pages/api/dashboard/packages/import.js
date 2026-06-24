@@ -13,9 +13,13 @@ function clean(v) {
 }
 
 function parseDuration(text) {
-  const m = text.match(/(\d+)\s*N\s*[\/]?\s*(\d+)\s*D/i);
-  if (!m) return "";
-  return `${m[1]}N ${m[2]}D`.toUpperCase();
+  // Format "6N 7D" or "6N/7D" → nights first
+  let m = text.match(/(\d+)\s*N\s*[\/\s]?\s*(\d+)\s*D/i);
+  if (m) return `${m[1]}N ${m[2]}D`.toUpperCase();
+  // Format "7D 6N" → days first, swap to nights-first for storage
+  m = text.match(/(\d+)\s*D\s*[\/\s]?\s*(\d+)\s*N/i);
+  if (m) return `${m[2]}N ${m[1]}D`.toUpperCase();
+  return "";
 }
 
 function escHtml(str) {
