@@ -790,7 +790,7 @@ export default function CreatePackage() {
 
   async function handleSave(publishStatus) {
     if (!form.packageName.trim()) { alert("Please enter a package name."); return; }
-    const status = publishStatus === "Active" && !allDone ? "Inactive" : (publishStatus || form.status);
+    const status = publishStatus || form.status;
     setSaving(true);
     const payload = { ...form, status };
     try {
@@ -813,20 +813,19 @@ export default function CreatePackage() {
         setPendingReviews([]);
       }
 
-      if (publishStatus === "Active" && allDone) {
-        await Promise.all(siblings.map(s =>
-          fetch(`/api/dashboard/packages/${s.id}`, {
-            method: "PUT", headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ status: "Active" }),
-          })
-        ));
-        setToast({ msg: "All packages published!", next: null });
+      if (publishStatus === "Active") {
+        if (allDone) {
+          await Promise.all(siblings.map(s =>
+            fetch(`/api/dashboard/packages/${s.id}`, {
+              method: "PUT", headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ status: "Active" }),
+            })
+          ));
+          setToast({ msg: "All packages published!", next: null });
+        } else {
+          setToast({ msg: isEdit ? "Package published!" : "Package published!", next: null });
+        }
         setTimeout(() => router.back(), 1200);
-      } else if (nextMissing) {
-        setToast({
-          msg: `${form.packageSubtype} saved as draft!`,
-          next: { label: `Create ${nextMissing} →`, href: `/dashboard/packages/create?destination=${encodeURIComponent(form.destination)}&packageType=${encodeURIComponent(form.packageType)}&subtype=${nextMissing}` }
-        });
       } else {
         setToast({ msg: isEdit ? "Package updated!" : "Package saved!", next: null });
         setTimeout(() => router.back(), 1200);
@@ -1718,10 +1717,8 @@ export default function CreatePackage() {
               <button className="bk-draft-btn" onClick={() => handleSave("Inactive")} disabled={saving}>
                 {saving ? "Saving…" : "Save Draft"}
               </button>
-              <button className="bk-publish-btn" onClick={() => handleSave("Active")}
-                disabled={saving || !allDone}
-                title={!allDone ? `Create all 3 subtypes first. Missing: ${PKG_SUBTYPES.filter(s=>s!==form.packageSubtype&&!siblingSubs.includes(s)).join(", ")}` : ""}>
-                {saving ? "Publishing…" : isEdit ? "Update & Publish" : allDone ? "Publish All Packages" : "Publish (create all 3 first)"}
+              <button className="bk-publish-btn" onClick={() => handleSave("Active")} disabled={saving}>
+                {saving ? "Publishing…" : isEdit ? "Update & Publish" : allDone ? "Publish All" : "Publish"}
               </button>
             </div>
 
