@@ -54,6 +54,11 @@ const LeadSchema = new mongoose.Schema(
     adset:      { type: String, default: "" },
     adContent:  { type: String, default: "" },
     campaignId: { type: String, default: "" },
+    // Meta CAPI matching fields (captured at enquiry time)
+    fbc:       { type: String, default: "" },
+    fbp:       { type: String, default: "" },
+    clientIp:  { type: String, default: "" },
+    userAgent: { type: String, default: "" },
     // CRM fields
     connects: { type: Number, default: 0 },
     score:    { type: ScoreSchema, default: null },

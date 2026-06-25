@@ -1,5 +1,6 @@
 import connectDB from "../../../../utils/mongodb";
 import Lead from "../../../../models/Lead";
+import { sendMetaEvent } from "../../../../utils/metaCapi";
 
 const ALLOWED_PATCH = [
   "assignedTo", "contacted", "contactedAt",
@@ -52,6 +53,20 @@ export default async function handler(req, res) {
       .populate("assignedTo", "name email username")
       .lean();
     if (!lead) return res.status(404).json({ error: "Lead not found" });
+
+    if (update.status === "Qualified") {
+      sendMetaEvent({
+        eventName: "QualifiedLead",
+        eventId:   `qlead_${lead._id}`,
+        email:     lead.email,
+        phone:     lead.phone,
+        fbc:       lead.fbc,
+        fbp:       lead.fbp,
+        clientIp:  lead.clientIp,
+        userAgent: lead.userAgent,
+      }).catch((err) => console.error("[MetaCAPI] QualifiedLead failed:", err));
+    }
+
     return res.status(200).json(lead);
   }
 
