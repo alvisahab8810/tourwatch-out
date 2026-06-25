@@ -42,7 +42,7 @@ async function firePurchaseEvent(inv) {
   }
   const value = Math.round(calcGrand(inv) * 100) / 100;
   await sendMetaEvent({
-    eventName: "Purchase",
+    eventName: "BookingConfirmed",
     eventId:   `booking_${String(inv._id)}`,
     email, phone, fbc, fbp, clientIp, userAgent,
     value, currency: "INR",
