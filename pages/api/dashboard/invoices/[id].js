@@ -8,13 +8,21 @@ export const config = { api: { bodyParser: { sizeLimit: "2mb" } } };
 
 const STRIP = new Set(["_id", "id", "__v", "createdAt", "updatedAt"]);
 
-function computeInvoiceTotal(inv) {
-  const itemTotal = (inv.items || []).reduce((s, it) => s + (parseFloat(it.amount) || 0), 0);
-  const cgst = itemTotal * (parseFloat(inv.cgstPct) || 0) / 100;
-  const sgst = itemTotal * (parseFloat(inv.sgstPct) || 0) / 100;
-  const igst = itemTotal * (parseFloat(inv.igstPct) || 0) / 100;
-  const tcs  = (itemTotal + cgst + sgst + igst) * (parseFloat(inv.tcsPct) || 0) / 100;
-  return Math.round((itemTotal + cgst + sgst + igst + tcs) * 100) / 100;
+/* Mirror the frontend getStatus logic — status is NOT stored in DB */
+function calcGrand(inv) {
+  const sub  = (inv.items || []).reduce((s, i) => s + (parseFloat(i.amount) || 0), 0);
+  const cgst = inv.cgstPct ? (sub  * parseFloat(inv.cgstPct)) / 100 : 0;
+  const sgst = inv.sgstPct ? (sub  * parseFloat(inv.sgstPct)) / 100 : 0;
+  const igst = inv.igstPct ? (sub  * parseFloat(inv.igstPct)) / 100 : 0;
+  const after = sub + cgst + sgst + igst;
+  const tcs  = inv.tcsPct ? (after * parseFloat(inv.tcsPct)) / 100 : 0;
+  return after + tcs;
+}
+function calcPaid(inv) { return (inv.payments || []).reduce((s, p) => s + (+p.amount || 0), 0); }
+function isNowPaid(inv) {
+  const grand = calcGrand(inv);
+  const paid  = calcPaid(inv);
+  return paid >= 0.01 && Math.max(0, grand - paid) < 0.01;
 }
 
 async function firePurchaseEvent(inv) {
@@ -32,7 +40,7 @@ async function firePurchaseEvent(inv) {
       }
     } catch (_) {}
   }
-  const value = computeInvoiceTotal(inv);
+  const value = Math.round(calcGrand(inv) * 100) / 100;
   await sendMetaEvent({
     eventName: "Purchase",
     eventId:   `booking_${String(inv._id)}`,
@@ -76,7 +84,7 @@ export default async function handler(req, res) {
       );
       const inv = result?.value ?? result;
       if (!inv) return res.status(404).json({ error: "Not found" });
-      if (body.status === "Paid" && prevInv?.status !== "Paid") {
+      if (!isNowPaid(prevInv) && isNowPaid(inv)) {
         firePurchaseEvent(inv).catch((e) => console.error("[MetaCAPI] Purchase failed:", e));
       }
       return res.status(200).json({ ...inv, id: String(inv._id) });
@@ -96,7 +104,7 @@ export default async function handler(req, res) {
       );
       const inv = result?.value ?? result;
       if (!inv) return res.status(404).json({ error: "Not found" });
-      if (body.status === "Paid" && prevInv?.status !== "Paid") {
+      if (!isNowPaid(prevInv) && isNowPaid(inv)) {
         firePurchaseEvent(inv).catch((e) => console.error("[MetaCAPI] Purchase failed:", e));
       }
       return res.status(200).json({ ...inv, id: String(inv._id) });
