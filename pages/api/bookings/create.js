@@ -1,6 +1,5 @@
 import connectDB from "../../../utils/mongodb";
 import Booking from "../../../models/Booking";
-import { sendMetaEvent } from "../../../utils/metaCapi";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).end();
@@ -41,15 +40,6 @@ export default async function handler(req, res) {
     status:        "Confirmed",
     userId:        userId || null,
   });
-
-  sendMetaEvent({
-    eventName: "Purchase",
-    eventId:   `booking_${booking._id}`,
-    email:     booking.email,
-    phone:     booking.phone,
-    value:     booking.totalAmount,
-    currency:  "INR",
-  }).catch((err) => console.error("[MetaCAPI] Purchase failed:", err));
 
   res.status(201).json({ bookingId: booking.bookingId, id: booking._id });
 }
