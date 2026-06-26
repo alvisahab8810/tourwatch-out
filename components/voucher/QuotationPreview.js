@@ -82,7 +82,7 @@ function fmtDate(v) {
 const inr = n => "₹" + Math.round(n || 0).toLocaleString("en-IN");
 
 export default function QuotationPreview({ data, id }) {
-  const { quoteId, lead = {}, form = {}, hotels = [], flights = [], transfers = [], itin = [], selling = 0 } = data || {};
+  const { quoteId, lead = {}, form = {}, hotels = [], flights = [], transfers = [], miscs = [], itin = [], selling = 0 } = data || {};
 
   return (
     <div id={id} style={q.wrap}>
@@ -120,9 +120,9 @@ export default function QuotationPreview({ data, id }) {
         </div>
         <div style={q.metaDivider} />
         <div style={q.metaRight}>
-          <InfoPair label="Destination" value={lead.destination} right />
-          <InfoPair label="Email"       value={lead.email}       right />
-          <InfoPair label="Contact No." value={lead.phone}       right />
+          <InfoPair label="Destination" value={lead.destination} />
+          <InfoPair label="Email"       value={lead.email} />
+          <InfoPair label="Contact No." value={lead.phone} />
         </div>
       </div>
 
@@ -227,6 +227,28 @@ export default function QuotationPreview({ data, id }) {
         </RedSection>
       )}
 
+      {/* ══════════ MISCELLANEOUS ══════════ */}
+      {miscs.filter(m => m.name || m.amount).length > 0 && (
+        <RedSection title="Additional Services">
+          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <thead>
+              <tr style={{ background: "#fafafa" }}>
+                <Th>Service / Item</Th>
+                <Th style={{ textAlign: "right" }}>Amount</Th>
+              </tr>
+            </thead>
+            <tbody>
+              {miscs.filter(m => m.name || m.amount).map((m, i) => (
+                <tr key={i} style={{ background: i % 2 === 0 ? "#fff" : "#fafafa" }}>
+                  <Td>{m.name || "—"}</Td>
+                  <Td style={{ textAlign: "right", fontWeight: 700 }}>{m.amount ? inr(+m.amount) : "—"}</Td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </RedSection>
+      )}
+
       {/* ══════════ INCLUSIONS ══════════ */}
       {form.inclusions && (
         <RedSection title="Inclusions">
@@ -280,7 +302,7 @@ export default function QuotationPreview({ data, id }) {
       )}
 
       {/* ══════════ FOOTER ══════════ */}
-      <div style={q.footer}>
+      <div id="qb-pdf-footer" style={q.footer}>
         <div style={q.footerItem}>
           <img src="/assets/voucher/email.svg" alt="" style={q.fIcon} crossOrigin="anonymous" />
           <span style={q.fEmail}>sales1@tourwatchout.com</span>
@@ -312,6 +334,9 @@ const q = {
     boxShadow: "0 4px 24px rgba(0,0,0,0.08)",
     overflow: "hidden",
     boxSizing: "border-box",
+    position: "relative",
+    minHeight: 1100,
+    paddingBottom: 58,
   },
   header: { display: "flex", justifyContent: "space-between", alignItems: "flex-start", padding: "20px 22px 16px", background: "#fff", gap: 20 },
   headerLeft: { flex: 1, minWidth: 0 },
@@ -332,7 +357,7 @@ const q = {
   dayMetaRow: { display: "flex", gap: 18, flexWrap: "wrap", fontSize: 11.5, color: "#555", marginBottom: 4 },
   dayMeta: { display: "inline-flex", gap: 4 },
   priceBox: { display: "flex", justifyContent: "space-between", alignItems: "center", background: "#fff5f5", border: `1.5px solid ${RED}`, borderRadius: 10, padding: "14px 18px" },
-  footer: { background: "#fff5f5", borderTop: `2px solid ${RED}`, padding: "11px 22px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 },
+  footer: { position: "absolute", bottom: 0, left: 0, right: 0, background: "#fff5f5", borderTop: `2px solid ${RED}`, padding: "11px 22px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 },
   footerItem: { display: "flex", alignItems: "center", gap: 6 },
   fIcon: { width: 20, height: 20, objectFit: "contain", flexShrink: 0 },
   fEmail: { fontSize: 11.5, color: "#333", fontWeight: 600 },

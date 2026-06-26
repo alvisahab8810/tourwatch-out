@@ -51,6 +51,13 @@ const QuotationSchema = new mongoose.Schema({
     description: { type: String, default: "" },  // legacy plain-text fallback
   }],
 
+  // Miscellaneous items
+  miscs: [{
+    _id: false,
+    name:   { type: String, default: "" },
+    amount: { type: Number, default: 0 },
+  }],
+
   // Content
   inclusions: { type: String, default: "" },
   exclusions: { type: String, default: "" },

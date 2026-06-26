@@ -60,6 +60,7 @@ function initItin(initialData) {
 const DEF_HOTEL    = { name: "", roomCat: "Deluxe", nights: "", rooms: "", price: "" };
 const DEF_FLIGHT   = { from: "", to: "", date: "", pax: "", price: "", roundTrip: false, returnPrice: "" };
 const DEF_TRANSFER = { cab: "", perDay: "", days: "" };
+const DEF_MISC     = { name: "", amount: "" };
 
 const toN = (v, d = 0) => (v === "" || v === undefined || v === null) ? d : (+v || d);
 
@@ -234,6 +235,7 @@ export default function QuotationBuilder({
   const [hotels,    setHotels]    = useState(arrInit.hotels);
   const [flights,   setFlights]   = useState(arrInit.flights);
   const [transfers, setTransfers] = useState(arrInit.transfers);
+  const [miscs,     setMiscs]     = useState(initialData?.miscs?.length ? [...initialData.miscs] : []);
   const [itin,       setItin]       = useState(() => initItin(initialData));
   const [saving,     setSaving]     = useState(false);
   const [pdfLoading, setPdfLoading] = useState(false);
@@ -320,6 +322,14 @@ export default function QuotationBuilder({
   const hotelTotal    = hotels.reduce((s, h) => s + (+h.price || 0) * (+h.nights || 0) * (+h.rooms || 0), 0);
   const flightTotal   = flights.reduce((s, f) => s + ((+f.price || 0) + (f.roundTrip ? (+f.returnPrice || 0) : 0)) * (+f.pax || 0), 0);
   const transferTotal = transfers.reduce((s, t) => s + (+t.perDay || 0) * (+t.days || 0), 0);
+  const miscTotal     = miscs.reduce((s, m) => s + (+m.amount || 0), 0);
+  const grandComponentTotal = hotelTotal + flightTotal + transferTotal + miscTotal;
+
+  /* ── auto-sync Cost Price from component grand total ── */
+  useEffect(() => {
+    if (grandComponentTotal > 0) upd("cost", grandComponentTotal);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [grandComponentTotal]);
 
   /* ── shared body builder (used by manual save + auto-save) ── */
   function buildBody() {
@@ -330,6 +340,7 @@ export default function QuotationBuilder({
       hotels: hotels.map(h => ({ name: h.name, roomCat: h.roomCat, nights: toN(h.nights), rooms: toN(h.rooms, 1), price: toN(h.price) })),
       flights: flights.map(f => ({ from: f.from, to: f.to, date: f.date, pax: toN(f.pax), price: toN(f.price), roundTrip: !!f.roundTrip, returnPrice: toN(f.returnPrice) })),
       transfers: transfers.map(t => ({ cab: t.cab, perDay: toN(t.perDay), days: toN(t.days) })),
+      miscs: miscs.filter(m => m.name || m.amount).map(m => ({ name: m.name, amount: toN(m.amount) })),
       itinerary: itin.map(({ _k, ...rest }) => rest),
     };
   }
@@ -367,7 +378,7 @@ export default function QuotationBuilder({
     }, 1200);
     return () => clearTimeout(autoTimer.current);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [form, hotels, flights, transfers, itin]);
+  }, [form, hotels, flights, transfers, miscs, itin]);
 
   /* ── save (explicit, creates a new version) ── */
   async function save() {
@@ -408,19 +419,49 @@ export default function QuotationBuilder({
       const { jsPDF } = await import("jspdf");
       const el = document.getElementById("qb-pdf-target");
       if (!el) return null;
+
+      /* Measure footer height before cloning */
+      const footerEl    = document.getElementById("qb-pdf-footer");
+      const footerH     = footerEl ? footerEl.offsetHeight : 0;
+      const scale       = 2;
+
       const patch = doc => { const st = doc.createElement("style"); st.textContent = "* { font-family: Arial, Helvetica, sans-serif !important; }"; doc.head.appendChild(st); };
-      const canvas = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: "#fff", logging: false, height: el.scrollHeight, windowHeight: el.scrollHeight, onclone: patch });
-      const pdf = new jsPDF("p", "mm", "a4");
-      const pageW = pdf.internal.pageSize.getWidth(), pageH = pdf.internal.pageSize.getHeight();
-      const pxPerMm = canvas.width / pageW, pagePx = pageH * pxPerMm;
+      const canvas  = await html2canvas(el, { scale, useCORS: true, backgroundColor: "#fff", logging: false, height: el.scrollHeight, windowHeight: el.scrollHeight, onclone: patch });
+
+      const pdf     = new jsPDF("p", "mm", "a4");
+      const pageW   = pdf.internal.pageSize.getWidth();
+      const pageH   = pdf.internal.pageSize.getHeight();
+      const pxPerMm = canvas.width / pageW;
+      const pagePx  = Math.round(pageH * pxPerMm);
+
+      /* Pad canvas to exact multiple of pagePx; move footer to very bottom */
+      const totalPages   = Math.ceil(canvas.height / pagePx);
+      const paddedHeight = totalPages * pagePx;
+      const padded       = document.createElement("canvas");
+      padded.width       = canvas.width;
+      padded.height      = paddedHeight;
+      const ctx          = padded.getContext("2d");
+      ctx.fillStyle      = "#fff";
+      ctx.fillRect(0, 0, padded.width, padded.height);
+
+      const footerPx    = footerH * scale;           // footer height in canvas px
+      const contentEnd  = canvas.height - footerPx;  // where footer starts in original canvas
+
+      /* Draw all content above footer */
+      ctx.drawImage(canvas, 0, 0, canvas.width, contentEnd, 0, 0, canvas.width, contentEnd);
+      /* Draw footer pinned to very bottom of padded canvas */
+      ctx.drawImage(canvas, 0, contentEnd, canvas.width, footerPx, 0, paddedHeight - footerPx, canvas.width, footerPx);
+
+      /* Slice into A4 pages — every slice is now exactly pagePx tall */
       let yPx = 0, first = true;
-      while (yPx < canvas.height) {
+      while (yPx < padded.height) {
         if (!first) pdf.addPage();
         first = false;
-        const h = Math.min(pagePx, canvas.height - yPx);
-        const sl = document.createElement("canvas"); sl.width = canvas.width; sl.height = h;
-        sl.getContext("2d").drawImage(canvas, 0, yPx, canvas.width, h, 0, 0, canvas.width, h);
-        pdf.addImage(sl.toDataURL("image/png"), "PNG", 0, 0, pageW, h / pxPerMm);
+        const sl = document.createElement("canvas");
+        sl.width  = padded.width;
+        sl.height = pagePx;
+        sl.getContext("2d").drawImage(padded, 0, yPx, padded.width, pagePx, 0, 0, padded.width, pagePx);
+        pdf.addImage(sl.toDataURL("image/png"), "PNG", 0, 0, pageW, pageH);
         yPx += pagePx;
       }
       return pdf;
@@ -517,17 +558,33 @@ export default function QuotationBuilder({
               </div>
             )}
 
+            {/* Misc preview */}
+            {miscTotal > 0 && (
+              <div style={{ background: "#FAF5FF", border: "1px solid #D8B4FE", borderRadius: 8, padding: "8px 10px" }}>
+                <div style={{ fontSize: 10, fontWeight: 800, color: "#7C3AED", textTransform: "uppercase", letterSpacing: ".05em", marginBottom: 5 }}>➕ Misc</div>
+                {miscs.map((m, i) => +m.amount > 0 && (
+                  <div key={i} style={{ display: "flex", justifyContent: "space-between", fontSize: 11, marginBottom: 3 }}>
+                    <span style={{ color: "#374151", flexShrink: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{m.name || `Item ${i + 1}`}</span>
+                    <span style={{ fontWeight: 700, color: "#7C3AED", flexShrink: 0 }}>{inr(+m.amount)}</span>
+                  </div>
+                ))}
+                {miscs.filter(m => +m.amount > 0).length > 1 && (
+                  <div style={{ fontSize: 11, fontWeight: 800, color: "#7C3AED", borderTop: "1px dashed #D8B4FE", paddingTop: 4, marginTop: 2, display: "flex", justifyContent: "space-between" }}><span>Total</span><span>{inr(miscTotal)}</span></div>
+                )}
+              </div>
+            )}
+
             {/* Grand total */}
-            {(hotelTotal + flightTotal + transferTotal) > 0 && (
+            {grandComponentTotal > 0 && (
               <div style={{ background: "#EFF4FF", border: "2px solid #2563EB", borderRadius: 8, padding: "8px 10px", marginTop: 2 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                   <span style={{ fontSize: 11, fontWeight: 800, color: "#1D4ED8" }}>Grand Total</span>
-                  <span style={{ fontSize: 14, fontWeight: 900, color: "#1D4ED8" }}>{inr(hotelTotal + flightTotal + transferTotal)}</span>
+                  <span style={{ fontSize: 14, fontWeight: 900, color: "#1D4ED8" }}>{inr(grandComponentTotal)}</span>
                 </div>
               </div>
             )}
 
-            {(hotelTotal + flightTotal + transferTotal) === 0 && (
+            {grandComponentTotal === 0 && (
               <div style={{ fontSize: 11, color: "#9CA3AF", textAlign: "center", marginTop: 20, lineHeight: 1.6 }}>
                 Enter prices in Hotels, Flights or Transfers to see live preview here.
               </div>
@@ -644,9 +701,7 @@ export default function QuotationBuilder({
                   Combined Hotel Total: {inr(hotelTotal)}
                 </div>
               )}
-              {hotels.length < 3 && (
-                <button onClick={() => addRow(setHotels, DEF_HOTEL)} style={QS.addBtnBottom}>+ Add Hotel</button>
-              )}
+              <button onClick={() => addRow(setHotels, DEF_HOTEL)} style={QS.addBtnBottom}>+ Add Hotel</button>
             </Sec>
 
             {/* ── Transfers (Cab) ── */}
@@ -690,6 +745,33 @@ export default function QuotationBuilder({
                   style={QS.addBtnBottom}
                 >+ Add Transfer</button>
               )}
+            </Sec>
+
+            {/* ── Miscellaneous ── */}
+            <Sec label="➕  Miscellaneous">
+              {miscs.length === 0 && (
+                <div style={{ fontSize: 12, color: "#9CA3AF", marginBottom: 10 }}>Add any additional services — sightseeing, entry fees, boat rides, etc.</div>
+              )}
+              {miscs.map((m, i) => (
+                <div key={i} style={QS.rowBox}>
+                  <button style={QS.remBtn} onClick={() => remRow(setMiscs, i)}>✕</button>
+                  {miscs.length > 1 && <div style={QS.rowLabel}>Item {i + 1}</div>}
+                  <div style={G2}>
+                    <Fl l="Service / Item">
+                      <input style={QS.inp} placeholder="Sightseeing, Boat Ride, Entry Fees…" value={m.name} onChange={e => updArr(setMiscs, i, "name", e.target.value)} />
+                    </Fl>
+                    <Fl l="Amount (₹)">
+                      <input type="number" style={QS.inp} value={m.amount} onChange={e => updArr(setMiscs, i, "amount", e.target.value)} />
+                    </Fl>
+                  </div>
+                </div>
+              ))}
+              {miscs.length > 1 && miscTotal > 0 && (
+                <div style={{ textAlign: "right", fontSize: 13, fontWeight: 700, color: "#7C3AED", marginTop: 4 }}>
+                  Total Misc: {inr(miscTotal)}
+                </div>
+              )}
+              <button onClick={() => addRow(setMiscs, { ...DEF_MISC })} style={QS.addBtnBottom}>+ Add Misc Item</button>
             </Sec>
 
             {/* ── Flights ── */}
@@ -836,7 +918,7 @@ export default function QuotationBuilder({
               </div>
               <div style={{ background: "#fff", padding: 14 }}>
                 <div style={{ display: "grid", gridTemplateColumns: `repeat(${intl ? 4 : 3}, 1fr)`, gap: 12, marginBottom: 14 }}>
-                  <Fl l="Cost Price (₹)"><input type="number" style={QS.inp} value={form.cost} onChange={e => upd("cost", e.target.value)} /></Fl>
+                  <Fl l="Cost Price (₹) — auto from components"><input type="number" style={{ ...QS.inp, background: "#F0FDF4", fontWeight: 700 }} value={form.cost} onChange={e => upd("cost", e.target.value)} /></Fl>
                   <Fl l="Margin (₹)"><input type="number" style={QS.inp} value={form.margin} onChange={e => upd("margin", e.target.value)} /></Fl>
                   <Fl l="GST %"><input type="number" style={QS.inp} value={form.gstPct} onChange={e => upd("gstPct", e.target.value)} /></Fl>
                   {intl && (
@@ -895,7 +977,7 @@ export default function QuotationBuilder({
             <div style={{ padding: 22, maxHeight: "76vh", overflowY: "auto" }}>
               <QuotationPreview
                 id="qb-pdf-target"
-                data={{ quoteId: quoteDisplayId, lead, form, hotels, flights, transfers, itin, selling: c.selling }}
+                data={{ quoteId: quoteDisplayId, lead, form, hotels, flights, transfers, miscs, itin, selling: c.selling }}
               />
             </div>
             <div style={QS.foot}>
