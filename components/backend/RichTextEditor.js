@@ -4,8 +4,13 @@ import dynamic from "next/dynamic";
 
 const ReactQuill = dynamic(
   async () => {
-    const { default: RQ } = await import("react-quill");
+    const { default: RQ, Quill } = await import("react-quill");
     await import("react-quill/dist/quill.snow.css");
+
+    const SizeStyle = Quill.import("attributors/style/size");
+    SizeStyle.whitelist = ["10px", "12px", "14px", "16px", "18px", "20px", "24px", "28px", "32px"];
+    Quill.register(SizeStyle, true);
+
     const QuillWrapper = forwardRef(({ forwardedRef, ...props }, _) => (
       <RQ ref={forwardedRef} {...props} />
     ));
@@ -15,7 +20,7 @@ const ReactQuill = dynamic(
   { ssr: false }
 );
 
-export default function RichTextEditor({ label, value, onChange, rows = 6 }) {
+export default function RichTextEditor({ label, value, onChange, rows = 6, placeholder }) {
   const quillRef = useRef(null);
 
   function imageHandler() {
@@ -51,7 +56,7 @@ export default function RichTextEditor({ label, value, onChange, rows = 6 }) {
     () => ({
       toolbar: {
         container: [
-          [{ header: [1, 2, 3, false] }],
+          [{ size: ["10px", "12px", "14px", false, "18px", "20px", "24px", "28px", "32px"] }],
           ["bold", "italic", "underline", "strike"],
           [{ color: [] }, { background: [] }],
           [{ list: "ordered" }, { list: "bullet" }],
@@ -66,7 +71,7 @@ export default function RichTextEditor({ label, value, onChange, rows = 6 }) {
   );
 
   const formats = [
-    "header",
+    "size",
     "bold", "italic", "underline", "strike",
     "color", "background",
     "list", "bullet",
@@ -86,6 +91,7 @@ export default function RichTextEditor({ label, value, onChange, rows = 6 }) {
         onChange={onChange}
         modules={modules}
         formats={formats}
+        placeholder={placeholder}
         style={{ height: editorHeight, marginBottom: 42 }}
       />
     </div>

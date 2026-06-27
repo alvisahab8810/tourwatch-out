@@ -57,7 +57,7 @@ function initItin(initialData) {
   }));
 }
 
-const DEF_HOTEL    = { name: "", roomCat: "Deluxe", nights: "", rooms: "", price: "" };
+const DEF_HOTEL    = { name: "", roomCat: "Deluxe", occupancy: "Double", nights: "", rooms: "", price: "" };
 const DEF_FLIGHT   = { from: "", to: "", date: "", pax: "", price: "", roundTrip: false, returnPrice: "" };
 const DEF_TRANSFER = { cab: "", perDay: "", days: "" };
 const DEF_MISC     = { name: "", amount: "" };
@@ -337,7 +337,7 @@ export default function QuotationBuilder({
       ...form,
       assignedTo: form.assignedTo || null, // empty string can't be cast to ObjectId — send null instead
       cost: toN(form.cost), margin: toN(form.margin), gstPct: toN(form.gstPct, 5), tcsPct: toN(form.tcsPct),
-      hotels: hotels.map(h => ({ name: h.name, roomCat: h.roomCat, nights: toN(h.nights), rooms: toN(h.rooms, 1), price: toN(h.price) })),
+      hotels: hotels.map(h => ({ name: h.name, roomCat: h.roomCat, occupancy: h.occupancy || "Double", nights: toN(h.nights), rooms: toN(h.rooms, 1), price: toN(h.price) })),
       flights: flights.map(f => ({ from: f.from, to: f.to, date: f.date, pax: toN(f.pax), price: toN(f.price), roundTrip: !!f.roundTrip, returnPrice: toN(f.returnPrice) })),
       transfers: transfers.map(t => ({ cab: t.cab, perDay: toN(t.perDay), days: toN(t.days) })),
       miscs: miscs.filter(m => m.name || m.amount).map(m => ({ name: m.name, amount: toN(m.amount) })),
@@ -665,7 +665,7 @@ export default function QuotationBuilder({
                 <div key={i} style={QS.rowBox}>
                   {hotels.length > 1 && <button style={QS.remBtn} onClick={() => remRow(setHotels, i)}>✕</button>}
                   {hotels.length > 1 && <div style={QS.rowLabel}>Hotel {i + 1}</div>}
-                  <div style={{ ...G3, marginBottom: 10 }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr", gap: 10, marginBottom: 10 }}>
                     <Fl l="Select Hotel">
                       <input style={QS.inp} placeholder="Hotel name, city" value={h.name} onChange={e => updArr(setHotels, i, "name", e.target.value)} />
                     </Fl>
@@ -677,6 +677,13 @@ export default function QuotationBuilder({
                         onAdd={addRoomCategory}
                         onDelete={removeRoomCategory}
                       />
+                    </Fl>
+                    <Fl l="Occupancy">
+                      <select style={QS.inp} value={h.occupancy || "Double"} onChange={e => updArr(setHotels, i, "occupancy", e.target.value)}>
+                        <option value="Single">Single</option>
+                        <option value="Double">Double</option>
+                        <option value="Triple">Triple</option>
+                      </select>
                     </Fl>
                     <Fl l="Price / Night (₹)">
                       <input type="number" style={QS.inp} value={h.price} onChange={e => updArr(setHotels, i, "price", e.target.value)} />
@@ -846,12 +853,6 @@ export default function QuotationBuilder({
                 <button onClick={() => addRow(setFlights, DEF_FLIGHT)} style={QS.addBtnBottom}>+ Add Flight</button>
               )}
             </Sec>
-
-            {/* ── Combined Cost (Hotel + Flight + Transfer) ── */}
-            <div style={{ background: "#EFF4FF", border: "1px solid #BFD3FE", borderRadius: 12, padding: "12px 16px", marginBottom: 14, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
-              <span style={{ fontSize: 13, fontWeight: 700, color: "#1D4ED8" }}>💰 Combined Trip Cost (Hotel + Flight + Transfer)</span>
-              <span style={{ fontSize: 18, fontWeight: 800, color: "#1D4ED8" }}>{inr(hotelTotal + flightTotal + transferTotal)}</span>
-            </div>
 
             {/* ── Inclusions / Exclusions / Notes ── */}
             <Sec label="📝  Inclusions, Exclusions and Notes">
@@ -1097,14 +1098,43 @@ function TripTypeToggle({ value, onChange }) {
 function CR({ l, v, vc }) {
   return <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, padding: "6px 2px", borderBottom: "1px dashed #E4E9F2" }}><span style={{ color: "#36415A" }}>{l}</span><b style={{ color: vc || "#0F1B33" }}>{v}</b></div>;
 }
+const FONT_FAMILIES = ["Default", "Arial", "Georgia", "Tahoma", "Verdana", "Courier New", "Times New Roman"];
+const FONT_SIZES    = ["Default", "10px", "12px", "13px", "14px", "16px", "18px", "20px", "24px", "28px", "32px"];
+
 function RTE({ value, onChange, placeholder, minHeight }) {
   const ref = useRef(null);
   useEffect(() => { if (ref.current) ref.current.innerHTML = value || ""; }, []);
-  const exec = cmd => { document.execCommand(cmd, false, null); if (ref.current) onChange(ref.current.innerHTML); ref.current?.focus(); };
+  const exec    = cmd  => { document.execCommand(cmd, false, null);  if (ref.current) onChange(ref.current.innerHTML); ref.current?.focus(); };
+  const execVal = (cmd, val) => { document.execCommand(cmd, false, val); if (ref.current) onChange(ref.current.innerHTML); ref.current?.focus(); };
   const isEmpty = !(value ? value.replace(/<[^>]*>/g, "").trim() : "");
+
+  function applyFontSize(px) {
+    if (!px || px === "Default") { exec("removeFormat"); return; }
+    const sel = window.getSelection();
+    if (!sel || sel.rangeCount === 0) return;
+    const range = sel.getRangeAt(0);
+    if (range.collapsed) return;
+    const span = document.createElement("span");
+    span.style.fontSize = px;
+    range.surroundContents(span);
+    if (ref.current) onChange(ref.current.innerHTML);
+  }
+
   return (
     <div style={{ border: "1.5px solid #E4E9F2", borderRadius: 9, overflow: "hidden", background: "#F8FAFD" }}>
-      <div style={{ display: "flex", gap: 4, padding: "5px 9px", background: "#EFF4FF", borderBottom: "1px solid #E4E9F2", flexWrap: "wrap" }}>
+      <div style={{ display: "flex", gap: 4, padding: "5px 9px", background: "#EFF4FF", borderBottom: "1px solid #E4E9F2", flexWrap: "wrap", alignItems: "center" }}>
+        <select defaultValue="" onMouseDown={e => e.stopPropagation()}
+          onChange={e => { const v = e.target.value; e.target.value = ""; if (v && v !== "Default") execVal("fontName", v); else exec("removeFormat"); ref.current?.focus(); }}
+          style={{ ...QS.rteBtn, padding: "3px 5px", cursor: "pointer", width: 110 }}>
+          <option value="">Font</option>
+          {FONT_FAMILIES.map(f => <option key={f} value={f === "Default" ? "" : f}>{f}</option>)}
+        </select>
+        <select defaultValue="" onMouseDown={e => e.stopPropagation()}
+          onChange={e => { const v = e.target.value; e.target.value = ""; applyFontSize(v); ref.current?.focus(); }}
+          style={{ ...QS.rteBtn, padding: "3px 5px", cursor: "pointer", width: 72 }}>
+          <option value="">Size</option>
+          {FONT_SIZES.map(s => <option key={s} value={s === "Default" ? "" : s}>{s}</option>)}
+        </select>
         <button type="button" onMouseDown={e => { e.preventDefault(); exec("bold"); }} style={QS.rteBtn}><b>B</b></button>
         <button type="button" onMouseDown={e => { e.preventDefault(); exec("italic"); }} style={QS.rteBtn}><i>I</i></button>
         <button type="button" onMouseDown={e => { e.preventDefault(); exec("insertUnorderedList"); }} style={QS.rteBtn}>• List</button>

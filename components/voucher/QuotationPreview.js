@@ -167,6 +167,7 @@ export default function QuotationPreview({ data, id }) {
                 <span style={{ fontSize: 14 }}>🏨</span>
                 <span style={{ fontSize: 15, fontWeight: 700, color: DARK }}>{h.name}</span>
                 {h.roomCat && <span style={{ fontSize: 12, color: "#6b7280" }}>— {h.roomCat}</span>}
+                {h.occupancy && <span style={{ fontSize: 11, background: "#EFF4FF", color: "#2563EB", borderRadius: 4, padding: "1px 7px", fontWeight: 700 }}>{h.occupancy} Occ.</span>}
               </div>
               <div style={{ display: "flex", gap: 24, flexWrap: "wrap", fontSize: 12, color: "#374151" }}>
                 {h.nights && <span><b>Nights:</b> {h.nights}</span>}
@@ -178,7 +179,7 @@ export default function QuotationPreview({ data, id }) {
       )}
 
       {/* ══════════ TRANSPORTATION (CAB) ══════════ */}
-      {transfers.filter(t => t.cab || t.perDay || t.days).length > 0 && (
+      {transfers.filter(t => +t.perDay > 0).length > 0 && (
         <RedSection title="Transportation Details">
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>
@@ -188,7 +189,7 @@ export default function QuotationPreview({ data, id }) {
               </tr>
             </thead>
             <tbody>
-              {transfers.filter(t => t.cab || t.perDay || t.days).map((t, i) => (
+              {transfers.filter(t => +t.perDay > 0).map((t, i) => (
                 <tr key={i} style={{ background: i % 2 === 0 ? "#fff" : "#fafafa" }}>
                   <Td>{t.cab}</Td>
                   <Td>{t.days}</Td>
@@ -200,7 +201,7 @@ export default function QuotationPreview({ data, id }) {
       )}
 
       {/* ══════════ FLIGHT DETAILS ══════════ */}
-      {flights.filter(f => f.from || f.to || f.date || f.pax || f.price).length > 0 && (
+      {flights.filter(f => f.from || f.to || +f.price > 0).length > 0 && (
         <RedSection title="Flight Details">
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>
@@ -213,7 +214,7 @@ export default function QuotationPreview({ data, id }) {
               </tr>
             </thead>
             <tbody>
-              {flights.filter(f => f.from || f.to || f.date || f.pax || f.price).map((f, i) => (
+              {flights.filter(f => f.from || f.to || +f.price > 0).map((f, i) => (
                 <tr key={i} style={{ background: i % 2 === 0 ? "#fff" : "#fafafa" }}>
                   <Td>{f.from}</Td>
                   <Td>{f.roundTrip ? `${f.to || "—"} ⇄ ${f.from || "—"}` : f.to}</Td>
@@ -227,25 +228,14 @@ export default function QuotationPreview({ data, id }) {
         </RedSection>
       )}
 
-      {/* ══════════ MISCELLANEOUS ══════════ */}
-      {miscs.filter(m => m.name || m.amount).length > 0 && (
-        <RedSection title="Additional Services">
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
-            <thead>
-              <tr style={{ background: "#fafafa" }}>
-                <Th>Service / Item</Th>
-                <Th style={{ textAlign: "right" }}>Amount</Th>
-              </tr>
-            </thead>
-            <tbody>
-              {miscs.filter(m => m.name || m.amount).map((m, i) => (
-                <tr key={i} style={{ background: i % 2 === 0 ? "#fff" : "#fafafa" }}>
-                  <Td>{m.name || "—"}</Td>
-                  <Td style={{ textAlign: "right", fontWeight: 700 }}>{m.amount ? inr(+m.amount) : "—"}</Td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      {/* ══════════ VALUE ADDED SERVICES ══════════ */}
+      {miscs.filter(m => m.name).length > 0 && (
+        <RedSection title="Value Added Services">
+          <ul style={{ margin: "4px 0 0 0", paddingLeft: 20 }}>
+            {miscs.filter(m => m.name).map((m, i) => (
+              <li key={i} style={{ fontSize: 12.5, color: "#374151", marginBottom: 4 }}>{m.name}</li>
+            ))}
+          </ul>
         </RedSection>
       )}
 
