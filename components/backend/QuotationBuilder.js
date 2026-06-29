@@ -57,7 +57,8 @@ function initItin(initialData) {
   }));
 }
 
-const DEF_HOTEL    = { name: "", roomCat: "Deluxe", occupancy: "Double", nights: "", rooms: "", price: "" };
+const DEF_RATE     = { occupancy: "Double", roomCat: "Deluxe", nights: "", rooms: "", price: "" };
+const DEF_HOTEL    = { name: "", rates: [{ ...DEF_RATE }] };
 const DEF_FLIGHT   = { from: "", to: "", date: "", pax: "", price: "", roundTrip: false, returnPrice: "" };
 const DEF_TRANSFER = { cab: "", perDay: "", days: "" };
 const DEF_MISC     = { name: "", amount: "" };
@@ -168,13 +169,18 @@ const DEF_FORM = {
 
 /* Build initial hotels/flights/transfers from BRR or existing data */
 function initArrays(initialData, lead) {
-  // hotels
+  // hotels — normalise old flat format to new rates[] format
   let hotels;
   if (initialData?.hotels?.length) {
-    hotels = [...initialData.hotels];
+    hotels = initialData.hotels.map(h => ({
+      name:  h.name || "",
+      rates: h.rates?.length
+        ? h.rates.map(r => ({ occupancy: r.occupancy || "Double", roomCat: r.roomCat || h.roomCat || "Deluxe", nights: r.nights ?? "", rooms: r.rooms ?? 1, price: r.price ?? "" }))
+        : [{ occupancy: h.occupancy || "Double", roomCat: h.roomCat || "Deluxe", nights: h.nights || "", rooms: h.rooms || 1, price: h.price || "" }],
+    }));
   } else {
     const brr = lead?.brr || {};
-    hotels = [{ ...DEF_HOTEL, roomCat: brr.hotelCategory || "Deluxe" }];
+    hotels = [{ name: "", rates: [{ ...DEF_RATE, roomCat: brr.hotelCategory || "Deluxe" }] }];
   }
 
   // flights
@@ -319,7 +325,7 @@ export default function QuotationBuilder({
   function remRow(setter, idx)   { setter(p => p.filter((_, i) => i !== idx)); }
 
   /* ── sub-totals ── */
-  const hotelTotal    = hotels.reduce((s, h) => s + (+h.price || 0) * (+h.nights || 0) * (+h.rooms || 0), 0);
+  const hotelTotal    = hotels.reduce((s, h) => s + (h.rates || []).reduce((rs, r) => rs + (+r.price || 0) * (+r.nights || 0) * (+r.rooms || 0), 0), 0);
   const flightTotal   = flights.reduce((s, f) => s + ((+f.price || 0) + (f.roundTrip ? (+f.returnPrice || 0) : 0)) * (+f.pax || 0), 0);
   const transferTotal = transfers.reduce((s, t) => s + (+t.perDay || 0) * (+t.days || 0), 0);
   const miscTotal     = miscs.reduce((s, m) => s + (+m.amount || 0), 0);
@@ -337,7 +343,7 @@ export default function QuotationBuilder({
       ...form,
       assignedTo: form.assignedTo || null, // empty string can't be cast to ObjectId — send null instead
       cost: toN(form.cost), margin: toN(form.margin), gstPct: toN(form.gstPct, 5), tcsPct: toN(form.tcsPct),
-      hotels: hotels.map(h => ({ name: h.name, roomCat: h.roomCat, occupancy: h.occupancy || "Double", nights: toN(h.nights), rooms: toN(h.rooms, 1), price: toN(h.price) })),
+      hotels: hotels.map(h => ({ name: h.name, rates: (h.rates || []).map(r => ({ occupancy: r.occupancy || "Double", roomCat: r.roomCat || "Deluxe", nights: toN(r.nights), rooms: toN(r.rooms, 1), price: toN(r.price) })) })),
       flights: flights.map(f => ({ from: f.from, to: f.to, date: f.date, pax: toN(f.pax), price: toN(f.price), roundTrip: !!f.roundTrip, returnPrice: toN(f.returnPrice) })),
       transfers: transfers.map(t => ({ cab: t.cab, perDay: toN(t.perDay), days: toN(t.days) })),
       miscs: miscs.filter(m => m.name || m.amount).map(m => ({ name: m.name, amount: toN(m.amount) })),
@@ -509,15 +515,24 @@ export default function QuotationBuilder({
             <div style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: ".06em", color: "#6B7A99", marginBottom: 2 }}>💰 Price Preview</div>
 
             {/* Hotels */}
-            {hotels.some(h => +h.price > 0) && (
+            {hotelTotal > 0 && (
               <div style={{ background: "#F0FDF4", border: "1px solid #86EFAC", borderRadius: 8, padding: "8px 10px" }}>
                 <div style={{ fontSize: 10, fontWeight: 800, color: "#15803D", textTransform: "uppercase", letterSpacing: ".05em", marginBottom: 5 }}>🏨 Hotels</div>
-                {hotels.map((h, i) => +h.price > 0 && (
-                  <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 4, fontSize: 11, marginBottom: 3 }}>
-                    <span style={{ color: "#374151", flexShrink: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{h.name || `Hotel ${i + 1}`}</span>
-                    <span style={{ fontWeight: 700, color: "#15803D", flexShrink: 0 }}>{inr((+h.price || 0) * (+h.nights || 0) * (+h.rooms || 0))}</span>
-                  </div>
-                ))}
+                {hotels.map((h, i) => {
+                  const hTotal = (h.rates || []).reduce((s, r) => s + (+r.price || 0) * (+r.nights || 0) * (+r.rooms || 0), 0);
+                  if (!hTotal) return null;
+                  return (
+                    <div key={i} style={{ marginBottom: 4 }}>
+                      <div style={{ fontSize: 11, color: "#374151", fontWeight: 700, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{h.name || `Hotel ${i + 1}`}</div>
+                      {(h.rates || []).filter(r => +r.price > 0).map((r, j) => (
+                        <div key={j} style={{ display: "flex", justifyContent: "space-between", fontSize: 10.5, color: "#6B7A99", paddingLeft: 6 }}>
+                          <span>{r.occupancy}</span>
+                          <span style={{ fontWeight: 700, color: "#15803D" }}>{inr((+r.price || 0) * (+r.nights || 0) * (+r.rooms || 0))}</span>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })}
                 {hotels.length > 1 && <div style={{ fontSize: 11, fontWeight: 800, color: "#15803D", borderTop: "1px dashed #86EFAC", paddingTop: 4, marginTop: 2, display: "flex", justifyContent: "space-between" }}><span>Total</span><span>{inr(hotelTotal)}</span></div>}
               </div>
             )}
@@ -661,54 +676,77 @@ export default function QuotationBuilder({
               label="🏨  Hotel Details"
               right={<span style={{ fontSize: 12, opacity: 0.85, fontWeight: 600 }}>Customer side</span>}
             >
-              {hotels.map((h, i) => (
-                <div key={i} style={QS.rowBox}>
-                  {hotels.length > 1 && <button style={QS.remBtn} onClick={() => remRow(setHotels, i)}>✕</button>}
-                  {hotels.length > 1 && <div style={QS.rowLabel}>Hotel {i + 1}</div>}
-                  <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr", gap: 10, marginBottom: 10 }}>
-                    <Fl l="Select Hotel">
-                      <input style={QS.inp} placeholder="Hotel name, city" value={h.name} onChange={e => updArr(setHotels, i, "name", e.target.value)} />
-                    </Fl>
-                    <Fl l="Room Category">
-                      <RoomCatSelect
-                        value={h.roomCat}
-                        extra={extraRoomCats}
-                        onChange={v => updArr(setHotels, i, "roomCat", v)}
-                        onAdd={addRoomCategory}
-                        onDelete={removeRoomCategory}
-                      />
-                    </Fl>
-                    <Fl l="Occupancy">
-                      <select style={QS.inp} value={h.occupancy || "Double"} onChange={e => updArr(setHotels, i, "occupancy", e.target.value)}>
-                        <option value="Single">Single</option>
-                        <option value="Double">Double</option>
-                        <option value="Triple">Triple</option>
-                      </select>
-                    </Fl>
-                    <Fl l="Price / Night (₹)">
-                      <input type="number" style={QS.inp} value={h.price} onChange={e => updArr(setHotels, i, "price", e.target.value)} />
-                    </Fl>
+              {hotels.map((h, i) => {
+                const hTotal = (h.rates || []).reduce((s, r) => s + (+r.price || 0) * (+r.nights || 0) * (+r.rooms || 0), 0);
+                const updRate = (ri, field, val) => setHotels(p => p.map((x, xi) => xi !== i ? x : { ...x, rates: x.rates.map((r, rj) => rj !== ri ? r : { ...r, [field]: val }) }));
+                const addRate = () => setHotels(p => p.map((x, xi) => xi !== i ? x : { ...x, rates: [...x.rates, { ...DEF_RATE }] }));
+                const remRate = ri => setHotels(p => p.map((x, xi) => xi !== i ? x : { ...x, rates: x.rates.filter((_, rj) => rj !== ri) }));
+                return (
+                  <div key={i} style={QS.rowBox}>
+                    {hotels.length > 1 && <button style={QS.remBtn} onClick={() => remRow(setHotels, i)}>✕ Hotel</button>}
+                    {hotels.length > 1 && <div style={QS.rowLabel}>Hotel {i + 1}</div>}
+                    {/* Hotel name */}
+                    <div style={{ marginBottom: 12 }}>
+                      <Fl l="Select Hotel">
+                        <input style={QS.inp} placeholder="Hotel name, city" value={h.name} onChange={e => updArr(setHotels, i, "name", e.target.value)} />
+                      </Fl>
+                    </div>
+                    {/* Rate rows */}
+                    <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 8 }}>
+                      {(h.rates || []).map((r, ri) => (
+                        <div key={ri} style={{ border: "1px solid #E4E9F2", borderRadius: 8, padding: "10px 12px", background: ri % 2 === 0 ? "#fff" : "#F8FAFD", position: "relative" }}>
+                          {h.rates.length > 1 && (
+                            <button style={{ position: "absolute", top: 7, right: 7, background: "#FEE2E2", border: "none", color: "#BE123C", borderRadius: 4, width: 22, height: 22, fontSize: 11, fontWeight: 700, cursor: "pointer", padding: 0 }} onClick={() => remRate(ri)}>✕</button>
+                          )}
+                          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: 10 }}>
+                            <Fl l="Occupancy">
+                              <select style={QS.inp} value={r.occupancy || "Double"} onChange={e => updRate(ri, "occupancy", e.target.value)}>
+                                <option value="Single">Single</option>
+                                <option value="Double">Double</option>
+                                <option value="Triple">Triple</option>
+                                <option value="Quad">Quad</option>
+                              </select>
+                            </Fl>
+                            <Fl l="Room Category">
+                              <RoomCatSelect
+                                value={r.roomCat || "Deluxe"}
+                                extra={extraRoomCats}
+                                onChange={v => updRate(ri, "roomCat", v)}
+                                onAdd={addRoomCategory}
+                                onDelete={removeRoomCategory}
+                              />
+                            </Fl>
+                            <Fl l="Price / Night (₹)">
+                              <input type="number" style={QS.inp} value={r.price} placeholder="0" onChange={e => updRate(ri, "price", e.target.value)} />
+                            </Fl>
+                          </div>
+                          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
+                            <Fl l="Nights">
+                              <input type="number" style={QS.inp} value={r.nights} placeholder="0" onChange={e => updRate(ri, "nights", e.target.value)} />
+                            </Fl>
+                            <Fl l="Rooms">
+                              <input type="number" style={QS.inp} value={r.rooms} placeholder="1" onChange={e => updRate(ri, "rooms", e.target.value)} />
+                            </Fl>
+                            <Fl l="Sub Total">
+                              <input style={{ ...QS.inp, color: "#15803D", fontWeight: 700 }} value={inr((+r.price || 0) * (+r.nights || 0) * (+r.rooms || 0))} disabled />
+                            </Fl>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <button onClick={addRate} style={{ ...QS.addBtnBottom, marginTop: 0, width: "auto", padding: "5px 14px", fontSize: 12 }}>+ Add Rate Type</button>
+                      {hTotal > 0 && <span style={{ fontSize: 12, fontWeight: 800, color: "#15803D" }}>Hotel Total: {inr(hTotal)}</span>}
+                    </div>
                   </div>
-                  <div style={G3}>
-                    <Fl l="Nights">
-                      <input type="number" style={QS.inp} value={h.nights} onChange={e => updArr(setHotels, i, "nights", e.target.value)} />
-                    </Fl>
-                    <Fl l="Rooms">
-                      <input type="number" style={QS.inp} value={h.rooms} onChange={e => updArr(setHotels, i, "rooms", e.target.value)} />
-                    </Fl>
-                    <Fl l="Sub Total">
-                      <input style={{ ...QS.inp, color: "#15803D", fontWeight: 700 }}
-                        value={inr((+h.price || 0) * (+h.nights || 0) * (+h.rooms || 0))} disabled />
-                    </Fl>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
               {hotels.length > 1 && (
                 <div style={{ textAlign: "right", fontSize: 13, fontWeight: 700, color: "#15803D", marginTop: 4 }}>
                   Combined Hotel Total: {inr(hotelTotal)}
                 </div>
               )}
-              <button onClick={() => addRow(setHotels, DEF_HOTEL)} style={QS.addBtnBottom}>+ Add Hotel</button>
+              <button onClick={() => setHotels(p => [...p, { name: "", rates: [{ ...DEF_RATE }] }])} style={QS.addBtnBottom}>+ Add Hotel</button>
             </Sec>
 
             {/* ── Transfers (Cab) ── */}
@@ -1109,15 +1147,18 @@ function RTE({ value, onChange, placeholder, minHeight }) {
   const isEmpty = !(value ? value.replace(/<[^>]*>/g, "").trim() : "");
 
   function applyFontSize(px) {
-    if (!px || px === "Default") { exec("removeFormat"); return; }
-    const sel = window.getSelection();
-    if (!sel || sel.rangeCount === 0) return;
-    const range = sel.getRangeAt(0);
-    if (range.collapsed) return;
-    const span = document.createElement("span");
-    span.style.fontSize = px;
-    range.surroundContents(span);
-    if (ref.current) onChange(ref.current.innerHTML);
+    if (!px) return;
+    // execCommand handles all cross-element selection edge cases
+    document.execCommand("fontSize", false, "7");
+    if (ref.current) {
+      ref.current.querySelectorAll("font[size='7']").forEach(font => {
+        const span = document.createElement("span");
+        span.style.fontSize = px;
+        span.innerHTML = font.innerHTML;
+        font.parentNode.replaceChild(span, font);
+      });
+      onChange(ref.current.innerHTML);
+    }
   }
 
   return (

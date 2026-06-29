@@ -11,13 +11,23 @@ const QuotationSchema = new mongoose.Schema({
 
   // Hotels (array — supports multiple properties)
   hotels: [{
-    _id:       false,
-    name:      { type: String, default: "" },
-    roomCat:   { type: String, default: "Deluxe" },
-    occupancy: { type: String, default: "Double" },
+    _id:     false,
+    name:    { type: String, default: "" },
+    roomCat: { type: String, default: "Deluxe" },
+    // legacy flat fields kept for backward-compat reads
+    occupancy: { type: String, default: "" },
     nights:    { type: Number, default: 0 },
     rooms:     { type: Number, default: 1 },
     price:     { type: Number, default: 0 },
+    // new: multiple rate types per hotel
+    rates: [{
+      _id:       false,
+      occupancy: { type: String, default: "Double" },
+      roomCat:   { type: String, default: "Deluxe" },
+      nights:    { type: Number, default: 0 },
+      rooms:     { type: Number, default: 1 },
+      price:     { type: Number, default: 0 },
+    }],
   }],
 
   // Flights (array — outbound + return + any extra legs)

@@ -160,21 +160,42 @@ export default function QuotationPreview({ data, id }) {
       {/* ══════════ HOTEL DETAILS ══════════ */}
       {hotels.filter(h => h.name).length > 0 && (
         <RedSection title="Hotel Details">
-          {hotels.filter(h => h.name).map((h, idx) => (
-            <div key={idx} data-pdf-section="true"
-              style={idx > 0 ? { marginTop: 14, borderTop: "1px dashed #e0e0e0", paddingTop: 12 } : {}}>
-              <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
-                <span style={{ fontSize: 14 }}>🏨</span>
-                <span style={{ fontSize: 15, fontWeight: 700, color: DARK }}>{h.name}</span>
-                {h.roomCat && <span style={{ fontSize: 12, color: "#6b7280" }}>— {h.roomCat}</span>}
-                {h.occupancy && <span style={{ fontSize: 11, background: "#EFF4FF", color: "#2563EB", borderRadius: 4, padding: "1px 7px", fontWeight: 700 }}>{h.occupancy} Occ.</span>}
+          {hotels.filter(h => h.name).map((h, idx) => {
+            // normalise: support both new rates[] and legacy flat format
+            const rates = h.rates?.length
+              ? h.rates
+              : [{ occupancy: h.occupancy || "Double", nights: h.nights, rooms: h.rooms, price: h.price }];
+            return (
+              <div key={idx} data-pdf-section="true"
+                style={idx > 0 ? { marginTop: 14, borderTop: "1px dashed #e0e0e0", paddingTop: 12 } : {}}>
+                <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
+                  <span style={{ fontSize: 14 }}>🏨</span>
+                  <span style={{ fontSize: 15, fontWeight: 700, color: DARK }}>{h.name}</span>
+                  {h.roomCat && <span style={{ fontSize: 12, color: "#6b7280" }}>— {h.roomCat}</span>}
+                </div>
+                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
+                  <thead>
+                    <tr style={{ background: "#f3f4f6" }}>
+                      <Th>Occupancy</Th>
+                      <Th>Room Category</Th>
+                      <Th style={{ textAlign: "center" }}>Nights</Th>
+                      <Th style={{ textAlign: "center" }}>Rooms</Th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {rates.filter(r => r.nights || r.rooms).map((r, ri) => (
+                      <tr key={ri} style={{ background: ri % 2 === 0 ? "#fff" : "#fafafa" }}>
+                        <Td><b>{r.occupancy || "Double"}</b></Td>
+                        <Td>{r.roomCat || "—"}</Td>
+                        <Td style={{ textAlign: "center" }}>{r.nights || "—"}</Td>
+                        <Td style={{ textAlign: "center" }}>{r.rooms || "—"}</Td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
-              <div style={{ display: "flex", gap: 24, flexWrap: "wrap", fontSize: 12, color: "#374151" }}>
-                {h.nights && <span><b>Nights:</b> {h.nights}</span>}
-                {h.rooms  && <span><b>Rooms:</b> {h.rooms}</span>}
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </RedSection>
       )}
 
