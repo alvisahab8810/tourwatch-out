@@ -63,6 +63,25 @@ const DEF_FLIGHT   = { from: "", to: "", date: "", pax: "", price: "", roundTrip
 const DEF_TRANSFER = { cab: "", perDay: "", days: "" };
 const DEF_MISC     = { name: "", amount: "" };
 
+const TIER_LABELS = ["Economy", "Deluxe", "Premium"];
+const TIER_ICONS  = { Economy: "🟢", Deluxe: "🔵", Premium: "🟣" };
+const DEF_PKG = () => ({
+  hotels: [{ name: "", rates: [{ ...DEF_RATE }] }],
+  flights: [{ ...DEF_FLIGHT }],
+  transfers: [{ ...DEF_TRANSFER }],
+  miscs: [],
+});
+
+function normHotels(arr) {
+  if (!arr?.length) return [{ name: "", rates: [{ ...DEF_RATE }] }];
+  return arr.map(h => ({
+    name: h.name || "",
+    rates: h.rates?.length
+      ? h.rates.map(r => ({ occupancy: r.occupancy || "Double", roomCat: r.roomCat || h.roomCat || "Deluxe", nights: r.nights ?? "", rooms: r.rooms ?? 1, price: r.price ?? "" }))
+      : [{ occupancy: h.occupancy || "Double", roomCat: h.roomCat || "Deluxe", nights: h.nights || "", rooms: h.rooms || 1, price: h.price || "" }],
+  }));
+}
+
 const toN = (v, d = 0) => (v === "" || v === undefined || v === null) ? d : (+v || d);
 
 /* ── default policy content (prefilled, fully editable per-quotation) ── */
@@ -167,47 +186,48 @@ const DEF_FORM = {
   cost: "", margin: "", gstPct: 5, tcsPct: 2, tripExpense: 0,
 };
 
-/* Build initial hotels/flights/transfers from BRR or existing data */
+/* Build initial pkgTiers from existing data or BRR */
 function initArrays(initialData, lead) {
-  // hotels — normalise old flat format to new rates[] format
-  let hotels;
-  if (initialData?.hotels?.length) {
-    hotels = initialData.hotels.map(h => ({
-      name:  h.name || "",
-      rates: h.rates?.length
-        ? h.rates.map(r => ({ occupancy: r.occupancy || "Double", roomCat: r.roomCat || h.roomCat || "Deluxe", nights: r.nights ?? "", rooms: r.rooms ?? 1, price: r.price ?? "" }))
-        : [{ occupancy: h.occupancy || "Double", roomCat: h.roomCat || "Deluxe", nights: h.nights || "", rooms: h.rooms || 1, price: h.price || "" }],
-    }));
-  } else {
-    const brr = lead?.brr || {};
-    hotels = [{ name: "", rates: [{ ...DEF_RATE, roomCat: brr.hotelCategory || "Deluxe" }] }];
+  // If pkgTiers already saved, restore all three tiers
+  if (initialData?.pkgTiers && Object.keys(initialData.pkgTiers).length) {
+    return {
+      pkgTiers: Object.fromEntries(TIER_LABELS.map(lbl => {
+        const d = initialData.pkgTiers[lbl] || {};
+        return [lbl, {
+          hotels:    normHotels(d.hotels),
+          flights:   d.flights?.length   ? [...d.flights]   : [{ ...DEF_FLIGHT }],
+          transfers: d.transfers?.length ? [...d.transfers] : [{ ...DEF_TRANSFER }],
+          miscs:     d.miscs?.length     ? [...d.miscs]     : [],
+        }];
+      })),
+    };
   }
 
-  // flights
-  let flights;
-  if (initialData?.flights?.length) {
-    flights = [...initialData.flights];
+  // Migrate from legacy flat fields (or BRR seed) into Economy tier
+  const brr = lead?.brr || {};
+  let pax;
+  if (brr.adults != null) {
+    pax = brr.adults + (brr.children || 0);
   } else {
-    const brr = lead?.brr || {};
-    let pax;
-    if (brr.adults != null) {
-      pax = brr.adults + (brr.children || 0);
-    } else {
-      const rawPax = lead?.pax || "";
-      const adultM = rawPax.match(/(\d+)\s*(?:adult|adults)/i);
-      const childM = rawPax.match(/(\d+)\s*(?:child|children|kid|kids)/i);
-      const first  = parseInt(rawPax);
-      const a = adultM ? +adultM[1] : (!isNaN(first) && first > 0 ? first : 0);
-      const c = childM ? +childM[1] : 0;
-      pax = a + c;
-    }
-    flights = [{ ...DEF_FLIGHT, pax: pax || 0, date: brr.tripDate || lead?.travelDate || "" }];
+    const rawPax = lead?.pax || "";
+    const adultM = rawPax.match(/(\d+)\s*(?:adult|adults)/i);
+    const childM = rawPax.match(/(\d+)\s*(?:child|children|kid|kids)/i);
+    const first  = parseInt(rawPax);
+    const a = adultM ? +adultM[1] : (!isNaN(first) && first > 0 ? first : 0);
+    const c = childM ? +childM[1] : 0;
+    pax = a + c;
   }
-
-  // transfers
-  const transfers = initialData?.transfers?.length ? [...initialData.transfers] : [{ ...DEF_TRANSFER }];
-
-  return { hotels, flights, transfers };
+  const ecoHotels    = normHotels(initialData?.hotels?.length ? initialData.hotels : [{ name: "", rates: [{ ...DEF_RATE, roomCat: brr.hotelCategory || "Deluxe" }] }]);
+  const ecoFlights   = initialData?.flights?.length   ? [...initialData.flights]   : [{ ...DEF_FLIGHT, pax: pax || 0, date: brr.tripDate || lead?.travelDate || "" }];
+  const ecoTransfers = initialData?.transfers?.length ? [...initialData.transfers] : [{ ...DEF_TRANSFER }];
+  const ecoMiscs     = initialData?.miscs?.length     ? [...initialData.miscs]     : [];
+  return {
+    pkgTiers: {
+      Economy: { hotels: ecoHotels, flights: ecoFlights, transfers: ecoTransfers, miscs: ecoMiscs },
+      Deluxe:  DEF_PKG(),
+      Premium: DEF_PKG(),
+    },
+  };
 }
 
 export default function QuotationBuilder({
@@ -238,10 +258,18 @@ export default function QuotationBuilder({
   const arrInit = initArrays(initialData, lead);
 
   const [form,      setForm]      = useState(baseForm);
-  const [hotels,    setHotels]    = useState(arrInit.hotels);
-  const [flights,   setFlights]   = useState(arrInit.flights);
-  const [transfers, setTransfers] = useState(arrInit.transfers);
-  const [miscs,     setMiscs]     = useState(initialData?.miscs?.length ? [...initialData.miscs] : []);
+  const [activePkg, setActivePkg] = useState("Economy");
+  const [pkgTiers,  setPkgTiers]  = useState(arrInit.pkgTiers);
+
+  // Proxy access — always read/write the active tier
+  const hotels    = pkgTiers[activePkg].hotels;
+  const flights   = pkgTiers[activePkg].flights;
+  const transfers = pkgTiers[activePkg].transfers;
+  const miscs     = pkgTiers[activePkg].miscs;
+  const setHotels    = fn => setPkgTiers(p => { const t = p[activePkg]; return { ...p, [activePkg]: { ...t, hotels:    typeof fn === "function" ? fn(t.hotels)    : fn } }; });
+  const setFlights   = fn => setPkgTiers(p => { const t = p[activePkg]; return { ...p, [activePkg]: { ...t, flights:   typeof fn === "function" ? fn(t.flights)   : fn } }; });
+  const setTransfers = fn => setPkgTiers(p => { const t = p[activePkg]; return { ...p, [activePkg]: { ...t, transfers: typeof fn === "function" ? fn(t.transfers) : fn } }; });
+  const setMiscs     = fn => setPkgTiers(p => { const t = p[activePkg]; return { ...p, [activePkg]: { ...t, miscs:     typeof fn === "function" ? fn(t.miscs)     : fn } }; });
   const [itin,       setItin]       = useState(() => initItin(initialData));
   const [saving,     setSaving]     = useState(false);
   const [pdfLoading, setPdfLoading] = useState(false);
@@ -250,6 +278,8 @@ export default function QuotationBuilder({
 
   /* ── auto-save ── */
   const [savedId,   setSavedId]   = useState(initialData?._id || null);
+  const savedIdRef    = useRef(initialData?._id || null);   // always current — avoids stale-closure duplicates
+  const autoSaving    = useRef(false);                      // mutex: prevents concurrent POSTs
   const [autoState, setAutoState] = useState(""); // "" | "saving" | "saved"
   const skipFirstAuto = useRef(true);
   const autoTimer     = useRef(null);
@@ -257,7 +287,7 @@ export default function QuotationBuilder({
   /* ── shared cab/transfer detail: Day 1 itinerary's "Transfer Type" is the source for ──
      (a) every other itinerary day (unless that day was customised), and
      (b) the Cab Details section's "Cab Type" field — both stay editable, just kept in sync. */
-  const prevSharedCab = useRef(itin[0]?.transfer || arrInit.transfers[0]?.cab || "");
+  const prevSharedCab = useRef(itin[0]?.transfer || arrInit.pkgTiers.Economy.transfers[0]?.cab || "");
   function setSharedCab(val) {
     const old = prevSharedCab.current;
     setItin(p => p.map((x, j) => {
@@ -324,12 +354,21 @@ export default function QuotationBuilder({
   function addRow(setter, def)   { setter(p => [...p, { ...def }]); }
   function remRow(setter, idx)   { setter(p => p.filter((_, i) => i !== idx)); }
 
-  /* ── sub-totals ── */
-  const hotelTotal    = hotels.reduce((s, h) => s + (h.rates || []).reduce((rs, r) => rs + (+r.price || 0) * (+r.nights || 0) * (+r.rooms || 0), 0), 0);
-  const flightTotal   = flights.reduce((s, f) => s + ((+f.price || 0) + (f.roundTrip ? (+f.returnPrice || 0) : 0)) * (+f.pax || 0), 0);
-  const transferTotal = transfers.reduce((s, t) => s + (+t.perDay || 0) * (+t.days || 0), 0);
-  const miscTotal     = miscs.reduce((s, m) => s + (+m.amount || 0), 0);
-  const grandComponentTotal = hotelTotal + flightTotal + transferTotal + miscTotal;
+  /* ── per-tier sub-totals ── */
+  function calcTierTotal(tier) {
+    const h = (tier.hotels    || []).reduce((s, h) => s + (h.rates || []).reduce((rs, r) => rs + (+r.price || 0) * (+r.nights || 0) * (+r.rooms || 0), 0), 0);
+    const f = (tier.flights   || []).reduce((s, f) => s + ((+f.price || 0) + (f.roundTrip ? (+f.returnPrice || 0) : 0)) * (+f.pax || 0), 0);
+    const t = (tier.transfers || []).reduce((s, t) => s + (+t.perDay || 0) * (+t.days || 0), 0);
+    const m = (tier.miscs     || []).reduce((s, m) => s + (+m.amount || 0), 0);
+    return { h, f, t, m, total: h + f + t + m };
+  }
+  const tierTotals = Object.fromEntries(TIER_LABELS.map(lbl => [lbl, calcTierTotal(pkgTiers[lbl])]));
+  // Active-tier aliases (used by existing form code below)
+  const hotelTotal    = tierTotals[activePkg].h;
+  const flightTotal   = tierTotals[activePkg].f;
+  const transferTotal = tierTotals[activePkg].t;
+  const miscTotal     = tierTotals[activePkg].m;
+  const grandComponentTotal = tierTotals[activePkg].total;
 
   /* ── auto-sync Cost Price from component grand total ── */
   useEffect(() => {
@@ -339,14 +378,20 @@ export default function QuotationBuilder({
 
   /* ── shared body builder (used by manual save + auto-save) ── */
   function buildBody() {
+    const normTier = tier => ({
+      hotels:    tier.hotels.map(h => ({ name: h.name, rates: (h.rates || []).map(r => ({ occupancy: r.occupancy || "Double", roomCat: r.roomCat || "Deluxe", nights: toN(r.nights), rooms: toN(r.rooms, 1), price: toN(r.price) })) })),
+      flights:   tier.flights.map(f => ({ from: f.from, to: f.to, date: f.date, pax: toN(f.pax), price: toN(f.price), roundTrip: !!f.roundTrip, returnPrice: toN(f.returnPrice) })),
+      transfers: tier.transfers.map(t => ({ cab: t.cab, perDay: toN(t.perDay), days: toN(t.days) })),
+      miscs:     tier.miscs.filter(m => m.name || m.amount).map(m => ({ name: m.name, amount: toN(m.amount) })),
+    });
+    const ecoNorm = normTier(pkgTiers.Economy);
     return {
       ...form,
-      assignedTo: form.assignedTo || null, // empty string can't be cast to ObjectId — send null instead
+      assignedTo: form.assignedTo || null,
       cost: toN(form.cost), margin: toN(form.margin), gstPct: toN(form.gstPct, 5), tcsPct: toN(form.tcsPct),
-      hotels: hotels.map(h => ({ name: h.name, rates: (h.rates || []).map(r => ({ occupancy: r.occupancy || "Double", roomCat: r.roomCat || "Deluxe", nights: toN(r.nights), rooms: toN(r.rooms, 1), price: toN(r.price) })) })),
-      flights: flights.map(f => ({ from: f.from, to: f.to, date: f.date, pax: toN(f.pax), price: toN(f.price), roundTrip: !!f.roundTrip, returnPrice: toN(f.returnPrice) })),
-      transfers: transfers.map(t => ({ cab: t.cab, perDay: toN(t.perDay), days: toN(t.days) })),
-      miscs: miscs.filter(m => m.name || m.amount).map(m => ({ name: m.name, amount: toN(m.amount) })),
+      pkgTiers: Object.fromEntries(TIER_LABELS.map(lbl => [lbl, normTier(pkgTiers[lbl])])),
+      // backward-compat flat fields = Economy tier (used by PDF preview)
+      hotels: ecoNorm.hotels, flights: ecoNorm.flights, transfers: ecoNorm.transfers, miscs: ecoNorm.miscs,
       itinerary: itin.map(({ _k, ...rest }) => rest),
     };
   }
@@ -358,33 +403,40 @@ export default function QuotationBuilder({
     setAutoState("");
     if (autoTimer.current) clearTimeout(autoTimer.current);
     autoTimer.current = setTimeout(async () => {
+      if (autoSaving.current) return; // already in-flight — skip to avoid duplicate POST
+      autoSaving.current = true;
       setAutoState("saving");
       try {
         const body = buildBody();
         let res;
-        if (!savedId) {
+        const currentId = savedIdRef.current; // always read ref, never stale closure
+        if (!currentId) {
           res = await fetch("/api/dashboard/quotations", {
             method: "POST", headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ ...body, leadId: lead._id }),
           });
         } else {
-          res = await fetch(`/api/dashboard/quotations/${savedId}`, {
+          res = await fetch(`/api/dashboard/quotations/${currentId}`, {
             method: "PATCH", headers: { "Content-Type": "application/json" },
             body: JSON.stringify(body),
           });
         }
         if (res.ok) {
           const data = await res.json();
-          if (!savedId) setSavedId(data._id);
+          if (!savedIdRef.current) {
+            savedIdRef.current = data._id;
+            setSavedId(data._id);
+          }
           setAutoState("saved");
         } else {
           setAutoState("");
         }
       } catch { setAutoState(""); }
+      finally { autoSaving.current = false; }
     }, 1200);
     return () => clearTimeout(autoTimer.current);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [form, hotels, flights, transfers, miscs, itin]);
+  }, [form, pkgTiers, itin]);
 
   /* ── save (explicit, creates a new version) ── */
   async function save() {
@@ -393,14 +445,16 @@ export default function QuotationBuilder({
       const newVer = { v: (initialData?.versions?.length || 0) + 1, date: todayISO(), cost: toN(form.cost), margin: toN(form.margin), note: (initialData?.versions?.length || 0) === 0 ? "First quote created" : "Quote revised" };
       const body = { ...buildBody(), versions: [...(initialData?.versions || []), newVer] };
       let res;
-      if (!savedId) {
+      const currentId = savedIdRef.current;
+      if (!currentId) {
         body.leadId = lead._id;
         res = await fetch("/api/dashboard/quotations", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
       } else {
-        res = await fetch(`/api/dashboard/quotations/${savedId}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+        res = await fetch(`/api/dashboard/quotations/${currentId}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
       }
       if (res.ok) {
         const data = await res.json();
+        savedIdRef.current = data._id;
         setSavedId(data._id);
         onSaved?.(data); onClose();
       }
@@ -487,7 +541,7 @@ export default function QuotationBuilder({
 
   return (
     <>
-      <Ov onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
+      <Ov>
         <div style={{ ...QS.modal, maxWidth: 960 }}>
           {/* Header */}
           <div style={QS.head}>
@@ -511,97 +565,37 @@ export default function QuotationBuilder({
           <div style={{ display: "flex", maxHeight: "70vh", overflow: "hidden" }}>
 
           {/* ── LEFT: live price preview ── */}
-          <div style={{ width: 210, flexShrink: 0, overflowY: "auto", background: "#fff", borderRight: "1px solid #E4E9F2", padding: "14px 12px", display: "flex", flexDirection: "column", gap: 10 }}>
-            <div style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: ".06em", color: "#6B7A99", marginBottom: 2 }}>💰 Price Preview</div>
+          <div style={{ width: 215, flexShrink: 0, overflowY: "auto", background: "#fff", borderRight: "1px solid #E4E9F2", padding: "14px 12px", display: "flex", flexDirection: "column", gap: 10 }}>
+            <div style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: ".06em", color: "#6B7A99", marginBottom: 2 }}>💰 Package Preview</div>
 
-            {/* Hotels */}
-            {hotelTotal > 0 && (
-              <div style={{ background: "#F0FDF4", border: "1px solid #86EFAC", borderRadius: 8, padding: "8px 10px" }}>
-                <div style={{ fontSize: 10, fontWeight: 800, color: "#15803D", textTransform: "uppercase", letterSpacing: ".05em", marginBottom: 5 }}>🏨 Hotels</div>
-                {hotels.map((h, i) => {
-                  const hTotal = (h.rates || []).reduce((s, r) => s + (+r.price || 0) * (+r.nights || 0) * (+r.rooms || 0), 0);
-                  if (!hTotal) return null;
-                  return (
-                    <div key={i} style={{ marginBottom: 4 }}>
-                      <div style={{ fontSize: 11, color: "#374151", fontWeight: 700, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{h.name || `Hotel ${i + 1}`}</div>
-                      {(h.rates || []).filter(r => +r.price > 0).map((r, j) => (
-                        <div key={j} style={{ display: "flex", justifyContent: "space-between", fontSize: 10.5, color: "#6B7A99", paddingLeft: 6 }}>
-                          <span>{r.occupancy}</span>
-                          <span style={{ fontWeight: 700, color: "#15803D" }}>{inr((+r.price || 0) * (+r.nights || 0) * (+r.rooms || 0))}</span>
-                        </div>
-                      ))}
-                    </div>
-                  );
-                })}
-                {hotels.length > 1 && <div style={{ fontSize: 11, fontWeight: 800, color: "#15803D", borderTop: "1px dashed #86EFAC", paddingTop: 4, marginTop: 2, display: "flex", justifyContent: "space-between" }}><span>Total</span><span>{inr(hotelTotal)}</span></div>}
-              </div>
-            )}
-
-            {/* Flights */}
-            {flights.some(f => +f.price > 0) && (
-              <div style={{ background: "#EFF4FF", border: "1px solid #93C5FD", borderRadius: 8, padding: "8px 10px" }}>
-                <div style={{ fontSize: 10, fontWeight: 800, color: "#1D4ED8", textTransform: "uppercase", letterSpacing: ".05em", marginBottom: 5 }}>✈️ Flights</div>
-                {flights.map((f, i) => +f.price > 0 && (
-                  <div key={i} style={{ fontSize: 11, marginBottom: 3 }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", gap: 4 }}>
-                      <span style={{ color: "#374151" }}>{f.from || "—"} → {f.to || "—"}</span>
-                      <span style={{ fontWeight: 700, color: "#2563EB", flexShrink: 0 }}>{inr((+f.price || 0) * (+f.pax || 0))}</span>
-                    </div>
-                    {f.roundTrip && +f.returnPrice > 0 && (
-                      <div style={{ display: "flex", justifyContent: "space-between", gap: 4, color: "#6B7A99" }}>
-                        <span>↩ Return</span>
-                        <span style={{ fontWeight: 700, flexShrink: 0 }}>{inr((+f.returnPrice || 0) * (+f.pax || 0))}</span>
-                      </div>
-                    )}
+            {TIER_LABELS.map(lbl => {
+              const tt = tierTotals[lbl];
+              const isActive = lbl === activePkg;
+              const tierColor = lbl === "Economy" ? "#15803D" : lbl === "Deluxe" ? "#2563EB" : "#7C3AED";
+              const tierBg    = lbl === "Economy" ? "#F0FDF4" : lbl === "Deluxe" ? "#EFF4FF" : "#FAF5FF";
+              const tierBorder= lbl === "Economy" ? "#86EFAC" : lbl === "Deluxe" ? "#93C5FD" : "#D8B4FE";
+              return (
+                <div
+                  key={lbl}
+                  onClick={() => setActivePkg(lbl)}
+                  style={{ background: tierBg, border: `2px solid ${isActive ? tierColor : tierBorder}`, borderRadius: 10, padding: "8px 10px", cursor: "pointer", opacity: tt.total === 0 ? 0.55 : 1, transition: "border .15s" }}
+                >
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: tt.total > 0 ? 5 : 0 }}>
+                    <span style={{ fontSize: 11, fontWeight: 800, color: tierColor, textTransform: "uppercase", letterSpacing: ".05em" }}>{TIER_ICONS[lbl]} {lbl}</span>
+                    <span style={{ fontSize: 13, fontWeight: 900, color: tierColor }}>{tt.total > 0 ? inr(tt.total) : <span style={{ fontSize: 10, color: "#9CA3AF" }}>empty</span>}</span>
                   </div>
-                ))}
-                {flights.length > 1 && <div style={{ fontSize: 11, fontWeight: 800, color: "#1D4ED8", borderTop: "1px dashed #93C5FD", paddingTop: 4, marginTop: 2, display: "flex", justifyContent: "space-between" }}><span>Total</span><span>{inr(flightTotal)}</span></div>}
-              </div>
-            )}
-
-            {/* Transfers */}
-            {transfers.some(t => +t.perDay > 0) && (
-              <div style={{ background: "#FFFBEB", border: "1px solid #FCD34D", borderRadius: 8, padding: "8px 10px" }}>
-                <div style={{ fontSize: 10, fontWeight: 800, color: "#B45309", textTransform: "uppercase", letterSpacing: ".05em", marginBottom: 5 }}>🚐 Transfers</div>
-                {transfers.map((t, i) => +t.perDay > 0 && (
-                  <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 4, fontSize: 11, marginBottom: 3 }}>
-                    <span style={{ color: "#374151", flexShrink: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{t.cab || `Transfer ${i + 1}`}</span>
-                    <span style={{ fontWeight: 700, color: "#B45309", flexShrink: 0 }}>{inr((+t.perDay || 0) * (+t.days || 0))}</span>
-                  </div>
-                ))}
-                {transfers.length > 1 && <div style={{ fontSize: 11, fontWeight: 800, color: "#B45309", borderTop: "1px dashed #FCD34D", paddingTop: 4, marginTop: 2, display: "flex", justifyContent: "space-between" }}><span>Total</span><span>{inr(transferTotal)}</span></div>}
-              </div>
-            )}
-
-            {/* Misc preview */}
-            {miscTotal > 0 && (
-              <div style={{ background: "#FAF5FF", border: "1px solid #D8B4FE", borderRadius: 8, padding: "8px 10px" }}>
-                <div style={{ fontSize: 10, fontWeight: 800, color: "#7C3AED", textTransform: "uppercase", letterSpacing: ".05em", marginBottom: 5 }}>➕ Misc</div>
-                {miscs.map((m, i) => +m.amount > 0 && (
-                  <div key={i} style={{ display: "flex", justifyContent: "space-between", fontSize: 11, marginBottom: 3 }}>
-                    <span style={{ color: "#374151", flexShrink: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{m.name || `Item ${i + 1}`}</span>
-                    <span style={{ fontWeight: 700, color: "#7C3AED", flexShrink: 0 }}>{inr(+m.amount)}</span>
-                  </div>
-                ))}
-                {miscs.filter(m => +m.amount > 0).length > 1 && (
-                  <div style={{ fontSize: 11, fontWeight: 800, color: "#7C3AED", borderTop: "1px dashed #D8B4FE", paddingTop: 4, marginTop: 2, display: "flex", justifyContent: "space-between" }}><span>Total</span><span>{inr(miscTotal)}</span></div>
-                )}
-              </div>
-            )}
-
-            {/* Grand total */}
-            {grandComponentTotal > 0 && (
-              <div style={{ background: "#EFF4FF", border: "2px solid #2563EB", borderRadius: 8, padding: "8px 10px", marginTop: 2 }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <span style={{ fontSize: 11, fontWeight: 800, color: "#1D4ED8" }}>Grand Total</span>
-                  <span style={{ fontSize: 14, fontWeight: 900, color: "#1D4ED8" }}>{inr(grandComponentTotal)}</span>
+                  {tt.h > 0 && <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10.5, color: "#6B7A99", marginBottom: 2 }}><span>🏨 Hotels</span><span style={{ fontWeight: 700 }}>{inr(tt.h)}</span></div>}
+                  {tt.f > 0 && <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10.5, color: "#6B7A99", marginBottom: 2 }}><span>✈️ Flights</span><span style={{ fontWeight: 700 }}>{inr(tt.f)}</span></div>}
+                  {tt.t > 0 && <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10.5, color: "#6B7A99", marginBottom: 2 }}><span>🚐 Transfer</span><span style={{ fontWeight: 700 }}>{inr(tt.t)}</span></div>}
+                  {tt.m > 0 && <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10.5, color: "#6B7A99" }}><span>➕ Misc</span><span style={{ fontWeight: 700 }}>{inr(tt.m)}</span></div>}
+                  {isActive && <div style={{ fontSize: 9.5, color: tierColor, fontWeight: 700, marginTop: 4, textAlign: "right" }}>● Editing now</div>}
                 </div>
-              </div>
-            )}
+              );
+            })}
 
-            {grandComponentTotal === 0 && (
-              <div style={{ fontSize: 11, color: "#9CA3AF", textAlign: "center", marginTop: 20, lineHeight: 1.6 }}>
-                Enter prices in Hotels, Flights or Transfers to see live preview here.
+            {TIER_LABELS.every(lbl => tierTotals[lbl].total === 0) && (
+              <div style={{ fontSize: 11, color: "#9CA3AF", textAlign: "center", marginTop: 16, lineHeight: 1.6 }}>
+                Enter prices in Hotels, Flights or Transfers to see a live preview here.
               </div>
             )}
           </div>
@@ -671,9 +665,37 @@ export default function QuotationBuilder({
               >+ Add Day {itin.length + 1}</button>
             </Sec>
 
+            {/* ── Package Tier Selector ── */}
+            <div style={{ marginBottom: 4 }}>
+              <div style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: ".06em", color: "#6B7A99", marginBottom: 8 }}>Select Package Tier to Edit</div>
+              <div style={{ display: "flex", gap: 0, border: "1.5px solid #E4E9F2", borderRadius: 10, overflow: "hidden" }}>
+                {TIER_LABELS.map((lbl, idx) => {
+                  const isActive = activePkg === lbl;
+                  const tierColor = lbl === "Economy" ? "#15803D" : lbl === "Deluxe" ? "#2563EB" : "#7C3AED";
+                  const tierBg    = lbl === "Economy" ? "#F0FDF4" : lbl === "Deluxe" ? "#EFF4FF" : "#FAF5FF";
+                  return (
+                    <button
+                      key={lbl}
+                      onClick={() => setActivePkg(lbl)}
+                      style={{
+                        flex: 1, padding: "9px 0", border: "none", cursor: "pointer",
+                        fontWeight: 700, fontSize: 13,
+                        background: isActive ? tierColor : tierBg,
+                        color: isActive ? "#fff" : tierColor,
+                        borderRight: idx < 2 ? "1.5px solid #E4E9F2" : "none",
+                        transition: "all .15s",
+                      }}
+                    >
+                      {TIER_ICONS[lbl]} {lbl}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
             {/* ── Hotels ── */}
             <Sec
-              label="🏨  Hotel Details"
+              label={`🏨  Hotel Details — ${activePkg}`}
               right={<span style={{ fontSize: 12, opacity: 0.85, fontWeight: 600 }}>Customer side</span>}
             >
               {hotels.map((h, i) => {
@@ -750,7 +772,7 @@ export default function QuotationBuilder({
             </Sec>
 
             {/* ── Transfers (Cab) ── */}
-            <Sec label="🚐  Transfer">
+            <Sec label={`🚐  Transfer — ${activePkg}`}>
               {transfers.map((t, i) => (
                 <div key={i} style={QS.rowBox}>
                   {transfers.length > 1 && <button style={QS.remBtn} onClick={() => remRow(setTransfers, i)}>✕</button>}
@@ -793,7 +815,7 @@ export default function QuotationBuilder({
             </Sec>
 
             {/* ── Miscellaneous ── */}
-            <Sec label="➕  Miscellaneous">
+            <Sec label={`➕  Miscellaneous — ${activePkg}`}>
               {miscs.length === 0 && (
                 <div style={{ fontSize: 12, color: "#9CA3AF", marginBottom: 10 }}>Add any additional services — sightseeing, entry fees, boat rides, etc.</div>
               )}
@@ -820,7 +842,7 @@ export default function QuotationBuilder({
             </Sec>
 
             {/* ── Flights ── */}
-            <Sec label="✈️  Flight Details">
+            <Sec label={`✈️  Flight Details — ${activePkg}`}>
               {flights.map((f, i) => (
                 <div key={i} style={QS.rowBox}>
                   {flights.length > 1 && <button style={QS.remBtn} onClick={() => remRow(setFlights, i)}>✕</button>}
@@ -999,7 +1021,7 @@ export default function QuotationBuilder({
 
       {/* ── Preview PDF ── */}
       {preview && (
-        <Ov style={{ zIndex: 101 }} onClick={e => { if (e.target === e.currentTarget) setPreview(false); }}>
+        <Ov style={{ zIndex: 101 }}>
           <div style={{ ...QS.modal, maxWidth: 840 }}>
             <div style={QS.head}>
               <div style={{ color: "#fff", fontWeight: 800, fontSize: 15 }}>Quote Preview · {quoteDisplayId}</div>
@@ -1016,7 +1038,7 @@ export default function QuotationBuilder({
             <div style={{ padding: 22, maxHeight: "76vh", overflowY: "auto" }}>
               <QuotationPreview
                 id="qb-pdf-target"
-                data={{ quoteId: quoteDisplayId, lead, form, hotels, flights, transfers, miscs, itin, selling: c.selling }}
+                data={{ quoteId: quoteDisplayId, lead, form, pkgTiers, hotels, flights, transfers, miscs, itin, selling: c.selling }}
               />
             </div>
             <div style={QS.foot}>

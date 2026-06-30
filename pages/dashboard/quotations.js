@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { useRouter } from "next/router";
 import dynamic from "next/dynamic";
 import Head from "next/head";
 import DashboardLayout from "../../components/backend/DashboardLayout";
@@ -43,6 +44,7 @@ function statusStyle(s) {
 }
 
 export default function QuotationsPage() {
+  const router = useRouter();
   const [quotes, setQuotes]           = useState([]);
   const [leads, setLeads]             = useState([]);
   const [salespeople, setSalespeople] = useState([]);
@@ -520,15 +522,25 @@ export default function QuotationsPage() {
                     </td>
 
                     <td style={S.td}>
-                      {invByQuote[q._id] ? (
-                        <button style={{ ...S.linkBtn, fontSize: 12, color: "#15803D", fontWeight: 700 }} onClick={() => openInvoice(q)}>
-                          🧾 {invByQuote[q._id].invoiceNo}
-                        </button>
-                      ) : (
-                        <button style={{ ...S.linkBtn, fontSize: 12, color: "#2563EB", fontWeight: 700 }} onClick={() => openInvoice(q)}>
-                          + Invoice
-                        </button>
-                      )}
+                      <div style={{ display: "flex", flexDirection: "column", gap: 4, alignItems: "flex-start" }}>
+                        {invByQuote[q._id] ? (
+                          <button style={{ ...S.linkBtn, fontSize: 12, color: "#15803D", fontWeight: 700 }} onClick={() => openInvoice(q)}>
+                            🧾 {invByQuote[q._id].invoiceNo}
+                          </button>
+                        ) : (
+                          <button style={{ ...S.linkBtn, fontSize: 12, color: "#2563EB", fontWeight: 700 }} onClick={() => openInvoice(q)}>
+                            + Invoice
+                          </button>
+                        )}
+                        {q.status === "Won" && (
+                          <button
+                            style={{ ...S.linkBtn, fontSize: 12, color: "#7C3AED", fontWeight: 700 }}
+                            onClick={() => router.push(`/dashboard/create-voucher?fromQuote=${q._id}`)}
+                          >
+                            📋 Create Voucher
+                          </button>
+                        )}
+                      </div>
                     </td>
 
                     {/* Delete */}
@@ -555,7 +567,7 @@ export default function QuotationsPage() {
 
       {/* ── New Quote Step Modal ── */}
       {newStep && (
-        <Ov onClick={e => { if (e.target === e.currentTarget) setNewStep(null); }}>
+        <Ov>
           <div style={{ ...S.modal, maxWidth: 520 }}>
             <div style={S.mHead}>
               <div style={{ color: "#fff", fontWeight: 800, fontSize: 15 }}>Create Package · New Quotation</div>
@@ -614,7 +626,7 @@ export default function QuotationsPage() {
 
       {/* ── Follow-up Modal ── */}
       {fuModal && (
-        <Ov onClick={e => { if (e.target === e.currentTarget) setFuModal(null); }}>
+        <Ov>
           <div style={{ ...S.modal, maxWidth: 480 }}>
             <div style={{ ...S.mHead, flexDirection: "column", alignItems: "flex-start", gap: 3 }}>
               <div style={{ display: "flex", width: "100%", alignItems: "center" }}>
@@ -643,7 +655,7 @@ export default function QuotationsPage() {
         const rems     = remsByQuote[remModal._id] || [];
         const leadName = remModal.leadId?.name || "—";
         return (
-          <Ov onClick={e => { if (e.target === e.currentTarget) { setRemModal(null); setRemNote(""); setRemDate(todayISO()); } }}>
+          <Ov>
             <div style={{ ...S.modal, maxWidth: 740 }}>
               {/* Header */}
               <div style={{ ...S.mHead, flexDirection: "column", alignItems: "flex-start", gap: 3 }}>
@@ -721,7 +733,7 @@ export default function QuotationsPage() {
         const vers = verModal.versions || [];
         const leadName = verModal.leadId?.name || "—";
         return (
-          <Ov onClick={e => { if (e.target === e.currentTarget) setVerModal(null); }}>
+          <Ov>
             <div style={{ ...S.modal, maxWidth: 860 }}>
               {/* Header */}
               <div style={{ ...S.mHead, flexDirection: "column", alignItems: "flex-start", gap: 4 }}>
@@ -798,7 +810,7 @@ export default function QuotationsPage() {
 
       {/* ── PDF Preview Modal ── */}
       {pdfPreviewData && (
-        <Ov onClick={e => { if (e.target === e.currentTarget) setPdfPreviewData(null); }}>
+        <Ov>
           <div style={{ ...S.modal, maxWidth: 860, display: "flex", flexDirection: "column" }}>
             {/* Header */}
             <div style={{ ...S.mHead, flexShrink: 0 }}>

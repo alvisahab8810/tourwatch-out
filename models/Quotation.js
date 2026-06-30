@@ -87,6 +87,9 @@ const QuotationSchema = new mongoose.Schema({
   tripExpense:     { type: Number, default: 0 },
   newSellingPrice: { type: Number, default: 0 },
 
+  // Package tiers (Economy / Deluxe / Premium — each has its own hotels/flights/transfers/miscs)
+  pkgTiers: { type: mongoose.Schema.Types.Mixed, default: {} },
+
   // Workflow
   status:     { type: String, enum: ["Open", "Won", "Lost"], default: "Open" },
   lostReason: { type: String, default: "" },

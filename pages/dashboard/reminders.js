@@ -23,7 +23,7 @@ function isOverdue(dueDate) {
   return new Date(dueDate + "T00:00:00") < new Date(new Date().toDateString());
 }
 
-const DEF_FORM = { dueDate: "", type: "Follow-up Call", note: "", quotationId: "", leadId: "", salespersonId: "" };
+const DEF_FORM = { dueDate: "", dueTime: "", type: "Follow-up Call", note: "", quotationId: "", leadId: "", salespersonId: "" };
 
 export default function RemindersPage() {
   const [reminders,    setReminders]    = useState([]);
@@ -199,6 +199,7 @@ export default function RemindersPage() {
                         <div style={{ fontWeight: 700, fontSize: 13, color: over ? "#BE123C" : "#0F1B33" }}>
                           {fmtDate(rem.dueDate)}
                         </div>
+                        {rem.dueTime && <div style={{ fontSize: 11, color: over ? "#BE123C" : "#6B7A99", fontWeight: 600 }}>{rem.dueTime}</div>}
                         {over && <div style={{ fontSize: 10, color: "#BE123C", fontWeight: 700 }}>OVERDUE</div>}
                       </td>
 
@@ -284,12 +285,16 @@ export default function RemindersPage() {
                   <input type="date" required style={{ ...S.inp, colorScheme: "light" }} value={form.dueDate}
                     onChange={e => setForm(f => ({ ...f, dueDate: e.target.value }))} />
                 </Fl>
-                <Fl label="Type">
-                  <select style={S.inp} value={form.type} onChange={e => setForm(f => ({ ...f, type: e.target.value }))}>
-                    {TYPES.map(t => <option key={t}>{t}</option>)}
-                  </select>
+                <Fl label="Time (24h)">
+                  <input type="time" style={{ ...S.inp, colorScheme: "light" }} value={form.dueTime || ""}
+                    onChange={e => setForm(f => ({ ...f, dueTime: e.target.value }))} />
                 </Fl>
               </div>
+              <Fl label="Type">
+                <select style={S.inp} value={form.type} onChange={e => setForm(f => ({ ...f, type: e.target.value }))}>
+                  {TYPES.map(t => <option key={t}>{t}</option>)}
+                </select>
+              </Fl>
 
               <Fl label="Reminder Note *">
                 <textarea required rows={3} style={{ ...S.inp, resize: "vertical" }} placeholder="What needs to be done?" value={form.note}

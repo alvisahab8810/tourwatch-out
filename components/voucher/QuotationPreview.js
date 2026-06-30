@@ -1,6 +1,43 @@
 const RED  = "#e84949";
 const DARK = "#1a1a2e";
 
+const TIER_LABELS = ["Economy", "Deluxe", "Premium"];
+const TIER_ICONS  = { Economy: "🟢", Deluxe: "🔵", Premium: "🟣" };
+const TIER_CLR    = { Economy: "#15803D", Deluxe: "#2563EB", Premium: "#7C3AED" };
+const TIER_BG     = { Economy: "#F0FDF4", Deluxe: "#EFF4FF", Premium: "#FAF5FF" };
+
+function hasTierData(tier) {
+  if (!tier) return false;
+  return (tier.hotels  || []).some(h => h.name)
+      || (tier.flights  || []).some(f => f.from || f.to)
+      || (tier.transfers|| []).some(t => t.cab || +t.days > 0)
+      || (tier.miscs    || []).some(m => m.name);
+}
+
+function calcTierCost(tier) {
+  const h = (tier.hotels    || []).reduce((s, h) => s + (h.rates||[]).reduce((rs,r) => rs + (+r.price||0)*(+r.nights||0)*(+r.rooms||0), 0), 0);
+  const f = (tier.flights   || []).reduce((s, f) => s + ((+f.price||0) + (f.roundTrip ? (+f.returnPrice||0) : 0)) * (+f.pax||0), 0);
+  const t = (tier.transfers || []).reduce((s, t) => s + (+t.perDay||0)*(+t.days||0), 0);
+  const m = (tier.miscs     || []).reduce((s, m) => s + (+m.amount||0), 0);
+  return h + f + t + m;
+}
+
+function calcTierSelling(tier, form) {
+  const cost = calcTierCost(tier);
+  if (!cost) return 0;
+  const globalCost = +form.cost || 0;
+  const marginRate = globalCost > 0 ? (+form.margin || 0) / globalCost : 0;
+  const base = cost * (1 + marginRate);
+  const gst  = base * (+form.gstPct || 5) / 100;
+  const tcs  = form.type === "International" ? (base + gst) * (+form.tcsPct || 0) / 100 : 0;
+  return Math.round(base + gst + tcs);
+}
+
+function getTierPax(tier) {
+  const f = (tier.flights || []).find(f => +f.pax > 0);
+  return f ? +f.pax : 0;
+}
+
 function flattenLists(html) {
   let out = html;
   out = out.replace(/<ol[^>]*>([\s\S]*?)<\/ol>/gi, (_, inner) => {
@@ -59,9 +96,9 @@ function HRow({ label, value }) {
   );
 }
 
-function Th({ children }) {
+function Th({ children, gray }) {
   return (
-    <th style={{ background: RED, color: "#fff", padding: "7px 9px", fontSize: 11, fontWeight: 700, textAlign: "left", border: "1px solid rgba(255,255,255,0.15)", whiteSpace: "nowrap" }}>
+    <th style={{ background: gray ? "#4b5563" : RED, color: "#fff", padding: "7px 9px", fontSize: 11, fontWeight: 700, textAlign: "left", border: "1px solid rgba(255,255,255,0.15)", whiteSpace: "nowrap" }}>
       {children}
     </th>
   );
@@ -82,7 +119,11 @@ function fmtDate(v) {
 const inr = n => "₹" + Math.round(n || 0).toLocaleString("en-IN");
 
 export default function QuotationPreview({ data, id }) {
-  const { quoteId, lead = {}, form = {}, hotels = [], flights = [], transfers = [], miscs = [], itin = [], selling = 0 } = data || {};
+  const { quoteId, lead = {}, form = {}, pkgTiers, hotels = [], flights = [], transfers = [], miscs = [], itin = [], selling = 0 } = data || {};
+
+  // Decide rendering mode: new tier-based or legacy flat
+  const useTiers = pkgTiers && TIER_LABELS.some(lbl => hasTierData(pkgTiers[lbl]));
+  const activeTiers = useTiers ? TIER_LABELS.filter(lbl => hasTierData(pkgTiers[lbl])) : [];
 
   return (
     <div id={id} style={q.wrap}>
@@ -157,107 +198,210 @@ export default function QuotationPreview({ data, id }) {
         </RedSection>
       )}
 
-      {/* ══════════ HOTEL DETAILS ══════════ */}
-      {hotels.filter(h => h.name).length > 0 && (
-        <RedSection title="Hotel Details">
-          {hotels.filter(h => h.name).map((h, idx) => {
-            // normalise: support both new rates[] and legacy flat format
-            const rates = h.rates?.length
-              ? h.rates
-              : [{ occupancy: h.occupancy || "Double", nights: h.nights, rooms: h.rooms, price: h.price }];
+      {/* ══════════ PACKAGE OPTIONS — one section per tier ══════════ */}
+      {useTiers ? (
+        <>
+          {activeTiers.map((lbl, tidx) => {
+            const tier = pkgTiers[lbl];
+            const tHotels    = (tier.hotels    || []).filter(h => h.name);
+            const tFlights   = (tier.flights   || []).filter(f => f.from || f.to);
+            const tTransfers = (tier.transfers || []).filter(t => t.cab || +t.days > 0);
+            const tMiscs     = (tier.miscs     || []).filter(m => m.name);
             return (
-              <div key={idx} data-pdf-section="true"
-                style={idx > 0 ? { marginTop: 14, borderTop: "1px dashed #e0e0e0", paddingTop: 12 } : {}}>
-                <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
-                  <span style={{ fontSize: 14 }}>🏨</span>
-                  <span style={{ fontSize: 15, fontWeight: 700, color: DARK }}>{h.name}</span>
-                  {h.roomCat && <span style={{ fontSize: 12, color: "#6b7280" }}>— {h.roomCat}</span>}
+              <div key={lbl} data-pdf-section="true" style={{ borderTop: "1px solid #e8e8e8" }}>
+                {/* Tier header */}
+                <div style={{ background: "#374151", color: "#fff", padding: "9px 18px", fontSize: 13, fontWeight: 700, letterSpacing: "0.02em" }}>
+                  {lbl.toUpperCase()} PACKAGE
                 </div>
-                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
-                  <thead>
-                    <tr style={{ background: "#f3f4f6" }}>
-                      <Th>Occupancy</Th>
-                      <Th>Room Category</Th>
-                      <Th style={{ textAlign: "center" }}>Nights</Th>
-                      <Th style={{ textAlign: "center" }}>Rooms</Th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {rates.filter(r => r.nights || r.rooms).map((r, ri) => (
-                      <tr key={ri} style={{ background: ri % 2 === 0 ? "#fff" : "#fafafa" }}>
-                        <Td><b>{r.occupancy || "Double"}</b></Td>
-                        <Td>{r.roomCat || "—"}</Td>
-                        <Td style={{ textAlign: "center" }}>{r.nights || "—"}</Td>
-                        <Td style={{ textAlign: "center" }}>{r.rooms || "—"}</Td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+
+                <div style={{ padding: "14px 18px 10px", background: "#fff" }}>
+
+                  {/* Hotels table */}
+                  {tHotels.length > 0 && (
+                    <div style={{ marginBottom: tFlights.length || tTransfers.length || tMiscs.length ? 12 : 0 }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, color: RED, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 5 }}>Hotel Details</div>
+                      <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                        <thead>
+                          <tr>
+                            <Th style={{ width: "5%" }}>S.No.</Th>
+                            <Th style={{ width: "32%" }}>Hotel Name</Th>
+                            <Th style={{ width: "18%" }}>Occupancy</Th>
+                            <Th style={{ width: "28%" }}>Room Category</Th>
+                            <Th style={{ width: "10%", textAlign: "center" }}>Nights</Th>
+                            <Th style={{ width: "7%", textAlign: "center" }}>Rooms</Th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {tHotels.map((h, hi) => {
+                            const rates = (h.rates?.length
+                              ? h.rates
+                              : [{ occupancy: h.occupancy || "Double", roomCat: h.roomCat, nights: h.nights, rooms: h.rooms }]
+                            ).filter(r => r.occupancy || r.nights);
+                            return rates.map((r, ri) => (
+                              <tr key={`${hi}-${ri}`} style={{ background: hi % 2 === 0 ? "#fff" : "#fafafa" }}>
+                                <Td style={{ textAlign: "center", color: "#888" }}>{ri === 0 ? `${hi + 1}.` : ""}</Td>
+                                <Td>{ri === 0 ? <strong>{h.name}</strong> : ""}</Td>
+                                <Td>{r.occupancy || "Double"}</Td>
+                                <Td>{r.roomCat || "—"}</Td>
+                                <Td style={{ textAlign: "center" }}>{r.nights ? `${r.nights}N` : "—"}</Td>
+                                <Td style={{ textAlign: "center" }}>{r.rooms || 1}</Td>
+                              </tr>
+                            ));
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+
+                  {/* Flights table */}
+                  {tFlights.length > 0 && (
+                    <div style={{ marginBottom: tTransfers.length || tMiscs.length ? 12 : 0 }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, color: RED, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 5 }}>Flight Details</div>
+                      <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                        <thead>
+                          <tr><Th>Route</Th><Th>Date</Th><Th>Pax</Th><Th>Type</Th></tr>
+                        </thead>
+                        <tbody>
+                          {tFlights.map((f, fi) => (
+                            <tr key={fi} style={{ background: fi % 2 === 0 ? "#fff" : "#fafafa" }}>
+                              <Td><strong>{f.from || "—"} → {f.to || "—"}</strong></Td>
+                              <Td>{f.date ? fmtDate(f.date) : "—"}</Td>
+                              <Td style={{ textAlign: "center" }}>{f.pax || "—"}</Td>
+                              <Td>{f.roundTrip ? "Round Trip" : "One-way"}</Td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+
+                  {/* Transfers table */}
+                  {tTransfers.length > 0 && (
+                    <div style={{ marginBottom: tMiscs.length ? 12 : 0 }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, color: RED, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 5 }}>Transfer / Transportation</div>
+                      <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                        <thead>
+                          <tr><Th>Cab Type</Th><Th style={{ width: "20%", textAlign: "center" }}>Days</Th></tr>
+                        </thead>
+                        <tbody>
+                          {tTransfers.map((t, ti) => (
+                            <tr key={ti} style={{ background: ti % 2 === 0 ? "#fff" : "#fafafa" }}>
+                              <Td>{t.cab || "—"}</Td>
+                              <Td style={{ textAlign: "center" }}>{t.days || "—"}</Td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+
+                  {/* Miscellaneous */}
+                  {tMiscs.length > 0 && (
+                    <div style={{ marginBottom: 12 }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, color: RED, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 5 }}>Miscellaneous</div>
+                      <ul style={{ margin: 0, paddingLeft: 18 }}>
+                        {tMiscs.map((m, mi) => (
+                          <li key={mi} style={{ fontSize: 12, color: "#374151", marginBottom: 3 }}>{m.name}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* Financials */}
+                  {(() => {
+                    const tierSelling = calcTierSelling(tier, form);
+                    const pax = getTierPax(tier);
+                    if (!tierSelling) return null;
+                    return (
+                      <table style={{ width: "100%", borderCollapse: "collapse", marginTop: 6 }}>
+                        <thead>
+                          <tr>
+                            <Th style={{ width: "20%" }}>Financials</Th>
+                            <Th>Net Package Cost (Incl. of GST)</Th>
+                            {pax > 0 && <Th style={{ width: "28%", textAlign: "right" }}>Per Person</Th>}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr style={{ background: "#fff8dc" }}>
+                            <Td style={{ fontWeight: 700, color: "#555", fontSize: 11 }}>Amount</Td>
+                            <Td>
+                              <span style={{ fontWeight: 800, color: RED, fontSize: 13 }}>
+                                INR {Math.round(tierSelling).toLocaleString("en-IN")}/- inclusive of GST
+                              </span>
+                            </Td>
+                            {pax > 0 && (
+                              <Td style={{ textAlign: "right", fontWeight: 700, fontSize: 12, color: "#374151" }}>
+                                Per Person: INR {Math.round(tierSelling / pax).toLocaleString("en-IN")}/-
+                              </Td>
+                            )}
+                          </tr>
+                        </tbody>
+                      </table>
+                    );
+                  })()}
+
+                </div>
+
+                {/* Tier separator (not after last) */}
+                {tidx < activeTiers.length - 1 && (
+                  <div style={{ borderTop: "2px dashed #e0e0e0", margin: "0 18px" }} />
+                )}
               </div>
             );
           })}
-        </RedSection>
-      )}
-
-      {/* ══════════ TRANSPORTATION (CAB) ══════════ */}
-      {transfers.filter(t => +t.perDay > 0).length > 0 && (
-        <RedSection title="Transportation Details">
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
-            <thead>
-              <tr>
-                <Th>Cab Type</Th>
-                <Th>Days</Th>
-              </tr>
-            </thead>
-            <tbody>
-              {transfers.filter(t => +t.perDay > 0).map((t, i) => (
-                <tr key={i} style={{ background: i % 2 === 0 ? "#fff" : "#fafafa" }}>
-                  <Td>{t.cab}</Td>
-                  <Td>{t.days}</Td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </RedSection>
-      )}
-
-      {/* ══════════ FLIGHT DETAILS ══════════ */}
-      {flights.filter(f => f.from || f.to || +f.price > 0).length > 0 && (
-        <RedSection title="Flight Details">
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
-            <thead>
-              <tr>
-                <Th>From</Th>
-                <Th>To</Th>
-                <Th>Date</Th>
-                <Th>Pax</Th>
-                <Th>Trip</Th>
-              </tr>
-            </thead>
-            <tbody>
-              {flights.filter(f => f.from || f.to || +f.price > 0).map((f, i) => (
-                <tr key={i} style={{ background: i % 2 === 0 ? "#fff" : "#fafafa" }}>
-                  <Td>{f.from}</Td>
-                  <Td>{f.roundTrip ? `${f.to || "—"} ⇄ ${f.from || "—"}` : f.to}</Td>
-                  <Td>{fmtDate(f.date)}</Td>
-                  <Td>{f.pax}</Td>
-                  <Td>{f.roundTrip ? "Round Trip" : "One-way"}</Td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </RedSection>
-      )}
-
-      {/* ══════════ VALUE ADDED SERVICES ══════════ */}
-      {miscs.filter(m => m.name).length > 0 && (
-        <RedSection title="Value Added Services">
-          <ul style={{ margin: "4px 0 0 0", paddingLeft: 20 }}>
-            {miscs.filter(m => m.name).map((m, i) => (
-              <li key={i} style={{ fontSize: 12.5, color: "#374151", marginBottom: 4 }}>{m.name}</li>
-            ))}
-          </ul>
-        </RedSection>
+        </>
+      ) : (
+        <>
+          {/* ── Legacy single-tier sections (old quotations) ── */}
+          {hotels.filter(h => h.name).length > 0 && (
+            <RedSection title="Hotel Details">
+              {hotels.filter(h => h.name).map((h, idx) => {
+                const rates = h.rates?.length ? h.rates : [{ occupancy: h.occupancy || "Double", nights: h.nights, rooms: h.rooms }];
+                return (
+                  <div key={idx} data-pdf-section="true" style={idx > 0 ? { marginTop: 14, borderTop: "1px dashed #e0e0e0", paddingTop: 12 } : {}}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
+                      <span style={{ fontSize: 14 }}>🏨</span>
+                      <span style={{ fontSize: 15, fontWeight: 700, color: DARK }}>{h.name}</span>
+                    </div>
+                    <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
+                      <thead><tr><Th>Occupancy</Th><Th>Room Category</Th><Th>Nights</Th><Th>Rooms</Th></tr></thead>
+                      <tbody>
+                        {rates.filter(r => r.nights || r.rooms).map((r, ri) => (
+                          <tr key={ri} style={{ background: ri % 2 === 0 ? "#fff" : "#fafafa" }}>
+                            <Td><b>{r.occupancy || "Double"}</b></Td><Td>{r.roomCat || "—"}</Td><Td>{r.nights || "—"}</Td><Td>{r.rooms || "—"}</Td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                );
+              })}
+            </RedSection>
+          )}
+          {transfers.filter(t => +t.perDay > 0).length > 0 && (
+            <RedSection title="Transportation Details">
+              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                <thead><tr><Th>Cab Type</Th><Th>Days</Th></tr></thead>
+                <tbody>{transfers.filter(t => +t.perDay > 0).map((t, i) => <tr key={i} style={{ background: i % 2 === 0 ? "#fff" : "#fafafa" }}><Td>{t.cab}</Td><Td>{t.days}</Td></tr>)}</tbody>
+              </table>
+            </RedSection>
+          )}
+          {flights.filter(f => f.from || f.to || +f.price > 0).length > 0 && (
+            <RedSection title="Flight Details">
+              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                <thead><tr><Th>From</Th><Th>To</Th><Th>Date</Th><Th>Pax</Th><Th>Trip</Th></tr></thead>
+                <tbody>{flights.filter(f => f.from || f.to || +f.price > 0).map((f, i) => <tr key={i} style={{ background: i % 2 === 0 ? "#fff" : "#fafafa" }}><Td>{f.from}</Td><Td>{f.roundTrip ? `${f.to || "—"} ⇄ ${f.from || "—"}` : f.to}</Td><Td>{fmtDate(f.date)}</Td><Td>{f.pax}</Td><Td>{f.roundTrip ? "Round Trip" : "One-way"}</Td></tr>)}</tbody>
+              </table>
+            </RedSection>
+          )}
+          {miscs.filter(m => m.name).length > 0 && (
+            <RedSection title="Value Added Services">
+              <ul style={{ margin: "4px 0 0 0", paddingLeft: 20 }}>
+                {miscs.filter(m => m.name).map((m, i) => <li key={i} style={{ fontSize: 12.5, color: "#374151", marginBottom: 4 }}>{m.name}</li>)}
+              </ul>
+            </RedSection>
+          )}
+        </>
       )}
 
       {/* ══════════ INCLUSIONS ══════════ */}
@@ -274,22 +418,12 @@ export default function QuotationPreview({ data, id }) {
         </RedSection>
       )}
 
-      {/* ══════════ PRICE BOX ══════════ */}
-      <div data-pdf-section="true" style={{ borderTop: "1px solid #e8e8e8" }}>
-        <div style={{ background: RED, color: "#fff", padding: "9px 18px", fontSize: 13, fontWeight: 700 }}>Package Price</div>
-        <div style={{ padding: "16px 18px", background: "#fff" }}>
-          <div style={q.priceBox}>
-            <div>
-              <div style={{ fontSize: 13, fontWeight: 700, color: "#374151" }}>Total Package Price</div>
-              <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 2 }}>All taxes included</div>
-            </div>
-            <div style={{ fontSize: 26, fontWeight: 800, color: RED }}>{inr(selling)}</div>
-          </div>
-          {form.notes && (
-            <p style={{ fontSize: 12, color: "#6B7A99", marginTop: 10, fontStyle: "italic", margin: "10px 0 0" }}>{form.notes}</p>
-          )}
+      {/* Package Price section removed — pricing shown per tier in Financials rows */}
+      {form.notes && (
+        <div style={{ padding: "10px 18px", borderTop: "1px solid #e8e8e8" }}>
+          <p style={{ fontSize: 12, color: "#6B7A99", fontStyle: "italic", margin: 0 }}>{form.notes}</p>
         </div>
-      </div>
+      )}
 
       {/* ══════════ BOOKING POLICY ══════════ */}
       {form.bookingPolicy && (
@@ -375,4 +509,6 @@ const q = {
   fMuted: { fontSize: 11, color: "#888" },
   fHandle: { fontSize: 11.5, color: "#333", fontWeight: 600 },
   fLogo: { height: 30, width: "auto", objectFit: "contain" },
+  pkgLabel: { padding: "8px 10px", fontSize: 11.5, fontWeight: 700, color: "#444", background: "#f9fafb", border: "1px solid #e0e0e0", verticalAlign: "top", whiteSpace: "nowrap" },
+  pkgCell:  { padding: "8px 10px", fontSize: 11.5, color: "#333", border: "1px solid #e8e8e8", verticalAlign: "top", lineHeight: 1.6 },
 };

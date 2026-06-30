@@ -15,6 +15,7 @@ const BRRSchema = new mongoose.Schema({
   hotelCategory: { type: String },
   budgetRange:   { type: String },
   collectedOn:   { type: String },
+  notes:         { type: String, default: "" },
 }, { _id: false });
 
 const ScoreSchema = new mongoose.Schema({

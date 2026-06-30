@@ -5,6 +5,7 @@ const ReminderSchema = new mongoose.Schema({
   leadId:       { type: mongoose.Schema.Types.ObjectId, ref: "Lead",      default: null },
   salespersonId:{ type: mongoose.Schema.Types.ObjectId, ref: "SalesPerson", default: null },
   dueDate:      { type: String, default: "" },
+  dueTime:      { type: String, default: "" },
   type:         { type: String, enum: ["Follow-up Call", "Send Package", "Document Reminder", "Payment Reminder", "Other"], default: "Follow-up Call" },
   note:         { type: String, default: "" },
   status:       { type: String, enum: ["Upcoming", "Done"], default: "Upcoming" },

@@ -26,8 +26,11 @@ export default async function handler(req, res) {
 
     const fy = getFY();
     const prefix = `TWO-Q-${fy}-`;
-    const count = await Quotation.countDocuments({ quotationNo: { $regex: `^${prefix}` } });
-    const quotationNo = `${prefix}${String(count + 1).padStart(3, "0")}`;
+    // Use findOne+sort instead of countDocuments — avoids duplicate numbers under concurrent POSTs
+    const last = await Quotation.findOne({ quotationNo: { $regex: `^${prefix}` } })
+      .sort({ quotationNo: -1 }).select("quotationNo").lean();
+    const nextNum = last ? (parseInt(last.quotationNo.replace(prefix, ""), 10) || 0) + 1 : 1;
+    const quotationNo = `${prefix}${String(nextNum).padStart(3, "0")}`;
 
     const quote = await Quotation.create({ leadId, type: type || "Domestic", quotationNo, ...rest });
     const populated = await Quotation.findById(quote._id)

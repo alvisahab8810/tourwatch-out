@@ -7,7 +7,7 @@ import QuotationBuilder, { calcQ, inrFmt } from "../../components/backend/Quotat
 /* ── constants ── */
 const HOTEL_CATS   = ["Standard", "Deluxe", "Deluxe Family", "Premium", "Premium / Water Villa", "Luxury"];
 const MEAL_OPTIONS = ["C.P.", "M.A.P.", "A.P."];
-const EMPTY_BRR    = { adults: 2, children: 0, childAge1: "", childAge2: "", duration: "", tripDate: "", mealPlan: "C.P.", flight: false, train: false, transfers: false, sightseeing: false, hotelCategory: "Deluxe", budgetRange: "" };
+const EMPTY_BRR    = { adults: 2, children: 0, childAge1: "", childAge2: "", duration: "", tripDate: "", mealPlan: "C.P.", flight: false, train: false, transfers: false, sightseeing: false, hotelCategory: "Deluxe", budgetRange: "", notes: "" };
 
 /* ── helpers ── */
 function todayISO() { return new Date().toISOString().slice(0, 10); }
@@ -149,16 +149,16 @@ export default function BrrPage() {
             <table style={S.tbl} className="tbl">
               <thead>
                 <tr style={{ background: "#F6F8FC" }}>
-                  {["Lead ID", "Name", "Destination", "Adults", "Children", "Child Ages", "Duration", "Trip Date", "Meal", "Flight", "Train", "Transfers", "Sightseeing", "Hotel Category", "Budget", "Collected On", "Action"].map(h => (
+                  {["Lead ID", "Name", "Destination", "Adults", "Children", "Child Ages", "Duration", "Trip Date", "Meal", "Flight", "Train", "Transfers", "Sightseeing", "Hotel Category", "Budget", "Collected On", "Notes", "Action"].map(h => (
                     <th key={h} style={S.th}>{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
-                  <tr><td colSpan={17} style={S.emptyCell}>Loading…</td></tr>
+                  <tr><td colSpan={18} style={S.emptyCell}>Loading…</td></tr>
                 ) : brrLeads.length === 0 ? (
-                  <tr><td colSpan={17} style={S.emptyCell}>No BRR collected yet. Qualify a lead and collect their requirements.</td></tr>
+                  <tr><td colSpan={18} style={S.emptyCell}>No BRR collected yet. Qualify a lead and collect their requirements.</td></tr>
                 ) : brrLeads.map(l => {
                   const b       = l.brr;
                   const mc      = mealColor[b.mealPlan] || mealColor["C.P."];
@@ -197,6 +197,13 @@ export default function BrrPage() {
                       <td style={S.td}>{b.hotelCategory}</td>
                       <td style={{ ...S.td, fontWeight: 600, color: "#15803D" }}>{b.budgetRange || "—"}</td>
                       <td style={{ ...S.td, whiteSpace: "nowrap" }}>{fmtDate(b.collectedOn)}</td>
+                      <td style={{ ...S.td, maxWidth: 200, color: "#374151" }}>
+                        {b.notes ? (
+                          <span title={b.notes} style={{ display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", fontSize: 12 }}>
+                            {b.notes}
+                          </span>
+                        ) : "—"}
+                      </td>
                       <td style={S.td}>
                         <div style={{ display: "flex", gap: 6, flexWrap: "nowrap" }}>
                           <button onClick={() => openBrr(l._id)} style={S.viewBtn}>View / Edit</button>
@@ -222,7 +229,7 @@ export default function BrrPage() {
 
       {/* ══ BRR Modal ══ */}
       {brrModal && brrLead && (
-        <div style={S.overlay} onClick={e => { if (e.target === e.currentTarget) setBrrModal(null); }}>
+        <div style={S.overlay}>
           <div style={{ ...S.modal, maxWidth: 700 }}>
             <div style={{ ...S.modalHead, background: "#2563EB" }}>
               <div>
@@ -274,6 +281,17 @@ export default function BrrPage() {
                     </Field>
                   </div>
                 </div>
+              </div>
+              {/* Notes */}
+              <div style={{ padding: "12px 16px 4px" }}>
+                <Field label="Notes">
+                  <textarea
+                    style={{ ...S.inp, minHeight: 72, resize: "vertical", fontFamily: "inherit" }}
+                    placeholder="Any special requirements, preferences or remarks…"
+                    value={brrForm.notes || ""}
+                    onChange={e => setBrrForm(f => ({ ...f, notes: e.target.value }))}
+                  />
+                </Field>
               </div>
             </div>
             <div style={S.modalFoot}>

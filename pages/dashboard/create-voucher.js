@@ -128,7 +128,7 @@ const DEFAULT_FORM = {
 
 export default function CreateVoucher() {
   const router = useRouter();
-  const { id: editId, preview: previewParam } = router.query;
+  const { id: editId, preview: previewParam, fromQuote } = router.query;
   const openSidebar = useOpenSidebar();
   const [formKey, setFormKey] = useState(0);
   const [form, setForm] = useState(DEFAULT_FORM);
@@ -188,6 +188,83 @@ export default function CreateVoucher() {
           }
         } catch (_) {}
       }
+      // Pre-fill from quotation when coming from quotation "Won" → Create Voucher
+      if (fromQuote) {
+        try {
+          const q = await fetch(`/api/dashboard/quotations/${fromQuote}`).then(r => r.json());
+          if (q && !q.error) {
+            const lead = q.leadId || {};
+            const brr  = lead.brr  || {};
+            const pax  = [
+              brr.adults   ? `${brr.adults} Adult${brr.adults > 1 ? "s" : ""}` : "",
+              brr.children ? `${brr.children} Child${brr.children > 1 ? "ren" : ""}` : "",
+            ].filter(Boolean).join(", ");
+
+            // Map quotation hotels → voucher hotels
+            const hotels = (q.hotels || []).filter(h => h.name).map(h => {
+              const firstRate = (h.rates || [])[0] || {};
+              return {
+                ...EMPTY_HOTEL(),
+                hotelName: h.name || "",
+                roomType:  firstRate.roomCat || h.roomCat || "",
+                nights:    String(firstRate.nights || h.nights || ""),
+                units:     String(firstRate.rooms  || h.rooms  || ""),
+              };
+            });
+
+            // Map quotation flights → voucher flights
+            const flights = (q.flights || []).filter(f => f.from || f.to).map(f => ({
+              ...EMPTY_FLIGHT(),
+              from_city: f.from || "",
+              to_city:   f.to   || "",
+              from_date: f.date || "",
+            }));
+
+            // Map quotation itinerary → voucher itineraries
+            const itineraries = (q.itinerary || []).filter(d => d.title || d.itinerary).map(d => ({
+              ...EMPTY_ITINERARY(),
+              date:        d.date        || "",
+              title:       d.title       || "",
+              tour:        d.tour        || "",
+              transfer:    d.transfer    || "",
+              pickup_time: d.pickup_time || "",
+              itinerary:   d.itinerary   || d.description || "",
+            }));
+
+            // Map quotation transfers → voucher transports
+            const transports = (q.transfers || []).filter(t => t.cab).map(t => ({
+              ...EMPTY_TRANSPORT(),
+              vehicle_type: t.cab || "",
+            }));
+
+            setForm(f => ({
+              ...f,
+              voucherNo:    buildVoucherNo(allVouchers),
+              tripId:       buildTripId(allVouchers),
+              name:         lead.name        || "",
+              email:        lead.email       || "",
+              contactNo:    lead.phone       || "",
+              destination:  lead.destination || q.type || "",
+              travelDate:   brr.tripDate || lead.travelDate || q.travelDate || "",
+              pax:          pax,
+              inclusions:   toRichText(q.inclusions  || ""),
+              exclusions:   toRichText(q.exclusions  || ""),
+              termsConditions: toRichText(q.termsConditions || DEFAULT_TC),
+              showHotel:     hotels.length > 0,
+              hotels:        hotels.length > 0 ? hotels : [],
+              showFlights:   flights.length > 0,
+              flights:       flights.length > 0 ? flights : [],
+              showTransport: transports.length > 0,
+              transports:    transports.length > 0 ? transports : [],
+              showItinerary: itineraries.length > 0,
+              itineraries:   itineraries.length > 0 ? itineraries : [],
+            }));
+            setFormKey(k => k + 1);
+            return;
+          }
+        } catch (_) {}
+      }
+
       setForm((f) => ({
         ...f,
         voucherNo: buildVoucherNo(allVouchers),
@@ -196,7 +273,7 @@ export default function CreateVoucher() {
       setFormKey((k) => k + 1);
     }
     init();
-  }, [editId]);
+  }, [editId, fromQuote]);
 
   const set = (key, val) => { setForm((f) => ({ ...f, [key]: val })); setSaved(false); };
   const setMulti = (updates) => { setForm((f) => ({ ...f, ...updates })); setSaved(false); };
@@ -735,7 +812,7 @@ export default function CreateVoucher() {
 
       {/* ═══════════════ PREVIEW MODAL ═══════════════ */}
       {showPreview && (
-        <div style={s.overlay} onClick={(e) => e.target === e.currentTarget && setShowPreview(false)}>
+        <div style={s.overlay}>
           <div style={s.modal}>
             <div style={s.modalHead}>
               <span style={s.modalTitle}>Voucher Preview</span>
@@ -762,7 +839,7 @@ export default function CreateVoucher() {
 
       {/* ═══════════════ EMAIL MODAL ═══════════════ */}
       {showEmailModal && (
-        <div style={s.overlay} onClick={(e) => e.target === e.currentTarget && setShowEmailModal(false)}>
+        <div style={s.overlay}>
           <div style={s.emailModal}>
             <div style={s.emailModalHead}>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>

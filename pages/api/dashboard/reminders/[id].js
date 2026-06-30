@@ -6,10 +6,11 @@ export default async function handler(req, res) {
   const { id } = req.query;
 
   if (req.method === "PATCH") {
-    const { status, dueDate, type, note } = req.body || {};
+    const { status, dueDate, dueTime, type, note } = req.body || {};
     const upd = {};
     if (status  !== undefined) upd.status  = status;
     if (dueDate !== undefined) upd.dueDate = dueDate;
+    if (dueTime !== undefined) upd.dueTime = dueTime;
     if (type    !== undefined) upd.type    = type;
     if (note    !== undefined) upd.note    = note;
     const updated = await Reminder.findByIdAndUpdate(id, { $set: upd }, { new: true })

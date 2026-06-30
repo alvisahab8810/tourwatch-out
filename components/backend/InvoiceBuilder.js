@@ -270,7 +270,7 @@ export default function InvoiceBuilder({ prefill, invoiceData, isNew, onClose, o
   return (
     <>
       {/* ══ Main builder modal ══ */}
-      <div style={s.overlay} onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
+      <div style={s.overlay}>
         <div style={s.modal}>
           {/* Header */}
           <div style={s.head}>
@@ -402,7 +402,7 @@ export default function InvoiceBuilder({ prefill, invoiceData, isNew, onClose, o
 
       {/* ══ Preview modal ══ */}
       {showPreview && (
-        <div style={{ ...s.overlay, zIndex: 101 }} onClick={e => { if (e.target === e.currentTarget) setShowPreview(false); }}>
+        <div style={{ ...s.overlay, zIndex: 101 }}>
           <div style={{ ...s.modal, maxWidth: 780 }}>
             <div style={{ background: "#1a1a2e", padding: "14px 22px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 10, borderRadius: "18px 18px 0 0" }}>
               <span style={{ color: "#fff", fontSize: 15, fontWeight: 700 }}>🧾 Invoice Preview · {invId}</span>
@@ -423,7 +423,7 @@ export default function InvoiceBuilder({ prefill, invoiceData, isNew, onClose, o
 
       {/* ══ Email modal ══ */}
       {showEmailModal && (
-        <div style={{ ...s.overlay, zIndex: 102 }} onClick={e => { if (e.target === e.currentTarget) setShowEmailModal(false); }}>
+        <div style={{ ...s.overlay, zIndex: 102 }}>
           <div style={{ background: "#fff", borderRadius: 14, width: "100%", maxWidth: 440, margin: "auto", boxShadow: "0 24px 60px rgba(0,0,0,.35)", overflow: "hidden" }}>
             <div style={{ background: "#ea4335", padding: "15px 20px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <span style={{ color: "#fff", fontWeight: 700 }}>Send Invoice via Email</span>

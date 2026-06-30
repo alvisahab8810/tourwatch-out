@@ -29,7 +29,7 @@ const SCORE_QS = [
   "Did the customer respond on call or WhatsApp within 24 hours?",
   "Has the customer shared specific requirements like hotel category, pax or sightseeing?",
 ];
-const EMPTY_BRR = { adults: 1, children: 0, childAge1: "", childAge2: "", duration: "", tripDate: "", mealPlan: "C.P.", flight: false, train: false, transfers: false, sightseeing: false, hotelCategory: "Deluxe", budgetRange: "" };
+const EMPTY_BRR = { adults: 1, children: 0, childAge1: "", childAge2: "", duration: "", tripDate: "", mealPlan: "C.P.", flight: false, train: false, transfers: false, sightseeing: false, hotelCategory: "Deluxe", budgetRange: "", notes: "" };
 const EMPTY_LEAD = { name: "", phone: "", email: "", destination: "", travelDate: "", pax: "", message: "", budgetBracket: "", source: "" };
 
 function parsePax(pax = "") {
@@ -557,7 +557,7 @@ export default function LeadsPage() {
 
       {/* ══ BRR Modal ══ */}
       {brrModal && brrLead && (
-        <div style={S.overlay} onClick={e => { if (e.target === e.currentTarget) setBrrModal(null); }}>
+        <div style={S.overlay}>
           <div style={{ ...S.modal, maxWidth: 700 }}>
             <div style={{ ...S.modalHead, background: "#2563EB" }}>
               <div><h3 style={{ ...S.modalTitle, color: "#fff" }}>Basic Requirement Record</h3><div style={{ fontSize: 12, color: "#BFD3FE", marginTop: 2 }}>{leadIdMap[brrLead._id]} · {brrLead.name} · {brrLead.destination}</div></div>
@@ -610,6 +610,17 @@ export default function LeadsPage() {
                     <Field label="Budget Range"><input style={S.inp} placeholder="₹80,000 to ₹1,00,000" value={brrForm.budgetRange} onChange={e => setBrrForm(f => ({ ...f, budgetRange: e.target.value }))} /></Field>
                   </div>
                 </div>
+              </div>
+              {/* Notes */}
+              <div style={{ padding: "12px 16px 4px" }}>
+                <Field label="Notes">
+                  <textarea
+                    style={{ ...S.inp, minHeight: 72, resize: "vertical", fontFamily: "inherit" }}
+                    placeholder="Any special requirements, preferences or remarks…"
+                    value={brrForm.notes || ""}
+                    onChange={e => setBrrForm(f => ({ ...f, notes: e.target.value }))}
+                  />
+                </Field>
               </div>
             </div>
             <div style={S.modalFoot}>

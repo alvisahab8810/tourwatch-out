@@ -58,13 +58,13 @@ export default async function handler(req, res) {
   }
 
   if (req.method === "POST") {
-    const { quotationId, leadId, salespersonId, dueDate, type, note } = req.body || {};
+    const { quotationId, leadId, salespersonId, dueDate, dueTime, type, note } = req.body || {};
     if (!dueDate) return res.status(400).json({ error: "dueDate required" });
     const r = await Reminder.create({
       quotationId:   quotationId   || null,
       leadId:        leadId        || null,
       salespersonId: salespersonId || null,
-      dueDate, type, note,
+      dueDate, dueTime: dueTime || "", type, note,
     });
     const populated = await Reminder.findById(r._id)
       .populate("quotationId", "quotationNo")
