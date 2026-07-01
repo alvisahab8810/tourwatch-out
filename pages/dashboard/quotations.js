@@ -752,7 +752,7 @@ export default function QuotationsPage() {
                   <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
                     <thead>
                       <tr style={{ background: "#F6F8FC" }}>
-                        {["Version","Date","Cost","Margin","Margin %","Selling","Note",""].map(h => (
+                        {["Version","Date","Cost","Margin","Margin %","Selling (incl. GST)","Note",""].map(h => (
                           <th key={h} style={{ ...S.th, textAlign: h === "" ? "right" : "left" }}>{h}</th>
                         ))}
                       </tr>
@@ -760,7 +760,10 @@ export default function QuotationsPage() {
                     <tbody>
                       {vers.map((v, i) => {
                         const isFinal = i === vers.length - 1;
-                        const selling = (v.cost || 0) + (v.margin || 0);
+                        const base    = (v.cost || 0) + (v.margin || 0);
+                        const gst     = base * ((verModal.gstPct || 5) / 100);
+                        const tcs     = verModal.type === "International" ? (base + gst) * ((verModal.tcsPct || 0) / 100) : 0;
+                        const selling = Math.round(base + gst + tcs);
                         const mpct = v.cost > 0 ? ((v.margin / v.cost) * 100).toFixed(1) : "—";
                         return (
                           <tr key={i} style={{ borderBottom: "1px solid #F1F5F9", background: isFinal ? "#F0FDF4" : "#fff" }}>
