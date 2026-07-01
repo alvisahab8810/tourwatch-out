@@ -47,6 +47,7 @@ export default function BrrPage() {
 
   /* Quotation builder modal */
   const [openBuilder, setOpenBuilder] = useState(null); // {quote|null, isNew, lead}
+  const [notePopup, setNotePopup] = useState(null); // full note text to show in popup
 
   useEffect(() => {
     Promise.all([
@@ -197,9 +198,13 @@ export default function BrrPage() {
                       <td style={S.td}>{b.hotelCategory}</td>
                       <td style={{ ...S.td, fontWeight: 600, color: "#15803D" }}>{b.budgetRange || "—"}</td>
                       <td style={{ ...S.td, whiteSpace: "nowrap" }}>{fmtDate(b.collectedOn)}</td>
-                      <td style={{ ...S.td, maxWidth: 200, color: "#374151" }}>
+                      <td style={{ ...S.td, maxWidth: 180, color: "#374151" }}>
                         {b.notes ? (
-                          <span title={b.notes} style={{ display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", fontSize: 12 }}>
+                          <span
+                            onClick={() => setNotePopup(b.notes)}
+                            title="Click to read full note"
+                            style={{ fontSize: 12, cursor: "pointer", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", textDecoration: "underline dotted #94A3B8" }}
+                          >
                             {b.notes}
                           </span>
                         ) : "—"}
@@ -226,6 +231,17 @@ export default function BrrPage() {
           </div>
         </div>
       </div>
+
+      {/* ══ Note Popup ══ */}
+      {notePopup && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 2000, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <div style={{ background: "#fff", borderRadius: 14, width: "100%", maxWidth: 480, padding: "24px 28px", boxShadow: "0 20px 60px rgba(0,0,0,0.25)", position: "relative" }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: "#1a1a2e", marginBottom: 14 }}>📝 Note</div>
+            <p style={{ fontSize: 14, color: "#374151", lineHeight: 1.7, margin: 0, whiteSpace: "pre-wrap" }}>{notePopup}</p>
+            <button onClick={() => setNotePopup(null)} style={{ position: "absolute", top: 14, right: 16, background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "#6B7A99" }}>✕</button>
+          </div>
+        </div>
+      )}
 
       {/* ══ BRR Modal ══ */}
       {brrModal && brrLead && (

@@ -25,9 +25,8 @@ function calcTierCost(tier) {
 function calcTierSelling(tier, form) {
   const cost = calcTierCost(tier);
   if (!cost) return 0;
-  const globalCost = +form.cost || 0;
-  const marginRate = globalCost > 0 ? (+form.margin || 0) / globalCost : 0;
-  const base = cost * (1 + marginRate);
+  // form.margin is an absolute ₹ amount, same margin applied to every tier
+  const base = cost + (+form.margin || 0);
   const gst  = base * (+form.gstPct || 5) / 100;
   const tcs  = form.type === "International" ? (base + gst) * (+form.tcsPct || 0) / 100 : 0;
   return Math.round(base + gst + tcs);
@@ -118,6 +117,15 @@ function fmtDate(v) {
 }
 const inr = n => "₹" + Math.round(n || 0).toLocaleString("en-IN");
 
+function getPaxLabel(lead) {
+  if (lead?.brr?.adults != null) {
+    let s = `${lead.brr.adults} Adult${lead.brr.adults !== 1 ? "s" : ""}`;
+    if (lead.brr.children) s += `, ${lead.brr.children} Child${lead.brr.children !== 1 ? "ren" : ""}`;
+    return s;
+  }
+  return lead?.pax || null;
+}
+
 export default function QuotationPreview({ data, id }) {
   const { quoteId, lead = {}, form = {}, pkgTiers, hotels = [], flights = [], transfers = [], miscs = [], itin = [], selling = 0 } = data || {};
 
@@ -156,6 +164,7 @@ export default function QuotationPreview({ data, id }) {
           <InfoPair label="Quote No."   value={quoteId} />
           <InfoPair label="Guest Name"  value={lead.name} />
           <InfoPair label="Duration"    value={form.days} />
+          {getPaxLabel(lead) && <InfoPair label="Pax"        value={getPaxLabel(lead)} />}
           <InfoPair label="Travel Date" value={fmtDate(form.travelDate)} />
           <InfoPair label="Trip Type"   value={[form.type, form.pkgMode].filter(Boolean).join(" · ")} />
         </div>
@@ -349,6 +358,12 @@ export default function QuotationPreview({ data, id }) {
               </div>
             );
           })}
+          {/* Notes / disclaimer — shown once, under the last tier's Financials */}
+          {form.notes && (
+            <div style={{ padding: "8px 18px 12px", borderTop: "1px dashed #e0e0e0" }}>
+              <p style={{ fontSize: 11.5, color: "#6B7A99", fontStyle: "italic", margin: 0 }}>{form.notes}</p>
+            </div>
+          )}
         </>
       ) : (
         <>
@@ -418,12 +433,6 @@ export default function QuotationPreview({ data, id }) {
         </RedSection>
       )}
 
-      {/* Package Price section removed — pricing shown per tier in Financials rows */}
-      {form.notes && (
-        <div style={{ padding: "10px 18px", borderTop: "1px solid #e8e8e8" }}>
-          <p style={{ fontSize: 12, color: "#6B7A99", fontStyle: "italic", margin: 0 }}>{form.notes}</p>
-        </div>
-      )}
 
       {/* ══════════ BOOKING POLICY ══════════ */}
       {form.bookingPolicy && (
