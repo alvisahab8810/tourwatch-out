@@ -25,8 +25,9 @@ function calcTierCost(tier) {
 function calcTierSelling(tier, form) {
   const cost = calcTierCost(tier);
   if (!cost) return 0;
-  // form.margin is an absolute ₹ amount, same margin applied to every tier
-  const base = cost + (+form.margin || 0);
+  // Each tier has its own margin; fall back to form.margin for old quotations that lack per-tier margin
+  const margin = tier.margin !== undefined ? +tier.margin : (+form.margin || 0);
+  const base = cost + margin;
   const gst  = base * (+form.gstPct || 5) / 100;
   const tcs  = form.type === "International" ? (base + gst) * (+form.tcsPct || 0) / 100 : 0;
   return Math.round(base + gst + tcs);
@@ -262,25 +263,41 @@ export default function QuotationPreview({ data, id }) {
                     </div>
                   )}
 
-                  {/* Flights table */}
+                  {/* Flights cards */}
                   {tFlights.length > 0 && (
                     <div style={{ marginBottom: tTransfers.length || tMiscs.length ? 12 : 0 }}>
-                      <div style={{ fontSize: 11, fontWeight: 700, color: RED, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 5 }}>Flight Details</div>
-                      <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                        <thead>
-                          <tr><Th>Route</Th><Th>Date</Th><Th>Pax</Th><Th>Type</Th></tr>
-                        </thead>
-                        <tbody>
-                          {tFlights.map((f, fi) => (
-                            <tr key={fi} style={{ background: fi % 2 === 0 ? "#fff" : "#fafafa" }}>
-                              <Td><strong>{f.from || "—"} → {f.to || "—"}</strong></Td>
-                              <Td>{f.date ? fmtDate(f.date) : "—"}</Td>
-                              <Td style={{ textAlign: "center" }}>{f.pax || "—"}</Td>
-                              <Td>{f.roundTrip ? "Round Trip" : "One-way"}</Td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
+                      <div style={{ fontSize: 11, fontWeight: 700, color: RED, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8 }}>Flight Details</div>
+                      {tFlights.map((f, fi) => (
+                        <div key={fi} style={{ marginBottom: fi < tFlights.length - 1 ? 12 : 0 }}>
+                          <div style={{ display: "flex", gap: 16, alignItems: "center", marginBottom: 6 }}>
+                            {f.pnr && <div style={{ fontSize: 12, color: "#444" }}><strong>PNR:</strong> <span style={{ fontWeight: 800, letterSpacing: 1, color: "#1a1a2e" }}>{f.pnr}</span></div>}
+                            {f.flightNo && <div style={{ fontSize: 12, color: "#444" }}><strong>Flight:</strong> {f.flightNo}</div>}
+                            <div style={{ fontSize: 12, color: "#666", marginLeft: "auto" }}>{f.roundTrip ? "Round Trip" : "One-way"} · {f.pax || "—"} Pax</div>
+                          </div>
+                          <div style={{ display: "flex", alignItems: "center", background: "#f9f9f9", border: "1px solid #e8e8e8", borderRadius: 8, padding: "12px 16px" }}>
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              <div style={{ fontSize: 14, fontWeight: 800, color: "#1a1a2e" }}>{f.depCity || f.from || "—"}</div>
+                              {f.depIATA && <div style={{ fontSize: 11, color: "#888" }}>({f.depIATA})</div>}
+                              {(f.depDate || f.date) && <div style={{ fontSize: 11, color: "#555", marginTop: 3 }}>{fmtDate(f.depDate || f.date)}</div>}
+                              {f.depTime && <div style={{ fontSize: 12, fontWeight: 700, color: RED, marginTop: 2 }}>{f.depTime}</div>}
+                            </div>
+                            <div style={{ flex: 1, textAlign: "center", padding: "0 8px" }}>
+                              {f.flightNo && <div style={{ fontSize: 11, fontWeight: 600, color: "#555", marginBottom: 4 }}>{f.flightNo}</div>}
+                              <div style={{ display: "flex", alignItems: "center", width: "100%", padding: "3px 0" }}>
+                                <div style={{ width: 8, height: 8, borderRadius: "50%", background: RED, flexShrink: 0 }} />
+                                <div style={{ flex: 1, height: 2, background: RED }} />
+                                <div style={{ width: 0, height: 0, borderTop: "5px solid transparent", borderBottom: "5px solid transparent", borderLeft: `8px solid ${RED}`, flexShrink: 0 }} />
+                              </div>
+                            </div>
+                            <div style={{ flex: 1, minWidth: 0, textAlign: "right" }}>
+                              <div style={{ fontSize: 14, fontWeight: 800, color: "#1a1a2e" }}>{f.arrCity || f.to || "—"}</div>
+                              {f.arrIATA && <div style={{ fontSize: 11, color: "#888" }}>({f.arrIATA})</div>}
+                              {f.arrDate && <div style={{ fontSize: 11, color: "#555", marginTop: 3 }}>{fmtDate(f.arrDate)}</div>}
+                              {f.arrTime && <div style={{ fontSize: 12, fontWeight: 700, color: RED, marginTop: 2 }}>{f.arrTime}</div>}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   )}
 
@@ -403,10 +420,37 @@ export default function QuotationPreview({ data, id }) {
           )}
           {flights.filter(f => f.from || f.to || +f.price > 0).length > 0 && (
             <RedSection title="Flight Details">
-              <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                <thead><tr><Th>From</Th><Th>To</Th><Th>Date</Th><Th>Pax</Th><Th>Trip</Th></tr></thead>
-                <tbody>{flights.filter(f => f.from || f.to || +f.price > 0).map((f, i) => <tr key={i} style={{ background: i % 2 === 0 ? "#fff" : "#fafafa" }}><Td>{f.from}</Td><Td>{f.roundTrip ? `${f.to || "—"} ⇄ ${f.from || "—"}` : f.to}</Td><Td>{fmtDate(f.date)}</Td><Td>{f.pax}</Td><Td>{f.roundTrip ? "Round Trip" : "One-way"}</Td></tr>)}</tbody>
-              </table>
+              {flights.filter(f => f.from || f.to || +f.price > 0).map((f, fi) => (
+                <div key={fi} style={{ marginBottom: fi < flights.filter(x => x.from || x.to || +x.price > 0).length - 1 ? 12 : 0 }}>
+                  <div style={{ display: "flex", gap: 16, alignItems: "center", marginBottom: 6 }}>
+                    {f.pnr && <div style={{ fontSize: 12, color: "#444" }}><strong>PNR:</strong> <span style={{ fontWeight: 800, letterSpacing: 1, color: "#1a1a2e" }}>{f.pnr}</span></div>}
+                    {f.flightNo && <div style={{ fontSize: 12, color: "#444" }}><strong>Flight:</strong> {f.flightNo}</div>}
+                    <div style={{ fontSize: 12, color: "#666", marginLeft: "auto" }}>{f.roundTrip ? "Round Trip" : "One-way"} · {f.pax || "—"} Pax</div>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", background: "#f9f9f9", border: "1px solid #e8e8e8", borderRadius: 8, padding: "12px 16px" }}>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 14, fontWeight: 800, color: "#1a1a2e" }}>{f.depCity || f.from || "—"}</div>
+                      {f.depIATA && <div style={{ fontSize: 11, color: "#888" }}>({f.depIATA})</div>}
+                      {(f.depDate || f.date) && <div style={{ fontSize: 11, color: "#555", marginTop: 3 }}>{fmtDate(f.depDate || f.date)}</div>}
+                      {f.depTime && <div style={{ fontSize: 12, fontWeight: 700, color: RED, marginTop: 2 }}>{f.depTime}</div>}
+                    </div>
+                    <div style={{ flex: 1, textAlign: "center", padding: "0 8px" }}>
+                      {f.flightNo && <div style={{ fontSize: 11, fontWeight: 600, color: "#555", marginBottom: 4 }}>{f.flightNo}</div>}
+                      <div style={{ display: "flex", alignItems: "center", width: "100%", padding: "3px 0" }}>
+                        <div style={{ width: 8, height: 8, borderRadius: "50%", background: RED, flexShrink: 0 }} />
+                        <div style={{ flex: 1, height: 2, background: RED }} />
+                        <div style={{ width: 0, height: 0, borderTop: "5px solid transparent", borderBottom: "5px solid transparent", borderLeft: `8px solid ${RED}`, flexShrink: 0 }} />
+                      </div>
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0, textAlign: "right" }}>
+                      <div style={{ fontSize: 14, fontWeight: 800, color: "#1a1a2e" }}>{f.arrCity || f.to || "—"}</div>
+                      {f.arrIATA && <div style={{ fontSize: 11, color: "#888" }}>({f.arrIATA})</div>}
+                      {f.arrDate && <div style={{ fontSize: 11, color: "#555", marginTop: 3 }}>{fmtDate(f.arrDate)}</div>}
+                      {f.arrTime && <div style={{ fontSize: 12, fontWeight: 700, color: RED, marginTop: 2 }}>{f.arrTime}</div>}
+                    </div>
+                  </div>
+                </div>
+              ))}
             </RedSection>
           )}
           {miscs.filter(m => m.name).length > 0 && (

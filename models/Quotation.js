@@ -40,6 +40,16 @@ const QuotationSchema = new mongoose.Schema({
     price:       { type: Number,  default: 0 },
     roundTrip:   { type: Boolean, default: false },
     returnPrice: { type: Number,  default: 0 },
+    pnr:         { type: String,  default: "" },
+    flightNo:    { type: String,  default: "" },
+    depCity:     { type: String,  default: "" },
+    depIATA:     { type: String,  default: "" },
+    depDate:     { type: String,  default: "" },
+    depTime:     { type: String,  default: "" },
+    arrCity:     { type: String,  default: "" },
+    arrIATA:     { type: String,  default: "" },
+    arrDate:     { type: String,  default: "" },
+    arrTime:     { type: String,  default: "" },
   }],
 
   // Transfers (array — multiple cab arrangements)

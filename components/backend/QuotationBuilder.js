@@ -59,7 +59,10 @@ function initItin(initialData) {
 
 const DEF_RATE     = { occupancy: "Double", roomCat: "Deluxe", nights: "", rooms: "", price: "" };
 const DEF_HOTEL    = { name: "", rates: [{ ...DEF_RATE }] };
-const DEF_FLIGHT   = { from: "", to: "", date: "", pax: "", price: "", roundTrip: false, returnPrice: "" };
+const DEF_FLIGHT   = { from: "", to: "", date: "", pax: "", price: "", roundTrip: false, returnPrice: "",
+  pnr: "", flightNo: "",
+  depCity: "", depIATA: "", depDate: "", depTime: "",
+  arrCity: "", arrIATA: "", arrDate: "", arrTime: "" };
 const DEF_TRANSFER = { cab: "", perDay: "", days: "" };
 const DEF_MISC     = { name: "", amount: "" };
 
@@ -70,6 +73,7 @@ const DEF_PKG = () => ({
   flights: [{ ...DEF_FLIGHT }],
   transfers: [{ ...DEF_TRANSFER }],
   miscs: [],
+  margin: 0,
 });
 
 function normHotels(arr) {
@@ -193,11 +197,14 @@ function initArrays(initialData, lead) {
     return {
       pkgTiers: Object.fromEntries(TIER_LABELS.map(lbl => {
         const d = initialData.pkgTiers[lbl] || {};
+        // Migrate: if saved tier has no margin, seed Economy with form.margin and others with 0
+        const fallbackMargin = lbl === "Economy" ? (+initialData.margin || 0) : 0;
         return [lbl, {
           hotels:    normHotels(d.hotels),
           flights:   d.flights?.length   ? [...d.flights]   : [{ ...DEF_FLIGHT }],
           transfers: d.transfers?.length ? [...d.transfers] : [{ ...DEF_TRANSFER }],
           miscs:     d.miscs?.length     ? [...d.miscs]     : [],
+          margin:    d.margin !== undefined ? d.margin : fallbackMargin,
         }];
       })),
     };
@@ -223,7 +230,7 @@ function initArrays(initialData, lead) {
   const ecoMiscs     = initialData?.miscs?.length     ? [...initialData.miscs]     : [];
   return {
     pkgTiers: {
-      Economy: { hotels: ecoHotels, flights: ecoFlights, transfers: ecoTransfers, miscs: ecoMiscs },
+      Economy: { hotels: ecoHotels, flights: ecoFlights, transfers: ecoTransfers, miscs: ecoMiscs, margin: +initialData?.margin || 0 },
       Deluxe:  DEF_PKG(),
       Premium: DEF_PKG(),
     },
@@ -343,7 +350,12 @@ export default function QuotationBuilder({
   }
 
   const upd = (k, v) => setForm(f => ({ ...f, [k]: v }));
-  const c    = calcQ(form);
+
+  // Per-tier margin proxy
+  const tierMargin    = pkgTiers[activePkg]?.margin ?? "";
+  const setTierMargin = v => setPkgTiers(p => ({ ...p, [activePkg]: { ...p[activePkg], margin: v } }));
+
+  const c    = calcQ({ ...form, margin: tierMargin });
   const g    = gradeColor(c.mpct);
   const intl = form.type === "International";
 
@@ -380,15 +392,16 @@ export default function QuotationBuilder({
   function buildBody() {
     const normTier = tier => ({
       hotels:    tier.hotels.map(h => ({ name: h.name, rates: (h.rates || []).map(r => ({ occupancy: r.occupancy || "Double", roomCat: r.roomCat || "Deluxe", nights: toN(r.nights), rooms: toN(r.rooms, 1), price: toN(r.price) })) })),
-      flights:   tier.flights.map(f => ({ from: f.from, to: f.to, date: f.date, pax: toN(f.pax), price: toN(f.price), roundTrip: !!f.roundTrip, returnPrice: toN(f.returnPrice) })),
+      flights:   tier.flights.map(f => ({ from: f.from, to: f.to, date: f.date, pax: toN(f.pax), price: toN(f.price), roundTrip: !!f.roundTrip, returnPrice: toN(f.returnPrice), pnr: f.pnr||"", flightNo: f.flightNo||"", depCity: f.depCity||"", depIATA: f.depIATA||"", depDate: f.depDate||"", depTime: f.depTime||"", arrCity: f.arrCity||"", arrIATA: f.arrIATA||"", arrDate: f.arrDate||"", arrTime: f.arrTime||"" })),
       transfers: tier.transfers.map(t => ({ cab: t.cab, perDay: toN(t.perDay), days: toN(t.days) })),
       miscs:     tier.miscs.filter(m => m.name || m.amount).map(m => ({ name: m.name, amount: toN(m.amount) })),
+      margin:    toN(tier.margin),
     });
     const ecoNorm = normTier(pkgTiers.Economy);
     return {
       ...form,
       assignedTo: form.assignedTo || null,
-      cost: toN(form.cost), margin: toN(form.margin), gstPct: toN(form.gstPct, 5), tcsPct: toN(form.tcsPct),
+      cost: toN(form.cost), margin: toN(pkgTiers.Economy.margin), gstPct: toN(form.gstPct, 5), tcsPct: toN(form.tcsPct),
       pkgTiers: Object.fromEntries(TIER_LABELS.map(lbl => [lbl, normTier(pkgTiers[lbl])])),
       // backward-compat flat fields = Economy tier (used by PDF preview)
       hotels: ecoNorm.hotels, flights: ecoNorm.flights, transfers: ecoNorm.transfers, miscs: ecoNorm.miscs,
@@ -442,7 +455,7 @@ export default function QuotationBuilder({
   async function save() {
     setSaving(true);
     try {
-      const newVer = { v: (initialData?.versions?.length || 0) + 1, date: todayISO(), cost: toN(form.cost), margin: toN(form.margin), note: (initialData?.versions?.length || 0) === 0 ? "First quote created" : "Quote revised" };
+      const newVer = { v: (initialData?.versions?.length || 0) + 1, date: todayISO(), cost: toN(form.cost), margin: toN(pkgTiers.Economy.margin), note: (initialData?.versions?.length || 0) === 0 ? "First quote created" : "Quote revised" };
       const body = { ...buildBody(), versions: [...(initialData?.versions || []), newVer] };
       let res;
       const currentId = savedIdRef.current;
@@ -574,6 +587,11 @@ export default function QuotationBuilder({
               const tierColor = lbl === "Economy" ? "#15803D" : lbl === "Deluxe" ? "#2563EB" : "#7C3AED";
               const tierBg    = lbl === "Economy" ? "#F0FDF4" : lbl === "Deluxe" ? "#EFF4FF" : "#FAF5FF";
               const tierBorder= lbl === "Economy" ? "#86EFAC" : lbl === "Deluxe" ? "#93C5FD" : "#D8B4FE";
+              const tMgn  = +pkgTiers[lbl].margin || 0;
+              const tBase = tt.total + tMgn;
+              const tGst  = tBase * (+form.gstPct || 0) / 100;
+              const tTcs  = intl ? (tBase + tGst) * (+form.tcsPct || 0) / 100 : 0;
+              const tSell = Math.round(tBase + tGst + tTcs);
               return (
                 <div
                   key={lbl}
@@ -587,7 +605,13 @@ export default function QuotationBuilder({
                   {tt.h > 0 && <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10.5, color: "#6B7A99", marginBottom: 2 }}><span>🏨 Hotels</span><span style={{ fontWeight: 700 }}>{inr(tt.h)}</span></div>}
                   {tt.f > 0 && <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10.5, color: "#6B7A99", marginBottom: 2 }}><span>✈️ Flights</span><span style={{ fontWeight: 700 }}>{inr(tt.f)}</span></div>}
                   {tt.t > 0 && <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10.5, color: "#6B7A99", marginBottom: 2 }}><span>🚐 Transfer</span><span style={{ fontWeight: 700 }}>{inr(tt.t)}</span></div>}
-                  {tt.m > 0 && <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10.5, color: "#6B7A99" }}><span>➕ Misc</span><span style={{ fontWeight: 700 }}>{inr(tt.m)}</span></div>}
+                  {tt.m > 0 && <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10.5, color: "#6B7A99", marginBottom: 2 }}><span>➕ Misc</span><span style={{ fontWeight: 700 }}>{inr(tt.m)}</span></div>}
+                  {tt.total > 0 && tMgn > 0 && (
+                    <div style={{ borderTop: `1px dashed ${tierBorder}`, marginTop: 5, paddingTop: 5 }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10.5, color: "#6B7A99", marginBottom: 2 }}><span>💰 Margin</span><span style={{ fontWeight: 700 }}>{inr(tMgn)}</span></div>
+                      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, fontWeight: 800, color: tierColor }}><span>Selling (incl. GST)</span><span>{inr(tSell)}</span></div>
+                    </div>
+                  )}
                   {isActive && <div style={{ fontSize: 9.5, color: tierColor, fontWeight: 700, marginTop: 4, textAlign: "right" }}>● Editing now</div>}
                 </div>
               );
@@ -848,57 +872,68 @@ export default function QuotationBuilder({
                   {flights.length > 1 && <button style={QS.remBtn} onClick={() => remRow(setFlights, i)}>✕</button>}
                   {flights.length > 1 && <div style={QS.rowLabel}>Flight {i + 1}</div>}
                   <TripTypeToggle value={!!f.roundTrip} onChange={v => updArr(setFlights, i, "roundTrip", v)} />
-                  {/* Row 1: From | To */}
+
+                  {/* PNR | Flight No */}
                   <div style={{ ...G2, marginBottom: 10 }}>
-                    <Fl l="From">
-                      <input style={QS.inp} placeholder="Delhi" value={f.from} onChange={e => updArr(setFlights, i, "from", e.target.value)} />
+                    <Fl l="PNR">
+                      <input style={QS.inp} placeholder="e.g. B8F6Y1" value={f.pnr || ""} onChange={e => updArr(setFlights, i, "pnr", e.target.value)} />
                     </Fl>
-                    <Fl l="To">
-                      <input style={QS.inp} placeholder="Srinagar" value={f.to} onChange={e => updArr(setFlights, i, "to", e.target.value)} />
+                    <Fl l="Flight No.">
+                      <input style={QS.inp} placeholder="e.g. SG 51" value={f.flightNo || ""} onChange={e => updArr(setFlights, i, "flightNo", e.target.value)} />
                     </Fl>
                   </div>
-                  {/* Row 2: Pax | Price Per Pax */}
-                  <div style={{ ...G2, marginBottom: 10 }}>
+
+                  {/* Departure + Arrival side by side */}
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 10 }}>
+                    <div style={{ border: "1px solid #FCA5A5", borderRadius: 8, padding: "10px 12px", background: "#FFF5F5" }}>
+                      <div style={{ fontSize: 11, fontWeight: 800, color: "#DC2626", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>✈ Departure</div>
+                      <Fl l="City"><input style={QS.inp} placeholder="e.g. Delhi" value={f.depCity || ""} onChange={e => updArr(setFlights, i, "depCity", e.target.value)} /></Fl>
+                      <div style={{ marginTop: 8 }}>
+                        <Fl l="IATA Code"><input style={QS.inp} placeholder="e.g. DEL" value={f.depIATA || ""} onChange={e => updArr(setFlights, i, "depIATA", e.target.value)} /></Fl>
+                      </div>
+                      <div style={{ ...G2, marginTop: 8 }}>
+                        <Fl l="Date"><input type="date" style={QS.inp} value={f.depDate || ""} onChange={e => updArr(setFlights, i, "depDate", e.target.value)} /></Fl>
+                        <Fl l="Time"><input style={QS.inp} placeholder="e.g. 10:30 hrs" value={f.depTime || ""} onChange={e => updArr(setFlights, i, "depTime", e.target.value)} /></Fl>
+                      </div>
+                    </div>
+                    <div style={{ border: "1px solid #93C5FD", borderRadius: 8, padding: "10px 12px", background: "#EFF6FF" }}>
+                      <div style={{ fontSize: 11, fontWeight: 800, color: "#1D4ED8", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>🛬 Arrival</div>
+                      <Fl l="City"><input style={QS.inp} placeholder="e.g. Srinagar" value={f.arrCity || ""} onChange={e => updArr(setFlights, i, "arrCity", e.target.value)} /></Fl>
+                      <div style={{ marginTop: 8 }}>
+                        <Fl l="IATA Code"><input style={QS.inp} placeholder="e.g. SXR" value={f.arrIATA || ""} onChange={e => updArr(setFlights, i, "arrIATA", e.target.value)} /></Fl>
+                      </div>
+                      <div style={{ ...G2, marginTop: 8 }}>
+                        <Fl l="Date"><input type="date" style={QS.inp} value={f.arrDate || ""} onChange={e => updArr(setFlights, i, "arrDate", e.target.value)} /></Fl>
+                        <Fl l="Time"><input style={QS.inp} placeholder="e.g. 12:45 hrs" value={f.arrTime || ""} onChange={e => updArr(setFlights, i, "arrTime", e.target.value)} /></Fl>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Pax | Price | Sub Total */}
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: f.roundTrip ? 10 : 0 }}>
                     <Fl l="Pax">
                       <input type="number" style={QS.inp} value={f.pax} onChange={e => updArr(setFlights, i, "pax", e.target.value)} />
                     </Fl>
                     <Fl l="Price Per Pax (₹)">
                       <input type="number" style={QS.inp} value={f.price} onChange={e => updArr(setFlights, i, "price", e.target.value)} />
                     </Fl>
+                    <Fl l="Sub Total">
+                      <input style={{ ...QS.inp, color: "#2563EB", fontWeight: 700 }} value={f.price === "" ? "" : inr((+f.price || 0) * (+f.pax || 0))} disabled />
+                    </Fl>
                   </div>
-                  {/* Row 3: Sub Total — full width */}
-                  <Fl l="Sub Total">
-                    <input style={{ ...QS.inp, color: "#2563EB", fontWeight: 700 }}
-                      value={f.price === "" ? "" : inr((+f.price || 0) * (+f.pax || 0))} disabled />
-                  </Fl>
 
                   {f.roundTrip && (
                     <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px dashed #E4E9F2" }}>
-                      {/* Return Row 1: Return From | Return To */}
                       <div style={{ ...G2, marginBottom: 10 }}>
-                        <Fl l="Return From">
-                          <input style={QS.inp} placeholder={f.to || "Srinagar"} value={f.to} disabled />
-                        </Fl>
-                        <Fl l="Return To">
-                          <input style={QS.inp} placeholder={f.from || "Delhi"} value={f.from} disabled />
-                        </Fl>
-                      </div>
-                      {/* Return Row 2: Pax | Return Price Per Pax */}
-                      <div style={{ ...G2, marginBottom: 10 }}>
-                        <Fl l="Pax">
-                          <input style={{ ...QS.inp, color: "#94A3B8" }} value={f.pax} disabled />
-                        </Fl>
                         <Fl l="Return Price Per Pax (₹)">
                           <input type="number" style={QS.inp} value={f.returnPrice} onChange={e => updArr(setFlights, i, "returnPrice", e.target.value)} />
                         </Fl>
+                        <Fl l="Return Sub Total">
+                          <input style={{ ...QS.inp, color: "#2563EB", fontWeight: 700 }} value={f.returnPrice === "" ? "" : inr((+f.returnPrice || 0) * (+f.pax || 0))} disabled />
+                        </Fl>
                       </div>
-                      {/* Return Row 3: Return Sub Total — full width */}
-                      <Fl l="Return Sub Total">
-                        <input style={{ ...QS.inp, color: "#2563EB", fontWeight: 700 }}
-                          value={f.returnPrice === "" ? "" : inr((+f.returnPrice || 0) * (+f.pax || 0))} disabled />
-                      </Fl>
-                      <div style={{ textAlign: "right", fontSize: 13, fontWeight: 800, color: "#1D4ED8", marginTop: 8 }}>
-                        Total Amount (Onward + Return): {inr(((+f.price || 0) + (+f.returnPrice || 0)) * (+f.pax || 0))}
+                      <div style={{ textAlign: "right", fontSize: 13, fontWeight: 800, color: "#1D4ED8" }}>
+                        Total (Onward + Return): {inr(((+f.price || 0) + (+f.returnPrice || 0)) * (+f.pax || 0))}
                       </div>
                     </div>
                   )}
@@ -910,7 +945,7 @@ export default function QuotationBuilder({
                 </div>
               )}
               {flights.length < 3 && (
-                <button onClick={() => addRow(setFlights, DEF_FLIGHT)} style={QS.addBtnBottom}>+ Add Flight</button>
+                <button onClick={() => addRow(setFlights, { ...DEF_FLIGHT })} style={QS.addBtnBottom}>+ Add Flight</button>
               )}
             </Sec>
 
@@ -980,7 +1015,7 @@ export default function QuotationBuilder({
               <div style={{ background: "#fff", padding: 14 }}>
                 <div style={{ display: "grid", gridTemplateColumns: `repeat(${intl ? 4 : 3}, 1fr)`, gap: 12, marginBottom: 14 }}>
                   <Fl l="Cost Price (₹) — auto from components"><input type="number" style={{ ...QS.inp, background: "#F0FDF4", fontWeight: 700 }} value={form.cost} onChange={e => upd("cost", e.target.value)} /></Fl>
-                  <Fl l="Margin (₹)"><input type="number" style={QS.inp} value={form.margin} onChange={e => upd("margin", e.target.value)} /></Fl>
+                  <Fl l={`Margin (₹) — ${activePkg}`}><input type="number" style={QS.inp} value={tierMargin} onChange={e => setTierMargin(e.target.value)} /></Fl>
                   <Fl l="GST %"><input type="number" style={QS.inp} value={form.gstPct} onChange={e => upd("gstPct", e.target.value)} /></Fl>
                   {intl && (
                     <Fl l="TCS % (Intl only)">
