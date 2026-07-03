@@ -393,7 +393,7 @@ export default function QuotationBuilder({
     const normTier = tier => ({
       hotels:    tier.hotels.map(h => ({ name: h.name, rates: (h.rates || []).map(r => ({ occupancy: r.occupancy || "Double", roomCat: r.roomCat || "Deluxe", nights: toN(r.nights), rooms: toN(r.rooms, 1), price: toN(r.price) })) })),
       flights:   tier.flights.map(f => ({ from: f.from, to: f.to, date: f.date, pax: toN(f.pax), price: toN(f.price), roundTrip: !!f.roundTrip, returnPrice: toN(f.returnPrice), pnr: f.pnr||"", flightNo: f.flightNo||"", depCity: f.depCity||"", depIATA: f.depIATA||"", depDate: f.depDate||"", depTime: f.depTime||"", arrCity: f.arrCity||"", arrIATA: f.arrIATA||"", arrDate: f.arrDate||"", arrTime: f.arrTime||"" })),
-      transfers: tier.transfers.map(t => ({ cab: t.cab, perDay: toN(t.perDay), days: toN(t.days) })),
+      transfers: tier.transfers.map(t => ({ cab: (toN(t.perDay) > 0 || toN(t.days) > 0) ? t.cab : "", perDay: toN(t.perDay), days: toN(t.days) })),
       miscs:     tier.miscs.filter(m => m.name || m.amount).map(m => ({ name: m.name, amount: toN(m.amount) })),
       margin:    toN(tier.margin),
     });

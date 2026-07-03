@@ -10,7 +10,7 @@ function hasTierData(tier) {
   if (!tier) return false;
   return (tier.hotels  || []).some(h => h.name)
       || (tier.flights  || []).some(f => f.from || f.to)
-      || (tier.transfers|| []).some(t => t.cab || +t.days > 0)
+      || (tier.transfers|| []).some(t => t.cab && (+t.perDay > 0 || +t.days > 0))
       || (tier.miscs    || []).some(m => m.name);
 }
 
