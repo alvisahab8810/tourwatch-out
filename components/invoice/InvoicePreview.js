@@ -9,12 +9,14 @@ export default function InvoicePreview({ data }) {
 
   // ── Computed amounts ─────────────────────────────────────────────────────
   const items     = d.items || [];
+  const is18      = d.gstMode === "18";
+  const convFee   = is18 ? (parseFloat(d.convenienceFee) || 0) : 0;
   const subTotal  = items.reduce((s, i) => s + (parseFloat(i.amount) || 0), 0);
-  const cgstAmt   = d.cgstPct  ? (subTotal * parseFloat(d.cgstPct))  / 100 : 0;
-  const sgstAmt   = d.sgstPct  ? (subTotal * parseFloat(d.sgstPct))  / 100 : 0;
-  const igstAmt   = d.igstPct  ? (subTotal * parseFloat(d.igstPct))  / 100 : 0;
+  const cgstAmt   = is18 ? convFee * 0.09 : (d.cgstPct ? (subTotal * parseFloat(d.cgstPct)) / 100 : 0);
+  const sgstAmt   = is18 ? convFee * 0.09 : (d.sgstPct ? (subTotal * parseFloat(d.sgstPct)) / 100 : 0);
+  const igstAmt   = is18 ? 0 : (d.igstPct ? (subTotal * parseFloat(d.igstPct)) / 100 : 0);
   const gstTotal  = cgstAmt + sgstAmt + igstAmt;
-  const afterGst  = subTotal + gstTotal;
+  const afterGst  = subTotal + convFee + gstTotal;
   const tcsAmt    = d.tcsPct   ? (afterGst  * parseFloat(d.tcsPct))   / 100 : 0;
   const grandTotal = afterGst + tcsAmt;
   const amtWords  = numberToWords(grandTotal);
@@ -136,22 +138,30 @@ export default function InvoicePreview({ data }) {
             <td style={{ ...iv.td, ...iv.subTotalCell, textAlign: "right" }}>{fmt(subTotal)}</td>
           </tr>
 
-          {/* GST rows */}
-          {(d.cgstPct && cgstAmt > 0) && (
+          {/* Convenience Fee row (18% mode) */}
+          {is18 && convFee > 0 && (
             <tr style={iv.taxRow}>
-              <td style={{ ...iv.td, textAlign: "left" }} colSpan={3}>CGST</td>
-              <td style={{ ...iv.td, textAlign: "right" }}>{d.cgstPct}%</td>
+              <td style={{ ...iv.td, textAlign: "left" }} colSpan={4}>Convenience Fee</td>
+              <td style={{ ...iv.td, textAlign: "right" }}>{fmt(convFee)}</td>
+            </tr>
+          )}
+
+          {/* GST rows */}
+          {cgstAmt > 0 && (
+            <tr style={iv.taxRow}>
+              <td style={{ ...iv.td, textAlign: "left" }} colSpan={3}>CGST{is18 ? " (on Convenience)" : ""}</td>
+              <td style={{ ...iv.td, textAlign: "right" }}>{is18 ? "9" : d.cgstPct}%</td>
               <td style={{ ...iv.td, textAlign: "right" }}>{fmt(cgstAmt)}</td>
             </tr>
           )}
-          {(d.sgstPct && sgstAmt > 0) && (
+          {sgstAmt > 0 && (
             <tr style={iv.taxRow}>
-              <td style={{ ...iv.td, textAlign: "left" }} colSpan={3}>SGST</td>
-              <td style={{ ...iv.td, textAlign: "right" }}>{d.sgstPct}%</td>
+              <td style={{ ...iv.td, textAlign: "left" }} colSpan={3}>SGST{is18 ? " (on Convenience)" : ""}</td>
+              <td style={{ ...iv.td, textAlign: "right" }}>{is18 ? "9" : d.sgstPct}%</td>
               <td style={{ ...iv.td, textAlign: "right" }}>{fmt(sgstAmt)}</td>
             </tr>
           )}
-          {(d.igstPct && igstAmt > 0) && (
+          {igstAmt > 0 && (
             <tr style={iv.taxRow}>
               <td style={{ ...iv.td, textAlign: "left" }} colSpan={3}>IGST</td>
               <td style={{ ...iv.td, textAlign: "right" }}>{d.igstPct}%</td>

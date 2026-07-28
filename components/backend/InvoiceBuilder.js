@@ -89,6 +89,8 @@ function buildDefault(prefill) {
     destination:   lead?.destination || "",
     contact:       lead?.phone || "",
     items,
+    gstMode:       "5",
+    convenienceFee: "",
     cgstPct: isIntl ? "" : gstHalf,
     sgstPct: isIntl ? "" : gstHalf,
     igstPct: "",
@@ -255,11 +257,13 @@ export default function InvoiceBuilder({ prefill, invoiceData, isNew, onClose, o
   }
 
   /* Totals */
+  const is18       = form.gstMode === "18";
+  const convFee    = is18 ? (parseFloat(form.convenienceFee) || 0) : 0;
   const subTotal   = form.items.reduce((s, i) => s + (parseFloat(i.amount) || 0), 0);
-  const cgstAmt    = form.cgstPct ? (subTotal * parseFloat(form.cgstPct)) / 100 : 0;
-  const sgstAmt    = form.sgstPct ? (subTotal * parseFloat(form.sgstPct)) / 100 : 0;
-  const igstAmt    = form.igstPct ? (subTotal * parseFloat(form.igstPct)) / 100 : 0;
-  const afterGst   = subTotal + cgstAmt + sgstAmt + igstAmt;
+  const cgstAmt    = is18 ? convFee * 0.09 : (form.cgstPct ? (subTotal * parseFloat(form.cgstPct)) / 100 : 0);
+  const sgstAmt    = is18 ? convFee * 0.09 : (form.sgstPct ? (subTotal * parseFloat(form.sgstPct)) / 100 : 0);
+  const igstAmt    = is18 ? 0 : (form.igstPct ? (subTotal * parseFloat(form.igstPct)) / 100 : 0);
+  const afterGst   = subTotal + convFee + cgstAmt + sgstAmt + igstAmt;
   const tcsAmt     = form.tcsPct ? (afterGst * parseFloat(form.tcsPct)) / 100 : 0;
   const grandTotal = afterGst + tcsAmt;
   const fmt = n => Number(n || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 });
@@ -295,6 +299,20 @@ export default function InvoiceBuilder({ prefill, invoiceData, isNew, onClose, o
 
           {/* Body */}
           <div style={s.body}>
+
+            {/* ── GST Mode Toggle ── */}
+            <div style={{ display: "flex", gap: 0, marginBottom: 16, background: "#e5e7eb", borderRadius: 10, padding: 3, width: "fit-content" }}>
+              {[{ key: "5", label: "5% GST" }, { key: "18", label: "18% GST" }].map(tab => (
+                <button key={tab.key} onClick={() => set("gstMode", tab.key)}
+                  style={{ padding: "8px 22px", borderRadius: 8, border: "none", fontWeight: 700, fontSize: 13, cursor: "pointer", transition: "all .18s",
+                    background: form.gstMode === tab.key ? "#2563eb" : "transparent",
+                    color:      form.gstMode === tab.key ? "#fff"    : "#6b7280",
+                    boxShadow:  form.gstMode === tab.key ? "0 2px 8px rgba(37,99,235,.25)" : "none",
+                  }}>
+                  {tab.label}
+                </button>
+              ))}
+            </div>
 
             {/* ── Invoice Info ── */}
             <FormSec title="Invoice Information" icon={<MdReceipt />}>
@@ -358,13 +376,30 @@ export default function InvoiceBuilder({ prefill, invoiceData, isNew, onClose, o
               <button style={s.addItm} onClick={addItem}><MdAdd size={15} /> Add Line Item</button>
 
               <div style={s.divider} />
-              <div style={s.subHead}>Tax Configuration (GST)</div>
-              <div style={s.note}>Domestic: CGST + SGST. Interstate: IGST only. Leave unused fields blank.</div>
-              <div style={g2}>
-                <Fld label="CGST %" value={form.cgstPct} onChange={v => set("cgstPct", v)} placeholder="2.5" inputMode="decimal" />
-                <Fld label="SGST %" value={form.sgstPct} onChange={v => set("sgstPct", v)} placeholder="2.5" inputMode="decimal" />
-              </div>
-              <Fld label="IGST % (leave blank if CGST+SGST applies)" value={form.igstPct} onChange={v => set("igstPct", v)} placeholder="e.g. 18 or blank" inputMode="decimal" />
+
+              {is18 ? (
+                <>
+                  <div style={s.subHead}>Convenience Fee + 18% GST</div>
+                  <div style={s.note}>No GST on tour items. Enter convenience fee below — CGST 9% + SGST 9% will be applied on it.</div>
+                  <Fld label="Convenience Fee (₹)" value={form.convenienceFee} onChange={v => set("convenienceFee", v)} placeholder="e.g. 1000" inputMode="decimal" />
+                  {convFee > 0 && (
+                    <div style={{ display: "flex", gap: 12, marginTop: 8, fontSize: 12, color: "#6b7280" }}>
+                      <span>CGST 9% = ₹{fmt(cgstAmt)}</span>
+                      <span>SGST 9% = ₹{fmt(sgstAmt)}</span>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <>
+                  <div style={s.subHead}>Tax Configuration (GST)</div>
+                  <div style={s.note}>Domestic: CGST + SGST. Interstate: IGST only. Leave unused fields blank.</div>
+                  <div style={g2}>
+                    <Fld label="CGST %" value={form.cgstPct} onChange={v => set("cgstPct", v)} placeholder="2.5" inputMode="decimal" />
+                    <Fld label="SGST %" value={form.sgstPct} onChange={v => set("sgstPct", v)} placeholder="2.5" inputMode="decimal" />
+                  </div>
+                  <Fld label="IGST % (leave blank if CGST+SGST applies)" value={form.igstPct} onChange={v => set("igstPct", v)} placeholder="e.g. 18 or blank" inputMode="decimal" />
+                </>
+              )}
 
               <div style={s.divider} />
               <div style={s.subHead}>TCS — Tax Collected at Source</div>
@@ -374,9 +409,10 @@ export default function InvoiceBuilder({ prefill, invoiceData, isNew, onClose, o
               {/* Summary */}
               <div style={s.sumBox}>
                 <div style={s.sumTitle}>Invoice Summary</div>
-                <SumRow l="Sub-total (before tax)"    v={`₹${fmt(subTotal)}`} />
-                {cgstAmt > 0 && <SumRow l={`CGST @ ${form.cgstPct}%`} v={`₹${fmt(cgstAmt)}`} />}
-                {sgstAmt > 0 && <SumRow l={`SGST @ ${form.sgstPct}%`} v={`₹${fmt(sgstAmt)}`} />}
+                <SumRow l="Sub-total (tour items)" v={`₹${fmt(subTotal)}`} />
+                {is18 && convFee > 0 && <SumRow l="Convenience Fee" v={`₹${fmt(convFee)}`} />}
+                {cgstAmt > 0 && <SumRow l={is18 ? "CGST @ 9% (on convenience)" : `CGST @ ${form.cgstPct}%`} v={`₹${fmt(cgstAmt)}`} />}
+                {sgstAmt > 0 && <SumRow l={is18 ? "SGST @ 9% (on convenience)" : `SGST @ ${form.sgstPct}%`} v={`₹${fmt(sgstAmt)}`} />}
                 {igstAmt > 0 && <SumRow l={`IGST @ ${form.igstPct}%`} v={`₹${fmt(igstAmt)}`} />}
                 {tcsAmt  > 0 && <SumRow l={`TCS @ ${form.tcsPct}% u/s 206C(1G)`} v={`₹${fmt(tcsAmt)}`} vc="#b45309" />}
                 <div style={{ display: "flex", justifyContent: "space-between", fontSize: 15, fontWeight: 800, color: "#1a1a2e", borderTop: "1.5px solid #e5e7eb", paddingTop: 10, marginTop: 6 }}>
