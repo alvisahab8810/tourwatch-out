@@ -508,31 +508,14 @@ export default function QuotationBuilder({
         return { url, top: r.top - elRect.top, left: r.left - elRect.left, w: r.width, h: r.height };
       });
 
-      /* Two section types:
-           header   — start with <MiniHeader /> in canvas; we skip it and composite ours
-           fullpage — raw full-page image (e.g. thank-you); no header overlay, drawn as-is  */
-      const headerSectionTops = Array.from(el.querySelectorAll("[data-pdf-section]:not([data-pdf-fullpage])"))
-        .map(sec => Math.round((sec.getBoundingClientRect().top - elRect.top) * scale))
-        .filter(t => t >= 0)
-        .sort((a, b) => a - b);
-      const fullpageSectionTops = Array.from(el.querySelectorAll("[data-pdf-fullpage]"))
-        .map(sec => Math.round((sec.getBoundingClientRect().top - elRect.top) * scale))
-        .sort((a, b) => a - b);
-      const sectionTops = [...headerSectionTops, ...fullpageSectionTops].sort((a, b) => a - b);
-
-      /* Soft break points: table rows, itinerary day cards — prefer to cut here
-         rather than mid-row. Unlike section tops these do NOT require a header. */
-      const softBreakTops = Array.from(el.querySelectorAll("[data-pdf-break]"))
-        .map(b => Math.round((b.getBoundingClientRect().top - elRect.top) * scale))
-        .filter(t => t > 0)
-        .sort((a, b) => a - b);
-
-      /* Cover page ends where the first section starts.
-         Measure MiniHeader height from live DOM (CSS px) — before html2canvas. */
-      const coverEnd   = sectionTops.length > 0 ? sectionTops[0] : Infinity;
-      const miniSecEl  = el.querySelector("[data-pdf-section]:not([data-pdf-fullpage])");
-      const MINI_H_CSS = miniSecEl && miniSecEl.firstElementChild
-        ? miniSecEl.firstElementChild.offsetHeight : 70;
+      /* Section/break positions are measured INSIDE onclone (from the cloned
+         document, after icon patches) so they match the actual canvas layout. */
+      let headerSectionTops = [];
+      let fullpageSectionTops = [];
+      let sectionTops = [];
+      let softBreakTops = [];
+      let coverEnd = Infinity;
+      let MINI_H_CSS = 70;
 
       /* Preload all SVG icons so they are in the browser cache when html2canvas captures */
       const iconSrcs = [
@@ -664,6 +647,28 @@ export default function QuotationBuilder({
           imgEl.style.flexShrink = "0";
           imgEl.style.display = "block";
         });
+
+        /* Measure section/break positions from the CLONED document using
+           offsetTop traversal — this matches the actual canvas layout exactly,
+           unlike getBoundingClientRect which can be shifted by scroll/transforms. */
+        const cloneEl = doc.getElementById("qb-pdf-target");
+        if (cloneEl) {
+          const relTop = el2 => {
+            let top = 0, cur = el2;
+            while (cur && cur !== cloneEl) { top += cur.offsetTop; cur = cur.offsetParent; }
+            return top;
+          };
+          headerSectionTops = Array.from(cloneEl.querySelectorAll("[data-pdf-section]:not([data-pdf-fullpage])"))
+            .map(s => Math.round(relTop(s) * scale)).filter(t => t >= 0).sort((a, b) => a - b);
+          fullpageSectionTops = Array.from(cloneEl.querySelectorAll("[data-pdf-fullpage]"))
+            .map(s => Math.round(relTop(s) * scale)).filter(t => t >= 0).sort((a, b) => a - b);
+          sectionTops = [...headerSectionTops, ...fullpageSectionTops].sort((a, b) => a - b);
+          softBreakTops = Array.from(cloneEl.querySelectorAll("[data-pdf-break]"))
+            .map(b => Math.round(relTop(b) * scale)).filter(t => t > 0).sort((a, b) => a - b);
+          coverEnd = sectionTops.length > 0 ? sectionTops[0] : Infinity;
+          const miniSecEl = cloneEl.querySelector("[data-pdf-section]:not([data-pdf-fullpage])");
+          MINI_H_CSS = miniSecEl?.firstElementChild?.offsetHeight || 70;
+        }
       };
       const canvas  = await html2canvas(el, { scale, useCORS: true, allowTaint: false, backgroundColor: "#fff", logging: false, height: el.scrollHeight, windowHeight: el.scrollHeight, onclone: patch });
 
@@ -717,8 +722,15 @@ export default function QuotationBuilder({
         if (secC.length) return secC[secC.length - 1];
         // Soft break: table row / day-card boundary — fallback to avoid mid-row cuts
         const softC = softBreakTops.filter(t => t >= min35 && t < ideal);
-        if (softC.length) return softC[softC.length - 1];
-        return ideal;
+        let breakPt = softC.length ? softC[softC.length - 1] : ideal;
+        // Never cut inside a MiniHeader — snap to section start so atSection logic handles it
+        for (const secTop of headerSectionTops) {
+          if (breakPt > secTop && breakPt < secTop + MINI_H_PX) {
+            breakPt = secTop >= min35 ? secTop : secTop + MINI_H_PX;
+            break;
+          }
+        }
+        return breakPt;
       }
 
       /* ── Page slicer ──────────────────────────────────────────────────────
@@ -752,7 +764,7 @@ export default function QuotationBuilder({
           yCanvas = breakPt;
 
         /* ── FULLPAGE (e.g. thank-you image) ────────────────────────── */
-        } else if (fullpageSectionTops.some(t => Math.abs(t - yCanvas) < 6)) {
+        } else if (fullpageSectionTops.some(t => Math.abs(t - yCanvas) < 20)) {
           const nextSec = sectionTops.find(t => t > yCanvas) ?? canvas.height;
           const sliceH  = Math.max(1, nextSec - yCanvas);
           const sl = document.createElement("canvas");
@@ -765,7 +777,7 @@ export default function QuotationBuilder({
 
         /* ── CONTENT (all other sections + overflow) ─────────────────── */
         } else {
-          const atSection  = sectionTops.some(t => Math.abs(t - yCanvas) < 6);
+          const atSection  = sectionTops.some(t => Math.abs(t - yCanvas) < 20);
           /* If at a section boundary, the canvas already has a MiniHeader there.
              Skip it in the source so we don't double up with our composited one. */
           const contentFrom = atSection ? yCanvas + MINI_H_PX : yCanvas;
