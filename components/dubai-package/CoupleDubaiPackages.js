@@ -25,7 +25,7 @@ export default function CoupleDubaiPackages() {
                   <Link href="/dubai/dubai-family?tab=economy">
                     <img
                       src="/assets/images/hero/icons/share1.svg"
-                      alt="share icon" alt=""
+                      alt="share icon"
                     />
                   </Link>
                 </div>
@@ -123,7 +123,7 @@ export default function CoupleDubaiPackages() {
                   <Link href="/dubai/dubai-family?tab=deluxe">
                     <img
                       src="/assets/images/hero/icons/share1.svg"
-                      alt="share icon" alt=""
+                      alt="share icon"
                     />
                   </Link>
                 </div>
@@ -217,7 +217,7 @@ export default function CoupleDubaiPackages() {
                   <Link href="/dubai/dubai-family?tab=premium">
                     <img
                       src="/assets/images/hero/icons/share1.svg"
-                      alt="share icon" alt=""
+                      alt="share icon"
                     />
                   </Link>
                 </div>
@@ -305,4 +305,5 @@ export default function CoupleDubaiPackages() {
     </section>
   );
 }
+
 
