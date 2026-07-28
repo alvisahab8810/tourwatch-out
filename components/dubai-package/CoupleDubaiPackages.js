@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import Link from "next/link";
 
 export default function CoupleDubaiPackages() {
@@ -25,7 +25,7 @@ export default function CoupleDubaiPackages() {
                   <Link href="/dubai/dubai-family?tab=economy">
                     <img
                       src="/assets/images/hero/icons/share1.svg"
-                      alt="share icon"
+                      alt="share icon" alt=""
                     />
                   </Link>
                 </div>
@@ -74,28 +74,28 @@ export default function CoupleDubaiPackages() {
                   <Link href="/dubai/dubai-family?tab=economy">
                     <ul className="amenities-icons">
                       <li>
-                        <img src="/assets/images/hero/icons/amenities/icon1.svg"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon1.svg" alt=""></img>
                       </li>
                       <li>
-                        <img src="/assets/images/hero/icons/amenities/icon2.svg"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon2.svg" alt=""></img>
                       </li>
                       <li>
-                        <img src="/assets/images/hero/icons/amenities/icon3.svg"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon3.svg" alt=""></img>
                       </li>
                       <li>
-                        <img src="/assets/images/hero/icons/amenities/icon4.svg"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon4.svg" alt=""></img>
                       </li>
                       <li>
-                        <img src="/assets/images/hero/icons/amenities/icon5.svg"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon5.svg" alt=""></img>
                       </li>
                       <li>
-                        <img src="/assets/images/hero/icons/amenities/icon6.svg"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon6.svg" alt=""></img>
                       </li>
                       <li>
-                        <img src="/assets/images/hero/icons/amenities/icon7.svg"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon7.svg" alt=""></img>
                       </li>
                       <li>
-                        <img src="/assets/images/hero/icons/amenities/icon8.svg"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon8.svg" alt=""></img>
                       </li>
                     </ul>
                   </Link>
@@ -123,7 +123,7 @@ export default function CoupleDubaiPackages() {
                   <Link href="/dubai/dubai-family?tab=deluxe">
                     <img
                       src="/assets/images/hero/icons/share1.svg"
-                      alt="share icon"
+                      alt="share icon" alt=""
                     />
                   </Link>
                 </div>
@@ -168,28 +168,28 @@ export default function CoupleDubaiPackages() {
                   <Link href="/dubai/dubai-family?tab=deluxe">
                     <ul className="amenities-icons">
                       <li>
-                        <img src="/assets/images/hero/icons/amenities/icon1.svg"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon1.svg" alt=""></img>
                       </li>
                       <li>
-                        <img src="/assets/images/hero/icons/amenities/icon2.svg"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon2.svg" alt=""></img>
                       </li>
                       <li>
-                        <img src="/assets/images/hero/icons/amenities/icon3.svg"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon3.svg" alt=""></img>
                       </li>
                       <li>
-                        <img src="/assets/images/hero/icons/amenities/icon4.svg"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon4.svg" alt=""></img>
                       </li>
                       <li>
-                        <img src="/assets/images/hero/icons/amenities/icon5.svg"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon5.svg" alt=""></img>
                       </li>
                       <li>
-                        <img src="/assets/images/hero/icons/amenities/icon6.svg"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon6.svg" alt=""></img>
                       </li>
                       <li>
-                        <img src="/assets/images/hero/icons/amenities/icon7.svg"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon7.svg" alt=""></img>
                       </li>
                       <li>
-                        <img src="/assets/images/hero/icons/amenities/icon8.svg"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon8.svg" alt=""></img>
                       </li>
                     </ul>
                   </Link>
@@ -217,7 +217,7 @@ export default function CoupleDubaiPackages() {
                   <Link href="/dubai/dubai-family?tab=premium">
                     <img
                       src="/assets/images/hero/icons/share1.svg"
-                      alt="share icon"
+                      alt="share icon" alt=""
                     />
                   </Link>
                 </div>
@@ -264,28 +264,28 @@ export default function CoupleDubaiPackages() {
                   <Link href="/dubai/dubai-family?tab=premium">
                     <ul className="amenities-icons">
                       <li>
-                        <img src="/assets/images/hero/icons/amenities/icon1.svg"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon1.svg" alt=""></img>
                       </li>
                       <li>
-                        <img src="/assets/images/hero/icons/amenities/icon2.svg"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon2.svg" alt=""></img>
                       </li>
                       <li>
-                        <img src="/assets/images/hero/icons/amenities/icon3.svg"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon3.svg" alt=""></img>
                       </li>
                       <li>
-                        <img src="/assets/images/hero/icons/amenities/icon4.svg"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon4.svg" alt=""></img>
                       </li>
                       <li>
-                        <img src="/assets/images/hero/icons/amenities/icon5.svg"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon5.svg" alt=""></img>
                       </li>
                       <li>
-                        <img src="/assets/images/hero/icons/amenities/icon6.svg"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon6.svg" alt=""></img>
                       </li>
                       <li>
-                        <img src="/assets/images/hero/icons/amenities/icon7.svg"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon7.svg" alt=""></img>
                       </li>
                       <li>
-                        <img src="/assets/images/hero/icons/amenities/icon8.svg"></img>
+                        <img src="/assets/images/hero/icons/amenities/icon8.svg" alt=""></img>
                       </li>
                     </ul>
                   </Link>
@@ -305,3 +305,4 @@ export default function CoupleDubaiPackages() {
     </section>
   );
 }
+

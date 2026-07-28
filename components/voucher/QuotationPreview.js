@@ -1,4 +1,4 @@
-/* ── colours ───────────────────────────────────────────── */
+﻿/* ── colours ───────────────────────────────────────────── */
 const TEAL        = "#2B8E8E";
 const TEAL_LIGHT  = "#EAF5F5";
 const TEAL_BORDER = "#9DD0D0";
@@ -36,8 +36,12 @@ const IcFlight = () => (
     <path d="M21 16V14L13 9V3.5C13 2.67 12.33 2 11.5 2C10.67 2 10 2.67 10 3.5V9L2 14V16L10 13.5V19L8 20.5V22L11.5 21L15 22V20.5L13 19V13.5L21 16Z" fill="#F74C4D"/>
   </svg>
 );
-/* Call & WhatsApp use file paths — gradients/shadows render fine as <img> */
-const _ICImg = (src, s) => () => <img src={src} crossOrigin="anonymous" style={{ width: s, height: s, display: "block", flexShrink: 0 }} alt="" />;
+/* Call & WhatsApp use file paths — gradients/shadows render fine as <img alt=""> */
+const _ICImg = (src, s) => {
+  const C = () => <img src={src} crossOrigin="anonymous" style={{ width: s, height: s, display: "block", flexShrink: 0 }} alt="" />;
+  C.displayName = "ICImg";
+  return C;
+};
 const IcCall     = _ICImg("/assets/icons/quotation/call.svg",      38);
 const IcWhatsApp = _ICImg("/assets/icons/quotation/whatsapp.svg",  38);
 
@@ -230,7 +234,7 @@ function CanxBar({ bar }) {
   );
 }
 
-/* Pill icons use clip-path-free SVG files via <img data-card-icon>.
+/* Pill icons use clip-path-free SVG files via <img data-card-icon alt="">.
    QuotationBuilder's CARD_ICON_PNG pipeline pre-renders them to PNG before
    html2canvas runs — same mechanism that works for card section headers. */
 const PILL_ICON_SRCS = {
@@ -954,3 +958,4 @@ export default function QuotationPreview({ data, id }) {
     </div>
   );
 }
+

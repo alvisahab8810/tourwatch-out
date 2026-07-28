@@ -17,7 +17,7 @@ export default function Hero() {
               Package!
             </h1>
 
-            <img src="/assets/images/hero/horizontal.svg" className="mobile-none"></img>
+            <img src="/assets/images/hero/horizontal.svg" className="mobile-none" alt="" />
 
           
             <button className="cta-button interactive " data-bs-toggle="modal"

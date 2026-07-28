@@ -55,10 +55,10 @@ export default function TopReviews() {
                 /> */}
                 {/* <div className="rating-number">4.9 Star</div> */}
                 <div className="rating-text">4.9 Star</div>
-                <img src="/assets/icons/google.png"></img>
+                <img src="/assets/icons/google.png" alt="Google" />
                 <div className="rating-source">
                   <span className="highlight">Reviews</span>
-                <img src="/assets/icons/stars.png"></img>
+                <img src="/assets/icons/stars.png" alt="Stars" />
 
                 </div>
               </div>
