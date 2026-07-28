@@ -70,6 +70,11 @@ const QuotationSchema = new mongoose.Schema({
     pickup_time: { type: String, default: "" },
     itinerary:   { type: String, default: "" },  // rich-text HTML (new field name)
     description: { type: String, default: "" },  // legacy plain-text fallback
+    activities:  [{
+      _id:  false,
+      type: { type: String, default: "transfer" },
+      text: { type: String, default: "" },
+    }],
   }],
 
   // Miscellaneous items
