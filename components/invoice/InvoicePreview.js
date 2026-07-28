@@ -141,14 +141,14 @@ export default function InvoicePreview({ data }) {
           {/* GST rows */}
           {cgstAmt > 0 && (
             <tr style={iv.taxRow}>
-              <td style={{ ...iv.td, textAlign: "left" }} colSpan={3}>CGST{is18 ? " (on Convenience)" : ""}</td>
+              <td style={{ ...iv.td, textAlign: "left" }} colSpan={3}>CGST</td>
               <td style={{ ...iv.td, textAlign: "right" }}>{is18 ? "9" : d.cgstPct}%</td>
               <td style={{ ...iv.td, textAlign: "right" }}>{fmt(cgstAmt)}</td>
             </tr>
           )}
           {sgstAmt > 0 && (
             <tr style={iv.taxRow}>
-              <td style={{ ...iv.td, textAlign: "left" }} colSpan={3}>SGST{is18 ? " (on Convenience)" : ""}</td>
+              <td style={{ ...iv.td, textAlign: "left" }} colSpan={3}>SGST</td>
               <td style={{ ...iv.td, textAlign: "right" }}>{is18 ? "9" : d.sgstPct}%</td>
               <td style={{ ...iv.td, textAlign: "right" }}>{fmt(sgstAmt)}</td>
             </tr>
