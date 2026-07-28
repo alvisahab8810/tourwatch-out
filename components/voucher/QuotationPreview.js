@@ -1,11 +1,47 @@
-const RED  = "#e84949";
-const DARK = "#1a1a2e";
+/* ── colours ───────────────────────────────────────────── */
+const TEAL        = "#2B8E8E";
+const TEAL_LIGHT  = "#EAF5F5";
+const TEAL_BORDER = "#9DD0D0";
+const RED         = "#E84949";
+const DARK        = "#1a1a2e";
 
 const TIER_LABELS = ["Economy", "Deluxe", "Premium"];
-const TIER_ICONS  = { Economy: "🟢", Deluxe: "🔵", Premium: "🟣" };
+const TIER_ICONS  = {};
 const TIER_CLR    = { Economy: "#15803D", Deluxe: "#2563EB", Premium: "#7C3AED" };
 const TIER_BG     = { Economy: "#F0FDF4", Deluxe: "#EFF4FF", Premium: "#FAF5FF" };
 
+/* ── inline SVG icons (no clipPath/filter = renders in html2canvas too) ── */
+const IcHotel = () => (
+  <svg width="18" height="18" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M9.19926 19.841V13.9275M10.9991 9.94049H11.0081M10.9991 6.3402H11.0081M12.7989 13.9275V19.841M13.6988 14.4409C12.92 13.8566 11.9727 13.5408 10.9991 13.5408C10.0255 13.5408 9.07821 13.8566 8.29935 14.4409M14.5987 9.94049H14.6077M14.5987 6.3402H14.6077M7.39944 9.94049H7.40844M7.39944 6.3402H7.40844M5.59962 1.83984H16.3985C17.3926 1.83984 18.1984 2.6458 18.1984 3.63999V18.0411C18.1984 19.0353 17.3926 19.8413 16.3985 19.8413H5.59962C4.60561 19.8413 3.7998 19.0353 3.7998 18.0411V3.63999C3.7998 2.6458 4.60561 1.83984 5.59962 1.83984Z" stroke="#F74C4D" strokeWidth="2.4" strokeLinecap="round"/>
+  </svg>
+);
+const IcActivity = () => (
+  <svg width="18" height="18" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M8.1002 17.1008C8.1002 18.5921 6.89136 19.801 5.4002 19.801C3.90903 19.801 2.7002 18.5921 2.7002 17.1008C2.7002 15.6095 3.90903 14.4006 5.4002 14.4006C6.89136 14.4006 8.1002 15.6095 8.1002 17.1008ZM8.1002 17.1008H15.7502C16.5856 17.1008 17.3868 16.7689 17.9776 16.1781C18.5683 15.5873 18.9002 14.786 18.9002 13.9505C18.9002 13.115 18.5683 12.3138 17.9776 11.723C17.3868 11.1322 16.5856 10.8003 15.7502 10.8003H5.8502C5.01476 10.8003 4.21355 10.4684 3.62281 9.87759C3.03207 9.28681 2.7002 8.48553 2.7002 7.65003C2.7002 6.81453 3.03207 6.01325 3.62281 5.42246C4.21355 4.83168 5.01476 4.49978 5.8502 4.49978H13.5002M13.5002 4.49978C13.5002 5.99106 14.709 7.19999 16.2002 7.19999C17.6914 7.19999 18.9002 5.99106 18.9002 4.49978C18.9002 3.00849 17.6914 1.79956 16.2002 1.79956C14.709 1.79956 13.5002 3.00849 13.5002 4.49978Z" stroke="#F74C4D" strokeWidth="2.4" strokeLinecap="round"/>
+  </svg>
+);
+const IcTransfer = () => (
+  <svg width="18" height="18" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M16.9008 14.8398H18.701C19.241 14.8398 19.601 14.4798 19.601 13.9398V11.2398C19.601 10.4298 18.971 9.70984 18.2509 9.52984C16.6308 9.07984 14.2006 8.53984 14.2006 8.53984C14.2006 8.53984 13.0305 7.27984 12.2205 6.46984C11.7704 6.10984 11.2304 5.83984 10.6003 5.83984H4.29983C3.75978 5.83984 3.30975 6.19984 3.03972 6.64984L1.77962 9.25984C1.66044 9.60745 1.59961 9.97238 1.59961 10.3398V13.9398C1.59961 14.4798 1.95964 14.8398 2.49968 14.8398H4.29983M16.9008 14.8398C16.9008 15.834 16.0949 16.6398 15.1007 16.6398C14.1065 16.6398 13.3005 15.834 13.3005 14.8398M16.9008 14.8398C16.9008 13.8457 16.0949 13.0398 15.1007 13.0398C14.1065 13.0398 13.3005 13.8457 13.3005 14.8398M4.29983 14.8398C4.29983 15.834 5.10578 16.6398 6.09997 16.6398C7.09416 16.6398 7.90011 15.834 7.90011 14.8398M4.29983 14.8398C4.29983 13.8457 5.10578 13.0398 6.09997 13.0398C7.09416 13.0398 7.90011 13.8457 7.90011 14.8398M13.3005 14.8398H7.90011" stroke="#F74C4D" strokeWidth="2.4" strokeLinecap="round"/>
+  </svg>
+);
+const IcMeals = () => (
+  <svg width="18" height="18" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M5.39961 7.19997L6.97479 18.2528C7.03593 18.6853 7.25227 19.0809 7.58348 19.3657C7.91469 19.6505 8.33817 19.8052 8.775 19.8009H12.8615C13.2983 19.8052 13.7218 19.6505 14.053 19.3657C14.3842 19.0809 14.6005 18.6853 14.6617 18.2528L16.2008 7.19997M4.49951 7.19997H17.101M6.29972 13.5001C7.01237 13.2015 7.77731 13.0478 8.54997 13.0478C9.32264 13.0478 10.0876 13.2015 10.8002 13.5001C11.5129 13.7986 12.2778 13.9524 13.0505 13.9524C13.8232 13.9524 14.5881 13.7986 15.3007 13.5001M10.8002 7.19997L11.7003 1.79956H13.5005" stroke="#F74C4D" strokeWidth="2.4" strokeLinecap="round"/>
+  </svg>
+);
+const IcFlight = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M21 16V14L13 9V3.5C13 2.67 12.33 2 11.5 2C10.67 2 10 2.67 10 3.5V9L2 14V16L10 13.5V19L8 20.5V22L11.5 21L15 22V20.5L13 19V13.5L21 16Z" fill="#F74C4D"/>
+  </svg>
+);
+/* Call & WhatsApp use file paths — gradients/shadows render fine as <img> */
+const _ICImg = (src, s) => () => <img src={src} crossOrigin="anonymous" style={{ width: s, height: s, display: "block", flexShrink: 0 }} alt="" />;
+const IcCall     = _ICImg("/assets/icons/quotation/call.svg",      38);
+const IcWhatsApp = _ICImg("/assets/icons/quotation/whatsapp.svg",  38);
+
+/* ── tier helpers (unchanged logic) ────────────────────── */
 function hasTierData(tier) {
   if (!tier) return false;
   return (tier.hotels  || []).some(h => h.name)
@@ -25,7 +61,6 @@ function calcTierCost(tier) {
 function calcTierSelling(tier, form) {
   const cost = calcTierCost(tier);
   if (!cost) return 0;
-  // Each tier has its own margin; fall back to form.margin for old quotations that lack per-tier margin
   const margin = tier.margin !== undefined ? +tier.margin : (+form.margin || 0);
   const base = cost + margin;
   const gst  = base * (+form.gstPct || 5) / 100;
@@ -38,18 +73,28 @@ function getTierPax(tier) {
   return f ? +f.pax : 0;
 }
 
+function getPaxLabel(lead) {
+  if (lead?.brr?.adults != null) {
+    let s = `${lead.brr.adults} Adult${lead.brr.adults !== 1 ? "s" : ""}`;
+    if (lead.brr.children) s += `, ${lead.brr.children} Child${lead.brr.children !== 1 ? "ren" : ""}`;
+    return s;
+  }
+  return lead?.pax || null;
+}
+
+/* ── rich-text renderer (unchanged) ────────────────────── */
 function flattenLists(html) {
   let out = html;
   out = out.replace(/<ol[^>]*>([\s\S]*?)<\/ol>/gi, (_, inner) => {
     let n = 0;
     return inner.replace(/<li[^>]*>([\s\S]*?)<\/li>/gi, (__, content) => {
       n++;
-      return `<div style="display:flex;align-items:flex-start;gap:5px;margin-bottom:3px"><span style="min-width:18px;font-weight:bold;flex-shrink:0">${n}.</span><span>${content.trim()}</span></div>`;
+      return `<div style="display:flex;align-items:flex-start;gap:5px;margin-bottom:4px"><span style="min-width:18px;font-weight:bold;flex-shrink:0">${n}.</span><span>${content.trim()}</span></div>`;
     });
   });
   out = out.replace(/<ul[^>]*>([\s\S]*?)<\/ul>/gi, (_, inner) =>
     inner.replace(/<li[^>]*>([\s\S]*?)<\/li>/gi, (__, content) =>
-      `<div style="display:flex;align-items:flex-start;gap:5px;margin-bottom:3px"><span style="min-width:18px;flex-shrink:0">•</span><span>${content.trim()}</span></div>`
+      `<div style="display:flex;align-items:flex-start;gap:5px;margin-bottom:4px"><span style="min-width:18px;flex-shrink:0">•</span><span>${content.trim()}</span></div>`
     )
   );
   return out;
@@ -58,7 +103,7 @@ function flattenLists(html) {
 function RichContent({ html, style }) {
   if (!html) return null;
   const hasHtml = /<[^>]+>/.test(html);
-  const base = { fontSize: 11.5, color: "#444", lineHeight: 1.8, margin: 0, ...(style || {}) };
+  const base = { fontSize: 13, color: "#374151", lineHeight: 1.8, margin: 0, ...(style || {}) };
   if (hasHtml) return <div dangerouslySetInnerHTML={{ __html: flattenLists(html) }} style={base} />;
   return (
     <div style={base}>
@@ -69,176 +114,524 @@ function RichContent({ html, style }) {
   );
 }
 
-function RedSection({ title, children }) {
-  return (
-    <div data-pdf-section="true" style={{ borderTop: "1px solid #e8e8e8" }}>
-      <div style={{ background: RED, color: "#fff", padding: "9px 18px", fontSize: 13, fontWeight: 700 }}>{title}</div>
-      <div style={{ padding: "14px 18px", background: "#fff" }}>{children}</div>
-    </div>
-  );
-}
-
-function InfoPair({ label, value, right }) {
-  return (
-    <div style={{ display: "flex", justifyContent: right ? "flex-end" : "flex-start", gap: 5, marginBottom: 5, fontSize: 12 }}>
-      <span style={{ fontWeight: 700, color: "#444", whiteSpace: "nowrap", flexShrink: 0 }}>{label}:</span>
-      <span style={{ color: "#222" }}>{value || "—"}</span>
-    </div>
-  );
-}
-
-function HRow({ label, value }) {
-  return (
-    <tr>
-      <td style={{ fontSize: 11, fontWeight: 700, color: "#555", paddingRight: 10, paddingBottom: 3, whiteSpace: "nowrap", verticalAlign: "top" }}>{label}</td>
-      <td style={{ fontSize: 11, color: "#333", paddingBottom: 3, lineHeight: 1.5 }}>: {value}</td>
-    </tr>
-  );
-}
-
-function Th({ children, gray }) {
-  return (
-    <th style={{ background: gray ? "#4b5563" : RED, color: "#fff", padding: "7px 9px", fontSize: 11, fontWeight: 700, textAlign: "left", border: "1px solid rgba(255,255,255,0.15)", whiteSpace: "nowrap" }}>
-      {children}
-    </th>
-  );
-}
-function Td({ children }) {
-  return (
-    <td style={{ padding: "7px 9px", fontSize: 11.5, color: "#333", border: "1px solid #ececec", verticalAlign: "top", lineHeight: 1.5 }}>
-      {children || "—"}
-    </td>
-  );
-}
-
+/* ── date helpers ───────────────────────────────────────── */
 function fmtDate(v) {
   if (!v) return "—";
   try { return new Date(v + "T00:00:00").toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" }); }
   catch { return v; }
 }
+function fmtCreated(iso) {
+  try {
+    const d = new Date(iso);
+    return d.toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })
+      + " " + d.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hour12: true }).toUpperCase();
+  } catch { return ""; }
+}
 const inr = n => "₹" + Math.round(n || 0).toLocaleString("en-IN");
-
-function getPaxLabel(lead) {
-  if (lead?.brr?.adults != null) {
-    let s = `${lead.brr.adults} Adult${lead.brr.adults !== 1 ? "s" : ""}`;
-    if (lead.brr.children) s += `, ${lead.brr.children} Child${lead.brr.children !== 1 ? "ren" : ""}`;
-    return s;
-  }
-  return lead?.pax || null;
+function fmtDateWeekday(v) {
+  if (!v) return "";
+  try {
+    const d = new Date(v + "T00:00:00");
+    const wd  = d.toLocaleDateString("en-IN", { weekday: "short" });
+    const day = d.toLocaleDateString("en-IN", { month: "short", day: "numeric" });
+    return `${wd}, ${day}`;
+  } catch { return v; }
 }
 
-export default function QuotationPreview({ data, id }) {
-  const { quoteId, lead = {}, form = {}, pkgTiers, hotels = [], flights = [], transfers = [], miscs = [], itin = [], selling = 0 } = data || {};
+/* ── reusable UI pieces ─────────────────────────────────── */
+function MiniHeader() {
+  return (
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 28px", borderTop: "1px solid #eee", borderBottom: "1px solid #eee", background: "#fff" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+        <img src="/assets/icons/quotation/long-logo.png" alt="tourwatchout" style={{ height: 38, width: "auto" }} crossOrigin="anonymous" />
+        <div style={{ width: 1, height: 36, background: "#ccc" }} />
+        <div>
+          <div style={{ fontSize: 11, color: "#888" }}>Think Travel</div>
+          <div style={{ fontSize: 12, fontWeight: 700, color: RED }}>Think Tourwatchout</div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
-  // Decide rendering mode: new tier-based or legacy flat
-  const useTiers = pkgTiers && TIER_LABELS.some(lbl => hasTierData(pkgTiers[lbl]));
+function Card({ icon, imgIcon, title, children, noPad }) {
+  return (
+    <div style={{ border: "1px solid #88CAD0", borderRadius: 12, overflow: "hidden", marginBottom: 18 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, background: "#F3FDFF", padding: "11px 16px", borderBottom: "1px solid #88CAD0" }}>
+        {imgIcon && <img data-card-icon={imgIcon} src={imgIcon} alt="" crossOrigin="anonymous" style={{ width: 22, height: 22, flexShrink: 0, objectFit: "contain" }} />}
+        {!imgIcon && icon && <span style={{ fontSize: 16 }}>{icon}</span>}
+        <span style={{ fontSize: 14, fontWeight: 700, color: DARK }}>{title}</span>
+      </div>
+      <div style={noPad ? {} : { padding: "16px", background: "#fff" }}>{children}</div>
+    </div>
+  );
+}
+
+function Th({ children, style }) {
+  return (
+    <th style={{ background: "transparent", color: DARK, padding: "8px 12px", fontSize: 13, fontWeight: 700, textAlign: "left", borderBottom: "1px solid #88CAD0", whiteSpace: "nowrap", ...(style || {}) }}>
+      {children}
+    </th>
+  );
+}
+function Td({ children, style }) {
+  return (
+    <td style={{ padding: "8px 12px", fontSize: 11, color: "#333", border: "1px solid #DFF0F0", verticalAlign: "top", lineHeight: 1.5, ...(style || {}) }}>
+      {children ?? "—"}
+    </td>
+  );
+}
+
+/* ── Cancellation bar visual component ─────────────────── */
+function CanxBar({ bar }) {
+  if (!bar?.enabled || !bar.cutoffDate) return null;
+  const pct = Math.max(8, Math.min(92, +(bar.sliderPct ?? 75)));
+  const d   = new Date(bar.cutoffDate);
+  const lbl = isNaN(d.getTime()) ? bar.cutoffDate
+    : d.toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "2-digit" });
+  const fee = (+bar.feeBefore || 0).toLocaleString("en-IN");
+  return (
+    <div style={{ border: "1px solid #E8E8E8", borderRadius: 10, padding: "16px 20px", marginBottom: 16 }}>
+      <div style={{ fontSize: 14, fontWeight: 700, color: "#1a1a2e", marginBottom: 4 }}>Package Cancellation Policy</div>
+      <div style={{ fontSize: 12, color: "#2B8E8E", marginBottom: 2 }}>Cancellation Possible before {lbl} only*</div>
+      <div style={{ fontSize: 12, color: "#555", marginBottom: 20 }}>After that package is <strong>non Refundable*</strong></div>
+
+      {/* ── bar ── */}
+      <div style={{ position: "relative", height: 8, borderRadius: 4, marginLeft: 12, marginRight: 12, marginBottom: 28 }}>
+        <div style={{ position: "absolute", inset: 0, borderRadius: 4, background: "linear-gradient(to right, #C8E6C9, #FFCDD2)" }} />
+        <div style={{ position: "absolute", left: 0, top: 0, height: "100%", width: `${pct}%`, background: "linear-gradient(to right, #43A047, #AED581)", borderRadius: "4px 0 0 4px" }} />
+        {/* green check left */}
+        <div style={{ position: "absolute", left: -12, top: -7, width: 22, height: 22, borderRadius: "50%", background: "#43A047", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <span style={{ color: "#fff", fontSize: 13, fontWeight: 900, lineHeight: 1 }}>✓</span>
+        </div>
+        {/* thumb */}
+        <div style={{ position: "absolute", left: `${pct}%`, top: -8, transform: "translateX(-50%)", width: 24, height: 24, borderRadius: "50%", background: "#fff", border: "2.5px solid #EF5350", boxShadow: "0 1px 4px rgba(0,0,0,.18)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <span style={{ color: "#EF5350", fontSize: 11, fontWeight: 900, lineHeight: 1 }}>✕</span>
+        </div>
+        {/* red X right */}
+        <div style={{ position: "absolute", right: -12, top: -7, width: 22, height: 22, borderRadius: "50%", background: "#EF5350", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <span style={{ color: "#fff", fontSize: 13, fontWeight: 900, lineHeight: 1 }}>✕</span>
+        </div>
+      </div>
+
+      {/* ── labels ── */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+        <div>
+          <div style={{ fontSize: 14, fontWeight: 800, color: "#2B8E8E" }}>Till {lbl}</div>
+          <div style={{ fontSize: 12.5, color: "#1a1a2e" }}>₹ {fee} Cancellation fee</div>
+        </div>
+        <div style={{ textAlign: "right" }}>
+          <div style={{ fontSize: 14, fontWeight: 800, color: "#E53935" }}>After {lbl}</div>
+          <div style={{ fontSize: 12.5, fontWeight: 700, color: "#1a1a2e" }}>Non Refundable</div>
+          <div style={{ fontSize: 11.5, color: "#888" }}>Cancellation is not allowed</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* Pill icons use clip-path-free SVG files via <img data-card-icon>.
+   QuotationBuilder's CARD_ICON_PNG pipeline pre-renders them to PNG before
+   html2canvas runs — same mechanism that works for card section headers. */
+const PILL_ICON_SRCS = {
+  hotel:    "/assets/icons/quotation/hotel-pill.svg",
+  activity: "/assets/icons/quotation/activity-pill.svg",
+  transfer: "/assets/icons/quotation/transfer-pill.svg",
+  meals:    "/assets/icons/quotation/meals-pill.svg",
+};
+
+function Pill({ iconKey, label }) {
+  return (
+    <span style={{ display: "inline-flex", alignItems: "center", border: "1px solid #ccc", borderRadius: 20, padding: "5px 14px", fontSize: 12.5, color: DARK, background: "#fff", marginRight: 8, marginBottom: 8 }}>
+      {label}
+    </span>
+  );
+}
+
+function FlightCard({ f }) {
+  return (
+    <div style={{ marginBottom: 12 }}>
+      {(f.pnr || f.flightNo) && (
+        <div style={{ display: "flex", gap: 20, marginBottom: 6, fontSize: 12, color: "#444" }}>
+          {f.pnr    && <span><strong>PNR:</strong> <span style={{ fontWeight: 800, letterSpacing: 1, color: DARK }}>{f.pnr}</span></span>}
+          {f.flightNo && <span><strong>Flight:</strong> {f.flightNo}</span>}
+          <span style={{ marginLeft: "auto" }}>{f.roundTrip ? "Round Trip" : "One-way"} · {f.pax || "—"} Pax</span>
+        </div>
+      )}
+      <div style={{ display: "flex", alignItems: "center", background: "#F5FBFB", border: `1px solid ${TEAL_BORDER}`, borderRadius: 8, padding: "12px 16px" }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: 14, fontWeight: 800, color: DARK }}>{f.depCity || f.from || "—"}</div>
+          {f.depIATA && <div style={{ fontSize: 11, color: "#888" }}>({f.depIATA})</div>}
+          {(f.depDate || f.date) && <div style={{ fontSize: 11, color: "#555", marginTop: 3 }}>{fmtDate(f.depDate || f.date)}</div>}
+          {f.depTime && <div style={{ fontSize: 12, fontWeight: 700, color: TEAL, marginTop: 2 }}>{f.depTime}</div>}
+        </div>
+        <div style={{ flex: 1, textAlign: "center", padding: "0 8px" }}>
+          {f.flightNo && <div style={{ fontSize: 11, color: "#666", marginBottom: 4 }}>{f.flightNo}</div>}
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <div style={{ width: 8, height: 8, borderRadius: "50%", background: TEAL, flexShrink: 0 }} />
+            <div style={{ flex: 1, height: 2, background: TEAL }} />
+            <div style={{ width: 0, height: 0, borderTop: "5px solid transparent", borderBottom: "5px solid transparent", borderLeft: `8px solid ${TEAL}`, flexShrink: 0 }} />
+          </div>
+        </div>
+        <div style={{ flex: 1, minWidth: 0, textAlign: "right" }}>
+          <div style={{ fontSize: 14, fontWeight: 800, color: DARK }}>{f.arrCity || f.to || "—"}</div>
+          {f.arrIATA && <div style={{ fontSize: 11, color: "#888" }}>({f.arrIATA})</div>}
+          {f.arrDate && <div style={{ fontSize: 11, color: "#555", marginTop: 3 }}>{fmtDate(f.arrDate)}</div>}
+          {f.arrTime && <div style={{ fontSize: 12, fontWeight: 700, color: TEAL, marginTop: 2 }}>{f.arrTime}</div>}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════
+   MAIN COMPONENT
+   ══════════════════════════════════════════════════════════ */
+export default function QuotationPreview({ data, id }) {
+  const {
+    quoteId, lead = {}, form = {},
+    pkgTiers,
+    hotels = [], flights = [], transfers = [], miscs = [],
+    itin = [], selling = 0,
+  } = data || {};
+
+  /* tier mode */
+  const useTiers    = pkgTiers && TIER_LABELS.some(lbl => hasTierData(pkgTiers[lbl]));
   const activeTiers = useTiers ? TIER_LABELS.filter(lbl => hasTierData(pkgTiers[lbl])) : [];
 
+  /* derived */
+  const destination = lead.destination || "";
+  const paxLabel    = getPaxLabel(lead);
+  const sp          = typeof form.assignedTo === "object" && form.assignedTo?.name ? form.assignedTo : null;
+  const createdAt   = fmtCreated(form.createdAt);
+
+  /* highlight visibility */
+  const showHotel    = useTiers ? activeTiers.some(l => (pkgTiers[l].hotels   ||[]).some(h => h.name)) : hotels.some(h => h.name);
+  const showTransfer = useTiers ? activeTiers.some(l => (pkgTiers[l].transfers||[]).some(t => t.cab && +t.days > 0)) : transfers.some(t => +t.perDay > 0);
+  const showFlight   = useTiers ? activeTiers.some(l => (pkgTiers[l].flights  ||[]).some(f => f.from || f.to)) : flights.some(f => f.from || f.to);
+  const hasItin      = itin.some(d => d.title || d.itinerary || d.date || d.tour || d.transfer);
+
+  /* contents list */
+  const contents = [
+    hasItin && "Your Itinerary",
+    hasItin && "Day Wise Details",
+    form.bookingPolicy && "How To Book",
+    form.cancellationPolicy && "Cancellation & Date Change Policies",
+  ].filter(Boolean);
+
   return (
-    <div id={id} style={q.wrap}>
+    <div id={id} style={{ fontFamily: "Arial, Helvetica, sans-serif", background: "#fff", width: "100%", maxWidth: 780, margin: "0 auto", border: "1px solid #d0d0d0", boxShadow: "0 4px 24px rgba(0,0,0,0.08)", overflow: "hidden", boxSizing: "border-box" }}>
 
-      {/* ══════════ HEADER ══════════ */}
-      <div style={q.header}>
-        <div style={q.headerLeft}>
-          <div style={q.docTitle}>Package Quotation</div>
-          <div style={q.realization}>Realization Customer Services Private Limited</div>
-          <table style={q.infoTable}>
-            <tbody>
-              <HRow label="Trade Name" value="Tourwatchout" />
-              <HRow label="Email"      value="sales1@tourwatchout.com" />
-              <HRow label="GSTIN"      value="09AANA63481P2ZK" />
-              <HRow label="State Name" value="Uttar Pradesh, Code: 09" />
-              <HRow label="Address"    value="Ground Floor, Unit no. -01, Tower 2, Parsvnath Planet, Gomti Nagar, Lucknow-226010" />
-            </tbody>
-          </table>
-        </div>
-        <div style={q.headerLogo}>
-          <img src="/assets/voucher/logo.png" alt="tourwatchout" style={q.logoImg} crossOrigin="anonymous" />
-        </div>
-      </div>
+      {/* ══════════════════════════════
+          COVER PAGE
+      ══════════════════════════════ */}
+      <div style={{ padding: "36px 32px 28px" }}>
 
-      <div style={q.redBar} />
-
-      {/* ══════════ META ══════════ */}
-      <div data-pdf-section="true" style={q.metaSection}>
-        <div style={q.metaLeft}>
-          <InfoPair label="Quote No."   value={quoteId} />
-          <InfoPair label="Guest Name"  value={lead.name} />
-          <InfoPair label="Duration"    value={form.days} />
-          {getPaxLabel(lead) && <InfoPair label="Pax"        value={getPaxLabel(lead)} />}
-          <InfoPair label="Travel Date" value={fmtDate(form.travelDate)} />
-          <InfoPair label="Trip Type"   value={[form.type, form.pkgMode].filter(Boolean).join(" · ")} />
-        </div>
-        <div style={q.metaDivider} />
-        <div style={q.metaRight}>
-          <InfoPair label="Destination" value={lead.destination} />
-          <InfoPair label="Email"       value={lead.email} />
-          <InfoPair label="Contact No." value={lead.phone} />
-        </div>
-      </div>
-
-      {/* ══════════ DAY-WISE ITINERARY ══════════ */}
-      {itin.some(d => d.title || d.itinerary || d.date || d.tour || d.transfer || d.pickup_time) && (
-        <RedSection title="Day-wise Itinerary">
-          {itin.filter(d => d.title || d.itinerary || d.date || d.tour || d.transfer || d.pickup_time).map((item, i, arr) => (
-            <div key={i} data-pdf-section="true" style={{
-              marginBottom: i < arr.length - 1 ? 18 : 0,
-              paddingBottom: i < arr.length - 1 ? 16 : 0,
-              borderBottom: i < arr.length - 1 ? "1px dashed #e0e0e0" : "none",
-            }}>
-              <div style={q.dayHeader}>
-                <div style={q.dayBadge}>Day {i + 1}</div>
-                {item.date  && <span style={q.dayDate}>{fmtDate(item.date)}</span>}
-                {item.title && <span style={q.dayTitle}> — {item.title}</span>}
-              </div>
-              {(item.tour || item.transfer || item.pickup_time) && (
-                <div style={q.dayMetaRow}>
-                  {item.tour        && <span style={q.dayMeta}><strong>Tour:</strong> {item.tour}</span>}
-                  {item.transfer    && <span style={q.dayMeta}><strong>Transfer:</strong> {item.transfer}</span>}
-                  {item.pickup_time && <span style={q.dayMeta}><strong>Pick-up:</strong> {item.pickup_time}</span>}
-                </div>
+        {/* Hero: name + destination + logo */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 4 }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 40, color: DARK, marginBottom: 4, lineHeight: 1.3 }}>
+              {lead.name
+                ? <><strong>{lead.name.split(" ")[0]}'s</strong> trip to</>
+                : "Your trip to"}
+            </div>
+            <div style={{ fontSize: 50, fontWeight: 900, color: RED, lineHeight: 1.2, marginBottom: 18, wordBreak: "break-word" }}>
+              {destination || "Your Destination"}
+            </div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+              {form.days && (
+                <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", border: "1.5px solid #ccc", borderRadius: 20, padding: "5px 16px", fontSize: 13.5, fontWeight: 600, color: DARK }}>
+                  {form.days}
+                </span>
               )}
-              {item.itinerary && (
-                <div style={{ marginTop: 6 }}>
-                  <RichContent html={item.itinerary} />
-                </div>
+              {paxLabel && (
+                <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", border: "1.5px solid #ccc", borderRadius: 20, padding: "5px 16px", fontSize: 13.5, fontWeight: 600, color: DARK }}>
+                  Pax: {paxLabel}
+                </span>
+              )}
+              {quoteId && (
+                <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", border: "1.5px solid #e0e0e0", borderRadius: 20, padding: "5px 16px", fontSize: 12, color: "#888" }}>
+                  {quoteId}
+                </span>
               )}
             </div>
-          ))}
-        </RedSection>
+          </div>
+          <img src="/assets/voucher/logo.png" alt="tourwatchout" style={{ width: 210, height: "auto", flexShrink: 0, marginLeft: 20, marginTop: 4 }} crossOrigin="anonymous" />
+        </div>
+
+        <hr style={{ margin: "24px 0", border: "none", borderTop: "1px solid #e0e0e0" }} />
+
+        {/* Contents + Coordinator */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, marginBottom: 28 }}>
+
+          {/* Contents list */}
+          <div>
+            <div style={{ fontSize: 16, fontWeight: 700, color: TEAL, marginBottom: 16 }}>Contents</div>
+            {contents.map((item, i) => (
+              <div key={i} style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
+                <div style={{ width: 26, height: 26, borderRadius: "50%", background: TEAL_LIGHT, border: `1.5px solid ${TEAL_BORDER}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, color: TEAL, flexShrink: 0 }}>
+                  {i + 1}
+                </div>
+                <span style={{ fontSize: 13.5, color: DARK }}>{item}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Coordinator card */}
+          <div style={{ border: `1px solid ${TEAL_BORDER}`, borderRadius: 20, padding: "16px 18px", background: "#F3FDFF" }}>
+            <div style={{ fontSize: 11, color: "#999", marginBottom: 6 }}>Your Travel Co-ordinator</div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 10 }}>
+              <div style={{ fontSize: 18, fontWeight: 800, color: DARK }}>{sp?.name || "Savi Prajapati"}</div>
+              <div style={{ display: "flex", gap: 6 }}>
+                <a href="tel:+918882701800" data-pdf-link="tel:+918882701800" style={{ textDecoration: "none", display: "flex" }}><IcCall /></a>
+                <a href="https://wa.me/918882701800" data-pdf-link="https://wa.me/918882701800" style={{ textDecoration: "none", display: "flex" }}><IcWhatsApp /></a>
+              </div>
+            </div>
+            <div style={{ fontSize: 13, color: DARK, marginBottom: 3 }}>Call: <strong>+91 8882701800</strong></div>
+            <div style={{ fontSize: 13, color: DARK, marginBottom: 14 }}>Email: <strong>{sp?.email || "sales1@tourwatchout.com"}</strong></div>
+            {createdAt && (
+              <>
+                <hr style={{ margin: "0 0 12px", border: "none", borderTop: "1px solid #eee" }} />
+                <div style={{ fontSize: 12, color: "#555" }}>Quotation Created on <strong>{createdAt}</strong></div>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Highlights */}
+        <div style={{ marginBottom: 22 }}>
+          <div style={{ fontSize: 16, fontWeight: 700, color: DARK, marginBottom: 12 }}>Highlights</div>
+          <div>
+            {showHotel    && <Pill iconKey="hotel"    label="Hotel" />}
+            {hasItin      && <Pill iconKey="activity" label="Activities" />}
+            {showTransfer && <Pill iconKey="transfer" label="Transfers" />}
+            {form.inclusions && <Pill iconKey="meals"  label="Selected Meals Included" />}
+            {showFlight   && <Pill iconKey="flight"   label="Flights" />}
+          </div>
+        </div>
+
+        {/* Package pricing box */}
+        {useTiers && activeTiers.length > 0 && (
+          <div style={{ border: "1px solid #26828D", borderRadius: 12, overflow: "hidden", marginBottom: 18 }}>
+            {activeTiers.map((lbl, idx) => {
+              const tier = pkgTiers[lbl];
+              const tierSelling = calcTierSelling(tier, form);
+              const tierPax     = getTierPax(tier);
+              return (
+                <div key={lbl} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 22px", borderBottom: idx < activeTiers.length - 1 ? "1px solid #26828D" : "none" }}>
+                  <div style={{ fontSize: 22, fontWeight: 700, color: TEAL }}>
+                    {lbl} Package{" "}
+                    <span style={{ fontWeight: 400, fontSize: 14, color: DARK }}>Incl. Tax</span>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "baseline", gap: 10 }}>
+                    <span style={{ fontSize: 24, fontWeight: 900, color: "#26828D" }}>
+                      ₹ {Math.round(tierSelling).toLocaleString("en-IN")}
+                    </span>
+                    {tierPax > 0
+                      ? <span style={{ fontSize: 13, color: DARK }}>For {tierPax} {tierPax === 1 ? "Adult" : "Adults"}</span>
+                      : paxLabel && <span style={{ fontSize: 13, color: DARK }}>For {paxLabel}</span>
+                    }
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Legacy single price */}
+        {!useTiers && selling > 0 && (
+          <div style={{ border: "1px solid #26828D", borderRadius: 12, padding: "16px 22px", marginBottom: 18, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div style={{ fontSize: 22, fontWeight: 700, color: TEAL }}>Package <span style={{ fontWeight: 400, fontSize: 14, color: DARK }}>Incl. Tax</span></div>
+            <div style={{ display: "flex", alignItems: "baseline", gap: 10 }}>
+              <span style={{ fontSize: 34, fontWeight: 900, color: "#26828D" }}>₹ {Math.round(selling).toLocaleString("en-IN")}</span>
+              {paxLabel && <span style={{ fontSize: 20, color: DARK }}>For {paxLabel}</span>}
+            </div>
+          </div>
+        )}
+
+        {/* Note box — always generic disclaimer */}
+        <div style={{ border: "1px solid #ddd", borderRadius: 10, padding: "14px 18px", background: "#F3FDFF" }}>
+          <div style={{ fontSize: 13, color: DARK, lineHeight: 1.75 }}>
+            <strong>Note:</strong>{" "}
+            This is a tentative and estimated quote and may vary based on selected hotels, inclusions, and customizations. Our Travel Expert will assist with any modifications.
+          </div>
+        </div>
+      </div>
+
+      {/* ══════════════════════════════
+          YOUR ITINERARY
+      ══════════════════════════════ */}
+      {hasItin && (
+        <div data-pdf-section="true">
+          <MiniHeader />
+          <div style={{ padding: "28px 32px" }}>
+            <div style={{ fontSize: 32, color: DARK, marginBottom: 4 }}>Your <strong>Itinerary</strong></div>
+            {destination && (
+              <div style={{ fontSize: 44, fontWeight: 900, color: RED, marginBottom: 24, lineHeight: 1.2 }}>
+                {form.days ? `${form.days} in ` : ""}{destination}
+              </div>
+            )}
+
+            {(() => {
+              const rows = itin.filter(d => d.title || d.itinerary || d.date || d.tour || d.transfer || d.pickup_time || d.activities?.length);
+
+              /* Build groups — a day with a title+activities starts a new bordered group;
+                 subsequent title-less days continue that group. */
+              const groups = [];
+              let currentGroup = null;
+              let dayCount = 0;
+
+              for (const item of rows) {
+                const hasAct = item.activities?.length > 0;
+                const isStandaloneHeader   = item.title && !item.date && !item.tour && !item.transfer && !item.itinerary && !item.pickup_time && !hasAct;
+                const isStandaloneTransfer = item.transfer && !item.date && !item.title && !item.tour && !item.itinerary && !item.pickup_time && !hasAct;
+
+                if (isStandaloneHeader) {
+                  groups.push({ type: "header", item });
+                  currentGroup = null;
+                } else if (isStandaloneTransfer) {
+                  groups.push({ type: "transfer", item });
+                  currentGroup = null;
+                } else {
+                  dayCount++;
+                  const dayEntry = { item, dayNum: dayCount, hasAct };
+                  if (hasAct && item.title) {
+                    /* New bordered group starting with this day's title */
+                    currentGroup = { type: "group", header: item.title, days: [dayEntry] };
+                    groups.push(currentGroup);
+                  } else if (currentGroup?.type === "group") {
+                    currentGroup.days.push(dayEntry);
+                  } else {
+                    /* Legacy / ungrouped day */
+                    groups.push({ type: "solo", ...dayEntry });
+                    currentGroup = null;
+                  }
+                }
+              }
+
+              const ActIcon = ({ type }) =>
+                type === "hotel"    ? <IcHotel />    :
+                type === "meals"    ? <IcMeals />    :
+                type === "activity" ? <IcActivity /> :
+                <IcTransfer />;
+
+              const ActRow = ({ act }) => (
+                <div style={{ display: "flex", alignItems: "flex-start", gap: 8, marginBottom: 7, fontSize: 13, color: DARK }}>
+                  <span style={{ flexShrink: 0, marginTop: 1 }}><ActIcon type={act.type} /></span>
+                  <span dangerouslySetInnerHTML={{ __html: act.text }} />
+                </div>
+              );
+
+              const LegacyActs = ({ item }) => (<>
+                {item.transfer   && <div style={{ display:"flex",alignItems:"flex-start",gap:8,marginBottom:7,fontSize:13,color:DARK }}><span style={{flexShrink:0,marginTop:1}}><IcTransfer /></span><span>{item.transfer}</span></div>}
+                {item.tour       && <div style={{ display:"flex",alignItems:"flex-start",gap:8,marginBottom:7,fontSize:13,color:DARK }}><span style={{flexShrink:0,marginTop:1}}><IcActivity /></span><span>{item.tour}</span></div>}
+                {item.pickup_time&& <div style={{ display:"flex",alignItems:"flex-start",gap:8,marginBottom:7,fontSize:13,color:DARK }}><span style={{flexShrink:0,marginTop:1}}><IcTransfer /></span><span>Pickup: {item.pickup_time}</span></div>}
+                {item.itinerary  && <RichContent html={item.itinerary} style={{ fontSize:12.5,color:"#444",lineHeight:1.75 }} />}
+              </>);
+
+              return groups.map((group, gi) => {
+                if (group.type === "header") {
+                  return (
+                    <div key={gi} data-pdf-break="true" style={{ display:"flex",alignItems:"center",gap:10,background:"#F3FDFF",border:"1px solid #88CAD0",borderRadius:10,padding:"12px 18px",marginBottom:8,marginTop:gi>0?18:0 }}>
+                      <img data-card-icon="/assets/icons/quotation/location.png" src="/assets/icons/quotation/location.png" alt="" crossOrigin="anonymous" style={{ width:20,height:20,flexShrink:0,objectFit:"contain" }} />
+                      <span style={{ fontSize:18,fontWeight:700,color:DARK }}>{group.item.title}</span>
+                    </div>
+                  );
+                }
+
+                if (group.type === "transfer") {
+                  return (
+                    <div key={gi} style={{ display:"flex",alignItems:"center",gap:10,padding:"12px 18px",marginBottom:8,marginTop:4 }}>
+                      <IcTransfer />
+                      <span style={{ fontSize:13.5,fontWeight:600,color:DARK }}>{group.item.transfer}</span>
+                    </div>
+                  );
+                }
+
+                if (group.type === "solo") {
+                  const { item, dayNum } = group;
+                  return (
+                    <div key={gi} data-pdf-break="true" style={{ display:"grid",gridTemplateColumns:"160px 1fr",borderTop:gi>0?"1px solid #e8e8e8":"none",padding:"14px 4px" }}>
+                      <div style={{ paddingRight:12 }}>
+                        {item.date && <div style={{ fontSize:13,fontWeight:700,color:DARK,marginBottom:3 }}>{fmtDate(item.date)}</div>}
+                        <div style={{ fontSize:11,color:TEAL,fontWeight:600 }}>Day {dayNum}</div>
+                        {item.title && <div style={{ fontSize:12,color:"#555",marginTop:5,lineHeight:1.4 }}>{item.title}</div>}
+                      </div>
+                      <div><LegacyActs item={item} /></div>
+                    </div>
+                  );
+                }
+
+                /* Bordered group with location header */
+                return (
+                  <div key={gi} data-pdf-break="true" style={{ border:"1px solid #88CAD0",borderRadius:12,overflow:"hidden",marginBottom:8,marginTop:gi>0?16:0 }}>
+                    {/* Location header row */}
+                    <div style={{ display:"flex",alignItems:"center",gap:10,background:"#F3FDFF",padding:"11px 18px",borderBottom:"1px solid #e0f0f0" }}>
+                      <img data-card-icon="/assets/icons/quotation/location.png" src="/assets/icons/quotation/location.png" alt="" crossOrigin="anonymous" style={{ width:18,height:18,flexShrink:0,objectFit:"contain" }} />
+                      <span style={{ fontSize:15,fontWeight:700,color:DARK }}>{group.header}</span>
+                    </div>
+                    {/* Day rows */}
+                    {group.days.map(({ item, dayNum, hasAct }, di) => (
+                      <div key={di} data-pdf-break="true" style={{ display:"grid",gridTemplateColumns:"180px 1fr",borderTop:di>0?"1px solid #e8e8e8":"none",padding:"14px 18px" }}>
+                        {/* Date + Day on one line */}
+                        <div style={{ paddingRight:12 }}>
+                          <div style={{ fontSize:13,fontWeight:700,color:DARK }}>
+                            {item.date ? fmtDateWeekday(item.date) : ""}
+                            {item.date && <span style={{ color:DARK,fontWeight:700 }}>, Day {dayNum}</span>}
+                            {!item.date && <span style={{ color:DARK,fontWeight:700 }}>Day {dayNum}</span>}
+                          </div>
+                        </div>
+                        {/* Activities */}
+                        <div>
+                          {hasAct
+                            ? item.activities.map((act, ai) => <ActRow key={ai} act={act} />)
+                            : <LegacyActs item={item} />
+                          }
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                );
+              });
+            })()}
+          </div>
+        </div>
       )}
 
-      {/* ══════════ PACKAGE OPTIONS — one section per tier ══════════ */}
-      {useTiers ? (
-        <>
-          {activeTiers.map((lbl, tidx) => {
-            const tier = pkgTiers[lbl];
-            const tHotels    = (tier.hotels    || []).filter(h => h.name);
-            const tFlights   = (tier.flights   || []).filter(f => f.from || f.to);
-            const tTransfers = (tier.transfers || []).filter(t => t.cab || +t.days > 0);
-            const tMiscs     = (tier.miscs     || []).filter(m => m.name);
-            return (
-              <div key={lbl} data-pdf-section="true" style={{ borderTop: "1px solid #e8e8e8" }}>
-                {/* Tier header */}
-                <div style={{ background: "#374151", color: "#fff", padding: "9px 18px", fontSize: 13, fontWeight: 700, letterSpacing: "0.02em" }}>
-                  {lbl.toUpperCase()} PACKAGE
-                </div>
+      {/* ══════════════════════════════
+          PACKAGE DETAILS — TIER MODE
+      ══════════════════════════════ */}
+      {useTiers && activeTiers.length > 0 && (
+        <div data-pdf-section="true">
+          <MiniHeader />
+          <div style={{ padding: "28px 32px" }}>
 
-                <div style={{ padding: "14px 18px 10px", background: "#fff" }}>
+            {activeTiers.map((lbl, tidx) => {
+              const tier      = pkgTiers[lbl];
+              const tHotels   = (tier.hotels   || []).filter(h => h.name);
+              const tFlights  = (tier.flights  || []).filter(f => f.from || f.to);
+              const tTransfers= (tier.transfers|| []).filter(t => t.cab && (+t.perDay > 0 || +t.days > 0));
+              const tMiscs    = (tier.miscs    || []).filter(m => m.name);
+              const tierSell  = calcTierSelling(tier, form);
+              const tierPax   = getTierPax(tier);
 
-                  {/* Hotels table */}
+              return (
+                <div key={lbl}>
+                  {/* Tier label */}
+                  <div style={{ fontSize: 15, fontWeight: 700, color: DARK, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 14 }}>
+                    {lbl} Package
+                  </div>
+
+                  {/* Hotels */}
                   {tHotels.length > 0 && (
-                    <div style={{ marginBottom: tFlights.length || tTransfers.length || tMiscs.length ? 12 : 0 }}>
-                      <div style={{ fontSize: 11, fontWeight: 700, color: RED, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 5 }}>Hotel Details</div>
+                    <Card imgIcon="/assets/icons/quotation/hotel-details.svg" title="Hotel Details" noPad>
                       <table style={{ width: "100%", borderCollapse: "collapse" }}>
                         <thead>
                           <tr>
-                            <Th style={{ width: "5%" }}>S.No.</Th>
-                            <Th style={{ width: "32%" }}>Hotel Name</Th>
-                            <Th style={{ width: "18%" }}>Occupancy</Th>
-                            <Th style={{ width: "28%" }}>Room Category</Th>
-                            <Th style={{ width: "10%", textAlign: "center" }}>Nights</Th>
-                            <Th style={{ width: "7%", textAlign: "center" }}>Rooms</Th>
+                            <Th>Location</Th>
+                            <Th>Hotel Name</Th>
+                            <Th>Room Category</Th>
+                            <Th style={{ textAlign: "center" }}>No. Of Rooms</Th>
                           </tr>
                         </thead>
                         <tbody>
@@ -246,322 +639,318 @@ export default function QuotationPreview({ data, id }) {
                             const rates = (h.rates?.length
                               ? h.rates
                               : [{ occupancy: h.occupancy || "Double", roomCat: h.roomCat, nights: h.nights, rooms: h.rooms }]
-                            ).filter(r => r.occupancy || r.nights);
+                            ).filter(r => r.occupancy || r.nights || r.rooms);
                             return rates.map((r, ri) => (
-                              <tr key={`${hi}-${ri}`} style={{ background: hi % 2 === 0 ? "#fff" : "#fafafa" }}>
-                                <Td style={{ textAlign: "center", color: "#888" }}>{ri === 0 ? `${hi + 1}.` : ""}</Td>
-                                <Td>{ri === 0 ? <strong>{h.name}</strong> : ""}</Td>
-                                <Td>{r.occupancy || "Double"}</Td>
-                                <Td>{r.roomCat || "—"}</Td>
-                                <Td style={{ textAlign: "center" }}>{r.nights ? `${r.nights}N` : "—"}</Td>
-                                <Td style={{ textAlign: "center" }}>{r.rooms || 1}</Td>
+                              <tr key={`${hi}-${ri}`} {...(hi > 0 || ri > 0 ? { "data-pdf-break": "true" } : {})} style={{ background: "#fff" }}>
+                                <Td style={{ fontWeight: 600 }}>{ri === 0 ? (h.location || "—") : ""}</Td>
+                                <Td style={{ fontWeight: ri === 0 ? 700 : 400 }}>{ri === 0 ? h.name : ""}</Td>
+                                <Td>{r.roomCat || "Deluxe Room"}</Td>
+                                <Td style={{ textAlign: "center" }}>{r.rooms ?? 1}</Td>
                               </tr>
                             ));
                           })}
                         </tbody>
                       </table>
-                    </div>
+                    </Card>
                   )}
 
-                  {/* Flights cards */}
-                  {tFlights.length > 0 && (
-                    <div style={{ marginBottom: tTransfers.length || tMiscs.length ? 12 : 0 }}>
-                      <div style={{ fontSize: 11, fontWeight: 700, color: RED, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8 }}>Flight Details</div>
-                      {tFlights.map((f, fi) => (
-                        <div key={fi} style={{ marginBottom: fi < tFlights.length - 1 ? 12 : 0 }}>
-                          <div style={{ display: "flex", gap: 16, alignItems: "center", marginBottom: 6 }}>
-                            {f.pnr && <div style={{ fontSize: 12, color: "#444" }}><strong>PNR:</strong> <span style={{ fontWeight: 800, letterSpacing: 1, color: "#1a1a2e" }}>{f.pnr}</span></div>}
-                            {f.flightNo && <div style={{ fontSize: 12, color: "#444" }}><strong>Flight:</strong> {f.flightNo}</div>}
-                            <div style={{ fontSize: 12, color: "#666", marginLeft: "auto" }}>{f.roundTrip ? "Round Trip" : "One-way"} · {f.pax || "—"} Pax</div>
-                          </div>
-                          <div style={{ display: "flex", alignItems: "center", background: "#f9f9f9", border: "1px solid #e8e8e8", borderRadius: 8, padding: "12px 16px" }}>
-                            <div style={{ flex: 1, minWidth: 0 }}>
-                              <div style={{ fontSize: 14, fontWeight: 800, color: "#1a1a2e" }}>{f.depCity || f.from || "—"}</div>
-                              {f.depIATA && <div style={{ fontSize: 11, color: "#888" }}>({f.depIATA})</div>}
-                              {(f.depDate || f.date) && <div style={{ fontSize: 11, color: "#555", marginTop: 3 }}>{fmtDate(f.depDate || f.date)}</div>}
-                              {f.depTime && <div style={{ fontSize: 12, fontWeight: 700, color: RED, marginTop: 2 }}>{f.depTime}</div>}
-                            </div>
-                            <div style={{ flex: 1, textAlign: "center", padding: "0 8px" }}>
-                              {f.flightNo && <div style={{ fontSize: 11, fontWeight: 600, color: "#555", marginBottom: 4 }}>{f.flightNo}</div>}
-                              <div style={{ display: "flex", alignItems: "center", width: "100%", padding: "3px 0" }}>
-                                <div style={{ width: 8, height: 8, borderRadius: "50%", background: RED, flexShrink: 0 }} />
-                                <div style={{ flex: 1, height: 2, background: RED }} />
-                                <div style={{ width: 0, height: 0, borderTop: "5px solid transparent", borderBottom: "5px solid transparent", borderLeft: `8px solid ${RED}`, flexShrink: 0 }} />
-                              </div>
-                            </div>
-                            <div style={{ flex: 1, minWidth: 0, textAlign: "right" }}>
-                              <div style={{ fontSize: 14, fontWeight: 800, color: "#1a1a2e" }}>{f.arrCity || f.to || "—"}</div>
-                              {f.arrIATA && <div style={{ fontSize: 11, color: "#888" }}>({f.arrIATA})</div>}
-                              {f.arrDate && <div style={{ fontSize: 11, color: "#555", marginTop: 3 }}>{fmtDate(f.arrDate)}</div>}
-                              {f.arrTime && <div style={{ fontSize: 12, fontWeight: 700, color: RED, marginTop: 2 }}>{f.arrTime}</div>}
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Transfers table */}
+                  {/* Cab Details */}
                   {tTransfers.length > 0 && (
-                    <div style={{ marginBottom: tMiscs.length ? 12 : 0 }}>
-                      <div style={{ fontSize: 11, fontWeight: 700, color: RED, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 5 }}>Transfer / Transportation</div>
-                      <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                        <thead>
-                          <tr><Th>Cab Type</Th><Th style={{ width: "20%", textAlign: "center" }}>Days</Th></tr>
-                        </thead>
-                        <tbody>
-                          {tTransfers.map((t, ti) => (
-                            <tr key={ti} style={{ background: ti % 2 === 0 ? "#fff" : "#fafafa" }}>
-                              <Td>{t.cab || "—"}</Td>
-                              <Td style={{ textAlign: "center" }}>{t.days || "—"}</Td>
+                    <div data-pdf-break="true">
+                      <Card imgIcon="/assets/icons/quotation/cab-details.svg" title="Cab Details" noPad>
+                        <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                          <thead>
+                            <tr>
+                              <Th>Cab Type</Th>
+                              <Th style={{ width: "30%", textAlign: "center" }}>Duration</Th>
                             </tr>
-                          ))}
-                        </tbody>
-                      </table>
+                          </thead>
+                          <tbody>
+                            {tTransfers.map((t, ti) => (
+                              <tr key={ti} style={{ background: "#fff" }}>
+                                <Td>{t.cab}</Td>
+                                <Td style={{ textAlign: "center" }}>{t.days ? `${t.days} Days` : "—"}</Td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </Card>
+                    </div>
+                  )}
+
+                  {/* Flights */}
+                  {tFlights.length > 0 && (
+                    <div data-pdf-break="true">
+                      <Card icon={<IcFlight />} title="Flight Details">
+                        {tFlights.map((f, fi) => <FlightCard key={fi} f={f} />)}
+                      </Card>
                     </div>
                   )}
 
                   {/* Miscellaneous */}
                   {tMiscs.length > 0 && (
-                    <div style={{ marginBottom: 12 }}>
-                      <div style={{ fontSize: 11, fontWeight: 700, color: RED, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 5 }}>Miscellaneous</div>
-                      <ul style={{ margin: 0, paddingLeft: 18 }}>
-                        {tMiscs.map((m, mi) => (
-                          <li key={mi} style={{ fontSize: 12, color: "#374151", marginBottom: 3 }}>{m.name}</li>
-                        ))}
-                      </ul>
+                    <div data-pdf-break="true">
+                      <Card imgIcon="/assets/icons/quotation/miscellaneous-details.svg" title="Add on">
+                        <ul style={{ margin: 0, paddingLeft: 20 }}>
+                          {tMiscs.map((m, mi) => (
+                            <li key={mi} style={{ fontSize: 13, color: DARK, marginBottom: 5 }}>{m.name}</li>
+                          ))}
+                        </ul>
+                      </Card>
                     </div>
                   )}
 
                   {/* Financials */}
-                  {(() => {
-                    const tierSelling = calcTierSelling(tier, form);
-                    const pax = getTierPax(tier);
-                    if (!tierSelling) return null;
-                    return (
-                      <table style={{ width: "100%", borderCollapse: "collapse", marginTop: 6 }}>
-                        <thead>
-                          <tr>
-                            <Th style={{ width: "20%" }}>Financials</Th>
-                            <Th>Net Package Cost (Incl. of GST)</Th>
-                            {pax > 0 && <Th style={{ width: "28%", textAlign: "right" }}>Per Person</Th>}
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr style={{ background: "#fff8dc" }}>
-                            <Td style={{ fontWeight: 700, color: "#555", fontSize: 11 }}>Amount</Td>
-                            <Td>
-                              <span style={{ fontWeight: 800, color: RED, fontSize: 13 }}>
-                                INR {Math.round(tierSelling).toLocaleString("en-IN")}/- inclusive of GST
-                              </span>
-                            </Td>
-                            {pax > 0 && (
-                              <Td style={{ textAlign: "right", fontWeight: 700, fontSize: 12, color: "#374151" }}>
-                                Per Person: INR {Math.round(tierSelling / pax).toLocaleString("en-IN")}/-
-                              </Td>
-                            )}
-                          </tr>
-                        </tbody>
-                      </table>
-                    );
-                  })()}
-
-                </div>
-
-                {/* Tier separator (not after last) */}
-                {tidx < activeTiers.length - 1 && (
-                  <div style={{ borderTop: "2px dashed #e0e0e0", margin: "0 18px" }} />
-                )}
-              </div>
-            );
-          })}
-          {/* Notes / disclaimer — shown once, under the last tier's Financials */}
-          {form.notes && (
-            <div style={{ padding: "8px 18px 12px", borderTop: "1px dashed #e0e0e0" }}>
-              <p style={{ fontSize: 11.5, color: "#6B7A99", fontStyle: "italic", margin: 0 }}>{form.notes}</p>
-            </div>
-          )}
-        </>
-      ) : (
-        <>
-          {/* ── Legacy single-tier sections (old quotations) ── */}
-          {hotels.filter(h => h.name).length > 0 && (
-            <RedSection title="Hotel Details">
-              {hotels.filter(h => h.name).map((h, idx) => {
-                const rates = h.rates?.length ? h.rates : [{ occupancy: h.occupancy || "Double", nights: h.nights, rooms: h.rooms }];
-                return (
-                  <div key={idx} data-pdf-section="true" style={idx > 0 ? { marginTop: 14, borderTop: "1px dashed #e0e0e0", paddingTop: 12 } : {}}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
-                      <span style={{ fontSize: 14 }}>🏨</span>
-                      <span style={{ fontSize: 15, fontWeight: 700, color: DARK }}>{h.name}</span>
-                    </div>
-                    <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
-                      <thead><tr><Th>Occupancy</Th><Th>Room Category</Th><Th>Nights</Th><Th>Rooms</Th></tr></thead>
-                      <tbody>
-                        {rates.filter(r => r.nights || r.rooms).map((r, ri) => (
-                          <tr key={ri} style={{ background: ri % 2 === 0 ? "#fff" : "#fafafa" }}>
-                            <Td><b>{r.occupancy || "Double"}</b></Td><Td>{r.roomCat || "—"}</Td><Td>{r.nights || "—"}</Td><Td>{r.rooms || "—"}</Td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                );
-              })}
-            </RedSection>
-          )}
-          {transfers.filter(t => +t.perDay > 0).length > 0 && (
-            <RedSection title="Transportation Details">
-              <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                <thead><tr><Th>Cab Type</Th><Th>Days</Th></tr></thead>
-                <tbody>{transfers.filter(t => +t.perDay > 0).map((t, i) => <tr key={i} style={{ background: i % 2 === 0 ? "#fff" : "#fafafa" }}><Td>{t.cab}</Td><Td>{t.days}</Td></tr>)}</tbody>
-              </table>
-            </RedSection>
-          )}
-          {flights.filter(f => f.from || f.to || +f.price > 0).length > 0 && (
-            <RedSection title="Flight Details">
-              {flights.filter(f => f.from || f.to || +f.price > 0).map((f, fi) => (
-                <div key={fi} style={{ marginBottom: fi < flights.filter(x => x.from || x.to || +x.price > 0).length - 1 ? 12 : 0 }}>
-                  <div style={{ display: "flex", gap: 16, alignItems: "center", marginBottom: 6 }}>
-                    {f.pnr && <div style={{ fontSize: 12, color: "#444" }}><strong>PNR:</strong> <span style={{ fontWeight: 800, letterSpacing: 1, color: "#1a1a2e" }}>{f.pnr}</span></div>}
-                    {f.flightNo && <div style={{ fontSize: 12, color: "#444" }}><strong>Flight:</strong> {f.flightNo}</div>}
-                    <div style={{ fontSize: 12, color: "#666", marginLeft: "auto" }}>{f.roundTrip ? "Round Trip" : "One-way"} · {f.pax || "—"} Pax</div>
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center", background: "#f9f9f9", border: "1px solid #e8e8e8", borderRadius: 8, padding: "12px 16px" }}>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 14, fontWeight: 800, color: "#1a1a2e" }}>{f.depCity || f.from || "—"}</div>
-                      {f.depIATA && <div style={{ fontSize: 11, color: "#888" }}>({f.depIATA})</div>}
-                      {(f.depDate || f.date) && <div style={{ fontSize: 11, color: "#555", marginTop: 3 }}>{fmtDate(f.depDate || f.date)}</div>}
-                      {f.depTime && <div style={{ fontSize: 12, fontWeight: 700, color: RED, marginTop: 2 }}>{f.depTime}</div>}
-                    </div>
-                    <div style={{ flex: 1, textAlign: "center", padding: "0 8px" }}>
-                      {f.flightNo && <div style={{ fontSize: 11, fontWeight: 600, color: "#555", marginBottom: 4 }}>{f.flightNo}</div>}
-                      <div style={{ display: "flex", alignItems: "center", width: "100%", padding: "3px 0" }}>
-                        <div style={{ width: 8, height: 8, borderRadius: "50%", background: RED, flexShrink: 0 }} />
-                        <div style={{ flex: 1, height: 2, background: RED }} />
-                        <div style={{ width: 0, height: 0, borderTop: "5px solid transparent", borderBottom: "5px solid transparent", borderLeft: `8px solid ${RED}`, flexShrink: 0 }} />
+                  {tierSell > 0 && (
+                    <div style={{ border: `1px solid ${TEAL_BORDER}`, borderRadius: 10, padding: "14px 18px", background: "transparent", marginBottom: 14 }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <div style={{ fontSize: 14, fontWeight: 700, color: TEAL }}>{lbl} Package — Net Cost (Incl. GST)</div>
+                        <div style={{ display: "flex", alignItems: "baseline", gap: 12 }}>
+                          <span style={{ fontSize: 20, fontWeight: 900, color: DARK }}>
+                            ₹ {Math.round(tierSell).toLocaleString("en-IN")}/-
+                          </span>
+                          {tierPax > 0 && (
+                            <span style={{ fontSize: 12, color: "#666" }}>
+                              Per Person: ₹ {Math.round(tierSell / tierPax).toLocaleString("en-IN")}/-
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
-                    <div style={{ flex: 1, minWidth: 0, textAlign: "right" }}>
-                      <div style={{ fontSize: 14, fontWeight: 800, color: "#1a1a2e" }}>{f.arrCity || f.to || "—"}</div>
-                      {f.arrIATA && <div style={{ fontSize: 11, color: "#888" }}>({f.arrIATA})</div>}
-                      {f.arrDate && <div style={{ fontSize: 11, color: "#555", marginTop: 3 }}>{fmtDate(f.arrDate)}</div>}
-                      {f.arrTime && <div style={{ fontSize: 12, fontWeight: 700, color: RED, marginTop: 2 }}>{f.arrTime}</div>}
-                    </div>
-                  </div>
+                  )}
+
+                  {tidx < activeTiers.length - 1 && (
+                    <hr style={{ border: "none", borderTop: "2px dashed #DFF0F0", margin: "22px 0" }} />
+                  )}
                 </div>
-              ))}
-            </RedSection>
-          )}
-          {miscs.filter(m => m.name).length > 0 && (
-            <RedSection title="Value Added Services">
-              <ul style={{ margin: "4px 0 0 0", paddingLeft: 20 }}>
-                {miscs.filter(m => m.name).map((m, i) => <li key={i} style={{ fontSize: 12.5, color: "#374151", marginBottom: 4 }}>{m.name}</li>)}
-              </ul>
-            </RedSection>
-          )}
-        </>
+              );
+            })}
+          </div>
+        </div>
       )}
 
-      {/* ══════════ INCLUSIONS ══════════ */}
-      {form.inclusions && (
-        <RedSection title="Inclusions">
-          <RichContent html={form.inclusions} />
-        </RedSection>
+      {/* ══════════════════════════════
+          PACKAGE DETAILS — LEGACY MODE
+      ══════════════════════════════ */}
+      {!useTiers && (hotels.some(h => h.name) || transfers.some(t => +t.perDay > 0) || flights.some(f => f.from || f.to) || miscs.some(m => m.name)) && (
+        <div data-pdf-section="true">
+          <MiniHeader />
+          <div style={{ padding: "28px 32px" }}>
+
+            {hotels.filter(h => h.name).length > 0 && (
+              <Card imgIcon="/assets/icons/quotation/hotel-details.svg" title="Hotel Details" noPad>
+                <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                  <thead>
+                    <tr>
+                      <Th>Location</Th>
+                      <Th>Hotel Name</Th>
+                      <Th>Room Category</Th>
+                      <Th style={{ textAlign: "center" }}>No. Of Rooms</Th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {hotels.filter(h => h.name).map((h, hi) => {
+                      const rates = (h.rates?.length ? h.rates : [{ occupancy: h.occupancy || "Double", roomCat: h.roomCat, nights: h.nights, rooms: h.rooms }]).filter(r => r.occupancy || r.nights);
+                      return rates.map((r, ri) => (
+                        <tr key={`${hi}-${ri}`} {...(hi > 0 || ri > 0 ? { "data-pdf-break": "true" } : {})} style={{ background: "#fff" }}>
+                          <Td style={{ fontWeight: 600 }}>{ri === 0 ? (h.location || "—") : ""}</Td>
+                          <Td style={{ fontWeight: ri === 0 ? 700 : 400 }}>{ri === 0 ? h.name : ""}</Td>
+                          <Td>{r.roomCat || "—"}</Td>
+                          <Td style={{ textAlign: "center" }}>{r.rooms || 1}</Td>
+                        </tr>
+                      ));
+                    })}
+                  </tbody>
+                </table>
+              </Card>
+            )}
+
+            {transfers.filter(t => +t.perDay > 0).length > 0 && (
+              <div data-pdf-break="true">
+                <Card imgIcon="/assets/icons/quotation/cab-details.svg" title="Cab Details" noPad>
+                  <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                    <thead><tr><Th>Cab Type</Th><Th style={{ width: "30%", textAlign: "center" }}>Duration</Th></tr></thead>
+                    <tbody>
+                      {transfers.filter(t => +t.perDay > 0).map((t, i) => (
+                        <tr key={i} style={{ background: "#fff" }}>
+                          <Td>{t.cab}</Td>
+                          <Td style={{ textAlign: "center" }}>{t.days ? `${t.days} Days` : "—"}</Td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </Card>
+              </div>
+            )}
+
+            {flights.filter(f => f.from || f.to || +f.price > 0).length > 0 && (
+              <div data-pdf-break="true">
+                <Card icon={<IcFlight />} title="Flight Details">
+                  {flights.filter(f => f.from || f.to || +f.price > 0).map((f, fi) => <FlightCard key={fi} f={f} />)}
+                </Card>
+              </div>
+            )}
+
+            {miscs.filter(m => m.name).length > 0 && (
+              <div data-pdf-break="true">
+                <Card imgIcon="/assets/icons/quotation/miscellaneous-details.svg" title="Add on">
+                  <ul style={{ margin: 0, paddingLeft: 20 }}>
+                    {miscs.filter(m => m.name).map((m, i) => (
+                      <li key={i} style={{ fontSize: 13, color: DARK, marginBottom: 5 }}>{m.name}</li>
+                    ))}
+                  </ul>
+                </Card>
+              </div>
+            )}
+
+            {selling > 0 && (
+              <div style={{ border: `1px solid ${TEAL_BORDER}`, borderRadius: 10, padding: "14px 18px", background: "transparent" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: TEAL }}>Package — Net Cost (Incl. GST)</div>
+                  <span style={{ fontSize: 20, fontWeight: 900, color: DARK }}>₹ {Math.round(selling).toLocaleString("en-IN")}/-</span>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       )}
 
-      {/* ══════════ EXCLUSIONS ══════════ */}
-      {form.exclusions && (
-        <RedSection title="Exclusions">
-          <RichContent html={form.exclusions} />
-        </RedSection>
+      {/* ══════════════════════════════
+          INCLUSIONS & EXCLUSIONS
+      ══════════════════════════════ */}
+      {(form.inclusions || form.exclusions) && (
+        <div data-pdf-section="true">
+          <MiniHeader />
+          <div style={{ padding: "28px 32px" }}>
+            {form.inclusions && (
+              <Card title="INCLUSIONS:">
+                <RichContent html={form.inclusions} style={{ fontSize: 13, lineHeight: 1.8 }} />
+              </Card>
+            )}
+            {form.exclusions && (
+              <Card title="EXCLUSIONS:">
+                <RichContent html={form.exclusions} style={{ fontSize: 13, lineHeight: 1.8 }} />
+              </Card>
+            )}
+          </div>
+        </div>
       )}
 
+      {/* ══════════════════════════════
+          IMPORTANT NOTES
+      ══════════════════════════════ */}
+      {form.notes && (
+        <div data-pdf-section="true">
+          <MiniHeader />
+          <div style={{ padding: "28px 32px" }}>
+            <Card title="IMPORTANT NOTES:">
+              <RichContent html={form.notes} style={{ fontSize: 13, lineHeight: 1.8 }} />
+            </Card>
+          </div>
+        </div>
+      )}
 
-      {/* ══════════ BOOKING POLICY ══════════ */}
+      {/* CTA Banner */}
+      <div style={{ padding: "0 32px 24px" }}>
+        <div data-pdf-link="https://tourwatchout.com/contact-us" style={{ display: "block", cursor: "pointer" }}>
+          <img src="/assets/icons/quotation/cta.png" alt="Get a Callback" crossOrigin="anonymous" style={{ width: "100%", borderRadius: 12, display: "block" }} />
+        </div>
+      </div>
+
+      {/* ══════════════════════════════
+          HOW TO BOOK
+      ══════════════════════════════ */}
       {form.bookingPolicy && (
-        <RedSection title="Booking Policy">
-          <RichContent html={form.bookingPolicy} style={{ fontSize: 11, lineHeight: 1.7 }} />
-        </RedSection>
+        <div data-pdf-section="true">
+          <MiniHeader />
+          <div style={{ padding: "28px 32px" }}>
+            <Card title="How To Book">
+              <RichContent html={form.bookingPolicy} style={{ fontSize: 13, lineHeight: 1.8 }} />
+            </Card>
+          </div>
+        </div>
       )}
 
-      {/* ══════════ CANCELLATION POLICY ══════════ */}
-      {form.cancellationPolicy && (
-        <RedSection title="Cancellation Policy">
-          <RichContent html={form.cancellationPolicy} style={{ fontSize: 11, lineHeight: 1.7 }} />
-        </RedSection>
+      {/* ══════════════════════════════
+          CANCELLATION
+      ══════════════════════════════ */}
+      {(form.cancellationPolicy || form.canxBar?.enabled) && (
+        <div data-pdf-section="true">
+          <MiniHeader />
+          <div style={{ padding: "28px 32px" }}>
+            <Card title="Cancellation & Date Change Policies">
+              {form.canxBar?.enabled && <CanxBar bar={form.canxBar} />}
+              {form.cancellationPolicy && <RichContent html={form.cancellationPolicy} style={{ fontSize: 13, lineHeight: 1.8 }} />}
+            </Card>
+          </div>
+        </div>
       )}
 
-      {/* ══════════ TERMS & CONDITIONS ══════════ */}
-      {form.termsConditions && (
-        <RedSection title="Terms & Conditions">
-          <RichContent html={form.termsConditions} style={{ fontSize: 11, lineHeight: 1.7 }} />
-        </RedSection>
-      )}
+      {/* ══════════════════════════════
+          TERMS & CONDITIONS LINK
+      ══════════════════════════════ */}
+      <div data-pdf-section="true">
+        <MiniHeader />
+        <div style={{ padding: "28px 32px", display: "flex", justifyContent: "flex-end" }}>
+          <a
+            href="https://tourwatchout.com/term-and-conditions"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ textDecoration: "none", cursor: "pointer", display: "block" }}
+          >
+            <div
+              data-pdf-link="https://tourwatchout.com/term-and-conditions"
+              style={{
+                border: `1px solid ${TEAL_BORDER}`,
+                borderRadius: 20,
+                padding: "14px 40px",
+                textAlign: "center",
+                background: "#FBFCFE",
+              }}
+            >
+              <div style={{ fontSize: 15, fontWeight: 700, color: DARK }}>Terms &amp; Conditions*</div>
+            </div>
+            <div style={{ fontSize: 12, color: "#888", marginTop: 6, textAlign: "center" }}>Click To View</div>
+          </a>
+        </div>
+      </div>
 
-      {/* ══════════ FOOTER ══════════ */}
-      <div id="qb-pdf-footer" style={q.footer}>
-        <div style={q.footerItem}>
-          <img src="/assets/voucher/email.svg" alt="" style={q.fIcon} crossOrigin="anonymous" />
-          <span style={q.fEmail}>sales1@tourwatchout.com</span>
-          <span style={q.fMuted}>&nbsp;(for any query)</span>
+      {/* ══════════════════════════════
+          COORDINATOR FULL CARD
+      ══════════════════════════════ */}
+      <div data-pdf-section="true">
+        <MiniHeader />
+        <div style={{ padding: "36px 32px" }}>
+          <div style={{ border: `1px solid ${TEAL_BORDER}`, borderRadius: 20, padding: "24px 26px", background: "#F3FDFF", marginBottom: 20 }}>
+            <div style={{ fontSize: 12, color: "#999", marginBottom: 8 }}>Your Travel Co-ordinator</div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 14 }}>
+              <div style={{ fontSize: 22, fontWeight: 800, color: DARK }}>{sp?.name || "Savi Prajapati"}</div>
+              <div style={{ display: "flex", gap: 8 }}>
+                <a href="tel:+918882701800" data-pdf-link="tel:+918882701800" style={{ textDecoration: "none", display: "flex" }}><IcCall /></a>
+                <a href="https://wa.me/918882701800" data-pdf-link="https://wa.me/918882701800" style={{ textDecoration: "none", display: "flex" }}><IcWhatsApp /></a>
+              </div>
+            </div>
+            <div style={{ fontSize: 14, color: DARK, marginBottom: 5 }}>Call: <strong>+91 8882701800</strong></div>
+            <div style={{ fontSize: 14, color: DARK, marginBottom: 18 }}>Email: <strong>{sp?.email || "sales1@tourwatchout.com"}</strong></div>
+            <hr style={{ border: "none", borderTop: "1px solid #eee", marginBottom: 14 }} />
+            {createdAt && <div style={{ fontSize: 13, color: "#555" }}>Quotation Created on <strong>{createdAt}</strong></div>}
+          </div>
+          <div style={{ border: `1px solid ${TEAL_BORDER}`, borderRadius: 20, padding: "16px 18px", background: "#F3FDFF" }}>
+            <div style={{ fontSize: 13, color: DARK, lineHeight: 1.8, fontWeight: 500 }}>
+              This is a tentative and estimated quote and may vary based on selected hotels, inclusions, and customizations. Our Travel Expert will assist with any modifications.
+            </div>
+          </div>
         </div>
-        <div style={q.footerItem}>
-          <img src="/assets/voucher/instagram.svg" alt="" style={q.fIcon} crossOrigin="anonymous" />
-          <span style={q.fHandle}>/Tourwatchout</span>
-        </div>
-        <div style={q.footerItem}>
-          <img src="/assets/voucher/footer-logo.png" alt="tourwatchout" style={q.fLogo} crossOrigin="anonymous" />
-        </div>
+      </div>
+
+      {/* ══════════════════════════════
+          THANK YOU PAGE
+      ══════════════════════════════ */}
+      <div data-pdf-section="true" data-pdf-fullpage="true" style={{ lineHeight: 0, fontSize: 0 }}>
+        <img src="/assets/icons/quotation/bottom-page.jpg" alt="Thank you" crossOrigin="anonymous"
+          style={{ width: "100%", display: "block" }} />
       </div>
 
     </div>
   );
 }
-
-const q = {
-  wrap: {
-    fontFamily: "Arial, Helvetica, sans-serif",
-    letterSpacing: "0.01px",
-    wordSpacing: "0.1px",
-    background: "#fff",
-    width: "100%",
-    maxWidth: 780,
-    margin: "0 auto",
-    border: "1px solid #d0d0d0",
-    boxShadow: "0 4px 24px rgba(0,0,0,0.08)",
-    overflow: "hidden",
-    boxSizing: "border-box",
-    position: "relative",
-    minHeight: 1100,
-    paddingBottom: 58,
-  },
-  header: { display: "flex", justifyContent: "space-between", alignItems: "flex-start", padding: "20px 22px 16px", background: "#fff", gap: 20 },
-  headerLeft: { flex: 1, minWidth: 0 },
-  docTitle: { fontSize: 22, fontWeight: 700, color: DARK, marginBottom: 3, lineHeight: 1.2, letterSpacing: "normal" },
-  realization: { fontSize: 12, fontWeight: 600, color: "#555", marginBottom: 12, lineHeight: 1.4 },
-  infoTable: { borderCollapse: "collapse", width: "100%" },
-  headerLogo: { flexShrink: 0, display: "flex", alignItems: "flex-start", justifyContent: "center", paddingLeft: 12 },
-  logoImg: { width: 140, height: "auto", maxHeight: 120, display: "block", objectFit: "contain" },
-  redBar: { height: 3, background: RED },
-  metaSection: { display: "flex", padding: "14px 22px", background: "#fafafa", borderBottom: "1px solid #ececec", gap: 12 },
-  metaLeft: { flex: 1 },
-  metaDivider: { width: 1, background: "#e0e0e0", flexShrink: 0 },
-  metaRight: { flex: 1 },
-  dayHeader: { display: "flex", alignItems: "center", gap: 8, marginBottom: 8, flexWrap: "wrap" },
-  dayBadge: { background: RED, color: "#fff", fontSize: 11, fontWeight: 700, borderRadius: 4, padding: "3px 10px", flexShrink: 0 },
-  dayDate: { fontSize: 12, fontWeight: 700, color: "#374151" },
-  dayTitle: { fontSize: 13, fontWeight: 700, color: DARK, letterSpacing: "normal" },
-  dayMetaRow: { display: "flex", gap: 18, flexWrap: "wrap", fontSize: 11.5, color: "#555", marginBottom: 4 },
-  dayMeta: { display: "inline-flex", gap: 4 },
-  priceBox: { display: "flex", justifyContent: "space-between", alignItems: "center", background: "#fff5f5", border: `1.5px solid ${RED}`, borderRadius: 10, padding: "14px 18px" },
-  footer: { position: "absolute", bottom: 0, left: 0, right: 0, background: "#fff5f5", borderTop: `2px solid ${RED}`, padding: "11px 22px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 },
-  footerItem: { display: "flex", alignItems: "center", gap: 6 },
-  fIcon: { width: 20, height: 20, objectFit: "contain", flexShrink: 0 },
-  fEmail: { fontSize: 11.5, color: "#333", fontWeight: 600 },
-  fMuted: { fontSize: 11, color: "#888" },
-  fHandle: { fontSize: 11.5, color: "#333", fontWeight: 600 },
-  fLogo: { height: 30, width: "auto", objectFit: "contain" },
-  pkgLabel: { padding: "8px 10px", fontSize: 11.5, fontWeight: 700, color: "#444", background: "#f9fafb", border: "1px solid #e0e0e0", verticalAlign: "top", whiteSpace: "nowrap" },
-  pkgCell:  { padding: "8px 10px", fontSize: 11.5, color: "#333", border: "1px solid #e8e8e8", verticalAlign: "top", lineHeight: 1.6 },
-};

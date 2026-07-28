@@ -42,7 +42,8 @@ function isBlankRichText(html) {
 }
 
 const uid = () => Math.random().toString(36).slice(2);
-const DEF_ITIN = () => ({ _k: uid(), date: "", title: "", tour: "", transfer: "", pickup_time: "", itinerary: "" });
+const DEF_ITIN = () => ({ _k: uid(), date: "", title: "", tour: "", transfer: "", pickup_time: "", itinerary: "", activities: [] });
+const DEF_ACT  = () => ({ type: "transfer", text: "" });
 
 function initItin(initialData) {
   if (!initialData?.itinerary?.length) return [DEF_ITIN()];
@@ -50,6 +51,7 @@ function initItin(initialData) {
     _k:          d._k           || uid(),
     date:        d.date         || "",
     title:       d.title        || "",
+    activities:  d.activities   || [],
     tour:        d.tour         || "",
     transfer:    d.transfer     || "",
     pickup_time: d.pickup_time  || "",
@@ -58,7 +60,7 @@ function initItin(initialData) {
 }
 
 const DEF_RATE     = { occupancy: "Double", roomCat: "Deluxe", nights: "", rooms: "", price: "" };
-const DEF_HOTEL    = { name: "", rates: [{ ...DEF_RATE }] };
+const DEF_HOTEL    = { name: "", location: "", rates: [{ ...DEF_RATE }] };
 const DEF_FLIGHT   = { from: "", to: "", date: "", pax: "", price: "", roundTrip: false, returnPrice: "",
   pnr: "", flightNo: "",
   depCity: "", depIATA: "", depDate: "", depTime: "",
@@ -69,7 +71,7 @@ const DEF_MISC     = { name: "", amount: "" };
 const TIER_LABELS = ["Economy", "Deluxe", "Premium"];
 const TIER_ICONS  = { Economy: "🟢", Deluxe: "🔵", Premium: "🟣" };
 const DEF_PKG = () => ({
-  hotels: [{ name: "", rates: [{ ...DEF_RATE }] }],
+  hotels: [{ name: "", location: "", rates: [{ ...DEF_RATE }] }],
   flights: [{ ...DEF_FLIGHT }],
   transfers: [{ ...DEF_TRANSFER }],
   miscs: [],
@@ -80,6 +82,7 @@ function normHotels(arr) {
   if (!arr?.length) return [{ name: "", rates: [{ ...DEF_RATE }] }];
   return arr.map(h => ({
     name: h.name || "",
+    location: h.location || "",
     rates: h.rates?.length
       ? h.rates.map(r => ({ occupancy: r.occupancy || "Double", roomCat: r.roomCat || h.roomCat || "Deluxe", nights: r.nights ?? "", rooms: r.rooms ?? 1, price: r.price ?? "" }))
       : [{ occupancy: h.occupancy || "Double", roomCat: h.roomCat || "Deluxe", nights: h.nights || "", rooms: h.rooms || 1, price: h.price || "" }],
@@ -187,6 +190,7 @@ const DEF_FORM = {
   termsConditions: DEFAULT_TERMS,
   bookingPolicy: DEFAULT_BOOKING_POLICY,
   cancellationPolicy: DEFAULT_CANCELLATION_POLICY,
+  canxBar: { enabled: false, cutoffDate: "", feeBefore: "", sliderPct: 75 },
   cost: "", margin: "", gstPct: 5, tcsPct: 2, tripExpense: 0,
 };
 
@@ -254,6 +258,7 @@ export default function QuotationBuilder({
         termsConditions:     isBlankRichText(initialData.termsConditions)    ? DEFAULT_TERMS             : initialData.termsConditions,
         bookingPolicy:       isBlankRichText(initialData.bookingPolicy)      ? DEFAULT_BOOKING_POLICY    : initialData.bookingPolicy,
         cancellationPolicy:  isBlankRichText(initialData.cancellationPolicy) ? DEFAULT_CANCELLATION_POLICY : initialData.cancellationPolicy,
+        canxBar: { ...DEF_FORM.canxBar, ...(initialData.canxBar || {}) },
       }
     : {
         ...DEF_FORM,
@@ -391,7 +396,7 @@ export default function QuotationBuilder({
   /* ── shared body builder (used by manual save + auto-save) ── */
   function buildBody() {
     const normTier = tier => ({
-      hotels:    tier.hotels.map(h => ({ name: h.name, rates: (h.rates || []).map(r => ({ occupancy: r.occupancy || "Double", roomCat: r.roomCat || "Deluxe", nights: toN(r.nights), rooms: toN(r.rooms, 1), price: toN(r.price) })) })),
+      hotels:    tier.hotels.map(h => ({ name: h.name, location: h.location || "", rates: (h.rates || []).map(r => ({ occupancy: r.occupancy || "Double", roomCat: r.roomCat || "Deluxe", nights: toN(r.nights), rooms: toN(r.rooms, 1), price: toN(r.price) })) })),
       flights:   tier.flights.map(f => ({ from: f.from, to: f.to, date: f.date, pax: toN(f.pax), price: toN(f.price), roundTrip: !!f.roundTrip, returnPrice: toN(f.returnPrice), pnr: f.pnr||"", flightNo: f.flightNo||"", depCity: f.depCity||"", depIATA: f.depIATA||"", depDate: f.depDate||"", depTime: f.depTime||"", arrCity: f.arrCity||"", arrIATA: f.arrIATA||"", arrDate: f.arrDate||"", arrTime: f.arrTime||"" })),
       transfers: tier.transfers.map(t => ({ cab: (toN(t.perDay) > 0 || toN(t.days) > 0) ? t.cab : "", perDay: toN(t.perDay), days: toN(t.days) })),
       miscs:     tier.miscs.filter(m => m.name || m.amount).map(m => ({ name: m.name, amount: toN(m.amount) })),
@@ -493,13 +498,174 @@ export default function QuotationBuilder({
       const el = document.getElementById("qb-pdf-target");
       if (!el) return null;
 
-      /* Measure footer height before cloning */
-      const footerEl    = document.getElementById("qb-pdf-footer");
-      const footerH     = footerEl ? footerEl.offsetHeight : 0;
-      const scale       = 2;
+      const scale = 2;
 
-      const patch = doc => { const st = doc.createElement("style"); st.textContent = "* { font-family: Arial, Helvetica, sans-serif !important; }"; doc.head.appendChild(st); };
-      const canvas  = await html2canvas(el, { scale, useCORS: true, backgroundColor: "#fff", logging: false, height: el.scrollHeight, windowHeight: el.scrollHeight, onclone: patch });
+      /* Collect clickable link hotspots BEFORE html2canvas clones the DOM. */
+      const elRect   = el.getBoundingClientRect();
+      const pdfLinks = Array.from(el.querySelectorAll("[data-pdf-link]")).map(linkEl => {
+        const url = linkEl.getAttribute("data-pdf-link");
+        const r   = linkEl.getBoundingClientRect();
+        return { url, top: r.top - elRect.top, left: r.left - elRect.left, w: r.width, h: r.height };
+      });
+
+      /* Two section types:
+           header   — start with <MiniHeader /> in canvas; we skip it and composite ours
+           fullpage — raw full-page image (e.g. thank-you); no header overlay, drawn as-is  */
+      const headerSectionTops = Array.from(el.querySelectorAll("[data-pdf-section]:not([data-pdf-fullpage])"))
+        .map(sec => Math.round((sec.getBoundingClientRect().top - elRect.top) * scale))
+        .filter(t => t >= 0)
+        .sort((a, b) => a - b);
+      const fullpageSectionTops = Array.from(el.querySelectorAll("[data-pdf-fullpage]"))
+        .map(sec => Math.round((sec.getBoundingClientRect().top - elRect.top) * scale))
+        .sort((a, b) => a - b);
+      const sectionTops = [...headerSectionTops, ...fullpageSectionTops].sort((a, b) => a - b);
+
+      /* Soft break points: table rows, itinerary day cards — prefer to cut here
+         rather than mid-row. Unlike section tops these do NOT require a header. */
+      const softBreakTops = Array.from(el.querySelectorAll("[data-pdf-break]"))
+        .map(b => Math.round((b.getBoundingClientRect().top - elRect.top) * scale))
+        .filter(t => t > 0)
+        .sort((a, b) => a - b);
+
+      /* Cover page ends where the first section starts.
+         Measure MiniHeader height from live DOM (CSS px) — before html2canvas. */
+      const coverEnd   = sectionTops.length > 0 ? sectionTops[0] : Infinity;
+      const miniSecEl  = el.querySelector("[data-pdf-section]:not([data-pdf-fullpage])");
+      const MINI_H_CSS = miniSecEl && miniSecEl.firstElementChild
+        ? miniSecEl.firstElementChild.offsetHeight : 70;
+
+      /* Preload all SVG icons so they are in the browser cache when html2canvas captures */
+      const iconSrcs = [
+        "/assets/icons/quotation/hotel.svg",
+        "/assets/icons/quotation/activity.svg",
+        "/assets/icons/quotation/transfer.svg",
+        "/assets/icons/quotation/meals.svg",
+        "/assets/icons/quotation/call.svg",
+        "/assets/icons/quotation/whatsapp.svg",
+      ];
+      await Promise.all(iconSrcs.map(src => new Promise(res => {
+        const img = new window.Image();
+        img.onload = res;
+        img.onerror = res;
+        img.crossOrigin = "anonymous";
+        img.src = src;
+      })));
+
+      /* base64 SVGs for pill icons — drawn to <canvas> in the clone to bypass
+         the html2canvas bug where SVG children of border-radius elements vanish */
+      const PILL_B64 = {
+        hotel:    "PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAyMiAyMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNOS4xOTkyNiAxOS44NDFWMTMuOTI3NU0xMC45OTkxIDkuOTQwNDlIMTEuMDA4MU0xMC45OTkxIDYuMzQwMkgxMS4wMDgxTTEyLjc5ODkgMTMuOTI3NVYxOS44NDFNMTMuNjk4OCAxNC40NDA5QzEyLjkyIDEzLjg1NjYgMTEuOTcyNyAxMy41NDA4IDEwLjk5OTEgMTMuNTQwOEMxMC4wMjU1IDEzLjU0MDggOS4wNzgyMSAxMy44NTY2IDguMjk5MzUgMTQuNDQwOU0xNC41OTg3IDkuOTQwNDlIMTQuNjA3N00xNC41OTg3IDYuMzQwMkgxNC42MDc3TTcuMzk5NDQgOS45NDA0OUg3LjQwODQ0TTcuMzk5NDQgNi4zNDAySDcuNDA4NDRNNS41OTk2MiAxLjgzOTg0SDE2LjM5ODVDMTcuMzkyNiAxLjgzOTg0IDE4LjE5ODQgMi42NDU4IDE4LjE5ODQgMy42Mzk5OVYxOC4wNDExQzE4LjE5ODQgMTkuMDM1MyAxNy4zOTI2IDE5Ljg0MTMgMTYuMzk4NSAxOS44NDEzSDUuNTk5NjJDNC42MDU2MSAxOS44NDEzIDMuNzk5OCAxOS4wMzUzIDMuNzk5OCAxOC4wNDExVjMuNjM5OTlDMy43OTk4IDIuNjQ1OCA0LjYwNTYxIDEuODM5ODQgNS41OTk2MiAxLjgzOTg0WiIgc3Ryb2tlPSIjRjc0QzREIiBzdHJva2Utd2lkdGg9IjIuNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PC9zdmc+",
+        activity: "PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAyMiAyMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNOC4xMDAyIDE3LjEwMDhDOC4xMDAyIDE4LjU5MjEgNi44OTEzNiAxOS44MDEgNS40MDAyIDE5LjgwMUMzLjkwOTAzIDE5LjgwMSAyLjcwMDIgMTguNTkyMSAyLjcwMDIgMTcuMTAwOEMyLjcwMDIgMTUuNjA5NSAzLjkwOTAzIDE0LjQwMDYgNS40MDAyIDE0LjQwMDZDNi44OTEzNiAxNC40MDA2IDguMTAwMiAxNS42MDk1IDguMTAwMiAxNy4xMDA4Wk04LjEwMDIgMTcuMTAwOEgxNS43NTAyQzE2LjU4NTYgMTcuMTAwOCAxNy4zODY4IDE2Ljc2ODkgMTcuOTc3NiAxNi4xNzgxQzE4LjU2ODMgMTUuNTg3MyAxOC45MDAyIDE0Ljc4NiAxOC45MDAyIDEzLjk1MDVDMTguOTAwMiAxMy4xMTUgMTguNTY4MyAxMi4zMTM4IDE3Ljk3NzYgMTEuNzIzQzE3LjM4NjggMTEuMTMyMiAxNi41ODU2IDEwLjgwMDMgMTUuNzUwMiAxMC44MDAzSDUuODUwMkM1LjAxNDc2IDEwLjgwMDMgNC4yMTM1NSAxMC40Njg0IDMuNjIyODEgOS44Nzc1OUMzLjAzMjA3IDkuMjg2ODEgMi43MDAyIDguNDg1NTMgMi43MDAyIDcuNjUwMDNDMi43MDAyIDYuODE0NTMgMy4wMzIwNyA2LjAxMzI1IDMuNjIyODEgNS40MjI0NkM0LjIxMzU1IDQuODMxNjggNS4wMTQ3NiA0LjQ5OTc4IDUuODUwMiA0LjQ5OTc4SDEzLjUwMDJNMTMuNTAwMiA0LjQ5OTc4QzEzLjUwMDIgNS45OTEwNiAxNC43MDkgNy4xOTk5OSAxNi4yMDAyIDcuMTk5OTlDMTcuNjkxNCA3LjE5OTk5IDE4LjkwMDIgNS45OTEwNiAxOC45MDAyIDQuNDk5NzhDMTguOTAwMiAzLjAwODQ5IDE3LjY5MTQgMS43OTk1NiAxNi4yMDAyIDEuNzk5NTZDMTQuNzA5IDEuNzk5NTYgMTMuNTAwMiAzLjAwODQ5IDEzLjUwMDIgNC40OTk3OFoiIHN0cm9rZT0iI0Y3NEM0RCIgc3Ryb2tlLXdpZHRoPSIyLjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjwvc3ZnPg==",
+        transfer: "PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAyMiAyMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMTYuOTAwOCAxNC44Mzk4SDE4LjcwMUMxOS4yNDEgMTQuODM5OCAxOS42MDEgMTQuNDc5OCAxOS42MDEgMTMuOTM5OFYxMS4yMzk4QzE5LjYwMSAxMC40Mjk4IDE4Ljk3MSA5LjcwOTg0IDE4LjI1MDkgOS41Mjk4NEMxNi42MzA4IDkuMDc5ODQgMTQuMjAwNiA4LjUzOTg0IDE0LjIwMDYgOC41Mzk4NEMxNC4yMDA2IDguNTM5ODQgMTMuMDMwNSA3LjI3OTg0IDEyLjIyMDUgNi40Njk4NEMxMS43NzA0IDYuMTA5ODQgMTEuMjMwNCA1LjgzOTg0IDEwLjYwMDMgNS44Mzk4NEg0LjI5OTgzQzMuNzU5NzggNS44Mzk4NCAzLjMwOTc1IDYuMTk5ODQgMy4wMzk3MiA2LjY0OTg0TDEuNzc5NjIgOS4yNTk4NEMxLjY2MDQ0IDkuNjA3NDUgMS41OTk2MSA5Ljk3MjM4IDEuNTk5NjEgMTAuMzM5OFYxMy45Mzk4QzEuNTk5NjEgMTQuNDc5OCAxLjk1OTY0IDE0LjgzOTggMi40OTk2OCAxNC44Mzk4SDQuMjk5ODNNMTYuOTAwOCAxNC44Mzk4QzE2LjkwMDggMTUuODM0IDE2LjA5NDkgMTYuNjM5OCAxNS4xMDA3IDE2LjYzOThDMTQuMTA2NSAxNi42Mzk4IDEzLjMwMDUgMTUuODM0IDEzLjMwMDUgMTQuODM5OE0xNi45MDA4IDE0LjgzOThDMTYuOTAwOCAxMy44NDU3IDE2LjA5NDkgMTMuMDM5OCAxNS4xMDA3IDEzLjAzOThDMTQuMTA2NSAxMy4wMzk4IDEzLjMwMDUgMTMuODQ1NyAxMy4zMDA1IDE0LjgzOThNNC4yOTk4MyAxNC44Mzk4QzQuMjk5ODMgMTUuODM0IDUuMTA1NzggMTYuNjM5OCA2LjA5OTk3IDE2LjYzOThDNy4wOTQxNiAxNi42Mzk4IDcuOTAwMTEgMTUuODM0IDcuOTAwMTEgMTQuODM5OE00LjI5OTgzIDE0LjgzOThDNC4yOTk4MyAxMy44NDU3IDUuMTA1NzggMTMuMDM5OCA2LjA5OTk3IDEzLjAzOThDNy4wOTQxNiAxMy4wMzk4IDcuOTAwMTEgMTMuODQ1NyA3LjkwMDExIDE0LjgzOThNMTMuMzAwNSAxNC44Mzk4SDcuOTAwMTEiIHN0cm9rZT0iI0Y3NEM0RCIgc3Ryb2tlLXdpZHRoPSIyLjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjwvc3ZnPg==",
+        meals:    "PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAyMiAyMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNNS4zOTk2MSA3LjE5OTk3TDYuOTc0NzkgMTguMjUyOEM3LjAzNTkzIDE4LjY4NTMgNy4yNTIyNyAxOS4wODA5IDcuNTgzNDggMTkuMzY1N0M3LjkxNDY5IDE5LjY1MDUgOC4zMzgxNyAxOS44MDUyIDguNzc1IDE5LjgwMDlIMTIuODYxNUMxMy4yOTgzIDE5LjgwNTIgMTMuNzIxOCAxOS42NTA1IDE0LjA1MyAxOS4zNjU3QzE0LjM4NDIgMTkuMDgwOSAxNC42MDA1IDE4LjY4NTMgMTQuNjYxNyAxOC4yNTI4TDE2LjIwMDggNy4xOTk5N000LjQ5OTUxIDcuMTk5OTdIMTcuMTAxTTYuMjk5NzIgMTMuNTAwMUM3LjAxMjM3IDEzLjIwMTUgNy43NzczMSAxMy4wNDc4IDguNTQ5OTcgMTMuMDQ3OEM5LjMyMjY0IDEzLjA0NzggMTAuMDg3NiAxMy4yMDE1IDEwLjgwMDIgMTMuNTAwMUMxMS41MTI5IDEzLjc5ODYgMTIuMjc3OCAxMy45NTI0IDEzLjA1MDUgMTMuOTUyNEMxMy44MjMyIDEzLjk1MjQgMTQuNTg4MSAxMy43OTg2IDE1LjMwMDcgMTMuNTAwMU0xMC44MDAyIDcuMTk5OTdMMTEuNzAwMyAxLjc5OTU2SDEzLjUwMDUiIHN0cm9rZT0iI0Y3NEM0RCIgc3Ryb2tlLXdpZHRoPSIyLjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjwvc3ZnPg==",
+        flight:   "PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMjEgMTZWMTRMMTMgOVYzLjVDMTMgMi42NyAxMi4zMyAyIDExLjUgMkMxMC42NyAyIDEwIDIuNjcgMTAgMy41VjlMMiAxNFYxNkwxMCAxMy41VjE5TDggMjAuNVYyMkwxMS41IDIxTDE1IDIyVjIwLjVMMTMgMTlWMTMuNUwyMSAxNloiIGZpbGw9IiNGNzRDNEQiLz48L3N2Zz4=",
+      };
+
+      /* Pre-render each pill icon SVG → PNG data URI using a main-document canvas.
+         This must happen BEFORE html2canvas clones the DOM so onclone can be
+         fully synchronous (no async image loads inside the cloned iframe). */
+      /* Use Blob URL (not data: URI) so canvas.drawImage never triggers a
+         SecurityError — data:image/svg+xml is treated as cross-origin by Chrome
+         in certain contexts, silently producing a blank canvas. */
+      const PILL_PNG = {};
+      await Promise.all(Object.entries(PILL_B64).map(([key, b64]) =>
+        new Promise(resolve => {
+          const offscreen = document.createElement("canvas");
+          offscreen.width = 36; offscreen.height = 36;
+          const ctx = offscreen.getContext("2d");
+          const img = new window.Image();
+          const svgStr = atob(b64);
+          const blobUrl = URL.createObjectURL(new Blob([svgStr], { type: "image/svg+xml" }));
+          img.onload = () => {
+            try { ctx.drawImage(img, 0, 0, 36, 36); } catch (e) {}
+            PILL_PNG[key] = offscreen.toDataURL("image/png");
+            URL.revokeObjectURL(blobUrl);
+            resolve();
+          };
+          img.onerror = () => { URL.revokeObjectURL(blobUrl); resolve(); };
+          img.src = blobUrl;
+        })
+      ));
+
+      /* Pre-render card/section SVG icons → PNG to prevent html2canvas stretching */
+      const CARD_ICON_SRCS = [
+        "/assets/icons/quotation/hotel-details.svg",
+        "/assets/icons/quotation/cab-details.svg",
+        "/assets/icons/quotation/miscellaneous-details.svg",
+        "/assets/icons/quotation/location.svg",
+        "/assets/icons/quotation/hotel.svg",
+        "/assets/icons/quotation/activity.svg",
+        "/assets/icons/quotation/transfer.svg",
+        "/assets/icons/quotation/meals.svg",
+        /* clip-path-free versions for Highlights pills */
+        "/assets/icons/quotation/hotel-pill.svg",
+        "/assets/icons/quotation/activity-pill.svg",
+        "/assets/icons/quotation/transfer-pill.svg",
+        "/assets/icons/quotation/meals-pill.svg",
+      ];
+      const CARD_ICON_PNG = {};
+      const CARD_ICON_RENDER = 88; /* render at 4× display size (22px) → crisp at any html2canvas scale */
+      await Promise.all(CARD_ICON_SRCS.map(src =>
+        new Promise(resolve => {
+          const img = new window.Image();
+          img.onload = () => {
+            const offscreen = document.createElement("canvas");
+            offscreen.width  = CARD_ICON_RENDER;
+            offscreen.height = CARD_ICON_RENDER;
+            try { offscreen.getContext("2d").drawImage(img, 0, 0, CARD_ICON_RENDER, CARD_ICON_RENDER); } catch (e) {}
+            CARD_ICON_PNG[src] = offscreen.toDataURL("image/png");
+            resolve();
+          };
+          img.onerror = resolve;
+          img.crossOrigin = "anonymous";
+          img.src = src;
+        })
+      ));
+
+      /* Synchronous onclone: swap pill icon spans with <img> pointing to the
+         pre-rendered PNGs. <img> elements with data-URI PNGs always render
+         in html2canvas regardless of ancestor border-radius. */
+      /* Pre-load Inter in the main document so the html2canvas clone inherits it.
+         document.fonts.ready waits until all declared fonts are fully available. */
+      if (!document.querySelector('link[data-inter-font]')) {
+        await new Promise(resolve => {
+          const link = document.createElement('link');
+          link.rel = 'stylesheet';
+          link.setAttribute('data-inter-font', 'true');
+          link.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap';
+          link.onload = resolve;
+          link.onerror = resolve;
+          document.head.appendChild(link);
+        });
+      }
+      await document.fonts.ready;
+
+      const patch = doc => {
+        const st = doc.createElement("style");
+        st.textContent = "* { font-family: 'Inter', sans-serif !important; }";
+        doc.head.appendChild(st);
+        doc.querySelectorAll("[data-pill-icon]").forEach(span => {
+          const pngUrl = PILL_PNG[span.getAttribute("data-pill-icon")];
+          if (!pngUrl) return;
+          const img = doc.createElement("img");
+          img.src = pngUrl;
+          img.style.cssText = "width:18px;height:18px;flex-shrink:0;display:block";
+          span.replaceWith(img);
+        });
+        doc.querySelectorAll("[data-card-icon]").forEach(imgEl => {
+          const src = imgEl.getAttribute("data-card-icon");
+          const pngUrl = CARD_ICON_PNG[src];
+          if (!pngUrl) return;
+          imgEl.src = pngUrl;
+          imgEl.style.width = "22px";
+          imgEl.style.height = "auto";
+          imgEl.style.maxHeight = "22px";
+          imgEl.style.objectFit = "contain";
+          imgEl.style.flexShrink = "0";
+          imgEl.style.display = "block";
+        });
+      };
+      const canvas  = await html2canvas(el, { scale, useCORS: true, allowTaint: false, backgroundColor: "#fff", logging: false, height: el.scrollHeight, windowHeight: el.scrollHeight, onclone: patch });
 
       const pdf     = new jsPDF("p", "mm", "a4");
       const pageW   = pdf.internal.pageSize.getWidth();
@@ -507,36 +673,164 @@ export default function QuotationBuilder({
       const pxPerMm = canvas.width / pageW;
       const pagePx  = Math.round(pageH * pxPerMm);
 
-      /* Pad canvas to exact multiple of pagePx; move footer to very bottom */
-      const totalPages   = Math.ceil(canvas.height / pagePx);
-      const paddedHeight = totalPages * pagePx;
-      const padded       = document.createElement("canvas");
-      padded.width       = canvas.width;
-      padded.height      = paddedHeight;
-      const ctx          = padded.getContext("2d");
-      ctx.fillStyle      = "#fff";
-      ctx.fillRect(0, 0, padded.width, padded.height);
+      /* Derived constants (now that pagePx is known).
+         Each content page layout:
+           [MINI_H_PX]     ← composited MiniHeader strip
+           [effectiveH px] ← actual content
+           [BOTTOM_PAD_PX] ← 50 CSS px of white breathing room  */
+      const MINI_H_PX     = Math.round(MINI_H_CSS * scale);
+      const TOP_PAD_PX    = Math.round(20 * scale);   // gap below header border
+      const BOTTOM_PAD_PX = Math.round(50 * scale);   // breathing room at page bottom
+      const CONTENT_Y     = MINI_H_PX + TOP_PAD_PX;  // where content starts on page
+      const effectiveH    = pagePx - CONTENT_Y - BOTTOM_PAD_PX;
 
-      const footerPx    = footerH * scale;           // footer height in canvas px
-      const contentEnd  = canvas.height - footerPx;  // where footer starts in original canvas
+      /* Extract the MiniHeader strip from the rendered canvas at the position
+         of the first header section — all MiniHeaders are identical. */
+      let miniStripCanvas = null;
+      if (headerSectionTops.length > 0 && MINI_H_PX > 0) {
+        miniStripCanvas = document.createElement("canvas");
+        miniStripCanvas.width  = canvas.width;
+        miniStripCanvas.height = MINI_H_PX;
+        miniStripCanvas.getContext("2d")
+          .drawImage(canvas, 0, headerSectionTops[0], canvas.width, MINI_H_PX,
+                              0, 0,                   canvas.width, MINI_H_PX);
+      }
 
-      /* Draw all content above footer */
-      ctx.drawImage(canvas, 0, 0, canvas.width, contentEnd, 0, 0, canvas.width, contentEnd);
-      /* Draw footer pinned to very bottom of padded canvas */
-      ctx.drawImage(canvas, 0, contentEnd, canvas.width, footerPx, 0, paddedHeight - footerPx, canvas.width, footerPx);
+      /* Break helpers
+         coverBreak  — used while still in cover area; breaks at first section start
+         contentBreak — used for content pages; finds next section boundary that is
+                        ≥ 35% into the effective content area (avoids tiny pages).
+                        Returns an absolute canvas y position.                        */
+      function coverBreak(yPx) {
+        const ideal = yPx + pagePx;
+        if (ideal >= coverEnd) return coverEnd;
+        const half = yPx + Math.round(pagePx * 0.5);
+        const c = sectionTops.filter(t => t >= half && t < ideal);
+        return c.length ? c[c.length - 1] : ideal;
+      }
+      function contentBreak(fromCanvas) {
+        const ideal = fromCanvas + effectiveH;
+        if (ideal >= canvas.height) return canvas.height;
+        const min35 = fromCanvas + Math.round(effectiveH * 0.35);
+        // Hard break: section boundary in the latter 65% of page
+        const secC = sectionTops.filter(t => t >= min35 && t < ideal);
+        if (secC.length) return secC[secC.length - 1];
+        // Soft break: table row / day-card boundary — fallback to avoid mid-row cuts
+        const softC = softBreakTops.filter(t => t >= min35 && t < ideal);
+        if (softC.length) return softC[softC.length - 1];
+        return ideal;
+      }
 
-      /* Slice into A4 pages — every slice is now exactly pagePx tall */
-      let yPx = 0, first = true;
-      while (yPx < padded.height) {
+      /* ── Page slicer ──────────────────────────────────────────────────────
+         yCanvas tracks our position in the main (raw) canvas.
+         Three page types:
+           cover     : direct canvas slice, full pagePx height
+           fullpage  : direct canvas slice (thank-you image), no header
+           content   : composited MiniHeader + content + bottom padding       */
+      let yCanvas = 0, first = true;
+
+      while (yCanvas < canvas.height) {
         if (!first) pdf.addPage();
         first = false;
-        const sl = document.createElement("canvas");
-        sl.width  = padded.width;
-        sl.height = pagePx;
-        sl.getContext("2d").drawImage(padded, 0, yPx, padded.width, pagePx, 0, 0, padded.width, pagePx);
-        pdf.addImage(sl.toDataURL("image/png"), "PNG", 0, 0, pageW, pageH);
-        yPx += pagePx;
+
+        /* ── COVER ──────────────────────────────────────────────────── */
+        if (yCanvas < coverEnd) {
+          const breakPt = Math.min(coverBreak(yCanvas), coverEnd);
+          const sliceH  = Math.max(1, breakPt - yCanvas);
+          const sl = document.createElement("canvas");
+          sl.width  = canvas.width;
+          sl.height = sliceH;
+          sl.getContext("2d").drawImage(canvas, 0, yCanvas, canvas.width, sliceH,
+                                                0, 0,       canvas.width, sliceH);
+          pdf.addImage(sl.toDataURL("image/png"), "PNG", 0, 0, pageW, sliceH / pxPerMm);
+          pdfLinks.forEach(({ url, top, left, w, h }) => {
+            const cy = top * scale, cb = cy + h * scale;
+            if (cb > yCanvas && cy < yCanvas + sliceH)
+              pdf.link((left * scale) / pxPerMm, Math.max(0, (cy - yCanvas) / pxPerMm),
+                       (w * scale) / pxPerMm,    (h * scale) / pxPerMm, { url });
+          });
+          yCanvas = breakPt;
+
+        /* ── FULLPAGE (e.g. thank-you image) ────────────────────────── */
+        } else if (fullpageSectionTops.some(t => Math.abs(t - yCanvas) < 6)) {
+          const nextSec = sectionTops.find(t => t > yCanvas) ?? canvas.height;
+          const sliceH  = Math.max(1, nextSec - yCanvas);
+          const sl = document.createElement("canvas");
+          sl.width  = canvas.width;
+          sl.height = sliceH;
+          sl.getContext("2d").drawImage(canvas, 0, yCanvas, canvas.width, sliceH,
+                                                0, 0,       canvas.width, sliceH);
+          pdf.addImage(sl.toDataURL("image/png"), "PNG", 0, 0, pageW, sliceH / pxPerMm);
+          yCanvas += sliceH;
+
+        /* ── CONTENT (all other sections + overflow) ─────────────────── */
+        } else {
+          const atSection  = sectionTops.some(t => Math.abs(t - yCanvas) < 6);
+          /* If at a section boundary, the canvas already has a MiniHeader there.
+             Skip it in the source so we don't double up with our composited one. */
+          const contentFrom = atSection ? yCanvas + MINI_H_PX : yCanvas;
+          const breakPt     = contentBreak(contentFrom);
+          const contentH    = Math.min(Math.max(0, breakPt - contentFrom),
+                                       canvas.height - contentFrom);
+
+          /* Build a fixed-height page canvas (always pagePx tall → always pageH mm) */
+          const pg = document.createElement("canvas");
+          pg.width  = canvas.width;
+          pg.height = pagePx;
+          const pgCtx = pg.getContext("2d");
+          pgCtx.fillStyle = "#fff";
+          pgCtx.fillRect(0, 0, pg.width, pg.height);
+
+          if (miniStripCanvas) pgCtx.drawImage(miniStripCanvas, 0, 0);
+
+          /* Draw content in segments, skipping any embedded section MiniHeaders.
+             This happens when a new section starts within the first 35% of a page
+             (too early to use as a break point) — its canvas header must be hidden
+             so it doesn't appear mid-page alongside our composited one.             */
+          if (contentH > 0) {
+            let srcY = contentFrom;
+            let dstY = CONTENT_Y;
+            for (const secTop of headerSectionTops) {
+              if (secTop > srcY && secTop < contentFrom + contentH) {
+                const segH = secTop - srcY;
+                if (segH > 0) {
+                  pgCtx.drawImage(canvas, 0, srcY, canvas.width, segH,
+                                          0, dstY,  canvas.width, segH);
+                  dstY += segH;
+                }
+                srcY = secTop + MINI_H_PX; // skip the section's own canvas header
+              }
+            }
+            const remainH = Math.max(0, contentFrom + contentH - srcY);
+            if (remainH > 0 && srcY < canvas.height) {
+              const clipped = Math.min(remainH, canvas.height - srcY);
+              pgCtx.drawImage(canvas, 0, srcY, canvas.width, clipped,
+                                      0, dstY,  canvas.width, clipped);
+            }
+          }
+
+          pdf.addImage(pg.toDataURL("image/png"), "PNG", 0, 0, pageW, pageH);
+
+          /* Link annotations: adjust y relative to contentFrom, shifted by MINI_H.
+             Also subtract any section-header rows that were skipped during drawing
+             (each skipped header shifts visual content up by MINI_H_PX). */
+          pdfLinks.forEach(({ url, top, left, w, h }) => {
+            const cy = top * scale, cb = cy + h * scale;
+            if (cb > contentFrom && cy < contentFrom + contentH) {
+              const xMm = (left * scale) / pxPerMm;
+              let skippedPx = 0;
+              for (const secTop of headerSectionTops) {
+                if (secTop > contentFrom && secTop < cy) skippedPx += MINI_H_PX;
+              }
+              const yMm = Math.max(0, (cy - contentFrom + CONTENT_Y - skippedPx) / pxPerMm);
+              pdf.link(xMm, yMm, (w * scale) / pxPerMm, (h * scale) / pxPerMm, { url });
+            }
+          });
+
+          yCanvas = breakPt;
+        }
       }
+
       return pdf;
     } finally { setPdfLoading(false); }
   }
@@ -669,15 +963,62 @@ export default function QuotationBuilder({
                             : setItin(p => p.map((x, j) => j === i ? { ...x, transfer: e.target.value } : x))} />
                       </Fl>
                     </div>
+                    {/* Activities list */}
                     <div>
-                      <Fl l="Itinerary Details">
-                        <RTE
-                          value={toRichText(d.itinerary || "")}
-                          onChange={v => setItin(p => p.map((x, j) => j === i ? { ...x, itinerary: v } : x))}
-                          placeholder="Describe what happens this day…"
-                          minHeight={200}
-                        />
-                      </Fl>
+                      <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".05em", color: "#6B7A99", marginBottom: 6 }}>Activities</div>
+                      {(d.activities || []).map((act, ai) => {
+                        const actType = act.type || "transfer";
+                        const ACT_OPTS = [
+                          { type: "transfer", src: "/assets/icons/quotation/transfer.svg",  label: "Transfer" },
+                          { type: "hotel",    src: "/assets/icons/quotation/hotel.svg",     label: "Hotel"    },
+                          { type: "meals",    src: "/assets/icons/quotation/meals.svg",     label: "Meals"    },
+                          { type: "activity", src: "/assets/icons/quotation/activity.svg",  label: "Activity" },
+                        ];
+                        return (
+                          <div key={ai} style={{ display: "flex", gap: 6, marginBottom: 6, alignItems: "center" }}>
+                            {/* Icon type picker */}
+                            <div style={{ display: "flex", gap: 3, border: "1px solid #E4E9F2", borderRadius: 9, padding: 3, background: "#F8FAFD", flexShrink: 0 }}>
+                              {ACT_OPTS.map(opt => (
+                                <button
+                                  key={opt.type}
+                                  type="button"
+                                  title={opt.label}
+                                  onClick={() => setItin(p => p.map((x, j) => j !== i ? x : {
+                                    ...x, activities: x.activities.map((a, k) => k !== ai ? a : { ...a, type: opt.type })
+                                  }))}
+                                  style={{
+                                    width: 30, height: 30, borderRadius: 6, cursor: "pointer",
+                                    display: "flex", alignItems: "center", justifyContent: "center",
+                                    background: actType === opt.type ? "#EFF4FF" : "transparent",
+                                    border: actType === opt.type ? "1.5px solid #2563EB" : "1.5px solid transparent",
+                                  }}
+                                >
+                                  <img src={opt.src} alt={opt.label} style={{ width: 16, height: 16, objectFit: "contain" }} />
+                                </button>
+                              ))}
+                            </div>
+                            <MiniRTE
+                              value={act.text || ""}
+                              placeholder="e.g. Private Cab to Hotel, Check in to XYZ..."
+                              onChange={v => setItin(p => p.map((x, j) => j !== i ? x : {
+                                ...x, activities: x.activities.map((a, k) => k !== ai ? a : { ...a, text: v })
+                              }))}
+                            />
+                            <button
+                              style={{ background: "#FEE2E2", border: "none", color: "#BE123C", borderRadius: 6, padding: "6px 10px", fontSize: 12, fontWeight: 700, cursor: "pointer", flexShrink: 0 }}
+                              onClick={() => setItin(p => p.map((x, j) => j !== i ? x : {
+                                ...x, activities: x.activities.filter((_, k) => k !== ai)
+                              }))}
+                            >✕</button>
+                          </div>
+                        );
+                      })}
+                      <button
+                        style={{ ...QS.addBtnBottom, marginTop: 4, fontSize: 12 }}
+                        onClick={() => setItin(p => p.map((x, j) => j !== i ? x : {
+                          ...x, activities: [...(x.activities || []), DEF_ACT()]
+                        }))}
+                      >+ Add Activity</button>
                     </div>
 
                   </div>
@@ -731,10 +1072,13 @@ export default function QuotationBuilder({
                   <div key={i} style={QS.rowBox}>
                     {hotels.length > 1 && <button style={QS.remBtn} onClick={() => remRow(setHotels, i)}>✕ Hotel</button>}
                     {hotels.length > 1 && <div style={QS.rowLabel}>Hotel {i + 1}</div>}
-                    {/* Hotel name */}
-                    <div style={{ marginBottom: 12 }}>
-                      <Fl l="Select Hotel">
-                        <input style={QS.inp} placeholder="Hotel name, city" value={h.name} onChange={e => updArr(setHotels, i, "name", e.target.value)} />
+                    {/* Hotel location + name */}
+                    <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+                      <Fl l="Location / City" style={{ flex: "0 0 160px" }}>
+                        <input style={QS.inp} placeholder="e.g. Srinagar" value={h.location || ""} onChange={e => updArr(setHotels, i, "location", e.target.value)} />
+                      </Fl>
+                      <Fl l="Hotel Name" style={{ flex: 1 }}>
+                        <input style={QS.inp} placeholder="Hotel name" value={h.name} onChange={e => updArr(setHotels, i, "name", e.target.value)} />
                       </Fl>
                     </div>
                     {/* Rate rows */}
@@ -839,7 +1183,7 @@ export default function QuotationBuilder({
             </Sec>
 
             {/* ── Miscellaneous ── */}
-            <Sec label={`➕  Miscellaneous — ${activePkg}`}>
+            <Sec label={`➕  Add on — ${activePkg}`}>
               {miscs.length === 0 && (
                 <div style={{ fontSize: 12, color: "#9CA3AF", marginBottom: 10 }}>Add any additional services — sightseeing, entry fees, boat rides, etc.</div>
               )}
@@ -976,7 +1320,7 @@ export default function QuotationBuilder({
 
             {/* ── Terms & Conditions / Booking Policy / Cancellation Policy ── */}
             <Sec
-              label="📜  Terms, Booking & Cancellation Policy"
+              label="📜  Booking & Cancellation Policy"
               right={<span style={{ fontSize: 12, opacity: 0.85, fontWeight: 600 }}>Customer side · shown on quote PDF</span>}
             >
               <div>
@@ -990,19 +1334,84 @@ export default function QuotationBuilder({
               <div style={{ height: 12 }} />
               <div>
                 <div style={QS.policyLabel}>Cancellation Policy</div>
+                {/* ── Cancellation Bar (visual progress bar) ── */}
+                <div style={{ border: "1.5px solid #E4E9F2", borderRadius: 10, padding: "14px 16px", marginBottom: 12, background: "#F8FAFD" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+                    <input type="checkbox" id="canxBarEnabled" checked={!!form.canxBar?.enabled}
+                      onChange={e => upd("canxBar", { ...form.canxBar, enabled: e.target.checked })}
+                      style={{ width: 16, height: 16, cursor: "pointer" }} />
+                    <label htmlFor="canxBarEnabled" style={{ fontSize: 13, fontWeight: 700, color: "#0F1B33", cursor: "pointer" }}>
+                      Show Cancellation Progress Bar
+                    </label>
+                  </div>
+                  {form.canxBar?.enabled && (
+                    <div>
+                      <div style={{ display: "flex", gap: 10, marginBottom: 12 }}>
+                        <Fl l="Cutoff Date" style={{ flex: 1 }}>
+                          <input type="date" style={{ ...QS.inp, colorScheme: "light" }}
+                            value={form.canxBar?.cutoffDate || ""}
+                            onChange={e => upd("canxBar", { ...form.canxBar, cutoffDate: e.target.value })} />
+                        </Fl>
+                        <Fl l="Fee Before Cutoff (₹)" style={{ flex: 1 }}>
+                          <input type="number" style={QS.inp} placeholder="e.g. 15500"
+                            value={form.canxBar?.feeBefore || ""}
+                            onChange={e => upd("canxBar", { ...form.canxBar, feeBefore: e.target.value })} />
+                        </Fl>
+                      </div>
+                      <Fl l={`Slider Position — ${form.canxBar?.sliderPct ?? 75}%`}>
+                        <input type="range" min={10} max={90} step={1}
+                          value={form.canxBar?.sliderPct ?? 75}
+                          onChange={e => upd("canxBar", { ...form.canxBar, sliderPct: +e.target.value })}
+                          style={{ width: "100%", accentColor: "#2B8E8E", cursor: "pointer" }} />
+                      </Fl>
+                      {/* Live preview */}
+                      {form.canxBar?.cutoffDate && (
+                        <div style={{ marginTop: 14, border: "1px solid #DFF0F0", borderRadius: 8, padding: "12px 14px", background: "#fff" }}>
+                          {(() => {
+                            const pct = Math.max(8, Math.min(92, +(form.canxBar?.sliderPct ?? 75)));
+                            const d   = new Date(form.canxBar?.cutoffDate);
+                            const lbl = isNaN(d.getTime()) ? form.canxBar?.cutoffDate
+                              : d.toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "2-digit" });
+                            const fee = (+form.canxBar?.feeBefore || 0).toLocaleString("en-IN");
+                            return (
+                              <>
+                                <div style={{ fontSize: 11, fontWeight: 700, color: "#888", marginBottom: 10, textTransform: "uppercase", letterSpacing: ".04em" }}>Preview</div>
+                                <div style={{ position: "relative", height: 8, borderRadius: 4, marginLeft: 12, marginRight: 12, marginBottom: 22 }}>
+                                  <div style={{ position: "absolute", inset: 0, borderRadius: 4, background: "linear-gradient(to right, #C8E6C9, #FFCDD2)" }} />
+                                  <div style={{ position: "absolute", left: 0, top: 0, height: "100%", width: `${pct}%`, background: "linear-gradient(to right,#43A047,#AED581)", borderRadius: "4px 0 0 4px" }} />
+                                  <div style={{ position: "absolute", left: -12, top: "50%", transform: "translateY(-50%)", width: 22, height: 22, borderRadius: "50%", background: "#43A047", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                    <span style={{ color: "#fff", fontSize: 11, fontWeight: 800 }}>✓</span>
+                                  </div>
+                                  <div style={{ position: "absolute", left: `${pct}%`, top: "50%", transform: "translate(-50%,-50%)", width: 24, height: 24, borderRadius: "50%", background: "#fff", border: "2.5px solid #EF5350", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                    <span style={{ color: "#EF5350", fontSize: 11, fontWeight: 800 }}>✕</span>
+                                  </div>
+                                  <div style={{ position: "absolute", right: -12, top: "50%", transform: "translateY(-50%)", width: 22, height: 22, borderRadius: "50%", background: "#EF5350", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                    <span style={{ color: "#fff", fontSize: 11, fontWeight: 800 }}>✕</span>
+                                  </div>
+                                </div>
+                                <div style={{ display: "flex", justifyContent: "space-between" }}>
+                                  <div>
+                                    <div style={{ fontSize: 13, fontWeight: 800, color: "#2B8E8E" }}>Till {lbl}</div>
+                                    <div style={{ fontSize: 11, color: "#1a1a2e" }}>₹ {fee} Cancellation fee</div>
+                                  </div>
+                                  <div style={{ textAlign: "right" }}>
+                                    <div style={{ fontSize: 13, fontWeight: 800, color: "#E53935" }}>After {lbl}</div>
+                                    <div style={{ fontSize: 11, fontWeight: 700, color: "#1a1a2e" }}>Non Refundable</div>
+                                    <div style={{ fontSize: 10, color: "#888" }}>Cancellation is not allowed</div>
+                                  </div>
+                                </div>
+                              </>
+                            );
+                          })()}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
                 <RTE
                   value={toRichText(form.cancellationPolicy || "")}
                   onChange={v => upd("cancellationPolicy", v)}
                   placeholder="Cancellation policy…"
-                />
-              </div>
-              <div style={{ height: 12 }} />
-              <div>
-                <div style={QS.policyLabel}>Terms & Conditions</div>
-                <RTE
-                  value={toRichText(form.termsConditions || "")}
-                  onChange={v => upd("termsConditions", v)}
-                  placeholder="Terms & conditions…"
                 />
               </div>
             </Sec>
@@ -1195,6 +1604,28 @@ function CR({ l, v, vc }) {
 }
 const FONT_FAMILIES = ["Default", "Arial", "Georgia", "Tahoma", "Verdana", "Courier New", "Times New Roman"];
 const FONT_SIZES    = ["Default", "10px", "12px", "13px", "14px", "16px", "18px", "20px", "24px", "28px", "32px"];
+
+function MiniRTE({ value, onChange, placeholder }) {
+  const ref = useRef(null);
+  useEffect(() => { if (ref.current) ref.current.innerHTML = value || ""; }, []);
+  const exec = cmd => { document.execCommand(cmd, false, null); if (ref.current) onChange(ref.current.innerHTML); ref.current?.focus(); };
+  return (
+    <div style={{ border: "1px solid #E4E9F2", borderRadius: 9, overflow: "hidden", background: "#F8FAFD", flex: 1 }}>
+      <div style={{ display: "flex", gap: 3, padding: "3px 7px", background: "#EFF4FF", borderBottom: "1px solid #E4E9F2" }}>
+        <button type="button" onMouseDown={e => { e.preventDefault(); exec("bold"); }} style={{ ...QS.rteBtn, padding: "1px 7px", fontWeight: 800 }}>B</button>
+        <button type="button" onMouseDown={e => { e.preventDefault(); exec("italic"); }} style={{ ...QS.rteBtn, padding: "1px 7px", fontStyle: "italic" }}>I</button>
+        <button type="button" onMouseDown={e => { e.preventDefault(); exec("removeFormat"); }} style={{ ...QS.rteBtn, padding: "1px 7px", color: "#BE123C", fontSize: 10 }}>Clear</button>
+      </div>
+      <div
+        ref={ref}
+        contentEditable
+        suppressContentEditableWarning
+        onInput={() => { if (ref.current) onChange(ref.current.innerHTML); }}
+        style={{ minHeight: 30, padding: "6px 9px", fontSize: 13, color: "#0F1B33", outline: "none", lineHeight: 1.5, fontFamily: "inherit" }}
+      />
+    </div>
+  );
+}
 
 function RTE({ value, onChange, placeholder, minHeight }) {
   const ref = useRef(null);
