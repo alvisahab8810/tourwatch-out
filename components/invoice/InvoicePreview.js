@@ -138,14 +138,6 @@ export default function InvoicePreview({ data }) {
             <td style={{ ...iv.td, ...iv.subTotalCell, textAlign: "right" }}>{fmt(subTotal)}</td>
           </tr>
 
-          {/* Convenience Fee row (18% mode) */}
-          {is18 && convFee > 0 && (
-            <tr style={iv.taxRow}>
-              <td style={{ ...iv.td, textAlign: "left" }} colSpan={4}>Convenience Fee</td>
-              <td style={{ ...iv.td, textAlign: "right" }}>{fmt(convFee)}</td>
-            </tr>
-          )}
-
           {/* GST rows */}
           {cgstAmt > 0 && (
             <tr style={iv.taxRow}>
