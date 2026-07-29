@@ -708,11 +708,32 @@ export default function QuotationBuilder({
       const pxPerMm = canvas.width / pageW;
       const pagePx  = Math.round(pageH * pxPerMm);
 
-      /* addSlice — paint a vertical region of the source canvas onto a white
-         A4-sized page canvas, then add it to the PDF.  Any space below the
-         slice stays white (short last page).  Link annotations are placed
-         relative to fromY so they land at the correct position. */
-      const addSlice = (fromY, sliceH) => {
+      /* Layout constants for content pages:
+           [MINI_H_PX]   ← composited MiniHeader (real header from canvas)
+           [PAD_PX 60px] ← blank breathing room below header
+           [content]     ← actual page content
+           [PAD_PX 60px] ← blank breathing room at page bottom             */
+      const MINI_H_PX  = Math.round(MINI_H_CSS * scale);
+      const PAD_PX     = Math.round(60 * scale);
+      const CONTENT_Y  = MINI_H_PX + PAD_PX;
+      const effectiveH = pagePx - CONTENT_Y - PAD_PX;
+
+      /* Extract the MiniHeader strip once from the first detected section.
+         All MiniHeaders are visually identical so one strip serves every page. */
+      let miniStripCanvas = null;
+      if (headerSectionTops.length > 0 && MINI_H_PX > 0) {
+        miniStripCanvas = document.createElement("canvas");
+        miniStripCanvas.width  = canvas.width;
+        miniStripCanvas.height = MINI_H_PX;
+        miniStripCanvas.getContext("2d").drawImage(
+          canvas, 0, headerSectionTops[0], canvas.width, MINI_H_PX,
+                  0, 0,                    canvas.width, MINI_H_PX,
+        );
+      }
+
+      /* Direct slice helper — used for cover and fullpage sections which have
+         their own design and don't need a composited header. */
+      const addDirectSlice = (fromY, sliceH) => {
         const h = Math.max(1, Math.min(sliceH, canvas.height - fromY));
         const pg = document.createElement("canvas");
         pg.width = canvas.width; pg.height = pagePx;
@@ -729,52 +750,107 @@ export default function QuotationBuilder({
         });
       };
 
-      /* ── Page slicer ──────────────────────────────────────────────────────
-         Simple direct slicing — no MiniHeader compositing.  The canvas already
-         contains a real MiniHeader at the top of every [data-pdf-section], so
-         we just cut at section or soft-break boundaries to keep them intact.
+      /* Content page helper — composites the MiniHeader at the top (exactly once),
+         then draws source content in the space below it, skipping any canvas
+         MiniHeaders that land in the middle of this page so they never appear
+         twice on the same page. */
+      const addContentPage = (contentStart, cutSrc) => {
+        const pg = document.createElement("canvas");
+        pg.width = canvas.width; pg.height = pagePx;
+        const ctx = pg.getContext("2d");
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, pg.width, pg.height);
 
-         Page types:
-           fullpage  — render the section's exact pixel height (thank-you image)
-           normal    — pagePx-tall slice; cut preferably at a section or soft
-                       break boundary in the latter 45% of the page              */
+        if (miniStripCanvas) ctx.drawImage(miniStripCanvas, 0, 0);
+
+        /* Draw source content in segments, skipping canvas section headers. */
+        let srcY = contentStart, dstY = CONTENT_Y;
+        for (const secTop of headerSectionTops) {
+          if (secTop > srcY && secTop < cutSrc) {
+            const segH = secTop - srcY;
+            if (segH > 0) {
+              ctx.drawImage(canvas, 0, srcY, canvas.width, segH, 0, dstY, canvas.width, segH);
+              dstY += segH;
+            }
+            srcY = secTop + MINI_H_PX;
+          }
+        }
+        const remH = Math.min(Math.max(0, cutSrc - srcY), canvas.height - srcY);
+        if (remH > 0) ctx.drawImage(canvas, 0, srcY, canvas.width, remH, 0, dstY, canvas.width, remH);
+
+        pdf.addImage(pg.toDataURL("image/png"), "PNG", 0, 0, pageW, pageH);
+
+        pdfLinks.forEach(({ url, top, left, w: lw, h: lh }) => {
+          const cy = top * scale, cb = cy + lh * scale;
+          if (cb > contentStart && cy < cutSrc) {
+            let skipped = 0;
+            for (const t of headerSectionTops)
+              if (t >= contentStart && t < cy) skipped += MINI_H_PX;
+            pdf.link(
+              (left * scale) / pxPerMm,
+              Math.max(0, (cy - contentStart + CONTENT_Y - skipped) / pxPerMm),
+              (lw * scale) / pxPerMm,
+              (lh * scale) / pxPerMm,
+              { url },
+            );
+          }
+        });
+      };
+
+      /* ── Page slicer ──────────────────────────────────────────────────────
+         yCanvas: current position in the source canvas.
+
+         Cover  — direct slice (has its own full-page design, no composited header).
+         Fullpage sections (thank-you image) — direct slice.
+         Content pages — composited MiniHeader + 60px gap + content + 60px bottom.
+
+         Cut strategy for content pages:
+           Prefer a section boundary in the latter 45–100% of effectiveH so
+           the next page naturally starts with a fresh header.
+           Fall back to a soft break (day-card / table row), then hard cut.   */
       let yCanvas = 0, first = true;
 
       while (yCanvas < canvas.height) {
         if (!first) pdf.addPage();
         first = false;
 
-        const remaining = canvas.height - yCanvas;
+        /* ── Cover ── */
+        if (yCanvas < coverEnd) {
+          const cutAt = Math.min(yCanvas + pagePx, coverEnd);
+          addDirectSlice(yCanvas, cutAt - yCanvas);
+          yCanvas = cutAt;
+          continue;
+        }
 
-        /* Fullpage section (e.g. thank-you image) */
+        /* ── Fullpage ── */
         if (fullpageSectionTops.some(t => Math.abs(t - yCanvas) < 20)) {
           const nextBoundary = sectionTops.find(t => t > yCanvas) ?? canvas.height;
-          addSlice(yCanvas, nextBoundary - yCanvas);
+          addDirectSlice(yCanvas, nextBoundary - yCanvas);
           yCanvas = nextBoundary;
           continue;
         }
 
-        /* Last page — whatever is left */
-        if (remaining <= pagePx) {
-          addSlice(yCanvas, remaining);
+        /* ── Content page ── */
+        const atSection   = headerSectionTops.some(t => Math.abs(t - yCanvas) < 20);
+        const contentFrom = atSection ? yCanvas + MINI_H_PX : yCanvas;
+
+        const remaining = canvas.height - contentFrom;
+        if (remaining <= effectiveH) {
+          addContentPage(contentFrom, canvas.height);
           break;
         }
 
-        /* Normal page: find the best cut point.
-           Prefer a section boundary (new MiniHeader) in the latter 45–100% of
-           the page so the cut lands cleanly at the start of a new section.
-           Fall back to a soft break (day-card / table row), then hard pagePx. */
-        const minCut       = yCanvas + Math.round(pagePx * 0.45);
-        const maxCut       = yCanvas + pagePx;
-        const sectionCuts  = headerSectionTops.filter(t => t >= minCut && t < maxCut);
-        const softCuts     = softBreakTops.filter(t => t >= minCut && t < maxCut);
+        const minCut      = contentFrom + Math.round(effectiveH * 0.45);
+        const maxCut      = contentFrom + effectiveH;
+        const sectionCuts = headerSectionTops.filter(t => t >= minCut && t < maxCut);
+        const softCuts    = softBreakTops.filter(t => t >= minCut && t < maxCut);
 
-        const cutAt = sectionCuts.length ? sectionCuts[sectionCuts.length - 1]
-                    : softCuts.length    ? softCuts[softCuts.length - 1]
-                    : maxCut;
+        const cutSrc = sectionCuts.length ? sectionCuts[sectionCuts.length - 1]
+                     : softCuts.length    ? softCuts[softCuts.length - 1]
+                     : maxCut;
 
-        addSlice(yCanvas, cutAt - yCanvas);
-        yCanvas = cutAt;
+        addContentPage(contentFrom, cutSrc);
+        yCanvas = cutSrc;
       }
 
       return pdf;
