@@ -668,13 +668,15 @@ export default function QuotationBuilder({
         softBreakTops = Array.from(cloneEl.querySelectorAll("[data-pdf-break]"))
           .map(b => Math.round(relTop(b) * scale)).filter(t => t > 0).sort((a, b) => a - b);
 
-        /* Inject a 4×4 magenta marker at the top-left of each header section.
-           After rendering we scan the canvas to find their pixel-exact positions. */
+        /* Inject markers into the ROOT container (not inside each section) so
+           they always land at canvas x=0, regardless of section padding/margin.
+           Each marker's top = relTop(sec) so it aligns with the section start. */
+        if (cloneEl.style.position !== "absolute" && cloneEl.style.position !== "fixed")
+          cloneEl.style.position = "relative";
         cloneEl.querySelectorAll("[data-pdf-section]:not([data-pdf-fullpage])").forEach(sec => {
-          sec.style.position = "relative";
           const m = doc.createElement("div");
-          m.style.cssText = `position:absolute;top:0;left:0;width:4px;height:4px;background:rgb(${MK[0]},${MK[1]},${MK[2]});z-index:99999;pointer-events:none;`;
-          sec.insertBefore(m, sec.firstChild);
+          m.style.cssText = `position:absolute;top:${relTop(sec)}px;left:0;width:4px;height:4px;background:rgb(${MK[0]},${MK[1]},${MK[2]});z-index:99999;pointer-events:none;`;
+          cloneEl.appendChild(m);
         });
       };
       const canvas  = await html2canvas(el, { scale, useCORS: true, allowTaint: false, backgroundColor: "#fff", logging: false, height: el.scrollHeight, windowHeight: el.scrollHeight, onclone: patch });
