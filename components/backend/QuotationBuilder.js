@@ -623,10 +623,6 @@ export default function QuotationBuilder({
       }
       await document.fonts.ready;
 
-      /* Marker colour used to detect section tops from the canvas.
-         Chosen to be distinctive and not occur in our UI palette. */
-      const MK = [255, 0, 128]; // magenta
-
       const patch = doc => {
         const st = doc.createElement("style");
         st.textContent = "* { font-family: 'Inter', sans-serif !important; }";
@@ -655,52 +651,27 @@ export default function QuotationBuilder({
         const cloneEl = doc.getElementById("qb-pdf-target");
         if (!cloneEl) return;
 
-        /* Measure MINI_H_CSS and soft-break positions via offsetTop (still fine for these). */
+        /* Measure all section / break positions from the cloned document using
+           offsetTop traversal.  We do this AFTER icon patches so the layout
+           already reflects the final icon sizes, giving us accurate positions. */
         const relTop = el2 => {
           let top = 0, cur = el2;
           while (cur && cur !== cloneEl) { top += cur.offsetTop; cur = cur.offsetParent; }
           return top;
         };
+
         const miniSecEl = cloneEl.querySelector("[data-pdf-section]:not([data-pdf-fullpage])");
         MINI_H_CSS = miniSecEl?.firstElementChild?.offsetHeight || 70;
+
+        headerSectionTops = Array.from(cloneEl.querySelectorAll("[data-pdf-section]:not([data-pdf-fullpage])"))
+          .map(s => Math.round(relTop(s) * scale)).filter(t => t >= 0).sort((a, b) => a - b);
         fullpageSectionTops = Array.from(cloneEl.querySelectorAll("[data-pdf-fullpage]"))
           .map(s => Math.round(relTop(s) * scale)).filter(t => t >= 0).sort((a, b) => a - b);
         softBreakTops = Array.from(cloneEl.querySelectorAll("[data-pdf-break]"))
           .map(b => Math.round(relTop(b) * scale)).filter(t => t > 0).sort((a, b) => a - b);
-
-        /* Inject markers into the ROOT container (not inside each section) so
-           they always land at canvas x=0, regardless of section padding/margin.
-           Each marker's top = relTop(sec) so it aligns with the section start. */
-        if (cloneEl.style.position !== "absolute" && cloneEl.style.position !== "fixed")
-          cloneEl.style.position = "relative";
-        cloneEl.querySelectorAll("[data-pdf-section]:not([data-pdf-fullpage])").forEach(sec => {
-          const m = doc.createElement("div");
-          m.style.cssText = `position:absolute;top:${relTop(sec)}px;left:0;width:4px;height:4px;background:rgb(${MK[0]},${MK[1]},${MK[2]});z-index:99999;pointer-events:none;`;
-          cloneEl.appendChild(m);
-        });
       };
       const canvas  = await html2canvas(el, { scale, useCORS: true, allowTaint: false, backgroundColor: "#fff", logging: false, height: el.scrollHeight, windowHeight: el.scrollHeight, onclone: patch });
 
-      /* ── Detect section tops from the marker pixels in the rendered canvas ──
-         Scanning only the first 4 CSS columns (4*scale px) for magenta pixels.
-         This is 100% accurate: positions come from the actual canvas, not DOM estimates. */
-      {
-        const scanW = Math.ceil(4 * scale);
-        const imgData = canvas.getContext("2d").getImageData(0, 0, scanW, canvas.height).data;
-        let lastMarker = -999;
-        for (let y = 0; y < canvas.height; y++) {
-          const i = (y * scanW) * 4;
-          if (imgData[i] === MK[0] && imgData[i+1] === MK[1] && imgData[i+2] === MK[2] && y > lastMarker + 4) {
-            headerSectionTops.push(y);
-            lastMarker = y;
-          }
-        }
-        headerSectionTops.sort((a, b) => a - b);
-        /* Erase marker pixels from canvas so they don't appear in the PDF output. */
-        const ctx2 = canvas.getContext("2d");
-        ctx2.fillStyle = "#ffffff";
-        for (const t of headerSectionTops) ctx2.fillRect(0, t, scanW, Math.ceil(4 * scale));
-      }
       sectionTops = [...headerSectionTops, ...fullpageSectionTops].sort((a, b) => a - b);
       coverEnd    = sectionTops.length > 0 ? sectionTops[0] : Infinity;
 
