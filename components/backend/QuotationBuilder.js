@@ -651,9 +651,14 @@ export default function QuotationBuilder({
         const cloneEl = doc.getElementById("qb-pdf-target");
         if (!cloneEl) return;
 
-        /* Measure all section / break positions from the cloned document using
-           offsetTop traversal.  We do this AFTER icon patches so the layout
-           already reflects the final icon sizes, giving us accurate positions. */
+        /* ROOT-CAUSE FIX: cloneEl is position:static by default, so it is NOT
+           an offsetParent.  The relTop traversal would overshoot past cloneEl
+           to <body>, returning absolute page-coordinates instead of coordinates
+           relative to cloneEl (= canvas coordinates).  Setting position:relative
+           makes cloneEl an offsetParent, so the traversal stops here correctly. */
+        cloneEl.style.position = "relative";
+
+        /* relTop: offset of el2 relative to cloneEl, in CSS px (= canvas px / scale). */
         const relTop = el2 => {
           let top = 0, cur = el2;
           while (cur && cur !== cloneEl) { top += cur.offsetTop; cur = cur.offsetParent; }
@@ -669,11 +674,26 @@ export default function QuotationBuilder({
           .map(s => Math.round(relTop(s) * scale)).filter(t => t >= 0).sort((a, b) => a - b);
         softBreakTops = Array.from(cloneEl.querySelectorAll("[data-pdf-break]"))
           .map(b => Math.round(relTop(b) * scale)).filter(t => t > 0).sort((a, b) => a - b);
+
+        console.group("[PDF] onclone measurements");
+        console.log("MINI_H_CSS:", MINI_H_CSS);
+        console.log("headerSectionTops (canvas px):", headerSectionTops);
+        console.log("fullpageSectionTops (canvas px):", fullpageSectionTops);
+        console.log("softBreakTops count:", softBreakTops.length);
+        console.groupEnd();
       };
       const canvas  = await html2canvas(el, { scale, useCORS: true, allowTaint: false, backgroundColor: "#fff", logging: false, height: el.scrollHeight, windowHeight: el.scrollHeight, onclone: patch });
 
       sectionTops = [...headerSectionTops, ...fullpageSectionTops].sort((a, b) => a - b);
       coverEnd    = sectionTops.length > 0 ? sectionTops[0] : Infinity;
+
+      console.group("[PDF] post-canvas");
+      console.log("canvas size:", canvas.width, "×", canvas.height);
+      console.log("coverEnd:", coverEnd);
+      console.log("sectionTops:", sectionTops);
+      /* Expose full canvas for inspection: window.__pdfCanvas in browser devtools */
+      if (typeof window !== "undefined") window.__pdfCanvas = canvas;
+      console.groupEnd();
 
       const pdf     = new jsPDF("p", "mm", "a4");
       const pageW   = pdf.internal.pageSize.getWidth();
@@ -702,6 +722,11 @@ export default function QuotationBuilder({
           canvas, 0, headerSectionTops[0], canvas.width, MINI_H_PX,
                   0, 0,                    canvas.width, MINI_H_PX,
         );
+        console.log("[PDF] miniStripCanvas extracted at canvas-y:", headerSectionTops[0],
+                    "height:", MINI_H_PX, "— inspect: window.__pdfMini");
+        if (typeof window !== "undefined") window.__pdfMini = miniStripCanvas;
+      } else {
+        console.warn("[PDF] miniStripCanvas NOT created — headerSectionTops:", headerSectionTops, "MINI_H_PX:", MINI_H_PX);
       }
 
       /* Direct slice helper — used for cover and fullpage sections which have
@@ -790,6 +815,7 @@ export default function QuotationBuilder({
         /* ── Cover ── */
         if (yCanvas < coverEnd) {
           const cutAt = Math.min(yCanvas + pagePx, coverEnd);
+          console.log(`[PDF] Page ${pdf.getNumberOfPages()+1} COVER  yCanvas=${yCanvas} cutAt=${cutAt} coverEnd=${coverEnd}`);
           addDirectSlice(yCanvas, cutAt - yCanvas);
           yCanvas = cutAt;
           continue;
@@ -798,6 +824,7 @@ export default function QuotationBuilder({
         /* ── Fullpage ── */
         if (fullpageSectionTops.some(t => Math.abs(t - yCanvas) < 20)) {
           const nextBoundary = sectionTops.find(t => t > yCanvas) ?? canvas.height;
+          console.log(`[PDF] Page ${pdf.getNumberOfPages()+1} FULLPAGE  yCanvas=${yCanvas} next=${nextBoundary}`);
           addDirectSlice(yCanvas, nextBoundary - yCanvas);
           yCanvas = nextBoundary;
           continue;
@@ -809,6 +836,7 @@ export default function QuotationBuilder({
 
         const remaining = canvas.height - contentFrom;
         if (remaining <= effectiveH) {
+          console.log(`[PDF] Page ${pdf.getNumberOfPages()+1} CONTENT-LAST  atSection=${atSection} contentFrom=${contentFrom} to=${canvas.height}`);
           addContentPage(contentFrom, canvas.height);
           break;
         }
@@ -822,6 +850,7 @@ export default function QuotationBuilder({
                      : softCuts.length    ? softCuts[softCuts.length - 1]
                      : maxCut;
 
+        console.log(`[PDF] Page ${pdf.getNumberOfPages()+1} CONTENT  atSection=${atSection} contentFrom=${contentFrom} cutSrc=${cutSrc} (sec=${sectionCuts.length} soft=${softCuts.length})`);
         addContentPage(contentFrom, cutSrc);
         yCanvas = cutSrc;
       }
