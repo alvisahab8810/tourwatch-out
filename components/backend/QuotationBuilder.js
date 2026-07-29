@@ -824,8 +824,19 @@ export default function QuotationBuilder({
         /* ── Fullpage ── */
         if (fullpageSectionTops.some(t => Math.abs(t - yCanvas) < 20)) {
           const nextBoundary = sectionTops.find(t => t > yCanvas) ?? canvas.height;
-          console.log(`[PDF] Page ${pdf.getNumberOfPages()+1} FULLPAGE  yCanvas=${yCanvas} next=${nextBoundary}`);
-          addDirectSlice(yCanvas, nextBoundary - yCanvas);
+          const sliceH = Math.max(1, nextBoundary - yCanvas);
+          console.log(`[PDF] Page ${pdf.getNumberOfPages()+1} FULLPAGE  yCanvas=${yCanvas} sliceH=${sliceH} pagePx=${pagePx}`);
+          /* Scale to fit: if the image is taller than one page, compress it to fill
+             the page exactly.  This keeps the page count at exactly one. */
+          const pg = document.createElement("canvas");
+          pg.width = canvas.width; pg.height = pagePx;
+          const ctx = pg.getContext("2d");
+          ctx.fillStyle = "#ffffff";
+          ctx.fillRect(0, 0, pg.width, pg.height);
+          const srcH = Math.min(sliceH, canvas.height - yCanvas);
+          const dstH = Math.min(srcH, pagePx);   // scale down if taller than page
+          ctx.drawImage(canvas, 0, yCanvas, canvas.width, srcH, 0, 0, canvas.width, dstH);
+          pdf.addImage(pg.toDataURL("image/png"), "PNG", 0, 0, pageW, pageH);
           yCanvas = nextBoundary;
           continue;
         }
@@ -843,14 +854,23 @@ export default function QuotationBuilder({
 
         const minCut      = contentFrom + Math.round(effectiveH * 0.45);
         const maxCut      = contentFrom + effectiveH;
-        const sectionCuts = headerSectionTops.filter(t => t >= minCut && t < maxCut);
-        const softCuts    = softBreakTops.filter(t => t >= minCut && t < maxCut);
 
-        const cutSrc = sectionCuts.length ? sectionCuts[sectionCuts.length - 1]
-                     : softCuts.length    ? softCuts[softCuts.length - 1]
-                     : maxCut;
+        /* If a fullpage section starts anywhere in this page's range (even before
+           minCut), cut exactly at that boundary so we never slice into it.       */
+        const earlyFullpage = fullpageSectionTops.filter(t => t > contentFrom && t < maxCut);
 
-        console.log(`[PDF] Page ${pdf.getNumberOfPages()+1} CONTENT  atSection=${atSection} contentFrom=${contentFrom} cutSrc=${cutSrc} (sec=${sectionCuts.length} soft=${softCuts.length})`);
+        let cutSrc;
+        if (earlyFullpage.length) {
+          cutSrc = earlyFullpage[0];
+        } else {
+          const sectionCuts = headerSectionTops.filter(t => t >= minCut && t < maxCut);
+          const softCuts    = softBreakTops.filter(t => t >= minCut && t < maxCut);
+          cutSrc = sectionCuts.length ? sectionCuts[sectionCuts.length - 1]
+                 : softCuts.length    ? softCuts[softCuts.length - 1]
+                 : maxCut;
+        }
+
+        console.log(`[PDF] Page ${pdf.getNumberOfPages()+1} CONTENT  atSection=${atSection} contentFrom=${contentFrom} cutSrc=${cutSrc} earlyFullpage=${earlyFullpage.length}`);
         addContentPage(contentFrom, cutSrc);
         yCanvas = cutSrc;
       }
