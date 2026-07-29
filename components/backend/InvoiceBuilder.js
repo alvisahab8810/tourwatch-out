@@ -140,7 +140,14 @@ export default function InvoiceBuilder({ prefill, invoiceData, isNew, onClose, o
   function updateItem(id, key, val) {
     setForm(f => ({
       ...f,
-      items: f.items.map(item => item.id === id ? { ...item, [key]: val } : item),
+      items: f.items.map(item => {
+        if (item.id !== id) return item;
+        const updated = { ...item, [key]: val };
+        if ((key === "qty" || key === "rate") && updated.rate !== "" && +updated.rate > 0 && updated.qty !== "") {
+          updated.amount = String(Math.round((parseFloat(updated.qty) || 0) * (parseFloat(updated.rate) || 0)));
+        }
+        return updated;
+      }),
     }));
     setSaved(false);
   }

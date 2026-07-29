@@ -72,6 +72,13 @@ function calcTierSelling(tier, form) {
   return Math.round(base + gst + tcs);
 }
 
+function calcTierBase(tier, form) {
+  const cost = calcTierCost(tier);
+  if (!cost) return 0;
+  const margin = tier.margin !== undefined ? +tier.margin : (+form.margin || 0);
+  return cost + margin;
+}
+
 function getTierPax(tier) {
   const f = (tier.flights || []).find(f => +f.pax > 0);
   return f ? +f.pax : 0;
@@ -234,17 +241,7 @@ function CanxBar({ bar }) {
   );
 }
 
-/* Pill icons use clip-path-free SVG files via <img data-card-icon alt="">.
-   QuotationBuilder's CARD_ICON_PNG pipeline pre-renders them to PNG before
-   html2canvas runs — same mechanism that works for card section headers. */
-const PILL_ICON_SRCS = {
-  hotel:    "/assets/icons/quotation/hotel-pill.svg",
-  activity: "/assets/icons/quotation/activity-pill.svg",
-  transfer: "/assets/icons/quotation/transfer-pill.svg",
-  meals:    "/assets/icons/quotation/meals-pill.svg",
-};
-
-function Pill({ iconKey, label }) {
+function Pill({ label }) {
   return (
     <span style={{ display: "inline-flex", alignItems: "center", border: "1px solid #ccc", borderRadius: 20, padding: "5px 14px", fontSize: 12.5, color: DARK, background: "#fff", marginRight: 8, marginBottom: 8 }}>
       {label}
@@ -302,6 +299,20 @@ export default function QuotationPreview({ data, id }) {
   /* tier mode */
   const useTiers    = pkgTiers && TIER_LABELS.some(lbl => hasTierData(pkgTiers[lbl]));
   const activeTiers = useTiers ? TIER_LABELS.filter(lbl => hasTierData(pkgTiers[lbl])) : [];
+  const isPackage   = form.quoteType === "package";
+
+  /* per-person mode (package only) */
+  const ppSell = isPackage && !!form.ppSellEnabled;
+  const ppSub  = isPackage && !!form.ppSubEnabled;
+  const leadPax = (() => {
+    const brr = lead?.brr || {};
+    if (brr.adults != null) return (brr.adults || 0) + (brr.children || 0);
+    const raw = lead?.pax || "";
+    const a = raw.match(/(\d+)\s*(?:adult|adults)/i);
+    const ch = raw.match(/(\d+)\s*(?:child|children|kid|kids)/i);
+    const first = parseInt(raw);
+    return (a ? +a[1] : (!isNaN(first) && first > 0 ? first : 0)) + (ch ? +ch[1] : 0);
+  })();
 
   /* derived */
   const destination = lead.destination || "";
@@ -314,6 +325,24 @@ export default function QuotationPreview({ data, id }) {
   const showTransfer = useTiers ? activeTiers.some(l => (pkgTiers[l].transfers||[]).some(t => t.cab && +t.days > 0)) : transfers.some(t => +t.perDay > 0);
   const showFlight   = useTiers ? activeTiers.some(l => (pkgTiers[l].flights  ||[]).some(f => f.from || f.to)) : flights.some(f => f.from || f.to);
   const hasItin      = itin.some(d => d.title || d.itinerary || d.date || d.tour || d.transfer);
+
+  /* manual highlights: if form.highlights array is set, it controls visibility + labels;
+     otherwise fall back to auto-detect from data presence.
+     Supports both legacy string[] and new {key,label}[] formats. */
+  const hlArr = Array.isArray(form.highlights) && form.highlights.length > 0 ? form.highlights : null;
+  const hlNorm = hlArr
+    ? (typeof hlArr[0] === "string"
+        ? hlArr.map(k => ({ key: k, label: k }))
+        : hlArr)
+    : null;
+  const showHL  = key => hlNorm ? hlNorm.some(h => h.key === key) : (
+    key === "hotel"    ? showHotel    :
+    key === "activity" ? hasItin      :
+    key === "transfer" ? showTransfer :
+    key === "meals"    ? !!form.inclusions :
+    key === "flight"   ? showFlight   : false
+  );
+  const labelHL = (key, def) => hlNorm?.find(h => h.key === key)?.label || def;
 
   /* contents list */
   const contents = [
@@ -386,9 +415,15 @@ export default function QuotationPreview({ data, id }) {
             <div style={{ fontSize: 11, color: "#999", marginBottom: 6 }}>Your Travel Co-ordinator</div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 10 }}>
               <div style={{ fontSize: 18, fontWeight: 800, color: DARK }}>{sp?.name || "Savi Prajapati"}</div>
-              <div style={{ display: "flex", gap: 6 }}>
-                <a href="tel:+918882701800" data-pdf-link="tel:+918882701800" style={{ textDecoration: "none", display: "flex" }}><IcCall /></a>
-                <a href="https://wa.me/918882701800" data-pdf-link="https://wa.me/918882701800" style={{ textDecoration: "none", display: "flex" }}><IcWhatsApp /></a>
+              <div style={{ display: "flex", gap: 8 }}>
+                <a href="tel:+918882701800" data-pdf-link="tel:+918882701800" style={{ textDecoration: "none", display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
+                  <IcCall />
+                  <span style={{ fontSize: 8, fontWeight: 700, color: "#555", letterSpacing: ".03em" }}>Call</span>
+                </a>
+                <a href="https://wa.me/918882701800" data-pdf-link="https://wa.me/918882701800" style={{ textDecoration: "none", display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
+                  <IcWhatsApp />
+                  <span style={{ fontSize: 8, fontWeight: 700, color: "#555", letterSpacing: ".03em" }}>WhatsApp</span>
+                </a>
               </div>
             </div>
             <div style={{ fontSize: 13, color: DARK, marginBottom: 3 }}>Call: <strong>+91 8882701800</strong></div>
@@ -406,11 +441,11 @@ export default function QuotationPreview({ data, id }) {
         <div style={{ marginBottom: 22 }}>
           <div style={{ fontSize: 16, fontWeight: 700, color: DARK, marginBottom: 12 }}>Highlights</div>
           <div>
-            {showHotel    && <Pill iconKey="hotel"    label="Hotel" />}
-            {hasItin      && <Pill iconKey="activity" label="Activities" />}
-            {showTransfer && <Pill iconKey="transfer" label="Transfers" />}
-            {form.inclusions && <Pill iconKey="meals"  label="Selected Meals Included" />}
-            {showFlight   && <Pill iconKey="flight"   label="Flights" />}
+            {showHL("hotel")    && <Pill iconKey="hotel"    label={labelHL("hotel",    "Hotel")} />}
+            {showHL("activity") && <Pill iconKey="activity" label={labelHL("activity", "Activities")} />}
+            {showHL("transfer") && <Pill iconKey="transfer" label={labelHL("transfer", "Transfers")} />}
+            {showHL("meals")    && <Pill iconKey="meals"    label={labelHL("meals",    "Selected Meals Included")} />}
+            {showHL("flight")   && <Pill iconKey="flight"   label={labelHL("flight",   "Flights")} />}
           </div>
         </div>
 
@@ -418,23 +453,34 @@ export default function QuotationPreview({ data, id }) {
         {useTiers && activeTiers.length > 0 && (
           <div style={{ border: "1px solid #26828D", borderRadius: 12, overflow: "hidden", marginBottom: 18 }}>
             {activeTiers.map((lbl, idx) => {
-              const tier = pkgTiers[lbl];
+              const tier        = pkgTiers[lbl];
               const tierSelling = calcTierSelling(tier, form);
+              const tierBase    = calcTierBase(tier, form);
               const tierPax     = getTierPax(tier);
+              const effPax      = leadPax > 0 ? leadPax : tierPax;
+              const displayVal  = ppSell && effPax > 0
+                ? Math.round(tierSelling / effPax)
+                : ppSub && effPax > 0
+                  ? Math.round(tierBase / effPax)
+                  : isPackage ? tierSelling : tierSelling;
+              const priceLabel  = !isPackage
+                ? <>{lbl} Package <span style={{ fontWeight: 400, fontSize: 14, color: DARK }}>Incl. Tax</span></>
+                : ppSell && effPax > 0
+                  ? <>Per Person Price <span style={{ fontWeight: 400, fontSize: 14, color: DARK }}>(Incl. Tax)</span></>
+                  : ppSub && effPax > 0
+                    ? <>Per Person Price <span style={{ fontWeight: 400, fontSize: 14, color: DARK }}>(Excl. GST)</span></>
+                    : <>Total Package Cost <span style={{ fontWeight: 400, fontSize: 14, color: DARK }}>(Incl. Tax)</span></>;
+              const suffix = (ppSell || ppSub) && effPax > 0
+                ? <span style={{ fontSize: 13, color: DARK }}>Per Person</span>
+                : effPax > 0
+                  ? <span style={{ fontSize: 13, color: DARK }}>For {effPax} {effPax === 1 ? "Person" : "Persons"}</span>
+                  : paxLabel && <span style={{ fontSize: 13, color: DARK }}>For {paxLabel}</span>;
               return (
                 <div key={lbl} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 22px", borderBottom: idx < activeTiers.length - 1 ? "1px solid #26828D" : "none" }}>
-                  <div style={{ fontSize: 22, fontWeight: 700, color: TEAL }}>
-                    {lbl} Package{" "}
-                    <span style={{ fontWeight: 400, fontSize: 14, color: DARK }}>Incl. Tax</span>
-                  </div>
+                  <div style={{ fontSize: 22, fontWeight: 700, color: TEAL }}>{priceLabel}</div>
                   <div style={{ display: "flex", alignItems: "baseline", gap: 10 }}>
-                    <span style={{ fontSize: 24, fontWeight: 900, color: "#26828D" }}>
-                      ₹ {Math.round(tierSelling).toLocaleString("en-IN")}
-                    </span>
-                    {tierPax > 0
-                      ? <span style={{ fontSize: 13, color: DARK }}>For {tierPax} {tierPax === 1 ? "Adult" : "Adults"}</span>
-                      : paxLabel && <span style={{ fontSize: 13, color: DARK }}>For {paxLabel}</span>
-                    }
+                    <span style={{ fontSize: 24, fontWeight: 900, color: "#26828D" }}>₹ {displayVal.toLocaleString("en-IN")}</span>
+                    {suffix}
                   </div>
                 </div>
               );
@@ -443,15 +489,35 @@ export default function QuotationPreview({ data, id }) {
         )}
 
         {/* Legacy single price */}
-        {!useTiers && selling > 0 && (
-          <div style={{ border: "1px solid #26828D", borderRadius: 12, padding: "16px 22px", marginBottom: 18, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <div style={{ fontSize: 22, fontWeight: 700, color: TEAL }}>Package <span style={{ fontWeight: 400, fontSize: 14, color: DARK }}>Incl. Tax</span></div>
-            <div style={{ display: "flex", alignItems: "baseline", gap: 10 }}>
-              <span style={{ fontSize: 34, fontWeight: 900, color: "#26828D" }}>₹ {Math.round(selling).toLocaleString("en-IN")}</span>
-              {paxLabel && <span style={{ fontSize: 20, color: DARK }}>For {paxLabel}</span>}
+        {!useTiers && selling > 0 && (() => {
+          const base = (+form.cost || 0) + (+form.margin || 0);
+          const legacyVal = ppSell && leadPax > 0
+            ? Math.round(selling / leadPax)
+            : ppSub && leadPax > 0
+              ? Math.round(base / leadPax)
+              : Math.round(selling);
+          const legacyLabel = !isPackage
+            ? <>"Package" <span style={{ fontWeight: 400, fontSize: 14, color: DARK }}>Incl. Tax</span></>
+            : ppSell && leadPax > 0
+              ? <>Per Person Price <span style={{ fontWeight: 400, fontSize: 14, color: DARK }}>(Incl. Tax)</span></>
+              : ppSub && leadPax > 0
+                ? <>Per Person Price <span style={{ fontWeight: 400, fontSize: 14, color: DARK }}>(Excl. GST)</span></>
+                : <>Total Package Cost <span style={{ fontWeight: 400, fontSize: 14, color: DARK }}>(Incl. Tax)</span></>;
+          const legacySuffix = (ppSell || ppSub) && leadPax > 0
+            ? <span style={{ fontSize: 20, color: DARK }}>Per Person</span>
+            : leadPax > 0
+              ? <span style={{ fontSize: 20, color: DARK }}>For {leadPax} {leadPax === 1 ? "Person" : "Persons"}</span>
+              : paxLabel && <span style={{ fontSize: 20, color: DARK }}>For {paxLabel}</span>;
+          return (
+            <div style={{ border: "1px solid #26828D", borderRadius: 12, padding: "16px 22px", marginBottom: 18, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div style={{ fontSize: 22, fontWeight: 700, color: TEAL }}>{legacyLabel}</div>
+              <div style={{ display: "flex", alignItems: "baseline", gap: 10 }}>
+                <span style={{ fontSize: 34, fontWeight: 900, color: "#26828D" }}>₹ {legacyVal.toLocaleString("en-IN")}</span>
+                {legacySuffix}
+              </div>
             </div>
-          </div>
-        )}
+          );
+        })()}
 
         {/* Note box — always generic disclaimer */}
         <div style={{ border: "1px solid #ddd", borderRadius: 10, padding: "14px 18px", background: "#F3FDFF" }}>
@@ -929,9 +995,15 @@ export default function QuotationPreview({ data, id }) {
             <div style={{ fontSize: 12, color: "#999", marginBottom: 8 }}>Your Travel Co-ordinator</div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 14 }}>
               <div style={{ fontSize: 22, fontWeight: 800, color: DARK }}>{sp?.name || "Savi Prajapati"}</div>
-              <div style={{ display: "flex", gap: 8 }}>
-                <a href="tel:+918882701800" data-pdf-link="tel:+918882701800" style={{ textDecoration: "none", display: "flex" }}><IcCall /></a>
-                <a href="https://wa.me/918882701800" data-pdf-link="https://wa.me/918882701800" style={{ textDecoration: "none", display: "flex" }}><IcWhatsApp /></a>
+              <div style={{ display: "flex", gap: 10 }}>
+                <a href="tel:+918882701800" data-pdf-link="tel:+918882701800" style={{ textDecoration: "none", display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}>
+                  <IcCall />
+                  <span style={{ fontSize: 9, fontWeight: 700, color: "#555", letterSpacing: ".03em" }}>Call</span>
+                </a>
+                <a href="https://wa.me/918882701800" data-pdf-link="https://wa.me/918882701800" style={{ textDecoration: "none", display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}>
+                  <IcWhatsApp />
+                  <span style={{ fontSize: 9, fontWeight: 700, color: "#555", letterSpacing: ".03em" }}>WhatsApp</span>
+                </a>
               </div>
             </div>
             <div style={{ fontSize: 14, color: DARK, marginBottom: 5 }}>Call: <strong>+91 8882701800</strong></div>

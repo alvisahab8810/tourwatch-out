@@ -101,9 +101,15 @@ const QuotationSchema = new mongoose.Schema({
   tcsPct:          { type: Number, default: 0 },
   tripExpense:     { type: Number, default: 0 },
   newSellingPrice: { type: Number, default: 0 },
+  ppSubEnabled:    { type: Boolean, default: false },
+  ppSellEnabled:   { type: Boolean, default: false },
 
   // Package tiers (Economy / Deluxe / Premium — each has its own hotels/flights/transfers/miscs)
   pkgTiers: { type: mongoose.Schema.Types.Mixed, default: {} },
+
+  // Quotation type
+  quoteType:  { type: String, enum: ["standard", "b2b", "package"], default: "standard" },
+  highlights: [{ _id: false, key: { type: String }, label: { type: String } }],
 
   // Workflow
   status:     { type: String, enum: ["Open", "Won", "Lost"], default: "Open" },

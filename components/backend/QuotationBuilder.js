@@ -182,8 +182,25 @@ const DEFAULT_CANCELLATION_POLICY = `
 </ul>
 `.trim();
 
+const HL_OPTIONS = [
+  { key: "hotel",    label: "Hotel"                   },
+  { key: "activity", label: "Activities"              },
+  { key: "transfer", label: "Transfers"               },
+  { key: "meals",    label: "Selected Meals Included" },
+  { key: "flight",   label: "Flights"                 },
+];
+const DEF_HIGHLIGHTS = HL_OPTIONS.map(o => ({ key: o.key, label: o.label }));
+
+/* normalise saved highlights — old format was string[], new is {key,label}[] */
+function normHL(hl) {
+  if (!Array.isArray(hl) || hl.length === 0) return DEF_HIGHLIGHTS;
+  if (typeof hl[0] === "string") return hl.map(k => ({ key: k, label: HL_OPTIONS.find(o => o.key === k)?.label || k }));
+  return hl;
+}
+
 const DEF_FORM = {
-  type: "Domestic", pkgMode: "Complete Package",
+  type: "Domestic", pkgMode: "Complete Package", quoteType: "standard",
+  highlights: DEF_HIGHLIGHTS,
   days: "", travelDate: "", assignedTo: "",
   inclusions: "", exclusions: "",
   notes: "This is an initial quote based on our most popular holiday package to your chosen destination.",
@@ -192,6 +209,7 @@ const DEF_FORM = {
   cancellationPolicy: DEFAULT_CANCELLATION_POLICY,
   canxBar: { enabled: false, cutoffDate: "", feeBefore: "", sliderPct: 75 },
   cost: "", margin: "", gstPct: 5, tcsPct: 2, tripExpense: 0,
+  ppSubEnabled: false, ppSellEnabled: false,
 };
 
 /* Build initial pkgTiers from existing data or BRR */
@@ -247,6 +265,14 @@ export default function QuotationBuilder({
   onClose, onSaved,
 }) {
   const brr = lead?.brr || {};
+  const leadPax = (() => {
+    if (brr.adults != null) return (brr.adults || 0) + (brr.children || 0);
+    const raw = lead?.pax || "";
+    const a = raw.match(/(\d+)\s*(?:adult|adults)/i);
+    const ch = raw.match(/(\d+)\s*(?:child|children|kid|kids)/i);
+    const first = parseInt(raw);
+    return (a ? +a[1] : (!isNaN(first) && first > 0 ? first : 0)) + (ch ? +ch[1] : 0);
+  })();
 
   const baseForm = initialData
     ? {
@@ -360,9 +386,12 @@ export default function QuotationBuilder({
   const tierMargin    = pkgTiers[activePkg]?.margin ?? "";
   const setTierMargin = v => setPkgTiers(p => ({ ...p, [activePkg]: { ...p[activePkg], margin: v } }));
 
-  const c    = calcQ({ ...form, margin: tierMargin });
-  const g    = gradeColor(c.mpct);
-  const intl = form.type === "International";
+  const c         = calcQ({ ...form, margin: tierMargin });
+  const g         = gradeColor(c.mpct);
+  const intl      = form.type === "International";
+  const isB2B     = form.quoteType === "b2b";
+  const isPackage = form.quoteType === "package";
+  const tierSuffix = isPackage ? "" : ` — ${activePkg}`;
 
   /* ── array helpers ── */
   function updArr(setter, idx, field, value) {
@@ -392,6 +421,12 @@ export default function QuotationBuilder({
     if (grandComponentTotal > 0) upd("cost", grandComponentTotal);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [grandComponentTotal]);
+
+  /* ── in Package mode always use Economy tier ── */
+  useEffect(() => {
+    if (form.quoteType === "package") setActivePkg("Economy");
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form.quoteType]);
 
   /* ── shared body builder (used by manual save + auto-save) ── */
   function buildBody() {
@@ -534,42 +569,6 @@ export default function QuotationBuilder({
         img.src = src;
       })));
 
-      /* base64 SVGs for pill icons — drawn to <canvas> in the clone to bypass
-         the html2canvas bug where SVG children of border-radius elements vanish */
-      const PILL_B64 = {
-        hotel:    "PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAyMiAyMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNOS4xOTkyNiAxOS44NDFWMTMuOTI3NU0xMC45OTkxIDkuOTQwNDlIMTEuMDA4MU0xMC45OTkxIDYuMzQwMkgxMS4wMDgxTTEyLjc5ODkgMTMuOTI3NVYxOS44NDFNMTMuNjk4OCAxNC40NDA5QzEyLjkyIDEzLjg1NjYgMTEuOTcyNyAxMy41NDA4IDEwLjk5OTEgMTMuNTQwOEMxMC4wMjU1IDEzLjU0MDggOS4wNzgyMSAxMy44NTY2IDguMjk5MzUgMTQuNDQwOU0xNC41OTg3IDkuOTQwNDlIMTQuNjA3N00xNC41OTg3IDYuMzQwMkgxNC42MDc3TTcuMzk5NDQgOS45NDA0OUg3LjQwODQ0TTcuMzk5NDQgNi4zNDAySDcuNDA4NDRNNS41OTk2MiAxLjgzOTg0SDE2LjM5ODVDMTcuMzkyNiAxLjgzOTg0IDE4LjE5ODQgMi42NDU4IDE4LjE5ODQgMy42Mzk5OVYxOC4wNDExQzE4LjE5ODQgMTkuMDM1MyAxNy4zOTI2IDE5Ljg0MTMgMTYuMzk4NSAxOS44NDEzSDUuNTk5NjJDNC42MDU2MSAxOS44NDEzIDMuNzk5OCAxOS4wMzUzIDMuNzk5OCAxOC4wNDExVjMuNjM5OTlDMy43OTk4IDIuNjQ1OCA0LjYwNTYxIDEuODM5ODQgNS41OTk2MiAxLjgzOTg0WiIgc3Ryb2tlPSIjRjc0QzREIiBzdHJva2Utd2lkdGg9IjIuNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PC9zdmc+",
-        activity: "PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAyMiAyMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNOC4xMDAyIDE3LjEwMDhDOC4xMDAyIDE4LjU5MjEgNi44OTEzNiAxOS44MDEgNS40MDAyIDE5LjgwMUMzLjkwOTAzIDE5LjgwMSAyLjcwMDIgMTguNTkyMSAyLjcwMDIgMTcuMTAwOEMyLjcwMDIgMTUuNjA5NSAzLjkwOTAzIDE0LjQwMDYgNS40MDAyIDE0LjQwMDZDNi44OTEzNiAxNC40MDA2IDguMTAwMiAxNS42MDk1IDguMTAwMiAxNy4xMDA4Wk04LjEwMDIgMTcuMTAwOEgxNS43NTAyQzE2LjU4NTYgMTcuMTAwOCAxNy4zODY4IDE2Ljc2ODkgMTcuOTc3NiAxNi4xNzgxQzE4LjU2ODMgMTUuNTg3MyAxOC45MDAyIDE0Ljc4NiAxOC45MDAyIDEzLjk1MDVDMTguOTAwMiAxMy4xMTUgMTguNTY4MyAxMi4zMTM4IDE3Ljk3NzYgMTEuNzIzQzE3LjM4NjggMTEuMTMyMiAxNi41ODU2IDEwLjgwMDMgMTUuNzUwMiAxMC44MDAzSDUuODUwMkM1LjAxNDc2IDEwLjgwMDMgNC4yMTM1NSAxMC40Njg0IDMuNjIyODEgOS44Nzc1OUMzLjAzMjA3IDkuMjg2ODEgMi43MDAyIDguNDg1NTMgMi43MDAyIDcuNjUwMDNDMi43MDAyIDYuODE0NTMgMy4wMzIwNyA2LjAxMzI1IDMuNjIyODEgNS40MjI0NkM0LjIxMzU1IDQuODMxNjggNS4wMTQ3NiA0LjQ5OTc4IDUuODUwMiA0LjQ5OTc4SDEzLjUwMDJNMTMuNTAwMiA0LjQ5OTc4QzEzLjUwMDIgNS45OTEwNiAxNC43MDkgNy4xOTk5OSAxNi4yMDAyIDcuMTk5OTlDMTcuNjkxNCA3LjE5OTk5IDE4LjkwMDIgNS45OTEwNiAxOC45MDAyIDQuNDk5NzhDMTguOTAwMiAzLjAwODQ5IDE3LjY5MTQgMS43OTk1NiAxNi4yMDAyIDEuNzk5NTZDMTQuNzA5IDEuNzk5NTYgMTMuNTAwMiAzLjAwODQ5IDEzLjUwMDIgNC40OTk3OFoiIHN0cm9rZT0iI0Y3NEM0RCIgc3Ryb2tlLXdpZHRoPSIyLjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjwvc3ZnPg==",
-        transfer: "PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAyMiAyMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMTYuOTAwOCAxNC44Mzk4SDE4LjcwMUMxOS4yNDEgMTQuODM5OCAxOS42MDEgMTQuNDc5OCAxOS42MDEgMTMuOTM5OFYxMS4yMzk4QzE5LjYwMSAxMC40Mjk4IDE4Ljk3MSA5LjcwOTg0IDE4LjI1MDkgOS41Mjk4NEMxNi42MzA4IDkuMDc5ODQgMTQuMjAwNiA4LjUzOTg0IDE0LjIwMDYgOC41Mzk4NEMxNC4yMDA2IDguNTM5ODQgMTMuMDMwNSA3LjI3OTg0IDEyLjIyMDUgNi40Njk4NEMxMS43NzA0IDYuMTA5ODQgMTEuMjMwNCA1LjgzOTg0IDEwLjYwMDMgNS44Mzk4NEg0LjI5OTgzQzMuNzU5NzggNS44Mzk4NCAzLjMwOTc1IDYuMTk5ODQgMy4wMzk3MiA2LjY0OTg0TDEuNzc5NjIgOS4yNTk4NEMxLjY2MDQ0IDkuNjA3NDUgMS41OTk2MSA5Ljk3MjM4IDEuNTk5NjEgMTAuMzM5OFYxMy45Mzk4QzEuNTk5NjEgMTQuNDc5OCAxLjk1OTY0IDE0LjgzOTggMi40OTk2OCAxNC44Mzk4SDQuMjk5ODNNMTYuOTAwOCAxNC44Mzk4QzE2LjkwMDggMTUuODM0IDE2LjA5NDkgMTYuNjM5OCAxNS4xMDA3IDE2LjYzOThDMTQuMTA2NSAxNi42Mzk4IDEzLjMwMDUgMTUuODM0IDEzLjMwMDUgMTQuODM5OE0xNi45MDA4IDE0LjgzOThDMTYuOTAwOCAxMy44NDU3IDE2LjA5NDkgMTMuMDM5OCAxNS4xMDA3IDEzLjAzOThDMTQuMTA2NSAxMy4wMzk4IDEzLjMwMDUgMTMuODQ1NyAxMy4zMDA1IDE0LjgzOThNNC4yOTk4MyAxNC44Mzk4QzQuMjk5ODMgMTUuODM0IDUuMTA1NzggMTYuNjM5OCA2LjA5OTk3IDE2LjYzOThDNy4wOTQxNiAxNi42Mzk4IDcuOTAwMTEgMTUuODM0IDcuOTAwMTEgMTQuODM5OE00LjI5OTgzIDE0LjgzOThDNC4yOTk4MyAxMy44NDU3IDUuMTA1NzggMTMuMDM5OCA2LjA5OTk3IDEzLjAzOThDNy4wOTQxNiAxMy4wMzk4IDcuOTAwMTEgMTMuODQ1NyA3LjkwMDExIDE0LjgzOThNMTMuMzAwNSAxNC44Mzk4SDcuOTAwMTEiIHN0cm9rZT0iI0Y3NEM0RCIgc3Ryb2tlLXdpZHRoPSIyLjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjwvc3ZnPg==",
-        meals:    "PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAyMiAyMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNNS4zOTk2MSA3LjE5OTk3TDYuOTc0NzkgMTguMjUyOEM3LjAzNTkzIDE4LjY4NTMgNy4yNTIyNyAxOS4wODA5IDcuNTgzNDggMTkuMzY1N0M3LjkxNDY5IDE5LjY1MDUgOC4zMzgxNyAxOS44MDUyIDguNzc1IDE5LjgwMDlIMTIuODYxNUMxMy4yOTgzIDE5LjgwNTIgMTMuNzIxOCAxOS42NTA1IDE0LjA1MyAxOS4zNjU3QzE0LjM4NDIgMTkuMDgwOSAxNC42MDA1IDE4LjY4NTMgMTQuNjYxNyAxOC4yNTI4TDE2LjIwMDggNy4xOTk5N000LjQ5OTUxIDcuMTk5OTdIMTcuMTAxTTYuMjk5NzIgMTMuNTAwMUM3LjAxMjM3IDEzLjIwMTUgNy43NzczMSAxMy4wNDc4IDguNTQ5OTcgMTMuMDQ3OEM5LjMyMjY0IDEzLjA0NzggMTAuMDg3NiAxMy4yMDE1IDEwLjgwMDIgMTMuNTAwMUMxMS41MTI5IDEzLjc5ODYgMTIuMjc3OCAxMy45NTI0IDEzLjA1MDUgMTMuOTUyNEMxMy44MjMyIDEzLjk1MjQgMTQuNTg4MSAxMy43OTg2IDE1LjMwMDcgMTMuNTAwMU0xMC44MDAyIDcuMTk5OTdMMTEuNzAwMyAxLjc5OTU2SDEzLjUwMDUiIHN0cm9rZT0iI0Y3NEM0RCIgc3Ryb2tlLXdpZHRoPSIyLjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjwvc3ZnPg==",
-        flight:   "PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMjEgMTZWMTRMMTMgOVYzLjVDMTMgMi42NyAxMi4zMyAyIDExLjUgMkMxMC42NyAyIDEwIDIuNjcgMTAgMy41VjlMMiAxNFYxNkwxMCAxMy41VjE5TDggMjAuNVYyMkwxMS41IDIxTDE1IDIyVjIwLjVMMTMgMTlWMTMuNUwyMSAxNloiIGZpbGw9IiNGNzRDNEQiLz48L3N2Zz4=",
-      };
-
-      /* Pre-render each pill icon SVG → PNG data URI using a main-document canvas.
-         This must happen BEFORE html2canvas clones the DOM so onclone can be
-         fully synchronous (no async image loads inside the cloned iframe). */
-      /* Use Blob URL (not data: URI) so canvas.drawImage never triggers a
-         SecurityError — data:image/svg+xml is treated as cross-origin by Chrome
-         in certain contexts, silently producing a blank canvas. */
-      const PILL_PNG = {};
-      await Promise.all(Object.entries(PILL_B64).map(([key, b64]) =>
-        new Promise(resolve => {
-          const offscreen = document.createElement("canvas");
-          offscreen.width = 36; offscreen.height = 36;
-          const ctx = offscreen.getContext("2d");
-          const img = new window.Image();
-          const svgStr = atob(b64);
-          const blobUrl = URL.createObjectURL(new Blob([svgStr], { type: "image/svg+xml" }));
-          img.onload = () => {
-            try { ctx.drawImage(img, 0, 0, 36, 36); } catch (e) {}
-            PILL_PNG[key] = offscreen.toDataURL("image/png");
-            URL.revokeObjectURL(blobUrl);
-            resolve();
-          };
-          img.onerror = () => { URL.revokeObjectURL(blobUrl); resolve(); };
-          img.src = blobUrl;
-        })
-      ));
-
       /* Pre-render card/section SVG icons → PNG to prevent html2canvas stretching */
       const CARD_ICON_SRCS = [
         "/assets/icons/quotation/hotel-details.svg",
@@ -580,11 +579,6 @@ export default function QuotationBuilder({
         "/assets/icons/quotation/activity.svg",
         "/assets/icons/quotation/transfer.svg",
         "/assets/icons/quotation/meals.svg",
-        /* clip-path-free versions for Highlights pills */
-        "/assets/icons/quotation/hotel-pill.svg",
-        "/assets/icons/quotation/activity-pill.svg",
-        "/assets/icons/quotation/transfer-pill.svg",
-        "/assets/icons/quotation/meals-pill.svg",
       ];
       const CARD_ICON_PNG = {};
       const CARD_ICON_RENDER = 88; /* render at 4× display size (22px) → crisp at any html2canvas scale */
@@ -605,9 +599,20 @@ export default function QuotationBuilder({
         })
       ));
 
-      /* Synchronous onclone: swap pill icon spans with <img> pointing to the
-         pre-rendered PNGs. <img> elements with data-URI PNGs always render
-         in html2canvas regardless of ancestor border-radius. */
+      /* Pre-decode every PNG data URI in the MAIN document so the browser's global
+         image-decode cache is warm before html2canvas runs. Without this, setting
+         imgEl.src = pngUrl inside the synchronous onclone callback triggers an async
+         decode; html2canvas renders before complete=true, producing a blank image.
+         On a second PDF click the cache is already warm, which is why it worked then. */
+      await Promise.all(Object.values(CARD_ICON_PNG).map(pngUrl =>
+        new Promise(resolve => {
+          const img = new window.Image();
+          img.onload  = resolve;
+          img.onerror = resolve;
+          img.src = pngUrl;
+        })
+      ));
+
       /* Pre-load Inter in the main document so the html2canvas clone inherits it.
          document.fonts.ready waits until all declared fonts are fully available. */
       if (!document.querySelector('link[data-inter-font]')) {
@@ -627,14 +632,6 @@ export default function QuotationBuilder({
         const st = doc.createElement("style");
         st.textContent = "* { font-family: 'Inter', sans-serif !important; }";
         doc.head.appendChild(st);
-        doc.querySelectorAll("[data-pill-icon]").forEach(span => {
-          const pngUrl = PILL_PNG[span.getAttribute("data-pill-icon")];
-          if (!pngUrl) return;
-          const img = doc.createElement("img");
-          img.src = pngUrl;
-          img.style.cssText = "width:18px;height:18px;flex-shrink:0;display:block";
-          span.replaceWith(img);
-        });
         doc.querySelectorAll("[data-card-icon]").forEach(imgEl => {
           const src = imgEl.getAttribute("data-card-icon");
           const pngUrl = CARD_ICON_PNG[src];
@@ -896,7 +893,44 @@ export default function QuotationBuilder({
           <div style={{ width: 215, flexShrink: 0, overflowY: "auto", background: "#fff", borderRight: "1px solid #E4E9F2", padding: "14px 12px", display: "flex", flexDirection: "column", gap: 10 }}>
             <div style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: ".06em", color: "#6B7A99", marginBottom: 2 }}>💰 Package Preview</div>
 
-            {TIER_LABELS.map(lbl => {
+            {/* B2B: show structure without pricing */}
+            {isB2B && (
+              <div style={{ background: "#EFF4FF", border: "2px solid #93C5FD", borderRadius: 10, padding: "10px 12px" }}>
+                <div style={{ fontSize: 11, fontWeight: 800, color: "#2563EB", textTransform: "uppercase", letterSpacing: ".05em", marginBottom: 8 }}>🤝 B2B Mode</div>
+                <div style={{ fontSize: 10.5, color: "#6B7A99", lineHeight: 1.6 }}>Pricing fields are hidden in B2B mode. Only itinerary and service details are shown to partners.</div>
+              </div>
+            )}
+
+            {/* Package: single tier preview */}
+            {isPackage && (() => {
+              const tt = tierTotals["Economy"];
+              const tMgn = +pkgTiers["Economy"].margin || 0;
+              const tBase = tt.total + tMgn;
+              const tGst  = tBase * (+form.gstPct || 0) / 100;
+              const tTcs  = intl ? (tBase + tGst) * (+form.tcsPct || 0) / 100 : 0;
+              const tSell = Math.round(tBase + tGst + tTcs);
+              return (
+                <div style={{ background: "#F0FDF4", border: "2px solid #86EFAC", borderRadius: 10, padding: "8px 10px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: tt.total > 0 ? 5 : 0 }}>
+                    <span style={{ fontSize: 11, fontWeight: 800, color: "#15803D", textTransform: "uppercase", letterSpacing: ".05em" }}>📦 Package</span>
+                    <span style={{ fontSize: 13, fontWeight: 900, color: "#15803D" }}>{tt.total > 0 ? inr(tt.total) : <span style={{ fontSize: 10, color: "#9CA3AF" }}>empty</span>}</span>
+                  </div>
+                  {tt.h > 0 && <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10.5, color: "#6B7A99", marginBottom: 2 }}><span>🏨 Hotels</span><span style={{ fontWeight: 700 }}>{inr(tt.h)}</span></div>}
+                  {tt.f > 0 && <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10.5, color: "#6B7A99", marginBottom: 2 }}><span>✈️ Flights</span><span style={{ fontWeight: 700 }}>{inr(tt.f)}</span></div>}
+                  {tt.t > 0 && <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10.5, color: "#6B7A99", marginBottom: 2 }}><span>🚐 Transfer</span><span style={{ fontWeight: 700 }}>{inr(tt.t)}</span></div>}
+                  {tt.m > 0 && <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10.5, color: "#6B7A99", marginBottom: 2 }}><span>➕ Misc</span><span style={{ fontWeight: 700 }}>{inr(tt.m)}</span></div>}
+                  {tt.total > 0 && tMgn > 0 && (
+                    <div style={{ borderTop: "1px dashed #86EFAC", marginTop: 5, paddingTop: 5 }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10.5, color: "#6B7A99", marginBottom: 2 }}><span>💰 Margin</span><span style={{ fontWeight: 700 }}>{inr(tMgn)}</span></div>
+                      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, fontWeight: 800, color: "#15803D" }}><span>Selling (incl. GST)</span><span>{inr(tSell)}</span></div>
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
+
+            {/* Standard: 3-tier pricing cards */}
+            {!isB2B && !isPackage && TIER_LABELS.map(lbl => {
               const tt = tierTotals[lbl];
               const isActive = lbl === activePkg;
               const tierColor = lbl === "Economy" ? "#15803D" : lbl === "Deluxe" ? "#2563EB" : "#7C3AED";
@@ -932,7 +966,7 @@ export default function QuotationBuilder({
               );
             })}
 
-            {TIER_LABELS.every(lbl => tierTotals[lbl].total === 0) && (
+            {!isB2B && !isPackage && TIER_LABELS.every(lbl => tierTotals[lbl].total === 0) && (
               <div style={{ fontSize: 11, color: "#9CA3AF", textAlign: "center", marginTop: 16, lineHeight: 1.6 }}>
                 Enter prices in Hotels, Flights or Transfers to see a live preview here.
               </div>
@@ -941,6 +975,35 @@ export default function QuotationBuilder({
 
           {/* ── RIGHT: scrollable form ── */}
           <div style={{ flex: 1, overflowY: "auto", padding: "18px 20px" }}>
+
+            {/* ── Quotation Type Toggle ── */}
+            <div style={{ marginBottom: 16 }}>
+              <div style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: ".06em", color: "#6B7A99", marginBottom: 8 }}>Quotation Type</div>
+              <div style={{ display: "flex", border: "1.5px solid #E4E9F2", borderRadius: 10, overflow: "hidden" }}>
+                {[
+                  { key: "standard", label: "Standard" },
+                  { key: "b2b",      label: "B2B" },
+                  { key: "package",  label: "Package" },
+                ].map((t, idx) => (
+                  <button
+                    key={t.key}
+                    onClick={() => upd("quoteType", t.key)}
+                    style={{
+                      flex: 1, padding: "9px 0", border: "none", cursor: "pointer",
+                      fontWeight: 700, fontSize: 13,
+                      background: form.quoteType === t.key ? "#2563EB" : "#F8FAFF",
+                      color: form.quoteType === t.key ? "#fff" : "#6B7A99",
+                      borderRight: idx < 2 ? "1.5px solid #E4E9F2" : "none",
+                      transition: "all .15s",
+                    }}
+                  >
+                    {t.label}
+                  </button>
+                ))}
+              </div>
+              {isB2B && <div style={{ marginTop: 6, fontSize: 11, color: "#2563EB", fontWeight: 600 }}>B2B mode: pricing fields are hidden. Itinerary & service details only.</div>}
+              {isPackage && <div style={{ marginTop: 6, fontSize: 11, color: "#15803D", fontWeight: 600 }}>Package mode: single flat package — no Economy/Deluxe/Premium tiers.</div>}
+            </div>
 
             {/* ── Trip Basics ── */}
             <Sec label="Trip Basics" slate>
@@ -954,6 +1017,54 @@ export default function QuotationBuilder({
                     {salespeople.map(sp => <option key={sp._id} value={sp._id}>{sp.name}</option>)}
                   </select>
                 </Fl>
+              </div>
+            </Sec>
+
+            {/* ── Highlights ── */}
+            <Sec label="⭐  Highlights (shown on quotation cover)">
+              <div style={{ fontSize: 11, color: "#6B7A99", marginBottom: 12 }}>Click pill to show/hide · Click label text to edit it</div>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+                {HL_OPTIONS.map(opt => {
+                  const curHL = normHL(form.highlights);
+                  const item  = curHL.find(h => h.key === opt.key);
+                  const on    = !!item;
+                  const lbl   = item?.label ?? opt.label;
+                  return (
+                    <div
+                      key={opt.key}
+                      onClick={() => upd("highlights", on
+                        ? curHL.filter(h => h.key !== opt.key)
+                        : [...curHL, { key: opt.key, label: opt.label }]
+                      )}
+                      style={{
+                        display: "inline-flex", alignItems: "center", gap: 7,
+                        border: on ? "2px solid #2563EB" : "1.5px solid #D1D5DB",
+                        borderRadius: 20, padding: "6px 14px",
+                        background: on ? "#EFF4FF" : "#F9FAFB",
+                        cursor: "pointer", fontSize: 12.5, fontWeight: 600,
+                        color: on ? "#2563EB" : "#9CA3AF",
+                        transition: "all .15s", userSelect: "none",
+                      }}
+                    >
+                      {on ? (
+                        <input
+                          value={lbl}
+                          onClick={e => e.stopPropagation()}
+                          onChange={e => upd("highlights", curHL.map(h => h.key === opt.key ? { ...h, label: e.target.value } : h))}
+                          style={{
+                            border: "none", background: "transparent",
+                            color: "#2563EB", fontWeight: 700, fontSize: 12.5,
+                            outline: "none", minWidth: 40,
+                            width: `${Math.max(lbl.length, 4)}ch`,
+                            cursor: "text",
+                          }}
+                        />
+                      ) : (
+                        <span>{opt.label}</span>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </Sec>
 
@@ -1051,37 +1162,39 @@ export default function QuotationBuilder({
               >+ Add Day {itin.length + 1}</button>
             </Sec>
 
-            {/* ── Package Tier Selector ── */}
-            <div style={{ marginBottom: 4 }}>
-              <div style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: ".06em", color: "#6B7A99", marginBottom: 8 }}>Select Package Tier to Edit</div>
-              <div style={{ display: "flex", gap: 0, border: "1.5px solid #E4E9F2", borderRadius: 10, overflow: "hidden" }}>
-                {TIER_LABELS.map((lbl, idx) => {
-                  const isActive = activePkg === lbl;
-                  const tierColor = lbl === "Economy" ? "#15803D" : lbl === "Deluxe" ? "#2563EB" : "#7C3AED";
-                  const tierBg    = lbl === "Economy" ? "#F0FDF4" : lbl === "Deluxe" ? "#EFF4FF" : "#FAF5FF";
-                  return (
-                    <button
-                      key={lbl}
-                      onClick={() => setActivePkg(lbl)}
-                      style={{
-                        flex: 1, padding: "9px 0", border: "none", cursor: "pointer",
-                        fontWeight: 700, fontSize: 13,
-                        background: isActive ? tierColor : tierBg,
-                        color: isActive ? "#fff" : tierColor,
-                        borderRight: idx < 2 ? "1.5px solid #E4E9F2" : "none",
-                        transition: "all .15s",
-                      }}
-                    >
-                      {TIER_ICONS[lbl]} {lbl}
-                    </button>
-                  );
-                })}
+            {/* ── Package Tier Selector (Standard + B2B only) ── */}
+            {!isPackage && (
+              <div style={{ marginBottom: 4 }}>
+                <div style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: ".06em", color: "#6B7A99", marginBottom: 8 }}>Select Package Tier to Edit</div>
+                <div style={{ display: "flex", gap: 0, border: "1.5px solid #E4E9F2", borderRadius: 10, overflow: "hidden" }}>
+                  {TIER_LABELS.map((lbl, idx) => {
+                    const isActive = activePkg === lbl;
+                    const tierColor = lbl === "Economy" ? "#15803D" : lbl === "Deluxe" ? "#2563EB" : "#7C3AED";
+                    const tierBg    = lbl === "Economy" ? "#F0FDF4" : lbl === "Deluxe" ? "#EFF4FF" : "#FAF5FF";
+                    return (
+                      <button
+                        key={lbl}
+                        onClick={() => setActivePkg(lbl)}
+                        style={{
+                          flex: 1, padding: "9px 0", border: "none", cursor: "pointer",
+                          fontWeight: 700, fontSize: 13,
+                          background: isActive ? tierColor : tierBg,
+                          color: isActive ? "#fff" : tierColor,
+                          borderRight: idx < 2 ? "1.5px solid #E4E9F2" : "none",
+                          transition: "all .15s",
+                        }}
+                      >
+                        {TIER_ICONS[lbl]} {lbl}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* ── Hotels ── */}
             <Sec
-              label={`🏨  Hotel Details — ${activePkg}`}
+              label={`🏨  Hotel Details${tierSuffix}`}
               right={<span style={{ fontSize: 12, opacity: 0.85, fontWeight: 600 }}>Customer side</span>}
             >
               {hotels.map((h, i) => {
@@ -1109,7 +1222,7 @@ export default function QuotationBuilder({
                           {h.rates.length > 1 && (
                             <button style={{ position: "absolute", top: 7, right: 7, background: "#FEE2E2", border: "none", color: "#BE123C", borderRadius: 4, width: 22, height: 22, fontSize: 11, fontWeight: 700, cursor: "pointer", padding: 0 }} onClick={() => remRate(ri)}>✕</button>
                           )}
-                          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: 10 }}>
+                          <div style={{ display: "grid", gridTemplateColumns: isB2B ? "1fr 1fr" : "1fr 1fr 1fr", gap: 10, marginBottom: 10 }}>
                             <Fl l="Occupancy">
                               <select style={QS.inp} value={r.occupancy || "Double"} onChange={e => updRate(ri, "occupancy", e.target.value)}>
                                 <option value="Single">Single</option>
@@ -1127,32 +1240,36 @@ export default function QuotationBuilder({
                                 onDelete={removeRoomCategory}
                               />
                             </Fl>
-                            <Fl l="Price / Night (₹)">
-                              <input type="number" style={QS.inp} value={r.price} placeholder="0" onChange={e => updRate(ri, "price", e.target.value)} />
-                            </Fl>
+                            {!isB2B && (
+                              <Fl l="Price / Night (₹)">
+                                <input type="number" style={QS.inp} value={r.price} placeholder="0" onChange={e => updRate(ri, "price", e.target.value)} />
+                              </Fl>
+                            )}
                           </div>
-                          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
+                          <div style={{ display: "grid", gridTemplateColumns: isB2B ? "1fr 1fr" : "1fr 1fr 1fr", gap: 10 }}>
                             <Fl l="Nights">
                               <input type="number" style={QS.inp} value={r.nights} placeholder="0" onChange={e => updRate(ri, "nights", e.target.value)} />
                             </Fl>
                             <Fl l="Rooms">
                               <input type="number" style={QS.inp} value={r.rooms} placeholder="1" onChange={e => updRate(ri, "rooms", e.target.value)} />
                             </Fl>
-                            <Fl l="Sub Total">
-                              <input style={{ ...QS.inp, color: "#15803D", fontWeight: 700 }} value={inr((+r.price || 0) * (+r.nights || 0) * (+r.rooms || 0))} disabled />
-                            </Fl>
+                            {!isB2B && (
+                              <Fl l="Sub Total">
+                                <input style={{ ...QS.inp, color: "#15803D", fontWeight: 700 }} value={inr((+r.price || 0) * (+r.nights || 0) * (+r.rooms || 0))} disabled />
+                              </Fl>
+                            )}
                           </div>
                         </div>
                       ))}
                     </div>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                       <button onClick={addRate} style={{ ...QS.addBtnBottom, marginTop: 0, width: "auto", padding: "5px 14px", fontSize: 12 }}>+ Add Rate Type</button>
-                      {hTotal > 0 && <span style={{ fontSize: 12, fontWeight: 800, color: "#15803D" }}>Hotel Total: {inr(hTotal)}</span>}
+                      {!isB2B && hTotal > 0 && <span style={{ fontSize: 12, fontWeight: 800, color: "#15803D" }}>Hotel Total: {inr(hTotal)}</span>}
                     </div>
                   </div>
                 );
               })}
-              {hotels.length > 1 && (
+              {!isB2B && hotels.length > 1 && (
                 <div style={{ textAlign: "right", fontSize: 13, fontWeight: 700, color: "#15803D", marginTop: 4 }}>
                   Combined Hotel Total: {inr(hotelTotal)}
                 </div>
@@ -1161,32 +1278,36 @@ export default function QuotationBuilder({
             </Sec>
 
             {/* ── Transfers (Cab) ── */}
-            <Sec label={`🚐  Transfer — ${activePkg}`}>
+            <Sec label={`🚐  Transfer${tierSuffix}`}>
               {transfers.map((t, i) => (
                 <div key={i} style={QS.rowBox}>
                   {transfers.length > 1 && <button style={QS.remBtn} onClick={() => remRow(setTransfers, i)}>✕</button>}
                   {transfers.length > 1 && <div style={QS.rowLabel}>Transfer {i + 1}</div>}
-                  <div style={G4}>
+                  <div style={isB2B ? G2 : G4}>
                     <Fl l="Cab Type">
                       <input style={QS.inp} placeholder="Innova Crysta" value={t.cab}
                         onChange={e => i === 0
                           ? setSharedCab(e.target.value)
                           : updArr(setTransfers, i, "cab", e.target.value)} />
                     </Fl>
-                    <Fl l="Price / Day (₹)">
-                      <input type="number" style={QS.inp} value={t.perDay} onChange={e => updArr(setTransfers, i, "perDay", e.target.value)} />
-                    </Fl>
+                    {!isB2B && (
+                      <Fl l="Price / Day (₹)">
+                        <input type="number" style={QS.inp} value={t.perDay} onChange={e => updArr(setTransfers, i, "perDay", e.target.value)} />
+                      </Fl>
+                    )}
                     <Fl l="Days">
                       <input type="number" style={QS.inp} value={t.days} onChange={e => updArr(setTransfers, i, "days", e.target.value)} />
                     </Fl>
-                    <Fl l="Sub Total">
-                      <input style={{ ...QS.inp, color: "#B45309", fontWeight: 700 }}
-                        value={inr((+t.perDay || 0) * (+t.days || 0))} disabled />
-                    </Fl>
+                    {!isB2B && (
+                      <Fl l="Sub Total">
+                        <input style={{ ...QS.inp, color: "#B45309", fontWeight: 700 }}
+                          value={inr((+t.perDay || 0) * (+t.days || 0))} disabled />
+                      </Fl>
+                    )}
                   </div>
                 </div>
               ))}
-              {transfers.length > 1 && (
+              {!isB2B && transfers.length > 1 && (
                 <div style={{ textAlign: "right", fontSize: 13, fontWeight: 700, color: "#B45309", marginTop: 4 }}>
                   Combined Transfer Total: {inr(transferTotal)}
                 </div>
@@ -1204,7 +1325,7 @@ export default function QuotationBuilder({
             </Sec>
 
             {/* ── Miscellaneous ── */}
-            <Sec label={`➕  Add on — ${activePkg}`}>
+            <Sec label={`➕  Add on${tierSuffix}`}>
               {miscs.length === 0 && (
                 <div style={{ fontSize: 12, color: "#9CA3AF", marginBottom: 10 }}>Add any additional services — sightseeing, entry fees, boat rides, etc.</div>
               )}
@@ -1212,17 +1333,19 @@ export default function QuotationBuilder({
                 <div key={i} style={QS.rowBox}>
                   <button style={QS.remBtn} onClick={() => remRow(setMiscs, i)}>✕</button>
                   {miscs.length > 1 && <div style={QS.rowLabel}>Item {i + 1}</div>}
-                  <div style={G2}>
+                  <div style={isB2B ? { display: "grid", gridTemplateColumns: "1fr", gap: 10 } : G2}>
                     <Fl l="Service / Item">
                       <input style={QS.inp} placeholder="Sightseeing, Boat Ride, Entry Fees…" value={m.name} onChange={e => updArr(setMiscs, i, "name", e.target.value)} />
                     </Fl>
-                    <Fl l="Amount (₹)">
-                      <input type="number" style={QS.inp} value={m.amount} onChange={e => updArr(setMiscs, i, "amount", e.target.value)} />
-                    </Fl>
+                    {!isB2B && (
+                      <Fl l="Amount (₹)">
+                        <input type="number" style={QS.inp} value={m.amount} onChange={e => updArr(setMiscs, i, "amount", e.target.value)} />
+                      </Fl>
+                    )}
                   </div>
                 </div>
               ))}
-              {miscs.length > 1 && miscTotal > 0 && (
+              {!isB2B && miscs.length > 1 && miscTotal > 0 && (
                 <div style={{ textAlign: "right", fontSize: 13, fontWeight: 700, color: "#7C3AED", marginTop: 4 }}>
                   Total Misc: {inr(miscTotal)}
                 </div>
@@ -1231,7 +1354,7 @@ export default function QuotationBuilder({
             </Sec>
 
             {/* ── Flights ── */}
-            <Sec label={`✈️  Flight Details — ${activePkg}`}>
+            <Sec label={`✈️  Flight Details${tierSuffix}`}>
               {flights.map((f, i) => (
                 <div key={i} style={QS.rowBox}>
                   {flights.length > 1 && <button style={QS.remBtn} onClick={() => remRow(setFlights, i)}>✕</button>}
@@ -1275,36 +1398,44 @@ export default function QuotationBuilder({
                   </div>
 
                   {/* Pax | Price | Sub Total */}
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: f.roundTrip ? 10 : 0 }}>
+                  <div style={{ display: "grid", gridTemplateColumns: isB2B ? "1fr" : "1fr 1fr 1fr", gap: 10, marginBottom: f.roundTrip ? 10 : 0 }}>
                     <Fl l="Pax">
                       <input type="number" style={QS.inp} value={f.pax} onChange={e => updArr(setFlights, i, "pax", e.target.value)} />
                     </Fl>
-                    <Fl l="Price Per Pax (₹)">
-                      <input type="number" style={QS.inp} value={f.price} onChange={e => updArr(setFlights, i, "price", e.target.value)} />
-                    </Fl>
-                    <Fl l="Sub Total">
-                      <input style={{ ...QS.inp, color: "#2563EB", fontWeight: 700 }} value={f.price === "" ? "" : inr((+f.price || 0) * (+f.pax || 0))} disabled />
-                    </Fl>
+                    {!isB2B && (
+                      <Fl l="Price Per Pax (₹)">
+                        <input type="number" style={QS.inp} value={f.price} onChange={e => updArr(setFlights, i, "price", e.target.value)} />
+                      </Fl>
+                    )}
+                    {!isB2B && (
+                      <Fl l="Sub Total">
+                        <input style={{ ...QS.inp, color: "#2563EB", fontWeight: 700 }} value={f.price === "" ? "" : inr((+f.price || 0) * (+f.pax || 0))} disabled />
+                      </Fl>
+                    )}
                   </div>
 
                   {f.roundTrip && (
                     <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px dashed #E4E9F2" }}>
-                      <div style={{ ...G2, marginBottom: 10 }}>
-                        <Fl l="Return Price Per Pax (₹)">
-                          <input type="number" style={QS.inp} value={f.returnPrice} onChange={e => updArr(setFlights, i, "returnPrice", e.target.value)} />
-                        </Fl>
-                        <Fl l="Return Sub Total">
-                          <input style={{ ...QS.inp, color: "#2563EB", fontWeight: 700 }} value={f.returnPrice === "" ? "" : inr((+f.returnPrice || 0) * (+f.pax || 0))} disabled />
-                        </Fl>
-                      </div>
-                      <div style={{ textAlign: "right", fontSize: 13, fontWeight: 800, color: "#1D4ED8" }}>
-                        Total (Onward + Return): {inr(((+f.price || 0) + (+f.returnPrice || 0)) * (+f.pax || 0))}
-                      </div>
+                      {!isB2B && (
+                        <div style={{ ...G2, marginBottom: 10 }}>
+                          <Fl l="Return Price Per Pax (₹)">
+                            <input type="number" style={QS.inp} value={f.returnPrice} onChange={e => updArr(setFlights, i, "returnPrice", e.target.value)} />
+                          </Fl>
+                          <Fl l="Return Sub Total">
+                            <input style={{ ...QS.inp, color: "#2563EB", fontWeight: 700 }} value={f.returnPrice === "" ? "" : inr((+f.returnPrice || 0) * (+f.pax || 0))} disabled />
+                          </Fl>
+                        </div>
+                      )}
+                      {!isB2B && (
+                        <div style={{ textAlign: "right", fontSize: 13, fontWeight: 800, color: "#1D4ED8" }}>
+                          Total (Onward + Return): {inr(((+f.price || 0) + (+f.returnPrice || 0)) * (+f.pax || 0))}
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
               ))}
-              {flights.length > 1 && (
+              {!isB2B && flights.length > 1 && (
                 <div style={{ textAlign: "right", fontSize: 13, fontWeight: 700, color: "#2563EB", marginTop: 4 }}>
                   Combined Flight Total: {inr(flightTotal)}
                 </div>
@@ -1445,7 +1576,7 @@ export default function QuotationBuilder({
               <div style={{ background: "#fff", padding: 14 }}>
                 <div style={{ display: "grid", gridTemplateColumns: `repeat(${intl ? 4 : 3}, 1fr)`, gap: 12, marginBottom: 14 }}>
                   <Fl l="Cost Price (₹) — auto from components"><input type="number" style={{ ...QS.inp, background: "#F0FDF4", fontWeight: 700 }} value={form.cost} onChange={e => upd("cost", e.target.value)} /></Fl>
-                  <Fl l={`Margin (₹) — ${activePkg}`}><input type="number" style={QS.inp} value={tierMargin} onChange={e => setTierMargin(e.target.value)} /></Fl>
+                  <Fl l={`Margin (₹)${tierSuffix}`}><input type="number" style={QS.inp} value={tierMargin} onChange={e => setTierMargin(e.target.value)} /></Fl>
                   <Fl l="GST %"><input type="number" style={QS.inp} value={form.gstPct} onChange={e => upd("gstPct", e.target.value)} /></Fl>
                   {intl && (
                     <Fl l="TCS % (Intl only)">
@@ -1457,13 +1588,52 @@ export default function QuotationBuilder({
                   )}
                 </div>
                 <div style={{ background: "#FFF8F8", border: "1px dashed #E8364A", borderRadius: 10, padding: "10px 14px" }}>
-                  <CR l="Margin %  (auto)" v={`${c.mpct.toFixed(1)}%  ${g.g} Grade`} vc={g.c} />
-                  <CR l="Base Price = Cost + Margin" v={inr(c.base)} />
-                  <CR l="GST Amount" v={inr(c.gst)} />
+                  <CR l="Margin % (auto)" v={`${c.mpct.toFixed(1)}%  ${g.g} Grade`} vc={g.c} />
+                  <CR l="Cost Price" v={inr(c.cost)} />
+                  <CR l="Margin" v={inr(c.margin)} />
+                  {/* Subtotal row with optional per-person toggle */}
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "6px 0", margin: "4px 0", borderTop: "1px dashed #FECACA", borderBottom: "1px dashed #FECACA" }}>
+                    <label style={{ display: "flex", alignItems: "center", gap: isPackage ? 6 : 0, cursor: isPackage ? "pointer" : "default" }}>
+                      {isPackage && (
+                        <input
+                          type="checkbox"
+                          checked={!!form.ppSubEnabled}
+                          onChange={e => { upd("ppSubEnabled", e.target.checked); if (e.target.checked) upd("ppSellEnabled", false); }}
+                          style={{ width: 14, height: 14, accentColor: "#E8364A", cursor: "pointer", flexShrink: 0 }}
+                        />
+                      )}
+                      <span style={{ fontSize: 12.5, fontWeight: 700, color: "#0F1B33" }}>
+                        {isPackage && form.ppSubEnabled && leadPax > 0
+                          ? `Subtotal per Person${leadPax > 0 ? ` (÷ ${leadPax})` : ""}`
+                          : "Subtotal (before GST)"}
+                      </span>
+                    </label>
+                    <span style={{ fontSize: 13, fontWeight: 800, color: "#0F1B33" }}>
+                      {isPackage && form.ppSubEnabled && leadPax > 0 ? inr(c.base / leadPax) : inr(c.base)}
+                    </span>
+                  </div>
+                  <CR l={`GST Amount (${form.gstPct}%)`} v={inr(c.gst)} />
                   {intl && <CR l="TCS Amount" v={inr(c.tcs)} />}
+                  {/* Selling Price row with optional per-person toggle */}
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: 10, marginTop: 4, borderTop: "1px dashed #FECACA" }}>
-                    <b style={{ color: "#0F1B33", fontSize: 13 }}>Selling Price = Base + GST{intl ? " + TCS" : ""}</b>
-                    <b style={{ fontSize: 20, color: "#2563EB" }}>{inr(c.selling)}</b>
+                    <label style={{ display: "flex", alignItems: "center", gap: isPackage ? 6 : 0, cursor: isPackage ? "pointer" : "default" }}>
+                      {isPackage && (
+                        <input
+                          type="checkbox"
+                          checked={!!form.ppSellEnabled}
+                          onChange={e => { upd("ppSellEnabled", e.target.checked); if (e.target.checked) upd("ppSubEnabled", false); }}
+                          style={{ width: 14, height: 14, accentColor: "#2563EB", cursor: "pointer", flexShrink: 0 }}
+                        />
+                      )}
+                      <b style={{ color: "#0F1B33", fontSize: 13 }}>
+                        {isPackage && form.ppSellEnabled && leadPax > 0
+                          ? `Selling Price per Person${leadPax > 0 ? ` (÷ ${leadPax})` : ""}`
+                          : `Selling Price${intl ? " (incl. GST + TCS)" : " (incl. GST)"}`}
+                      </b>
+                    </label>
+                    <b style={{ fontSize: 20, color: "#2563EB" }}>
+                      {isPackage && form.ppSellEnabled && leadPax > 0 ? inr(c.selling / leadPax) : inr(c.selling)}
+                    </b>
                   </div>
                 </div>
               </div>
