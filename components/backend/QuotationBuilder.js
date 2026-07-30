@@ -391,7 +391,7 @@ export default function QuotationBuilder({
   const intl      = form.type === "International";
   const isB2B     = form.quoteType === "b2b";
   const isPackage = form.quoteType === "package";
-  const tierSuffix = isPackage ? "" : ` — ${activePkg}`;
+  const tierSuffix = (isPackage || isB2B) ? "" : ` — ${activePkg}`;
 
   /* ── array helpers ── */
   function updArr(setter, idx, field, value) {
@@ -535,13 +535,8 @@ export default function QuotationBuilder({
 
       const scale = 2;
 
-      /* Collect clickable link hotspots BEFORE html2canvas clones the DOM. */
-      const elRect   = el.getBoundingClientRect();
-      const pdfLinks = Array.from(el.querySelectorAll("[data-pdf-link]")).map(linkEl => {
-        const url = linkEl.getAttribute("data-pdf-link");
-        const r   = linkEl.getBoundingClientRect();
-        return { url, top: r.top - elRect.top, left: r.left - elRect.left, w: r.width, h: r.height };
-      });
+      /* pdfLinks collected INSIDE onclone (offsetTop traversal, scroll-safe). */
+      let pdfLinks = [];
 
       /* Section/break positions are measured INSIDE onclone (from the cloned
          document, after icon patches) so they match the actual canvas layout. */
@@ -630,7 +625,7 @@ export default function QuotationBuilder({
 
       const patch = doc => {
         const st = doc.createElement("style");
-        st.textContent = "* { font-family: 'Inter', sans-serif !important; }";
+        st.textContent = "* { font-family: 'Inter', sans-serif !important; word-spacing: 0.1px !important; letter-spacing: 0.01px !important; }";
         doc.head.appendChild(st);
         doc.querySelectorAll("[data-card-icon]").forEach(imgEl => {
           const src = imgEl.getAttribute("data-card-icon");
@@ -655,12 +650,35 @@ export default function QuotationBuilder({
            makes cloneEl an offsetParent, so the traversal stops here correctly. */
         cloneEl.style.position = "relative";
 
-        /* relTop: offset of el2 relative to cloneEl, in CSS px (= canvas px / scale). */
+        /* relTop/relLeft: offset relative to cloneEl, in CSS px (= canvas px / scale).
+           offsetTop/offsetLeft are scroll-independent — getBoundingClientRect() is not. */
         const relTop = el2 => {
           let top = 0, cur = el2;
           while (cur && cur !== cloneEl) { top += cur.offsetTop; cur = cur.offsetParent; }
           return top;
         };
+        const relLeft = el2 => {
+          let left = 0, cur = el2;
+          while (cur && cur !== cloneEl) { left += cur.offsetLeft; cur = cur.offsetParent; }
+          return left;
+        };
+
+        /* Collect link hotspots here — inside onclone — so positions match the
+           canvas layout regardless of how far the preview panel is scrolled. */
+        pdfLinks = Array.from(cloneEl.querySelectorAll("[data-pdf-link]")).map(linkEl => {
+          const url  = linkEl.getAttribute("data-pdf-link");
+          /* Inline <a> tags inside flex containers get block-ified, but force
+             inline-block in the clone so offsetWidth/Height are always non-zero. */
+          if (getComputedStyle(linkEl).display === "inline")
+            linkEl.style.display = "inline-block";
+          return {
+            url,
+            top:  relTop(linkEl),
+            left: relLeft(linkEl),
+            w:    linkEl.offsetWidth  || 40,
+            h:    linkEl.offsetHeight || 40,
+          };
+        });
 
         const miniSecEl = cloneEl.querySelector("[data-pdf-section]:not([data-pdf-fullpage])");
         MINI_H_CSS = miniSecEl?.firstElementChild?.offsetHeight || 70;

@@ -297,8 +297,11 @@ export default function QuotationPreview({ data, id }) {
   } = data || {};
 
   /* tier mode */
+  const isB2B       = form.quoteType === "b2b";
   const useTiers    = pkgTiers && TIER_LABELS.some(lbl => hasTierData(pkgTiers[lbl]));
-  const activeTiers = useTiers ? TIER_LABELS.filter(lbl => hasTierData(pkgTiers[lbl])) : [];
+  const activeTiers = useTiers
+    ? TIER_LABELS.filter(lbl => hasTierData(pkgTiers[lbl]) && calcTierSelling(pkgTiers[lbl], form) > 0)
+    : [];
   const isPackage   = form.quoteType === "package";
 
   /* per-person mode (package only) */
@@ -416,13 +419,11 @@ export default function QuotationPreview({ data, id }) {
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 10 }}>
               <div style={{ fontSize: 18, fontWeight: 800, color: DARK }}>{sp?.name || "Savi Prajapati"}</div>
               <div style={{ display: "flex", gap: 8 }}>
-                <a href="tel:+918882701800" data-pdf-link="tel:+918882701800" style={{ textDecoration: "none", display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
+                <a href="tel:+918882701800" data-pdf-link="tel:+918882701800" style={{ textDecoration: "none" }}>
                   <IcCall />
-                  <span style={{ fontSize: 8, fontWeight: 700, color: "#555", letterSpacing: ".03em" }}>Call</span>
                 </a>
-                <a href="https://wa.me/918882701800" data-pdf-link="https://wa.me/918882701800" style={{ textDecoration: "none", display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
+                <a href="https://wa.me/918882701800" data-pdf-link="https://wa.me/918882701800" style={{ textDecoration: "none" }}>
                   <IcWhatsApp />
-                  <span style={{ fontSize: 8, fontWeight: 700, color: "#555", letterSpacing: ".03em" }}>WhatsApp</span>
                 </a>
               </div>
             </div>
@@ -488,8 +489,8 @@ export default function QuotationPreview({ data, id }) {
           </div>
         )}
 
-        {/* Legacy single price */}
-        {!useTiers && selling > 0 && (() => {
+        {/* Legacy single price — show when no valid tiers OR all tiers have zero price */}
+        {selling > 0 && (!useTiers || activeTiers.length === 0) && (() => {
           const base = (+form.cost || 0) + (+form.margin || 0);
           const legacyVal = ppSell && leadPax > 0
             ? Math.round(selling / leadPax)
@@ -497,7 +498,7 @@ export default function QuotationPreview({ data, id }) {
               ? Math.round(base / leadPax)
               : Math.round(selling);
           const legacyLabel = !isPackage
-            ? <>"Package" <span style={{ fontWeight: 400, fontSize: 14, color: DARK }}>Incl. Tax</span></>
+            ? <>Total Cost Price <span style={{ fontWeight: 400, fontSize: 14, color: DARK }}>(Incl. Tax)</span></>
             : ppSell && leadPax > 0
               ? <>Per Person Price <span style={{ fontWeight: 400, fontSize: 14, color: DARK }}>(Incl. Tax)</span></>
               : ppSub && leadPax > 0
@@ -966,10 +967,10 @@ export default function QuotationPreview({ data, id }) {
             href="https://tourwatchout.com/term-and-conditions"
             target="_blank"
             rel="noopener noreferrer"
+            data-pdf-link="https://tourwatchout.com/term-and-conditions"
             style={{ textDecoration: "none", cursor: "pointer", display: "block" }}
           >
             <div
-              data-pdf-link="https://tourwatchout.com/term-and-conditions"
               style={{
                 border: `1px solid ${TEAL_BORDER}`,
                 borderRadius: 20,
@@ -996,13 +997,11 @@ export default function QuotationPreview({ data, id }) {
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 14 }}>
               <div style={{ fontSize: 22, fontWeight: 800, color: DARK }}>{sp?.name || "Savi Prajapati"}</div>
               <div style={{ display: "flex", gap: 10 }}>
-                <a href="tel:+918882701800" data-pdf-link="tel:+918882701800" style={{ textDecoration: "none", display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}>
+                <a href="tel:+918882701800" data-pdf-link="tel:+918882701800" style={{ textDecoration: "none" }}>
                   <IcCall />
-                  <span style={{ fontSize: 9, fontWeight: 700, color: "#555", letterSpacing: ".03em" }}>Call</span>
                 </a>
-                <a href="https://wa.me/918882701800" data-pdf-link="https://wa.me/918882701800" style={{ textDecoration: "none", display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}>
+                <a href="https://wa.me/918882701800" data-pdf-link="https://wa.me/918882701800" style={{ textDecoration: "none" }}>
                   <IcWhatsApp />
-                  <span style={{ fontSize: 9, fontWeight: 700, color: "#555", letterSpacing: ".03em" }}>WhatsApp</span>
                 </a>
               </div>
             </div>
