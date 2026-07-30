@@ -299,8 +299,14 @@ export default function QuotationPreview({ data, id }) {
   /* tier mode */
   const isB2B       = form.quoteType === "b2b";
   const useTiers    = pkgTiers && TIER_LABELS.some(lbl => hasTierData(pkgTiers[lbl]));
+  /* activeTiers — tiers with a non-zero selling price, used for the pricing box */
   const activeTiers = useTiers
     ? TIER_LABELS.filter(lbl => hasTierData(pkgTiers[lbl]) && calcTierSelling(pkgTiers[lbl], form) > 0)
+    : [];
+  /* dataTiers — all tiers with any data, used for service detail cards (hotels/flights/transfers).
+     In B2B mode prices are not filled in, so activeTiers can be empty even when data exists. */
+  const dataTiers   = useTiers
+    ? TIER_LABELS.filter(lbl => hasTierData(pkgTiers[lbl]))
     : [];
   const isPackage   = form.quoteType === "package";
 
@@ -323,10 +329,10 @@ export default function QuotationPreview({ data, id }) {
   const sp          = typeof form.assignedTo === "object" && form.assignedTo?.name ? form.assignedTo : null;
   const createdAt   = fmtCreated(form.createdAt);
 
-  /* highlight visibility */
-  const showHotel    = useTiers ? activeTiers.some(l => (pkgTiers[l].hotels   ||[]).some(h => h.name)) : hotels.some(h => h.name);
-  const showTransfer = useTiers ? activeTiers.some(l => (pkgTiers[l].transfers||[]).some(t => t.cab && +t.days > 0)) : transfers.some(t => +t.perDay > 0);
-  const showFlight   = useTiers ? activeTiers.some(l => (pkgTiers[l].flights  ||[]).some(f => f.from || f.to)) : flights.some(f => f.from || f.to);
+  /* highlight visibility — use dataTiers so B2B (no pricing) still shows pills */
+  const showHotel    = useTiers ? dataTiers.some(l => (pkgTiers[l].hotels   ||[]).some(h => h.name)) : hotels.some(h => h.name);
+  const showTransfer = useTiers ? dataTiers.some(l => (pkgTiers[l].transfers||[]).some(t => t.cab && +t.days > 0)) : transfers.some(t => +t.perDay > 0);
+  const showFlight   = useTiers ? dataTiers.some(l => (pkgTiers[l].flights  ||[]).some(f => f.from || f.to)) : flights.some(f => f.from || f.to);
   const hasItin      = itin.some(d => d.title || d.itinerary || d.date || d.tour || d.transfer);
 
   /* manual highlights: if form.highlights array is set, it controls visibility + labels;
@@ -672,12 +678,12 @@ export default function QuotationPreview({ data, id }) {
       {/* ══════════════════════════════
           PACKAGE DETAILS — TIER MODE
       ══════════════════════════════ */}
-      {useTiers && activeTiers.length > 0 && (
+      {useTiers && dataTiers.length > 0 && (
         <div data-pdf-section="true">
           <MiniHeader />
           <div style={{ padding: "28px 32px" }}>
 
-            {activeTiers.map((lbl, tidx) => {
+            {dataTiers.map((lbl, tidx) => {
               const tier      = pkgTiers[lbl];
               const tHotels   = (tier.hotels   || []).filter(h => h.name);
               const tFlights  = (tier.flights  || []).filter(f => f.from || f.to);
@@ -790,7 +796,7 @@ export default function QuotationPreview({ data, id }) {
                     </div>
                   )}
 
-                  {tidx < activeTiers.length - 1 && (
+                  {tidx < dataTiers.length - 1 && (
                     <hr style={{ border: "none", borderTop: "2px dashed #DFF0F0", margin: "22px 0" }} />
                   )}
                 </div>
