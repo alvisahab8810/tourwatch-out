@@ -778,23 +778,26 @@ export default function QuotationPreview({ data, id }) {
                   )}
 
                   {/* Financials */}
-                  {tierSell > 0 && (
-                    <div style={{ border: `1px solid ${TEAL_BORDER}`, borderRadius: 10, padding: "14px 18px", background: "transparent", marginBottom: 14 }}>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <div style={{ fontSize: 14, fontWeight: 700, color: TEAL }}>{lbl} Package — Net Cost (Incl. GST)</div>
-                        <div style={{ display: "flex", alignItems: "baseline", gap: 12 }}>
-                          <span style={{ fontSize: 20, fontWeight: 900, color: DARK }}>
-                            ₹ {Math.round(tierSell).toLocaleString("en-IN")}/-
-                          </span>
-                          {tierPax > 0 && (
-                            <span style={{ fontSize: 12, color: "#666" }}>
-                              Per Person: ₹ {Math.round(tierSell / tierPax).toLocaleString("en-IN")}/-
+                  {tierSell > 0 && (() => {
+                    const effPax = leadPax > 0 ? leadPax : tierPax;
+                    return (
+                      <div style={{ border: `1px solid ${TEAL_BORDER}`, borderRadius: 10, padding: "14px 18px", background: "transparent", marginBottom: 14 }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                          <div style={{ fontSize: 14, fontWeight: 700, color: TEAL }}>{lbl} Package — Net Cost (Incl. GST)</div>
+                          <div style={{ display: "flex", alignItems: "baseline", gap: 12 }}>
+                            <span style={{ fontSize: 20, fontWeight: 900, color: DARK }}>
+                              ₹ {Math.round(tierSell).toLocaleString("en-IN")}/-
                             </span>
-                          )}
+                            {effPax > 1 && (
+                              <span style={{ fontSize: 12, color: "#666" }}>
+                                Per Person: ₹ {Math.round(tierSell / effPax).toLocaleString("en-IN")}/-
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  )}
+                    );
+                  })()}
 
                   {tidx < dataTiers.length - 1 && (
                     <hr style={{ border: "none", borderTop: "2px dashed #DFF0F0", margin: "22px 0" }} />
