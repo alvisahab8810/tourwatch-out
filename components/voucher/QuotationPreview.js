@@ -456,8 +456,8 @@ export default function QuotationPreview({ data, id }) {
           </div>
         </div>
 
-        {/* Package pricing box */}
-        {useTiers && activeTiers.length > 0 && (
+        {/* Package pricing box — only in Package mode; Standard/B2B use the flat selling price below */}
+        {isPackage && useTiers && activeTiers.length > 0 && (
           <div style={{ border: "1px solid #26828D", borderRadius: 12, overflow: "hidden", marginBottom: 18 }}>
             {activeTiers.map((lbl, idx) => {
               const tier        = pkgTiers[lbl];
@@ -495,8 +495,8 @@ export default function QuotationPreview({ data, id }) {
           </div>
         )}
 
-        {/* Legacy single price — show when no valid tiers OR all tiers have zero price */}
-        {selling > 0 && (!useTiers || activeTiers.length === 0) && (() => {
+        {/* Legacy single price — Standard/B2B always; Package mode only when no priced tiers */}
+        {selling > 0 && (!isPackage || !useTiers || activeTiers.length === 0) && (() => {
           const base = (+form.cost || 0) + (+form.margin || 0);
           const legacyVal = ppSell && leadPax > 0
             ? Math.round(selling / leadPax)
@@ -777,8 +777,10 @@ export default function QuotationPreview({ data, id }) {
                     </div>
                   )}
 
-                  {/* Financials */}
-                  {tierSell > 0 && (() => {
+                  {/* Financials — Package mode uses per-tier price; Standard/B2B use flat selling */}
+                  {(() => {
+                    const displaySell = isPackage ? tierSell : selling;
+                    if (!(displaySell > 0)) return null;
                     const effPax = leadPax > 0 ? leadPax : tierPax;
                     return (
                       <div style={{ border: `1px solid ${TEAL_BORDER}`, borderRadius: 10, padding: "14px 18px", background: "transparent", marginBottom: 14 }}>
@@ -786,11 +788,11 @@ export default function QuotationPreview({ data, id }) {
                           <div style={{ fontSize: 14, fontWeight: 700, color: TEAL }}>{lbl} Package — Net Cost (Incl. GST)</div>
                           <div style={{ display: "flex", alignItems: "baseline", gap: 12 }}>
                             <span style={{ fontSize: 20, fontWeight: 900, color: DARK }}>
-                              ₹ {Math.round(tierSell).toLocaleString("en-IN")}/-
+                              ₹ {Math.round(displaySell).toLocaleString("en-IN")}/-
                             </span>
                             {effPax > 1 && (
                               <span style={{ fontSize: 12, color: "#666" }}>
-                                Per Person: ₹ {Math.round(tierSell / effPax).toLocaleString("en-IN")}/-
+                                Per Person: ₹ {Math.round(displaySell / effPax).toLocaleString("en-IN")}/-
                               </span>
                             )}
                           </div>
