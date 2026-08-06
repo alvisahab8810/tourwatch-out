@@ -101,8 +101,10 @@ const QuotationSchema = new mongoose.Schema({
   tcsPct:          { type: Number, default: 0 },
   tripExpense:     { type: Number, default: 0 },
   newSellingPrice: { type: Number, default: 0 },
-  ppSubEnabled:    { type: Boolean, default: false },
-  ppSellEnabled:   { type: Boolean, default: false },
+  ppSubEnabled:      { type: Boolean, default: false },
+  ppSubTotalEnabled: { type: Boolean, default: false },
+  ppSellEnabled:     { type: Boolean, default: false },
+  canxBar:           { type: mongoose.Schema.Types.Mixed, default: {} },
 
   // Package tiers (Economy / Deluxe / Premium — each has its own hotels/flights/transfers/miscs)
   pkgTiers: { type: mongoose.Schema.Types.Mixed, default: {} },

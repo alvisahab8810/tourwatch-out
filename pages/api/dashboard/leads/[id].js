@@ -5,7 +5,7 @@ import { sendMetaEvent } from "../../../../utils/metaCapi";
 const ALLOWED_PATCH = [
   "assignedTo", "contacted", "contactedAt",
   "verificationStatus", "status", "budgetBracket", "notes",
-  "score", "brr",
+  "score", "brr", "destination",
 ];
 
 export default async function handler(req, res) {
@@ -49,7 +49,21 @@ export default async function handler(req, res) {
       update.contactedAt = req.body.contacted ? new Date() : null;
     }
     if (!Object.keys(update).length) return res.status(400).json({ error: "No valid fields to update" });
-    const lead = await Lead.findByIdAndUpdate(id, { $set: update }, { new: true })
+
+    /* Track destination changes in history */
+    let destHistEntry = null;
+    if ("destination" in update) {
+      const current = await Lead.findById(id).select("destination").lean();
+      const oldDest = current?.destination || "";
+      if (oldDest !== update.destination) {
+        destHistEntry = { from: oldDest, to: update.destination, changedAt: new Date() };
+      }
+    }
+
+    const mongoUpdate = { $set: update };
+    if (destHistEntry) mongoUpdate.$push = { destinationHistory: destHistEntry };
+
+    const lead = await Lead.findByIdAndUpdate(id, mongoUpdate, { new: true, strict: false })
       .populate("assignedTo", "name email username")
       .lean();
     if (!lead) return res.status(404).json({ error: "Lead not found" });

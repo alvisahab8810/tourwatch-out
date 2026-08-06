@@ -7,7 +7,7 @@ export default async function handler(req, res) {
 
   if (req.method === "GET") {
     const q = await Quotation.findById(id)
-      .populate("leadId", "name phone email destination travelDate brr")
+      .populate("leadId", "name phone email destination travelDate brr destinationHistory")
       .populate("assignedTo", "name email")
       .lean();
     if (!q) return res.status(404).json({ error: "Not found" });
@@ -16,7 +16,7 @@ export default async function handler(req, res) {
 
   if (req.method === "PATCH") {
     const q = await Quotation.findByIdAndUpdate(id, { $set: req.body }, { new: true })
-      .populate("leadId", "name phone email destination travelDate brr")
+      .populate("leadId", "name phone email destination travelDate brr destinationHistory")
       .populate("assignedTo", "name email")
       .lean();
     if (!q) return res.status(404).json({ error: "Not found" });

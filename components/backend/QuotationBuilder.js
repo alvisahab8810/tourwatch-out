@@ -207,9 +207,14 @@ const DEF_FORM = {
   termsConditions: DEFAULT_TERMS,
   bookingPolicy: DEFAULT_BOOKING_POLICY,
   cancellationPolicy: DEFAULT_CANCELLATION_POLICY,
-  canxBar: { enabled: false, cutoffDate: "", feeBefore: "", sliderPct: 75 },
+  canxBar: { enabled: false, slabs: [
+    { days: 40, pct: 0 },
+    { days: 30, pct: 25 },
+    { days: 15, pct: 50 },
+    { days: 7,  pct: 100 },
+  ]},
   cost: "", margin: "", gstPct: 5, tcsPct: 2, tripExpense: 0,
-  ppSubEnabled: false, ppSellEnabled: false,
+  ppSubEnabled: false, ppSubTotalEnabled: false, ppSellEnabled: false,
 };
 
 /* Build initial pkgTiers from existing data or BRR */
@@ -284,7 +289,12 @@ export default function QuotationBuilder({
         termsConditions:     isBlankRichText(initialData.termsConditions)    ? DEFAULT_TERMS             : initialData.termsConditions,
         bookingPolicy:       isBlankRichText(initialData.bookingPolicy)      ? DEFAULT_BOOKING_POLICY    : initialData.bookingPolicy,
         cancellationPolicy:  isBlankRichText(initialData.cancellationPolicy) ? DEFAULT_CANCELLATION_POLICY : initialData.cancellationPolicy,
-        canxBar: { ...DEF_FORM.canxBar, ...(initialData.canxBar || {}) },
+        canxBar: (() => {
+          const saved = initialData.canxBar || {};
+          // migrate old format (cutoffDate/feeBefore/sliderPct) → slabs
+          if (saved.slabs) return { ...DEF_FORM.canxBar, ...saved };
+          return { ...DEF_FORM.canxBar, enabled: !!saved.enabled };
+        })(),
       }
     : {
         ...DEF_FORM,
@@ -1458,9 +1468,7 @@ export default function QuotationBuilder({
                   Combined Flight Total: {inr(flightTotal)}
                 </div>
               )}
-              {flights.length < 3 && (
-                <button onClick={() => addRow(setFlights, { ...DEF_FLIGHT })} style={QS.addBtnBottom}>+ Add Flight</button>
-              )}
+              <button onClick={() => addRow(setFlights, { ...DEF_FLIGHT })} style={QS.addBtnBottom}>+ Add Flight</button>
             </Sec>
 
             {/* ── Inclusions / Exclusions / Notes ── */}
@@ -1504,80 +1512,109 @@ export default function QuotationBuilder({
               <div style={{ height: 12 }} />
               <div>
                 <div style={QS.policyLabel}>Cancellation Policy</div>
-                {/* ── Cancellation Bar (visual progress bar) ── */}
-                <div style={{ border: "1.5px solid #E4E9F2", borderRadius: 10, padding: "14px 16px", marginBottom: 12, background: "#F8FAFD" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
-                    <input type="checkbox" id="canxBarEnabled" checked={!!form.canxBar?.enabled}
-                      onChange={e => upd("canxBar", { ...form.canxBar, enabled: e.target.checked })}
-                      style={{ width: 16, height: 16, cursor: "pointer" }} />
-                    <label htmlFor="canxBarEnabled" style={{ fontSize: 13, fontWeight: 700, color: "#0F1B33", cursor: "pointer" }}>
-                      Show Cancellation Progress Bar
-                    </label>
-                  </div>
-                  {form.canxBar?.enabled && (
-                    <div>
-                      <div style={{ display: "flex", gap: 10, marginBottom: 12 }}>
-                        <Fl l="Cutoff Date" style={{ flex: 1 }}>
-                          <input type="date" style={{ ...QS.inp, colorScheme: "light" }}
-                            value={form.canxBar?.cutoffDate || ""}
-                            onChange={e => upd("canxBar", { ...form.canxBar, cutoffDate: e.target.value })} />
-                        </Fl>
-                        <Fl l="Fee Before Cutoff (₹)" style={{ flex: 1 }}>
-                          <input type="number" style={QS.inp} placeholder="e.g. 15500"
-                            value={form.canxBar?.feeBefore || ""}
-                            onChange={e => upd("canxBar", { ...form.canxBar, feeBefore: e.target.value })} />
-                        </Fl>
+                {/* ── Cancellation Bar (multi-slab progress bar) ── */}
+                {(() => {
+                  const slabColor = pct => pct === 0 ? "#22C55E" : pct <= 35 ? "#84CC16" : pct <= 65 ? "#F59E0B" : "#EF4444";
+                  const slabs = (form.canxBar?.slabs || []).slice().sort((a, b) => b.days - a.days);
+                  const maxDays = slabs.length ? slabs[0].days : 1;
+                  return (
+                    <div style={{ border: "1.5px solid #E4E9F2", borderRadius: 10, padding: "14px 16px", marginBottom: 12, background: "#F8FAFD" }}>
+                      {/* Toggle */}
+                      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: form.canxBar?.enabled ? 14 : 0 }}>
+                        <input type="checkbox" id="canxBarEnabled" checked={!!form.canxBar?.enabled}
+                          onChange={e => upd("canxBar", { ...form.canxBar, enabled: e.target.checked })}
+                          style={{ width: 16, height: 16, cursor: "pointer" }} />
+                        <label htmlFor="canxBarEnabled" style={{ fontSize: 13, fontWeight: 700, color: "#0F1B33", cursor: "pointer" }}>
+                          Show Cancellation Progress Bar
+                        </label>
                       </div>
-                      <Fl l={`Slider Position — ${form.canxBar?.sliderPct ?? 75}%`}>
-                        <input type="range" min={10} max={90} step={1}
-                          value={form.canxBar?.sliderPct ?? 75}
-                          onChange={e => upd("canxBar", { ...form.canxBar, sliderPct: +e.target.value })}
-                          style={{ width: "100%", accentColor: "#2B8E8E", cursor: "pointer" }} />
-                      </Fl>
-                      {/* Live preview */}
-                      {form.canxBar?.cutoffDate && (
-                        <div style={{ marginTop: 14, border: "1px solid #DFF0F0", borderRadius: 8, padding: "12px 14px", background: "#fff" }}>
-                          {(() => {
-                            const pct = Math.max(8, Math.min(92, +(form.canxBar?.sliderPct ?? 75)));
-                            const d   = new Date(form.canxBar?.cutoffDate);
-                            const lbl = isNaN(d.getTime()) ? form.canxBar?.cutoffDate
-                              : d.toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "2-digit" });
-                            const fee = (+form.canxBar?.feeBefore || 0).toLocaleString("en-IN");
+
+                      {form.canxBar?.enabled && (
+                        <div>
+                          {/* Column headers */}
+                          <div style={{ display: "grid", gridTemplateColumns: "110px 90px 130px 28px", gap: 8, marginBottom: 5, paddingLeft: 2 }}>
+                            {["Days Before Travel", "Charge %", "Amount (auto)", ""].map((h, i) => (
+                              <span key={i} style={{ fontSize: 10, fontWeight: 700, color: "#6B7A99", textTransform: "uppercase", letterSpacing: ".03em" }}>{h}</span>
+                            ))}
+                          </div>
+
+                          {/* Slab rows */}
+                          {(form.canxBar?.slabs || []).map((slab, i) => {
+                            const amt = slab.pct === 0 ? "No charge" : `₹${Math.round((slab.pct / 100) * (c.selling || 0)).toLocaleString("en-IN")}`;
                             return (
-                              <>
-                                <div style={{ fontSize: 11, fontWeight: 700, color: "#888", marginBottom: 10, textTransform: "uppercase", letterSpacing: ".04em" }}>Preview</div>
-                                <div style={{ position: "relative", height: 8, borderRadius: 4, marginLeft: 12, marginRight: 12, marginBottom: 22 }}>
-                                  <div style={{ position: "absolute", inset: 0, borderRadius: 4, background: "linear-gradient(to right, #C8E6C9, #FFCDD2)" }} />
-                                  <div style={{ position: "absolute", left: 0, top: 0, height: "100%", width: `${pct}%`, background: "linear-gradient(to right,#43A047,#AED581)", borderRadius: "4px 0 0 4px" }} />
-                                  <div style={{ position: "absolute", left: -12, top: "50%", transform: "translateY(-50%)", width: 22, height: 22, borderRadius: "50%", background: "#43A047", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                                    <span style={{ color: "#fff", fontSize: 11, fontWeight: 800 }}>✓</span>
-                                  </div>
-                                  <div style={{ position: "absolute", left: `${pct}%`, top: "50%", transform: "translate(-50%,-50%)", width: 24, height: 24, borderRadius: "50%", background: "#fff", border: "2.5px solid #EF5350", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                                    <span style={{ color: "#EF5350", fontSize: 11, fontWeight: 800 }}>✕</span>
-                                  </div>
-                                  <div style={{ position: "absolute", right: -12, top: "50%", transform: "translateY(-50%)", width: 22, height: 22, borderRadius: "50%", background: "#EF5350", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                                    <span style={{ color: "#fff", fontSize: 11, fontWeight: 800 }}>✕</span>
-                                  </div>
+                              <div key={i} style={{ display: "grid", gridTemplateColumns: "110px 90px 130px 28px", gap: 8, marginBottom: 7, alignItems: "center" }}>
+                                <input type="number" min={0} style={QS.inp} placeholder="e.g. 30"
+                                  value={slab.days === 0 && slab.days !== "" ? "" : slab.days}
+                                  onChange={e => {
+                                    const next = [...(form.canxBar.slabs || [])];
+                                    next[i] = { ...next[i], days: e.target.value === "" ? "" : +e.target.value };
+                                    upd("canxBar", { ...form.canxBar, slabs: next });
+                                  }} />
+                                <div style={{ position: "relative" }}>
+                                  <input type="number" min={0} max={100} style={QS.inp} placeholder="0–100"
+                                    value={slab.pct}
+                                    onChange={e => {
+                                      const next = [...(form.canxBar.slabs || [])];
+                                      next[i] = { ...next[i], pct: Math.min(100, Math.max(0, +e.target.value || 0)) };
+                                      upd("canxBar", { ...form.canxBar, slabs: next });
+                                    }} />
+                                  <span style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", fontSize: 12, color: "#6B7A99", pointerEvents: "none" }}>%</span>
                                 </div>
-                                <div style={{ display: "flex", justifyContent: "space-between" }}>
-                                  <div>
-                                    <div style={{ fontSize: 13, fontWeight: 800, color: "#2B8E8E" }}>Till {lbl}</div>
-                                    <div style={{ fontSize: 11, color: "#1a1a2e" }}>₹ {fee} Cancellation fee</div>
-                                  </div>
-                                  <div style={{ textAlign: "right" }}>
-                                    <div style={{ fontSize: 13, fontWeight: 800, color: "#E53935" }}>After {lbl}</div>
-                                    <div style={{ fontSize: 11, fontWeight: 700, color: "#1a1a2e" }}>Non Refundable</div>
-                                    <div style={{ fontSize: 10, color: "#888" }}>Cancellation is not allowed</div>
-                                  </div>
+                                <div style={{ background: "#F0F4F8", border: "1px solid #E4E9F2", borderRadius: 7, padding: "6px 10px", fontSize: 12, fontWeight: 700, color: slabColor(slab.pct) }}>
+                                  {amt}
                                 </div>
-                              </>
+                                <button onClick={() => {
+                                  const next = (form.canxBar.slabs || []).filter((_, j) => j !== i);
+                                  upd("canxBar", { ...form.canxBar, slabs: next });
+                                }} style={{ background: "#FEE2E2", border: "none", borderRadius: 6, width: 28, height: 28, cursor: "pointer", color: "#E8364A", fontSize: 15, display: "flex", alignItems: "center", justifyContent: "center", padding: 0, flexShrink: 0 }}>✕</button>
+                              </div>
                             );
-                          })()}
+                          })}
+
+                          {/* Add slab */}
+                          <button onClick={() => {
+                            const next = [...(form.canxBar?.slabs || []), { days: "", pct: 0 }];
+                            upd("canxBar", { ...form.canxBar, slabs: next });
+                          }} style={{ background: "#EFF4FF", border: "1px dashed #BFD3FE", borderRadius: 7, padding: "5px 14px", fontSize: 12, fontWeight: 700, color: "#1D4ED8", cursor: "pointer", marginTop: 2 }}>
+                            + Add Slab
+                          </button>
+
+                          {/* Live bar preview */}
+                          {slabs.length > 0 && (
+                            <div style={{ marginTop: 14, border: "1px solid #DFF0F0", borderRadius: 8, padding: "12px 14px", background: "#fff" }}>
+                              <div style={{ fontSize: 10, fontWeight: 700, color: "#888", marginBottom: 8, textTransform: "uppercase", letterSpacing: ".04em" }}>Preview</div>
+                              {/* Bar */}
+                              <div style={{ display: "flex", height: 16, borderRadius: 8, overflow: "hidden", marginBottom: 6 }}>
+                                {slabs.map((seg, idx) => {
+                                  const nextDays = idx < slabs.length - 1 ? slabs[idx + 1].days : 0;
+                                  const range = (seg.days || 0) - (nextDays || 0);
+                                  const w = maxDays > 0 ? (range / maxDays) * 100 : 100 / slabs.length;
+                                  return (
+                                    <div key={idx} style={{ width: `${w}%`, background: slabColor(seg.pct), borderRight: idx < slabs.length - 1 ? "2px solid #fff" : "none", minWidth: 2 }} />
+                                  );
+                                })}
+                              </div>
+                              {/* Labels */}
+                              <div style={{ display: "flex" }}>
+                                {slabs.map((seg, idx) => {
+                                  const nextDays = idx < slabs.length - 1 ? slabs[idx + 1].days : 0;
+                                  const range = (seg.days || 0) - (nextDays || 0);
+                                  const w = maxDays > 0 ? (range / maxDays) * 100 : 100 / slabs.length;
+                                  return (
+                                    <div key={idx} style={{ width: `${w}%`, textAlign: "center", minWidth: 0, overflow: "hidden" }}>
+                                      <div style={{ fontSize: 10, fontWeight: 800, color: slabColor(seg.pct), whiteSpace: "nowrap" }}>{seg.days}+ days</div>
+                                      <div style={{ fontSize: 10, color: "#555", whiteSpace: "nowrap" }}>{seg.pct === 0 ? "Free" : `${seg.pct}%`}</div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>
-                  )}
-                </div>
+                  );
+                })()}
                 <RTE
                   value={toRichText(form.cancellationPolicy || "")}
                   onChange={v => upd("cancellationPolicy", v)}
@@ -1609,23 +1646,33 @@ export default function QuotationBuilder({
                   <CR l="Margin % (auto)" v={`${c.mpct.toFixed(1)}%  ${g.g} Grade`} vc={g.c} />
                   <CR l="Cost Price" v={inr(c.cost)} />
                   <CR l="Margin" v={inr(c.margin)} />
-                  {/* Subtotal row with optional per-person toggle */}
+                  {/* Subtotal row — two Package-mode checkboxes: ÷pax (per person) | Total (no division) */}
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "6px 0", margin: "4px 0", borderTop: "1px dashed #FECACA", borderBottom: "1px dashed #FECACA" }}>
-                    <label style={{ display: "flex", alignItems: "center", gap: isPackage ? 6 : 0, cursor: isPackage ? "pointer" : "default" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                       {isPackage && (
-                        <input
-                          type="checkbox"
-                          checked={!!form.ppSubEnabled}
-                          onChange={e => { upd("ppSubEnabled", e.target.checked); if (e.target.checked) upd("ppSellEnabled", false); }}
-                          style={{ width: 14, height: 14, accentColor: "#E8364A", cursor: "pointer", flexShrink: 0 }}
-                        />
+                        <>
+                          {/* Per-person toggle */}
+                          <label title="Show subtotal per person in PDF" style={{ display: "flex", alignItems: "center", gap: 3, cursor: "pointer" }}>
+                            <input type="checkbox" checked={!!form.ppSubEnabled}
+                              onChange={e => { upd("ppSubEnabled", e.target.checked); if (e.target.checked) { upd("ppSellEnabled", false); upd("ppSubTotalEnabled", false); } }}
+                              style={{ width: 13, height: 13, accentColor: "#E8364A", cursor: "pointer", flexShrink: 0 }} />
+                            <span style={{ fontSize: 10, color: "#E8364A", fontWeight: 700 }}>÷pax</span>
+                          </label>
+                          {/* Total toggle (no division) */}
+                          <label title="Show total subtotal in PDF (no division)" style={{ display: "flex", alignItems: "center", gap: 3, cursor: "pointer" }}>
+                            <input type="checkbox" checked={!!form.ppSubTotalEnabled}
+                              onChange={e => { upd("ppSubTotalEnabled", e.target.checked); if (e.target.checked) { upd("ppSubEnabled", false); upd("ppSellEnabled", false); } }}
+                              style={{ width: 13, height: 13, accentColor: "#F59E0B", cursor: "pointer", flexShrink: 0 }} />
+                            <span style={{ fontSize: 10, color: "#F59E0B", fontWeight: 700 }}>Total</span>
+                          </label>
+                        </>
                       )}
                       <span style={{ fontSize: 12.5, fontWeight: 700, color: "#0F1B33" }}>
                         {isPackage && form.ppSubEnabled && leadPax > 0
-                          ? `Subtotal per Person${leadPax > 0 ? ` (÷ ${leadPax})` : ""}`
+                          ? `Subtotal per Person (÷ ${leadPax})`
                           : "Subtotal (before GST)"}
                       </span>
-                    </label>
+                    </div>
                     <span style={{ fontSize: 13, fontWeight: 800, color: "#0F1B33" }}>
                       {isPackage && form.ppSubEnabled && leadPax > 0 ? inr(c.base / leadPax) : inr(c.base)}
                     </span>
@@ -1639,7 +1686,7 @@ export default function QuotationBuilder({
                         <input
                           type="checkbox"
                           checked={!!form.ppSellEnabled}
-                          onChange={e => { upd("ppSellEnabled", e.target.checked); if (e.target.checked) upd("ppSubEnabled", false); }}
+                          onChange={e => { upd("ppSellEnabled", e.target.checked); if (e.target.checked) { upd("ppSubEnabled", false); upd("ppSubTotalEnabled", false); } }}
                           style={{ width: 14, height: 14, accentColor: "#2563EB", cursor: "pointer", flexShrink: 0 }}
                         />
                       )}

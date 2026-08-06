@@ -14,7 +14,7 @@ export default async function handler(req, res) {
   if (req.method === "GET") {
     const quotes = await Quotation.find({})
       .sort({ createdAt: -1 })
-      .populate("leadId", "name phone email destination travelDate pax brr")
+      .populate("leadId", "name phone email destination travelDate pax brr destinationHistory")
       .populate("assignedTo", "name email")
       .lean();
     return res.status(200).json(quotes);
@@ -34,7 +34,7 @@ export default async function handler(req, res) {
 
     const quote = await Quotation.create({ leadId, type: type || "Domestic", quotationNo, ...rest });
     const populated = await Quotation.findById(quote._id)
-      .populate("leadId", "name phone email destination travelDate pax brr")
+      .populate("leadId", "name phone email destination travelDate pax brr destinationHistory")
       .populate("assignedTo", "name email")
       .lean();
     return res.status(201).json(populated);

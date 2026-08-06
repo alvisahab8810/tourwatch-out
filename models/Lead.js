@@ -64,8 +64,16 @@ const LeadSchema = new mongoose.Schema(
     connects: { type: Number, default: 0 },
     score:    { type: ScoreSchema, default: null },
     brr:      { type: BRRSchema,   default: null },
+    // Destination change log
+    destinationHistory: [{
+      _id:       false,
+      from:      { type: String, default: "" },
+      to:        { type: String, default: "" },
+      changedAt: { type: Date, default: Date.now },
+    }],
   },
   { timestamps: true }
 );
 
-export default mongoose.models.Lead || mongoose.model("Lead", LeadSchema);
+delete mongoose.models.Lead;
+export default mongoose.model("Lead", LeadSchema);

@@ -267,7 +267,7 @@ export default function LeadsPage() {
 
         {/* Automation banner */}
         <div style={S.banner}>
-          ⚡ <span><strong>Automations live on this screen:</strong> leads land here straight from website forms, Meta Lead Ads and Google Ads with full UTM data. Duplicate numbers are auto-merged. Marking a lead <strong>Qualified</strong> unlocks the BRR button. Lead score is computed from 5 quick questions.</span>
+          ⚡ <span><strong>Automations live on this screen:</strong> leads land here straight from website forms, Meta Lead Ads and Google Ads with full UTM data. Duplicate numbers are auto-merged. Marking a lead <strong>Contacted</strong> or <strong>Qualified</strong> unlocks the BRR button. Lead score is computed from 5 quick questions.</span>
         </div>
 
         {/* Table panel */}
@@ -423,7 +423,7 @@ export default function LeadsPage() {
 
                       {/* BRR */}
                       <td style={S.td}>
-                        {l.status === "Qualified"
+                        {(l.status === "Qualified" || l.status === "Contacted")
                           ? hasBrr
                             ? <button style={S.brrGreen} onClick={() => openBrr(l._id)}>View BRR</button>
                             : <button style={S.brrBlue}  onClick={() => openBrr(l._id)}>Collect BRR</button>

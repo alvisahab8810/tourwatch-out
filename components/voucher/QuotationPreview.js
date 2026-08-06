@@ -46,10 +46,12 @@ const IcCall     = _ICImg("/assets/icons/quotation/call.svg",      38);
 const IcWhatsApp = _ICImg("/assets/icons/quotation/whatsapp.svg",  38);
 
 /* ── tier helpers (unchanged logic) ────────────────────── */
+const hasFlightData = f => !!(f.from || f.to || f.depCity || f.arrCity || f.pnr || f.flightNo);
+
 function hasTierData(tier) {
   if (!tier) return false;
   return (tier.hotels  || []).some(h => h.name)
-      || (tier.flights  || []).some(f => f.from || f.to)
+      || (tier.flights  || []).some(hasFlightData)
       || (tier.transfers|| []).some(t => t.cab && (+t.perDay > 0 || +t.days > 0))
       || (tier.miscs    || []).some(m => m.name);
 }
@@ -193,49 +195,136 @@ function Td({ children, style }) {
   );
 }
 
-/* ── Cancellation bar visual component ─────────────────── */
+/* ── Cancellation bar — multi-slab visual ─────────────── */
 function CanxBar({ bar }) {
-  if (!bar?.enabled || !bar.cutoffDate) return null;
-  const pct = Math.max(8, Math.min(92, +(bar.sliderPct ?? 75)));
-  const d   = new Date(bar.cutoffDate);
-  const lbl = isNaN(d.getTime()) ? bar.cutoffDate
-    : d.toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "2-digit" });
-  const fee = (+bar.feeBefore || 0).toLocaleString("en-IN");
-  return (
-    <div style={{ border: "1px solid #E8E8E8", borderRadius: 10, padding: "16px 20px", marginBottom: 16 }}>
-      <div style={{ fontSize: 14, fontWeight: 700, color: "#1a1a2e", marginBottom: 4 }}>Package Cancellation Policy</div>
-      <div style={{ fontSize: 12, color: "#2B8E8E", marginBottom: 2 }}>Cancellation Possible before {lbl} only*</div>
-      <div style={{ fontSize: 12, color: "#555", marginBottom: 20 }}>After that package is <strong>non Refundable*</strong></div>
+  if (!bar?.enabled) return null;
+  const slabs = (bar.slabs || [])
+    .filter(s => +s.days > 0 || s.pct === 0)
+    .slice()
+    .sort((a, b) => b.days - a.days);
+  if (slabs.length === 0) return null;
 
-      {/* ── bar ── */}
-      <div style={{ position: "relative", height: 8, borderRadius: 4, marginLeft: 12, marginRight: 12, marginBottom: 28 }}>
-        <div style={{ position: "absolute", inset: 0, borderRadius: 4, background: "linear-gradient(to right, #C8E6C9, #FFCDD2)" }} />
-        <div style={{ position: "absolute", left: 0, top: 0, height: "100%", width: `${pct}%`, background: "linear-gradient(to right, #43A047, #AED581)", borderRadius: "4px 0 0 4px" }} />
-        {/* green check left */}
-        <div style={{ position: "absolute", left: -12, top: -7, width: 22, height: 22, borderRadius: "50%", background: "#43A047", display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <span style={{ color: "#fff", fontSize: 13, fontWeight: 900, lineHeight: 1 }}>✓</span>
-        </div>
-        {/* thumb */}
-        <div style={{ position: "absolute", left: `${pct}%`, top: -8, transform: "translateX(-50%)", width: 24, height: 24, borderRadius: "50%", background: "#fff", border: "2.5px solid #EF5350", boxShadow: "0 1px 4px rgba(0,0,0,.18)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <span style={{ color: "#EF5350", fontSize: 11, fontWeight: 900, lineHeight: 1 }}>✕</span>
-        </div>
-        {/* red X right */}
-        <div style={{ position: "absolute", right: -12, top: -7, width: 22, height: 22, borderRadius: "50%", background: "#EF5350", display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <span style={{ color: "#fff", fontSize: 13, fontWeight: 900, lineHeight: 1 }}>✕</span>
-        </div>
+  const maxDays = slabs[0].days;
+
+  /* flat, muted colours — no gradients */
+  const segColor = pct =>
+    pct === 0   ? "#16A34A"
+    : pct <= 30 ? "#65A30D"
+    : pct <= 60 ? "#D97706"
+    : pct <= 85 ? "#EA580C"
+    :              "#DC2626";
+
+  const segBg = pct =>
+    pct === 0   ? "#22C55E"
+    : pct <= 30 ? "#84CC16"
+    : pct <= 60 ? "#F59E0B"
+    : pct <= 85 ? "#F97316"
+    :              "#EF4444";
+
+  const segLight = pct =>
+    pct === 0   ? "#DCFCE7"
+    : pct <= 30 ? "#ECFCCB"
+    : pct <= 60 ? "#FEF3C7"
+    : pct <= 85 ? "#FFEDD5"
+    :              "#FEE2E2";
+
+  const segIcon = pct => pct === 0 ? "✓" : pct < 100 ? "!" : "✕";
+
+  const segs = slabs.map((slab, i) => {
+    const nextDays = i < slabs.length - 1 ? slabs[i + 1].days : 0;
+    const range    = slab.days - nextDays;
+    const wPct     = maxDays > 0 ? (range / maxDays) * 100 : 100 / slabs.length;
+    return { ...slab, nextDays, wPct };
+  });
+
+  return (
+    <div style={{ borderRadius: 12, overflow: "hidden", marginBottom: 16, border: "1px solid #E5E7EB" }}>
+
+      {/* Header */}
+      <div style={{ background: "#1e293b", padding: "10px 16px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <div style={{ color: "#f1f5f9", fontSize: 12.5, fontWeight: 700, letterSpacing: ".02em" }}>Cancellation Policy</div>
+        <div style={{ color: "#94A3B8", fontSize: 10.5 }}>Days remaining before travel</div>
       </div>
 
-      {/* ── labels ── */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-        <div>
-          <div style={{ fontSize: 14, fontWeight: 800, color: "#2B8E8E" }}>Till {lbl}</div>
-          <div style={{ fontSize: 12.5, color: "#1a1a2e" }}>₹ {fee} Cancellation fee</div>
+      <div style={{ padding: "16px 16px 14px", background: "#fff" }}>
+
+        {/* ── bar ── */}
+        <div style={{ position: "relative", marginBottom: 8 }}>
+          <div style={{ display: "flex", height: 20, borderRadius: 10, overflow: "hidden" }}>
+            {segs.map((seg, i) => (
+              <div key={i} style={{
+                width: `${seg.wPct}%`, minWidth: 3,
+                background: segBg(seg.pct),
+                borderRight: i < segs.length - 1 ? "3px solid #fff" : "none",
+                display: "flex", alignItems: "center", justifyContent: "center",
+              }}>
+                <span style={{ fontSize: 9, fontWeight: 800, color: "#fff" }}>
+                  {seg.pct === 0 ? "FREE" : `${seg.pct}%`}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          {/* boundary dots */}
+          {(() => {
+            let cumW = 0;
+            return segs.slice(0, -1).map((seg, i) => {
+              cumW += seg.wPct;
+              return (
+                <div key={i} style={{
+                  position: "absolute", left: `${cumW}%`, top: -5,
+                  transform: "translateX(-50%)",
+                  width: 30, height: 30, borderRadius: "50%",
+                  background: "#fff",
+                  border: `2.5px solid ${segColor(segs[i + 1].pct)}`,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  zIndex: 2,
+                }}>
+                  <span style={{ fontSize: 9, fontWeight: 800, color: segColor(segs[i + 1].pct) }}>
+                    {segs[i + 1].days}d
+                  </span>
+                </div>
+              );
+            });
+          })()}
         </div>
-        <div style={{ textAlign: "right" }}>
-          <div style={{ fontSize: 14, fontWeight: 800, color: "#E53935" }}>After {lbl}</div>
-          <div style={{ fontSize: 12.5, fontWeight: 700, color: "#1a1a2e" }}>Non Refundable</div>
-          <div style={{ fontSize: 11.5, color: "#888" }}>Cancellation is not allowed</div>
+
+        {/* ── slab cards ── */}
+        <div style={{ display: "flex", gap: 6, marginTop: 18 }}>
+          {segs.map((seg, i) => (
+            <div key={i} style={{
+              flex: `${seg.wPct} 1 0%`, minWidth: 0,
+              borderRadius: 8,
+              border: `1.5px solid ${segColor(seg.pct)}30`,
+              background: segLight(seg.pct),
+              padding: "10px 6px",
+              textAlign: "center",
+            }}>
+              <div style={{
+                width: 26, height: 26, borderRadius: "50%",
+                background: segBg(seg.pct),
+                display: "flex", alignItems: "center", justifyContent: "center",
+                margin: "0 auto 6px",
+              }}>
+                <span style={{ fontSize: 11, fontWeight: 900, color: "#fff" }}>{segIcon(seg.pct)}</span>
+              </div>
+              <div style={{ fontSize: 11.5, fontWeight: 800, color: segColor(seg.pct) }}>
+                {seg.days}+ days
+              </div>
+              <div style={{ fontSize: 10.5, fontWeight: 600, color: "#374151", marginTop: 2 }}>
+                {seg.pct === 0 ? "No Charge" : `${seg.pct}% deducted`}
+              </div>
+            </div>
+          ))}
         </div>
+
+        {/* footer */}
+        <div style={{ marginTop: 10, padding: "7px 11px", background: "#FEF2F2", borderRadius: 7, border: "1px solid #FECACA" }}>
+          <span style={{ fontSize: 11, color: "#991B1B" }}>
+            ✕ &nbsp;Less than <strong>{slabs[slabs.length - 1].days} days</strong> before travel — Package is <strong>Non-Refundable</strong>.
+          </span>
+        </div>
+
       </div>
     </div>
   );
@@ -311,8 +400,9 @@ export default function QuotationPreview({ data, id }) {
   const isPackage   = form.quoteType === "package";
 
   /* per-person mode (package only) */
-  const ppSell = isPackage && !!form.ppSellEnabled;
-  const ppSub  = isPackage && !!form.ppSubEnabled;
+  const ppSell     = isPackage && !!form.ppSellEnabled;
+  const ppSub      = isPackage && !!form.ppSubEnabled;
+  const ppSubTotal = isPackage && !!form.ppSubTotalEnabled;
   const leadPax = (() => {
     const brr = lead?.brr || {};
     if (brr.adults != null) return (brr.adults || 0) + (brr.children || 0);
@@ -332,7 +422,7 @@ export default function QuotationPreview({ data, id }) {
   /* highlight visibility — use dataTiers so B2B (no pricing) still shows pills */
   const showHotel    = useTiers ? dataTiers.some(l => (pkgTiers[l].hotels   ||[]).some(h => h.name)) : hotels.some(h => h.name);
   const showTransfer = useTiers ? dataTiers.some(l => (pkgTiers[l].transfers||[]).some(t => t.cab && +t.days > 0)) : transfers.some(t => +t.perDay > 0);
-  const showFlight   = useTiers ? dataTiers.some(l => (pkgTiers[l].flights  ||[]).some(f => f.from || f.to)) : flights.some(f => f.from || f.to);
+  const showFlight   = useTiers ? dataTiers.some(l => (pkgTiers[l].flights  ||[]).some(hasFlightData)) : flights.some(hasFlightData);
   const hasItin      = itin.some(d => d.title || d.itinerary || d.date || d.tour || d.transfer);
 
   /* manual highlights: if form.highlights array is set, it controls visibility + labels;
@@ -469,19 +559,25 @@ export default function QuotationPreview({ data, id }) {
                 ? Math.round(tierSelling / effPax)
                 : ppSub && effPax > 0
                   ? Math.round(tierBase / effPax)
-                  : isPackage ? tierSelling : tierSelling;
+                  : ppSubTotal
+                    ? Math.round(tierBase)
+                    : isPackage ? tierSelling : tierSelling;
               const priceLabel  = !isPackage
                 ? <>{lbl} Package <span style={{ fontWeight: 400, fontSize: 14, color: DARK }}>Incl. Tax</span></>
                 : ppSell && effPax > 0
                   ? <>Per Person Price <span style={{ fontWeight: 400, fontSize: 14, color: DARK }}>(Incl. Tax)</span></>
                   : ppSub && effPax > 0
                     ? <>Per Person Price <span style={{ fontWeight: 400, fontSize: 14, color: DARK }}>(Excl. GST)</span></>
-                    : <>Total Package Cost <span style={{ fontWeight: 400, fontSize: 14, color: DARK }}>(Incl. Tax)</span></>;
+                    : ppSubTotal
+                      ? <>Total Package Cost <span style={{ fontWeight: 400, fontSize: 14, color: DARK }}>(Excl. GST)</span></>
+                      : <>Total Package Cost <span style={{ fontWeight: 400, fontSize: 14, color: DARK }}>(Incl. Tax)</span></>;
               const suffix = (ppSell || ppSub) && effPax > 0
                 ? <span style={{ fontSize: 13, color: DARK }}>Per Person</span>
-                : effPax > 0
-                  ? <span style={{ fontSize: 13, color: DARK }}>For {effPax} {effPax === 1 ? "Person" : "Persons"}</span>
-                  : paxLabel && <span style={{ fontSize: 13, color: DARK }}>For {paxLabel}</span>;
+                : ppSubTotal
+                  ? (effPax > 0 ? <span style={{ fontSize: 13, color: DARK }}>For {effPax} {effPax === 1 ? "Person" : "Persons"}</span> : paxLabel && <span style={{ fontSize: 13, color: DARK }}>For {paxLabel}</span>)
+                  : effPax > 0
+                    ? <span style={{ fontSize: 13, color: DARK }}>For {effPax} {effPax === 1 ? "Person" : "Persons"}</span>
+                    : paxLabel && <span style={{ fontSize: 13, color: DARK }}>For {paxLabel}</span>;
               return (
                 <div key={lbl} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 22px", borderBottom: idx < activeTiers.length - 1 ? "1px solid #26828D" : "none" }}>
                   <div style={{ fontSize: 22, fontWeight: 700, color: TEAL }}>{priceLabel}</div>
@@ -502,14 +598,18 @@ export default function QuotationPreview({ data, id }) {
             ? Math.round(selling / leadPax)
             : ppSub && leadPax > 0
               ? Math.round(base / leadPax)
-              : Math.round(selling);
+              : ppSubTotal
+                ? Math.round(base)
+                : Math.round(selling);
           const legacyLabel = !isPackage
             ? <>Total Cost Price <span style={{ fontWeight: 400, fontSize: 14, color: DARK }}>(Incl. Tax)</span></>
             : ppSell && leadPax > 0
               ? <>Per Person Price <span style={{ fontWeight: 400, fontSize: 14, color: DARK }}>(Incl. Tax)</span></>
               : ppSub && leadPax > 0
                 ? <>Per Person Price <span style={{ fontWeight: 400, fontSize: 14, color: DARK }}>(Excl. GST)</span></>
-                : <>Total Package Cost <span style={{ fontWeight: 400, fontSize: 14, color: DARK }}>(Incl. Tax)</span></>;
+                : ppSubTotal
+                  ? <>Total Package Cost <span style={{ fontWeight: 400, fontSize: 14, color: DARK }}>(Excl. GST)</span></>
+                  : <>Total Package Cost <span style={{ fontWeight: 400, fontSize: 14, color: DARK }}>(Incl. Tax)</span></>;
           const legacySuffix = (ppSell || ppSub) && leadPax > 0
             ? <span style={{ fontSize: 20, color: DARK }}>Per Person</span>
             : leadPax > 0
@@ -686,7 +786,7 @@ export default function QuotationPreview({ data, id }) {
             {dataTiers.map((lbl, tidx) => {
               const tier      = pkgTiers[lbl];
               const tHotels   = (tier.hotels   || []).filter(h => h.name);
-              const tFlights  = (tier.flights  || []).filter(f => f.from || f.to);
+              const tFlights  = (tier.flights  || []).filter(hasFlightData);
               const tTransfers= (tier.transfers|| []).filter(t => t.cab && (+t.perDay > 0 || +t.days > 0));
               const tMiscs    = (tier.miscs    || []).filter(m => m.name);
               const tierSell  = calcTierSelling(tier, form);
@@ -814,7 +914,7 @@ export default function QuotationPreview({ data, id }) {
       {/* ══════════════════════════════
           PACKAGE DETAILS — LEGACY MODE
       ══════════════════════════════ */}
-      {!useTiers && (hotels.some(h => h.name) || transfers.some(t => +t.perDay > 0) || flights.some(f => f.from || f.to) || miscs.some(m => m.name)) && (
+      {!useTiers && (hotels.some(h => h.name) || transfers.some(t => +t.perDay > 0) || flights.some(hasFlightData) || miscs.some(m => m.name)) && (
         <div data-pdf-section="true">
           <MiniHeader />
           <div style={{ padding: "28px 32px" }}>
@@ -865,10 +965,10 @@ export default function QuotationPreview({ data, id }) {
               </div>
             )}
 
-            {flights.filter(f => f.from || f.to || +f.price > 0).length > 0 && (
+            {flights.filter(f => hasFlightData(f) || +f.price > 0).length > 0 && (
               <div data-pdf-break="true">
                 <Card icon={<IcFlight />} title="Flight Details">
-                  {flights.filter(f => f.from || f.to || +f.price > 0).map((f, fi) => <FlightCard key={fi} f={f} />)}
+                  {flights.filter(f => hasFlightData(f) || +f.price > 0).map((f, fi) => <FlightCard key={fi} f={f} />)}
                 </Card>
               </div>
             )}

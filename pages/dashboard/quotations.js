@@ -77,6 +77,7 @@ export default function QuotationsPage() {
   const [deleting,   setDeleting]   = useState(null);
   const [newSP, setNewSP]         = useState({});
   const [expEdit, setExpEdit]     = useState({});
+  const [destModal, setDestModal] = useState(null); // { lead, val, saving }
   const [fuOpen, setFuOpen]       = useState(null);
 
   useEffect(() => {
@@ -211,6 +212,34 @@ export default function QuotationsPage() {
     const v = +expEdit[q._id]; if (isNaN(v)) return;
     await patchQuote(q._id, { tripExpense: v });
     setExpEdit(p => { const n = { ...p }; delete n[q._id]; return n; });
+  }
+
+  async function saveDestModal() {
+    if (!destModal) return;
+    const leadId = destModal.lead._id;
+    const trimmed = (destModal.val || "").trim();
+    if (trimmed === (destModal.lead.destination || "")) return; // no change
+    setDestModal(p => p ? { ...p, saving: true } : null);
+    try {
+      const r = await fetch(`/api/dashboard/leads/${leadId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ destination: trimmed }),
+      });
+      if (r.ok) {
+        const updated = await r.json();
+        const dest     = updated.destination ?? trimmed;
+        const destHist = updated.destinationHistory ?? [];
+        setLeads(prev => prev.map(l => l._id === leadId ? { ...l, destination: dest, destinationHistory: destHist } : l));
+        setQuotes(prev => prev.map(q => {
+          const lid = q.leadId?._id || q.leadId;
+          if (String(lid) !== String(leadId)) return q;
+          return { ...q, leadId: { ...(q.leadId || {}), destination: dest, destinationHistory: destHist } };
+        }));
+        // Refresh modal with new data
+        setDestModal(p => p ? { ...p, lead: { ...p.lead, destination: dest, destinationHistory: destHist }, val: dest, saving: false } : null);
+      }
+    } catch { setDestModal(p => p ? { ...p, saving: false } : null); }
   }
 
   function openPdfPreview(q, v) {
@@ -416,7 +445,19 @@ export default function QuotationsPage() {
                       <a href={`tel:${lead.phone || ""}`} style={{ color: "#2563EB", fontSize: 12, fontWeight: 600, textDecoration: "none" }}>{lead.phone || "—"}</a>
                     </td>
 
-                    <td style={S.td}><span style={{ fontWeight: 600, fontSize: 13 }}>{lead.destination || "—"}</span></td>
+                    <td style={S.td}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                        <span style={{ fontWeight: 600, fontSize: 13 }}>{lead.destination || "—"}</span>
+                        <button title="Edit / History"
+                          onClick={() => setDestModal({ lead, val: lead.destination || "", saving: false })}
+                          style={{ background: "none", border: "none", cursor: "pointer", padding: "2px 3px", borderRadius: 5, display: "flex", alignItems: "center", color: "#26828D" }}>
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                          </svg>
+                        </button>
+                      </div>
+                    </td>
                     <td style={S.td}><span style={{ fontSize: 12 }}>{q.days || "—"}</span></td>
                     <td style={S.td}><span style={{ fontSize: 12 }}>{fmtDate(q.travelDate)}</span></td>
 
@@ -810,6 +851,84 @@ export default function QuotationsPage() {
 
       {fuOpen && <div style={{ position: "fixed", inset: 0, zIndex: 30 }} onClick={() => setFuOpen(null)} />}
       </div>{/* end page wrapper */}
+
+      {/* ── Destination Edit + History Modal ── */}
+      {destModal && (() => {
+        const lead = destModal.lead;
+        const hist = [...(lead.destinationHistory || [])].reverse();
+        const fmtDT = d => { try { return new Date(d).toLocaleString("en-IN", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }); } catch { return "—"; } };
+        const changed = (destModal.val || "").trim() !== (lead.destination || "");
+        return (
+          <Ov>
+            <div style={{ ...S.modal, maxWidth: 500 }}>
+              {/* Header */}
+              <div style={S.mHead}>
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                </svg>
+                <div>
+                  <div style={{ color: "#fff", fontWeight: 800, fontSize: 15 }}>Destination · {lead.name}</div>
+                  <div style={{ color: "rgba(255,255,255,.65)", fontSize: 11, marginTop: 1 }}>Edit destination or view change history</div>
+                </div>
+                <button style={S.mx} onClick={() => setDestModal(null)}>✕</button>
+              </div>
+
+              <div style={{ padding: "18px 22px 0" }}>
+                {/* Edit row */}
+                <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
+                  <input
+                    autoFocus
+                    style={{ ...S.inlineInp, flex: 1, fontSize: 13 }}
+                    placeholder="Enter destination…"
+                    value={destModal.val}
+                    disabled={destModal.saving}
+                    onChange={e => setDestModal(p => ({ ...p, val: e.target.value }))}
+                    onKeyDown={e => { if (e.key === "Enter" && changed) saveDestModal(); }}
+                  />
+                  <button
+                    disabled={!changed || destModal.saving}
+                    onClick={saveDestModal}
+                    style={{ ...S.sb, padding: "6px 16px", opacity: (!changed || destModal.saving) ? 0.45 : 1, cursor: (!changed || destModal.saving) ? "not-allowed" : "pointer" }}>
+                    {destModal.saving ? "Saving…" : "Save"}
+                  </button>
+                </div>
+
+                {/* History table */}
+                <div style={{ borderTop: "1px solid #E4E9F2", paddingTop: 14, marginBottom: 4 }}>
+                  <div style={{ fontSize: 11, fontWeight: 800, color: "#6B7A99", letterSpacing: ".06em", textTransform: "uppercase", marginBottom: 10 }}>Change History</div>
+                  {hist.length === 0 ? (
+                    <div style={{ textAlign: "center", color: "#CBD5E1", fontSize: 13, padding: "18px 0 10px" }}>No changes recorded yet</div>
+                  ) : (
+                    <div style={{ display: "flex", flexDirection: "column", gap: 6, maxHeight: 260, overflowY: "auto" }}>
+                      {hist.map((h, i) => (
+                        <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "9px 12px", borderRadius: 9, background: i === 0 ? "#EFF4FF" : "#F8FAFD", border: `1px solid ${i === 0 ? "#BFDBFE" : "#E4E9F2"}` }}>
+                          <div style={{ width: 24, height: 24, borderRadius: "50%", background: i === 0 ? "#2563EB" : "#E4E9F2", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                            <span style={{ fontSize: 10, fontWeight: 800, color: i === 0 ? "#fff" : "#6B7A99" }}>v{hist.length - i}</span>
+                          </div>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+                              <span style={{ fontSize: 12, color: "#94A3B8", textDecoration: "line-through" }}>{h.from || "—"}</span>
+                              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#26828D" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                              <span style={{ fontSize: 12.5, fontWeight: 700, color: "#0F1B33" }}>{h.to || "—"}</span>
+                              {i === 0 && <span style={{ fontSize: 10, background: "#2563EB", color: "#fff", borderRadius: 4, padding: "1px 5px", fontWeight: 700 }}>Latest</span>}
+                            </div>
+                            <div style={{ fontSize: 11, color: "#94A3B8", marginTop: 2 }}>{fmtDT(h.changedAt)}</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div style={{ ...S.mFoot, justifyContent: "flex-end" }}>
+                <button style={S.fb} onClick={() => setDestModal(null)}>Close</button>
+              </div>
+            </div>
+          </Ov>
+        );
+      })()}
 
       {/* ── PDF Preview Modal ── */}
       {pdfPreviewData && (
