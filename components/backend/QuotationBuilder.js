@@ -1492,7 +1492,11 @@ export default function QuotationBuilder({
                 </Fl>
               </div>
               <Fl l="Special Notes (shown on quote PDF)">
-                <textarea style={{ ...QS.inp, minHeight: 54, resize: "vertical" }} value={form.notes} onChange={e => upd("notes", e.target.value)} />
+                <RTE
+                  value={toRichText(form.notes || "")}
+                  onChange={v => upd("notes", v)}
+                  placeholder="Add any special notes for the customer…"
+                />
               </Fl>
             </Sec>
 
