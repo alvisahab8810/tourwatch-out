@@ -45,6 +45,16 @@ const _ICImg = (src, s) => {
 const IcCall     = _ICImg("/assets/icons/quotation/call.svg",      38);
 const IcWhatsApp = _ICImg("/assets/icons/quotation/whatsapp.svg",  38);
 
+/* Clicking hand indicator — shown below each clickable icon */
+const ClickHand = () => (
+  <img
+    src="/assets/images/icons/cursor.png"
+    crossOrigin="anonymous"
+    alt=""
+    style={{ width: 28, height: 28, display: "block", margin: "0 auto" }}
+  />
+);
+
 /* ── tier helpers (unchanged logic) ────────────────────── */
 const hasFlightData = f => !!(f.from || f.to || f.depCity || f.arrCity || f.pnr || f.flightNo);
 
@@ -338,38 +348,94 @@ function Pill({ label }) {
   );
 }
 
+/* Single flight segment row (dep → arr) */
+function SegmentRow({ depCity, depFrom, depIATA, depDate, depTime, arrCity, arrTo, arrIATA, arrDate, arrTime, flightNo, accent }) {
+  const bg      = accent === "blue" ? "#EFF6FF" : "#F5FBFB";
+  const border  = accent === "blue" ? "1px solid #93C5FD" : `1px solid ${TEAL_BORDER}`;
+  const clr     = accent === "blue" ? "#1D4ED8" : TEAL;
+  return (
+    <div style={{ display: "flex", alignItems: "center", background: bg, border, borderRadius: 8, padding: "12px 16px" }}>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ fontSize: 14, fontWeight: 800, color: DARK }}>{depCity || depFrom || "—"}</div>
+        {depIATA && <div style={{ fontSize: 11, color: "#888" }}>({depIATA})</div>}
+        {(depDate) && <div style={{ fontSize: 11, color: "#555", marginTop: 3 }}>{fmtDate(depDate)}</div>}
+        {depTime && <div style={{ fontSize: 12, fontWeight: 700, color: clr, marginTop: 2 }}>{depTime}</div>}
+      </div>
+      <div style={{ flex: 1, textAlign: "center", padding: "0 8px" }}>
+        {flightNo && <div style={{ fontSize: 11, color: "#666", marginBottom: 4 }}>{flightNo}</div>}
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <div style={{ width: 8, height: 8, borderRadius: "50%", background: clr, flexShrink: 0 }} />
+          <div style={{ flex: 1, height: 2, background: clr }} />
+          <div style={{ width: 0, height: 0, borderTop: "5px solid transparent", borderBottom: "5px solid transparent", borderLeft: `8px solid ${clr}`, flexShrink: 0 }} />
+        </div>
+      </div>
+      <div style={{ flex: 1, minWidth: 0, textAlign: "right" }}>
+        <div style={{ fontSize: 14, fontWeight: 800, color: DARK }}>{arrCity || arrTo || "—"}</div>
+        {arrIATA && <div style={{ fontSize: 11, color: "#888" }}>({arrIATA})</div>}
+        {arrDate && <div style={{ fontSize: 11, color: "#555", marginTop: 3 }}>{fmtDate(arrDate)}</div>}
+        {arrTime && <div style={{ fontSize: 12, fontWeight: 700, color: clr, marginTop: 2 }}>{arrTime}</div>}
+      </div>
+    </div>
+  );
+}
+
 function FlightCard({ f }) {
+  const hasReturnDetail = f.roundTrip && (f.retDepCity || f.retArrCity || f.retDepDate || f.retArrDate);
   return (
     <div style={{ marginBottom: 12 }}>
+      {/* Outbound meta row */}
       {(f.pnr || f.flightNo) && (
-        <div style={{ display: "flex", gap: 20, marginBottom: 6, fontSize: 12, color: "#444" }}>
-          {f.pnr    && <span><strong>PNR:</strong> <span style={{ fontWeight: 800, letterSpacing: 1, color: DARK }}>{f.pnr}</span></span>}
+        <div style={{ display: "flex", gap: 20, marginBottom: 4, fontSize: 12, color: "#444" }}>
+          {f.pnr     && <span><strong>PNR:</strong> <span style={{ fontWeight: 800, letterSpacing: 1, color: DARK }}>{f.pnr}</span></span>}
           {f.flightNo && <span><strong>Flight:</strong> {f.flightNo}</span>}
           <span style={{ marginLeft: "auto" }}>{f.roundTrip ? "Round Trip" : "One-way"} · {f.pax || "—"} Pax</span>
         </div>
       )}
-      <div style={{ display: "flex", alignItems: "center", background: "#F5FBFB", border: `1px solid ${TEAL_BORDER}`, borderRadius: 8, padding: "12px 16px" }}>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 14, fontWeight: 800, color: DARK }}>{f.depCity || f.from || "—"}</div>
-          {f.depIATA && <div style={{ fontSize: 11, color: "#888" }}>({f.depIATA})</div>}
-          {(f.depDate || f.date) && <div style={{ fontSize: 11, color: "#555", marginTop: 3 }}>{fmtDate(f.depDate || f.date)}</div>}
-          {f.depTime && <div style={{ fontSize: 12, fontWeight: 700, color: TEAL, marginTop: 2 }}>{f.depTime}</div>}
+      {/* Outbound segment label (only when return leg has details) */}
+      {hasReturnDetail && (
+        <div style={{ fontSize: 10, fontWeight: 800, color: "#DC2626", textTransform: "uppercase", letterSpacing: ".05em", marginBottom: 4 }}>✈ Onward</div>
+      )}
+      <SegmentRow
+        depCity={f.depCity} depFrom={f.from} depIATA={f.depIATA}
+        depDate={f.depDate || f.date} depTime={f.depTime}
+        arrCity={f.arrCity} arrTo={f.to} arrIATA={f.arrIATA}
+        arrDate={f.arrDate} arrTime={f.arrTime}
+        flightNo={f.flightNo}
+      />
+      {/* Onward layover (round-trip only — between onward and return legs) */}
+      {f.roundTrip && f.hasLayover && f.layoverCity && (
+        <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "6px 0", padding: "7px 14px", background: "#FFFBEB", border: "1px solid #FDE68A", borderRadius: 8, fontSize: 12, color: "#92400E", fontWeight: 600 }}>
+          <span>🕐 Layover in <strong>{f.layoverCity}</strong></span>
+          {f.layoverDuration && <span style={{ marginLeft: "auto", fontWeight: 700, color: "#B45309" }}>Duration: {f.layoverDuration}</span>}
         </div>
-        <div style={{ flex: 1, textAlign: "center", padding: "0 8px" }}>
-          {f.flightNo && <div style={{ fontSize: 11, color: "#666", marginBottom: 4 }}>{f.flightNo}</div>}
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <div style={{ width: 8, height: 8, borderRadius: "50%", background: TEAL, flexShrink: 0 }} />
-            <div style={{ flex: 1, height: 2, background: TEAL }} />
-            <div style={{ width: 0, height: 0, borderTop: "5px solid transparent", borderBottom: "5px solid transparent", borderLeft: `8px solid ${TEAL}`, flexShrink: 0 }} />
-          </div>
-        </div>
-        <div style={{ flex: 1, minWidth: 0, textAlign: "right" }}>
-          <div style={{ fontSize: 14, fontWeight: 800, color: DARK }}>{f.arrCity || f.to || "—"}</div>
-          {f.arrIATA && <div style={{ fontSize: 11, color: "#888" }}>({f.arrIATA})</div>}
-          {f.arrDate && <div style={{ fontSize: 11, color: "#555", marginTop: 3 }}>{fmtDate(f.arrDate)}</div>}
-          {f.arrTime && <div style={{ fontSize: 12, fontWeight: 700, color: TEAL, marginTop: 2 }}>{f.arrTime}</div>}
-        </div>
-      </div>
+      )}
+      {/* Return leg (round trip with full details) */}
+      {hasReturnDetail && (
+        <>
+          {(f.retPnr || f.retFlightNo) && (
+            <div style={{ display: "flex", gap: 20, marginTop: 10, marginBottom: 4, fontSize: 12, color: "#444" }}>
+              {f.retPnr    && <span><strong>PNR:</strong> <span style={{ fontWeight: 800, letterSpacing: 1, color: DARK }}>{f.retPnr}</span></span>}
+              {f.retFlightNo && <span><strong>Flight:</strong> {f.retFlightNo}</span>}
+              <span style={{ marginLeft: "auto" }}>Return · {f.pax || "—"} Pax</span>
+            </div>
+          )}
+          <div style={{ fontSize: 10, fontWeight: 800, color: "#1D4ED8", textTransform: "uppercase", letterSpacing: ".05em", marginBottom: 4, marginTop: 8 }}>🔁 Return</div>
+          <SegmentRow
+            depCity={f.retDepCity} depIATA={f.retDepIATA}
+            depDate={f.retDepDate} depTime={f.retDepTime}
+            arrCity={f.retArrCity} arrIATA={f.retArrIATA}
+            arrDate={f.retArrDate} arrTime={f.retArrTime}
+            flightNo={f.retFlightNo} accent="blue"
+          />
+          {/* Return layover (after return leg) */}
+          {f.hasReturnLayover && f.returnLayoverCity && (
+            <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "6px 0 0", padding: "7px 14px", background: "#FFFBEB", border: "1px solid #FDE68A", borderRadius: 8, fontSize: 12, color: "#92400E", fontWeight: 600 }}>
+              <span>🕐 Layover in <strong>{f.returnLayoverCity}</strong></span>
+              {f.returnLayoverDuration && <span style={{ marginLeft: "auto", fontWeight: 700, color: "#B45309" }}>Duration: {f.returnLayoverDuration}</span>}
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 }
@@ -399,10 +465,10 @@ export default function QuotationPreview({ data, id }) {
     : [];
   const isPackage   = form.quoteType === "package";
 
-  /* per-person mode (package only) */
-  const ppSell     = isPackage && !!form.ppSellEnabled;
-  const ppSub      = isPackage && !!form.ppSubEnabled;
-  const ppSubTotal = isPackage && !!form.ppSubTotalEnabled;
+  /* per-person / GST display mode — applies to Standard, Package, and B2B */
+  const ppSell     = !!form.ppSellEnabled;
+  const ppSub      = !!form.ppSubEnabled;
+  const ppSubTotal = !!form.ppSubTotalEnabled;
   const leadPax = (() => {
     const brr = lead?.brr || {};
     if (brr.adults != null) return (brr.adults || 0) + (brr.children || 0);
@@ -515,11 +581,13 @@ export default function QuotationPreview({ data, id }) {
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 10 }}>
               <div style={{ fontSize: 18, fontWeight: 800, color: DARK }}>{sp?.name || "Savi Prajapati"}</div>
               <div style={{ display: "flex", gap: 8 }}>
-                <a href="tel:+918882701800" data-pdf-link="tel:+918882701800" style={{ textDecoration: "none" }}>
+                <a href="tel:+918882701800" data-pdf-link="tel:+918882701800" style={{ textDecoration: "none", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}>
                   <IcCall />
+                  <ClickHand />
                 </a>
-                <a href="https://wa.me/918882701800" data-pdf-link="https://wa.me/918882701800" style={{ textDecoration: "none" }}>
+                <a href="https://wa.me/918882701800" data-pdf-link="https://wa.me/918882701800" style={{ textDecoration: "none", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}>
                   <IcWhatsApp />
+                  <ClickHand />
                 </a>
               </div>
             </div>
@@ -546,8 +614,8 @@ export default function QuotationPreview({ data, id }) {
           </div>
         </div>
 
-        {/* Package pricing box — only in Package mode; Standard/B2B use the flat selling price below */}
-        {isPackage && useTiers && activeTiers.length > 0 && (
+        {/* Tier pricing box — Standard and Package mode; hidden in B2B (prices confidential) */}
+        {useTiers && activeTiers.length > 0 && !isB2B && (
           <div style={{ border: "1px solid #26828D", borderRadius: 12, overflow: "hidden", marginBottom: 18 }}>
             {activeTiers.map((lbl, idx) => {
               const tier        = pkgTiers[lbl];
@@ -555,25 +623,34 @@ export default function QuotationPreview({ data, id }) {
               const tierBase    = calcTierBase(tier, form);
               const tierPax     = getTierPax(tier);
               const effPax      = leadPax > 0 ? leadPax : tierPax;
-              const displayVal  = ppSell && effPax > 0
+              // Per-tier pp* flags: Standard/B2B read from each tier independently;
+              // Package uses form-level flags (shared for single-tier Package)
+              const tPpSell     = !isPackage ? (tier.ppSellEnabled || false) : ppSell;
+              const tPpSub      = !isPackage ? (tier.ppSubEnabled  || false) : ppSub;
+              const tPpSubTotal = !isPackage ? (tier.ppSubTotalEnabled || false) : ppSubTotal;
+              const displayVal  = tPpSell && effPax > 0
                 ? Math.round(tierSelling / effPax)
-                : ppSub && effPax > 0
+                : tPpSub && effPax > 0
                   ? Math.round(tierBase / effPax)
-                  : ppSubTotal
+                  : tPpSubTotal
                     ? Math.round(tierBase)
-                    : isPackage ? tierSelling : tierSelling;
-              const priceLabel  = !isPackage
-                ? <>{lbl} Package <span style={{ fontWeight: 400, fontSize: 14, color: DARK }}>Incl. Tax</span></>
-                : ppSell && effPax > 0
-                  ? <>Per Person Price <span style={{ fontWeight: 400, fontSize: 14, color: DARK }}>(Incl. Tax)</span></>
-                  : ppSub && effPax > 0
-                    ? <>Per Person Price <span style={{ fontWeight: 400, fontSize: 14, color: DARK }}>(Excl. GST)</span></>
-                    : ppSubTotal
-                      ? <>Total Package Cost <span style={{ fontWeight: 400, fontSize: 14, color: DARK }}>(Excl. GST)</span></>
-                      : <>Total Package Cost <span style={{ fontWeight: 400, fontSize: 14, color: DARK }}>(Incl. Tax)</span></>;
-              const suffix = (ppSell || ppSub) && effPax > 0
+                    : Math.round(tierSelling);
+              // Prefix: "Economy" for Standard, "Economy Package" for multi-tier Package, none for single-tier Package
+              const tierName   = isPackage
+                ? (activeTiers.length > 1 ? `${lbl} Package` : null)
+                : lbl;
+              const prefixJSX  = tierName ? <>{tierName} — </> : null;
+              const costWord   = isPackage && activeTiers.length === 1 ? "Total Package Cost" : "Net Cost";
+              const priceLabel = tPpSell && effPax > 0
+                ? <>{prefixJSX}Per Person Price <span style={{ fontWeight: 400, fontSize: 14, color: DARK }}>(Incl. Tax)</span></>
+                : tPpSub && effPax > 0
+                  ? <>{prefixJSX}Per Person Price <span style={{ fontWeight: 400, fontSize: 14, color: DARK }}>(Excl. GST)</span></>
+                  : tPpSubTotal
+                    ? <>{prefixJSX}{costWord} <span style={{ fontWeight: 400, fontSize: 14, color: DARK }}>(Excl. GST)</span></>
+                    : <>{prefixJSX}{costWord} <span style={{ fontWeight: 400, fontSize: 14, color: DARK }}>(Incl. Tax)</span></>;
+              const suffix = (tPpSell || tPpSub) && effPax > 0
                 ? <span style={{ fontSize: 13, color: DARK }}>Per Person</span>
-                : ppSubTotal
+                : tPpSubTotal
                   ? (effPax > 0 ? <span style={{ fontSize: 13, color: DARK }}>For {effPax} {effPax === 1 ? "Person" : "Persons"}</span> : paxLabel && <span style={{ fontSize: 13, color: DARK }}>For {paxLabel}</span>)
                   : effPax > 0
                     ? <span style={{ fontSize: 13, color: DARK }}>For {effPax} {effPax === 1 ? "Person" : "Persons"}</span>
@@ -591,8 +668,8 @@ export default function QuotationPreview({ data, id }) {
           </div>
         )}
 
-        {/* Legacy single price — Standard/B2B always; Package mode only when no priced tiers */}
-        {selling > 0 && (!isPackage || !useTiers || activeTiers.length === 0) && (() => {
+        {/* Flat price fallback — non-tier quotations, or Package/Standard with no priced tiers */}
+        {selling > 0 && (!useTiers || activeTiers.length === 0) && (() => {
           const base = (+form.cost || 0) + (+form.margin || 0);
           const legacyVal = ppSell && leadPax > 0
             ? Math.round(selling / leadPax)
@@ -601,15 +678,15 @@ export default function QuotationPreview({ data, id }) {
               : ppSubTotal
                 ? Math.round(base)
                 : Math.round(selling);
-          const legacyLabel = !isPackage
-            ? <>Total Cost Price <span style={{ fontWeight: 400, fontSize: 14, color: DARK }}>(Incl. Tax)</span></>
-            : ppSell && leadPax > 0
-              ? <>Per Person Price <span style={{ fontWeight: 400, fontSize: 14, color: DARK }}>(Incl. Tax)</span></>
-              : ppSub && leadPax > 0
-                ? <>Per Person Price <span style={{ fontWeight: 400, fontSize: 14, color: DARK }}>(Excl. GST)</span></>
-                : ppSubTotal
-                  ? <>Total Package Cost <span style={{ fontWeight: 400, fontSize: 14, color: DARK }}>(Excl. GST)</span></>
-                  : <>Total Package Cost <span style={{ fontWeight: 400, fontSize: 14, color: DARK }}>(Incl. Tax)</span></>;
+          const legacyLabel = ppSell && leadPax > 0
+            ? <>Per Person Price <span style={{ fontWeight: 400, fontSize: 14, color: DARK }}>(Incl. Tax)</span></>
+            : ppSub && leadPax > 0
+              ? <>Per Person Price <span style={{ fontWeight: 400, fontSize: 14, color: DARK }}>(Excl. GST)</span></>
+              : ppSubTotal
+                ? <>Total Cost <span style={{ fontWeight: 400, fontSize: 14, color: DARK }}>(Excl. GST)</span></>
+                : isPackage
+                  ? <>Total Package Cost <span style={{ fontWeight: 400, fontSize: 14, color: DARK }}>(Incl. Tax)</span></>
+                  : <>Total Cost Price <span style={{ fontWeight: 400, fontSize: 14, color: DARK }}>(Incl. Tax)</span></>;
           const legacySuffix = (ppSell || ppSub) && leadPax > 0
             ? <span style={{ fontSize: 20, color: DARK }}>Per Person</span>
             : leadPax > 0
@@ -695,7 +772,7 @@ export default function QuotationPreview({ data, id }) {
               const ActRow = ({ act }) => (
                 <div style={{ display: "flex", alignItems: "flex-start", gap: 8, marginBottom: 7, fontSize: 13, color: DARK }}>
                   <span style={{ flexShrink: 0, marginTop: 1 }}><ActIcon type={act.type} /></span>
-                  <span dangerouslySetInnerHTML={{ __html: act.text }} />
+                  <span dangerouslySetInnerHTML={{ __html: flattenLists(act.text || "") }} />
                 </div>
               );
 
@@ -790,14 +867,21 @@ export default function QuotationPreview({ data, id }) {
               const tTransfers= (tier.transfers|| []).filter(t => t.cab && (+t.perDay > 0 || +t.days > 0));
               const tMiscs    = (tier.miscs    || []).filter(m => m.name);
               const tierSell  = calcTierSelling(tier, form);
+              const tierBase  = calcTierBase(tier, form);
               const tierPax   = getTierPax(tier);
+              // Per-tier pp* flags for detail section (same logic as cover page)
+              const dPpSell     = !isPackage ? (tier.ppSellEnabled || false) : ppSell;
+              const dPpSub      = !isPackage ? (tier.ppSubEnabled  || false) : ppSub;
+              const dPpSubTotal = !isPackage ? (tier.ppSubTotalEnabled || false) : ppSubTotal;
 
               return (
                 <div key={lbl}>
-                  {/* Tier label */}
-                  <div style={{ fontSize: 15, fontWeight: 700, color: DARK, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 14 }}>
-                    {lbl} Package
-                  </div>
+                  {/* Tier label — only for multi-tier; "Economy Package" in Package mode, "Economy" in Standard */}
+                  {dataTiers.length > 1 && (
+                    <div style={{ fontSize: 15, fontWeight: 700, color: DARK, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 14 }}>
+                      {lbl}{isPackage ? " Package" : ""}
+                    </div>
+                  )}
 
                   {/* Hotels */}
                   {tHotels.length > 0 && (
@@ -808,7 +892,9 @@ export default function QuotationPreview({ data, id }) {
                             <Th>Location</Th>
                             <Th>Hotel Name</Th>
                             <Th>Room Category</Th>
-                            <Th style={{ textAlign: "center" }}>No. Of Rooms</Th>
+                            <Th style={{ textAlign: "center" }}>Occupancy</Th>
+                            <Th style={{ textAlign: "center" }}>Nights</Th>
+                            <Th style={{ textAlign: "center" }}>Rooms</Th>
                           </tr>
                         </thead>
                         <tbody>
@@ -822,6 +908,8 @@ export default function QuotationPreview({ data, id }) {
                                 <Td style={{ fontWeight: 600 }}>{ri === 0 ? (h.location || "—") : ""}</Td>
                                 <Td style={{ fontWeight: ri === 0 ? 700 : 400 }}>{ri === 0 ? h.name : ""}</Td>
                                 <Td>{r.roomCat || "Deluxe Room"}</Td>
+                                <Td style={{ textAlign: "center" }}>{r.occupancy || "Double"}</Td>
+                                <Td style={{ textAlign: "center" }}>{r.nights || "—"}</Td>
                                 <Td style={{ textAlign: "center" }}>{r.rooms ?? 1}</Td>
                               </tr>
                             ));
@@ -859,7 +947,18 @@ export default function QuotationPreview({ data, id }) {
                   {tFlights.length > 0 && (
                     <div data-pdf-break="true">
                       <Card icon={<IcFlight />} title="Flight Details">
-                        {tFlights.map((f, fi) => <FlightCard key={fi} f={f} />)}
+                        {tFlights.map((f, fi) => (
+                          <div key={fi}>
+                            <FlightCard f={f} />
+                            {/* One-way inter-card layover (round-trip layovers are rendered inside FlightCard) */}
+                            {!f.roundTrip && f.hasLayover && f.layoverCity && (
+                              <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "4px 0 10px", padding: "7px 14px", background: "#FFFBEB", border: "1px solid #FDE68A", borderRadius: 8, fontSize: 12, color: "#92400E", fontWeight: 600 }}>
+                                <span>🕐 Layover in <strong>{f.layoverCity}</strong></span>
+                                {f.layoverDuration && <span style={{ marginLeft: "auto", fontWeight: 700, color: "#B45309" }}>Duration: {f.layoverDuration}</span>}
+                              </div>
+                            )}
+                          </div>
+                        ))}
                       </Card>
                     </div>
                   )}
@@ -877,22 +976,43 @@ export default function QuotationPreview({ data, id }) {
                     </div>
                   )}
 
-                  {/* Financials — Package mode uses per-tier price; Standard/B2B use flat selling */}
-                  {(() => {
-                    const displaySell = isPackage ? tierSell : selling;
-                    if (!(displaySell > 0)) return null;
+                  {/* Financials — shown for all modes; mirrors cover page pricing flag */}
+                  {tierSell > 0 && (() => {
                     const effPax = leadPax > 0 ? leadPax : tierPax;
+                    // Tier name prefix: matches cover page
+                    //   Package single-tier  → "Package"
+                    //   Package multi-tier   → "Economy Package"
+                    //   Standard multi-tier  → "Economy"
+                    //   Standard single-tier → "" (no prefix)
+                    const tierName = isPackage
+                      ? (dataTiers.length > 1 ? `${lbl} Package` : "Package")
+                      : (dataTiers.length > 1 ? lbl : "");
+                    const sep = tierName ? " — " : "";
+                    // Value: uses this tier's own pp* flags (dPp*) — independent per tier
+                    const detailVal  = dPpSell && effPax > 0 ? Math.round(tierSell / effPax)
+                      : dPpSub  && effPax > 0 ? Math.round(tierBase / effPax)
+                      : dPpSubTotal            ? Math.round(tierBase)
+                      : Math.round(tierSell);
+                    // Label mirrors each tier's own display mode
+                    const detailLabel = dPpSell && effPax > 0 ? `${tierName}${sep}Per Person (Incl. GST)`
+                      : dPpSub  && effPax > 0 ? `${tierName}${sep}Per Person (Excl. GST)`
+                      : dPpSubTotal            ? `${tierName}${sep}Total Cost (Excl. GST)`
+                      : `${tierName}${sep}Net Cost (Incl. GST)`;
+                    // Per-person sub-note (only when main value is a total, not already per-person)
+                    const ppVal = !dPpSell && !dPpSub && effPax > 1
+                      ? Math.round((dPpSubTotal ? tierBase : tierSell) / effPax)
+                      : null;
                     return (
                       <div style={{ border: `1px solid ${TEAL_BORDER}`, borderRadius: 10, padding: "14px 18px", background: "transparent", marginBottom: 14 }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                          <div style={{ fontSize: 14, fontWeight: 700, color: TEAL }}>{lbl} Package — Net Cost (Incl. GST)</div>
+                          <div style={{ fontSize: 14, fontWeight: 700, color: TEAL }}>{detailLabel}</div>
                           <div style={{ display: "flex", alignItems: "baseline", gap: 12 }}>
                             <span style={{ fontSize: 20, fontWeight: 900, color: DARK }}>
-                              ₹ {Math.round(displaySell).toLocaleString("en-IN")}/-
+                              ₹ {detailVal.toLocaleString("en-IN")}/-
                             </span>
-                            {effPax > 1 && (
+                            {ppVal !== null && (
                               <span style={{ fontSize: 12, color: "#666" }}>
-                                Per Person: ₹ {Math.round(displaySell / effPax).toLocaleString("en-IN")}/-
+                                Per Person: ₹ {ppVal.toLocaleString("en-IN")}/-
                               </span>
                             )}
                           </div>
@@ -927,17 +1047,21 @@ export default function QuotationPreview({ data, id }) {
                       <Th>Location</Th>
                       <Th>Hotel Name</Th>
                       <Th>Room Category</Th>
-                      <Th style={{ textAlign: "center" }}>No. Of Rooms</Th>
+                      <Th style={{ textAlign: "center" }}>Occupancy</Th>
+                      <Th style={{ textAlign: "center" }}>Nights</Th>
+                      <Th style={{ textAlign: "center" }}>Rooms</Th>
                     </tr>
                   </thead>
                   <tbody>
                     {hotels.filter(h => h.name).map((h, hi) => {
-                      const rates = (h.rates?.length ? h.rates : [{ occupancy: h.occupancy || "Double", roomCat: h.roomCat, nights: h.nights, rooms: h.rooms }]).filter(r => r.occupancy || r.nights);
+                      const rates = (h.rates?.length ? h.rates : [{ occupancy: h.occupancy || "Double", roomCat: h.roomCat, nights: h.nights, rooms: h.rooms }]).filter(r => r.occupancy || r.nights || r.rooms);
                       return rates.map((r, ri) => (
                         <tr key={`${hi}-${ri}`} {...(hi > 0 || ri > 0 ? { "data-pdf-break": "true" } : {})} style={{ background: "#fff" }}>
                           <Td style={{ fontWeight: 600 }}>{ri === 0 ? (h.location || "—") : ""}</Td>
                           <Td style={{ fontWeight: ri === 0 ? 700 : 400 }}>{ri === 0 ? h.name : ""}</Td>
                           <Td>{r.roomCat || "—"}</Td>
+                          <Td style={{ textAlign: "center" }}>{r.occupancy || "Double"}</Td>
+                          <Td style={{ textAlign: "center" }}>{r.nights || "—"}</Td>
                           <Td style={{ textAlign: "center" }}>{r.rooms || 1}</Td>
                         </tr>
                       ));
@@ -968,7 +1092,17 @@ export default function QuotationPreview({ data, id }) {
             {flights.filter(f => hasFlightData(f) || +f.price > 0).length > 0 && (
               <div data-pdf-break="true">
                 <Card icon={<IcFlight />} title="Flight Details">
-                  {flights.filter(f => hasFlightData(f) || +f.price > 0).map((f, fi) => <FlightCard key={fi} f={f} />)}
+                  {flights.filter(f => hasFlightData(f) || +f.price > 0).map((f, fi) => (
+                    <div key={fi}>
+                      <FlightCard f={f} />
+                      {f.hasLayover && f.layoverCity && (
+                        <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "4px 0 10px", padding: "7px 14px", background: "#FFFBEB", border: "1px solid #FDE68A", borderRadius: 8, fontSize: 12, color: "#92400E", fontWeight: 600 }}>
+                          <span>🕐 Layover in <strong>{f.layoverCity}</strong></span>
+                          {f.layoverDuration && <span style={{ marginLeft: "auto", fontWeight: 700, color: "#B45309" }}>Duration: {f.layoverDuration}</span>}
+                        </div>
+                      )}
+                    </div>
+                  ))}
                 </Card>
               </div>
             )}
@@ -1073,7 +1207,7 @@ export default function QuotationPreview({ data, id }) {
       ══════════════════════════════ */}
       <div data-pdf-section="true">
         <MiniHeader />
-        <div style={{ padding: "28px 32px", display: "flex", justifyContent: "flex-end" }}>
+        <div style={{ padding: "28px 32px", display: "flex", justifyContent: "center" }}>
           <a
             href="https://tourwatchout.com/term-and-conditions"
             target="_blank"
@@ -1092,7 +1226,7 @@ export default function QuotationPreview({ data, id }) {
             >
               <div style={{ fontSize: 15, fontWeight: 700, color: DARK }}>Terms &amp; Conditions*</div>
             </div>
-            <div style={{ fontSize: 12, color: "#888", marginTop: 6, textAlign: "center" }}>Click To View</div>
+            <div style={{ fontSize: 12, color: "#111", marginTop: 6, textAlign: "center" }}>Click To View</div>
           </a>
         </div>
       </div>
@@ -1108,11 +1242,13 @@ export default function QuotationPreview({ data, id }) {
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 14 }}>
               <div style={{ fontSize: 22, fontWeight: 800, color: DARK }}>{sp?.name || "Savi Prajapati"}</div>
               <div style={{ display: "flex", gap: 10 }}>
-                <a href="tel:+918882701800" data-pdf-link="tel:+918882701800" style={{ textDecoration: "none" }}>
+                <a href="tel:+918882701800" data-pdf-link="tel:+918882701800" style={{ textDecoration: "none", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}>
                   <IcCall />
+                  <ClickHand />
                 </a>
-                <a href="https://wa.me/918882701800" data-pdf-link="https://wa.me/918882701800" style={{ textDecoration: "none" }}>
+                <a href="https://wa.me/918882701800" data-pdf-link="https://wa.me/918882701800" style={{ textDecoration: "none", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}>
                   <IcWhatsApp />
+                  <ClickHand />
                 </a>
               </div>
             </div>

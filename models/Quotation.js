@@ -30,7 +30,7 @@ const QuotationSchema = new mongoose.Schema({
     }],
   }],
 
-  // Flights (array — outbound + return + any extra legs)
+  // Flights (array — outbound + return + any extra legs / connecting segments)
   flights: [{
     _id: false,
     from:        { type: String,  default: "" },
@@ -50,6 +50,25 @@ const QuotationSchema = new mongoose.Schema({
     arrIATA:     { type: String,  default: "" },
     arrDate:     { type: String,  default: "" },
     arrTime:     { type: String,  default: "" },
+    // Return leg full details (round trip)
+    retFlightNo: { type: String,  default: "" },
+    retPnr:      { type: String,  default: "" },
+    retDepCity:  { type: String,  default: "" },
+    retDepIATA:  { type: String,  default: "" },
+    retDepDate:  { type: String,  default: "" },
+    retDepTime:  { type: String,  default: "" },
+    retArrCity:  { type: String,  default: "" },
+    retArrIATA:  { type: String,  default: "" },
+    retArrDate:  { type: String,  default: "" },
+    retArrTime:  { type: String,  default: "" },
+    // Layover after outbound (one-way: between this card and next; round-trip: between onward and return legs)
+    hasLayover:      { type: Boolean, default: false },
+    layoverCity:     { type: String,  default: "" },
+    layoverDuration: { type: String,  default: "" },
+    // Layover after return leg (round-trip only)
+    hasReturnLayover:      { type: Boolean, default: false },
+    returnLayoverCity:     { type: String,  default: "" },
+    returnLayoverDuration: { type: String,  default: "" },
   }],
 
   // Transfers (array — multiple cab arrangements)

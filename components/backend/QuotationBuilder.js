@@ -64,7 +64,15 @@ const DEF_HOTEL    = { name: "", location: "", rates: [{ ...DEF_RATE }] };
 const DEF_FLIGHT   = { from: "", to: "", date: "", pax: "", price: "", roundTrip: false, returnPrice: "",
   pnr: "", flightNo: "",
   depCity: "", depIATA: "", depDate: "", depTime: "",
-  arrCity: "", arrIATA: "", arrDate: "", arrTime: "" };
+  arrCity: "", arrIATA: "", arrDate: "", arrTime: "",
+  // Return leg (round trip)
+  retFlightNo: "", retPnr: "",
+  retDepCity: "", retDepIATA: "", retDepDate: "", retDepTime: "",
+  retArrCity: "", retArrIATA: "", retArrDate: "", retArrTime: "",
+  // Layover after outbound (one-way: between cards; round-trip: between onward & return)
+  hasLayover: false, layoverCity: "", layoverDuration: "",
+  // Layover after return leg (round-trip only)
+  hasReturnLayover: false, returnLayoverCity: "", returnLayoverDuration: "" };
 const DEF_TRANSFER = { cab: "", perDay: "", days: "" };
 const DEF_MISC     = { name: "", amount: "" };
 
@@ -232,6 +240,9 @@ function initArrays(initialData, lead) {
           transfers: d.transfers?.length ? [...d.transfers] : [{ ...DEF_TRANSFER }],
           miscs:     d.miscs?.length     ? [...d.miscs]     : [],
           margin:    d.margin !== undefined ? d.margin : fallbackMargin,
+          ppSubEnabled:      d.ppSubEnabled      || false,
+          ppSubTotalEnabled: d.ppSubTotalEnabled || false,
+          ppSellEnabled:     d.ppSellEnabled     || false,
         }];
       })),
     };
@@ -401,6 +412,23 @@ export default function QuotationBuilder({
   const intl      = form.type === "International";
   const isB2B     = form.quoteType === "b2b";
   const isPackage = form.quoteType === "package";
+
+  // Per-tier pp* flags: Standard/B2B use tier-level (independent per tier);
+  // Package mode uses form-level (single flat tier controlled from the form).
+  const activeTierData = pkgTiers[activePkg] || {};
+  const ppLocal        = !isPackage ? activeTierData : form;
+  const ppSubLocal      = ppLocal.ppSubEnabled      || false;
+  const ppSubTotalLocal = ppLocal.ppSubTotalEnabled || false;
+  const ppSellLocal     = ppLocal.ppSellEnabled     || false;
+  // Setter: writes to tier object (Standard/B2B) or form (Package)
+  const updPP = (key, val, also = {}) => {
+    if (!isPackage) {
+      setPkgTiers(p => ({ ...p, [activePkg]: { ...p[activePkg], [key]: val, ...also } }));
+    } else {
+      upd(key, val);
+      Object.entries(also).forEach(([k, v]) => upd(k, v));
+    }
+  };
   const tierSuffix = (isPackage || isB2B) ? "" : ` — ${activePkg}`;
 
   /* ── array helpers ── */
@@ -442,10 +470,13 @@ export default function QuotationBuilder({
   function buildBody() {
     const normTier = tier => ({
       hotels:    tier.hotels.map(h => ({ name: h.name, location: h.location || "", rates: (h.rates || []).map(r => ({ occupancy: r.occupancy || "Double", roomCat: r.roomCat || "Deluxe", nights: toN(r.nights), rooms: toN(r.rooms, 1), price: toN(r.price) })) })),
-      flights:   tier.flights.map(f => ({ from: f.from, to: f.to, date: f.date, pax: toN(f.pax), price: toN(f.price), roundTrip: !!f.roundTrip, returnPrice: toN(f.returnPrice), pnr: f.pnr||"", flightNo: f.flightNo||"", depCity: f.depCity||"", depIATA: f.depIATA||"", depDate: f.depDate||"", depTime: f.depTime||"", arrCity: f.arrCity||"", arrIATA: f.arrIATA||"", arrDate: f.arrDate||"", arrTime: f.arrTime||"" })),
+      flights:   tier.flights.map(f => ({ from: f.from, to: f.to, date: f.date, pax: toN(f.pax), price: toN(f.price), roundTrip: !!f.roundTrip, returnPrice: toN(f.returnPrice), pnr: f.pnr||"", flightNo: f.flightNo||"", depCity: f.depCity||"", depIATA: f.depIATA||"", depDate: f.depDate||"", depTime: f.depTime||"", arrCity: f.arrCity||"", arrIATA: f.arrIATA||"", arrDate: f.arrDate||"", arrTime: f.arrTime||"", retFlightNo: f.retFlightNo||"", retPnr: f.retPnr||"", retDepCity: f.retDepCity||"", retDepIATA: f.retDepIATA||"", retDepDate: f.retDepDate||"", retDepTime: f.retDepTime||"", retArrCity: f.retArrCity||"", retArrIATA: f.retArrIATA||"", retArrDate: f.retArrDate||"", retArrTime: f.retArrTime||"", hasLayover: !!f.hasLayover, layoverCity: f.layoverCity||"", layoverDuration: f.layoverDuration||"", hasReturnLayover: !!f.hasReturnLayover, returnLayoverCity: f.returnLayoverCity||"", returnLayoverDuration: f.returnLayoverDuration||"" })),
       transfers: tier.transfers.map(t => ({ cab: (toN(t.perDay) > 0 || toN(t.days) > 0) ? t.cab : "", perDay: toN(t.perDay), days: toN(t.days) })),
       miscs:     tier.miscs.filter(m => m.name || m.amount).map(m => ({ name: m.name, amount: toN(m.amount) })),
       margin:    toN(tier.margin),
+      ppSubEnabled:      tier.ppSubEnabled      || false,
+      ppSubTotalEnabled: tier.ppSubTotalEnabled || false,
+      ppSellEnabled:     tier.ppSellEnabled     || false,
     });
     const ecoNorm = normTier(pkgTiers.Economy);
     return {
@@ -1442,10 +1473,60 @@ export default function QuotationBuilder({
                     )}
                   </div>
 
+                  {/* Outbound layover — only for Round Trip (placed between onward and return sections) */}
                   {f.roundTrip && (
-                    <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px dashed #E4E9F2" }}>
+                    <LayoverWidget
+                      label="Outward Layover (after onward leg)"
+                      has={f.hasLayover}
+                      city={f.layoverCity || ""}
+                      dur={f.layoverDuration || ""}
+                      onEnable={() => updArr(setFlights, i, "hasLayover", true)}
+                      onRemove={() => { updArr(setFlights, i, "hasLayover", false); updArr(setFlights, i, "layoverCity", ""); updArr(setFlights, i, "layoverDuration", ""); }}
+                      onCity={v => updArr(setFlights, i, "layoverCity", v)}
+                      onDur={v => updArr(setFlights, i, "layoverDuration", v)}
+                    />
+                  )}
+
+                  {f.roundTrip && (
+                    <div style={{ marginTop: 12, paddingTop: 12, borderTop: "1.5px dashed #93C5FD" }}>
+                      <div style={{ fontSize: 11, fontWeight: 800, color: "#1D4ED8", textTransform: "uppercase", letterSpacing: ".06em", marginBottom: 10 }}>🔁 Return Leg</div>
+                      {/* Return PNR | Flight No */}
+                      <div style={{ ...G2, marginBottom: 10 }}>
+                        <Fl l="PNR (Return)">
+                          <input style={QS.inp} placeholder="e.g. C5K9R2" value={f.retPnr || ""} onChange={e => updArr(setFlights, i, "retPnr", e.target.value)} />
+                        </Fl>
+                        <Fl l="Flight No. (Return)">
+                          <input style={QS.inp} placeholder="e.g. 6E 451" value={f.retFlightNo || ""} onChange={e => updArr(setFlights, i, "retFlightNo", e.target.value)} />
+                        </Fl>
+                      </div>
+                      {/* Return Departure + Arrival */}
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 10 }}>
+                        <div style={{ border: "1px solid #FCA5A5", borderRadius: 8, padding: "10px 12px", background: "#FFF5F5" }}>
+                          <div style={{ fontSize: 11, fontWeight: 800, color: "#DC2626", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>✈ Return Departure</div>
+                          <Fl l="City"><input style={QS.inp} placeholder="e.g. Srinagar" value={f.retDepCity || ""} onChange={e => updArr(setFlights, i, "retDepCity", e.target.value)} /></Fl>
+                          <div style={{ marginTop: 8 }}>
+                            <Fl l="IATA Code"><input style={QS.inp} placeholder="e.g. SXR" value={f.retDepIATA || ""} onChange={e => updArr(setFlights, i, "retDepIATA", e.target.value)} /></Fl>
+                          </div>
+                          <div style={{ ...G2, marginTop: 8 }}>
+                            <Fl l="Date"><input type="date" style={QS.inp} value={f.retDepDate || ""} onChange={e => updArr(setFlights, i, "retDepDate", e.target.value)} /></Fl>
+                            <Fl l="Time"><input style={QS.inp} placeholder="e.g. 10:30 hrs" value={f.retDepTime || ""} onChange={e => updArr(setFlights, i, "retDepTime", e.target.value)} /></Fl>
+                          </div>
+                        </div>
+                        <div style={{ border: "1px solid #93C5FD", borderRadius: 8, padding: "10px 12px", background: "#EFF6FF" }}>
+                          <div style={{ fontSize: 11, fontWeight: 800, color: "#1D4ED8", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>🛬 Return Arrival</div>
+                          <Fl l="City"><input style={QS.inp} placeholder="e.g. Delhi" value={f.retArrCity || ""} onChange={e => updArr(setFlights, i, "retArrCity", e.target.value)} /></Fl>
+                          <div style={{ marginTop: 8 }}>
+                            <Fl l="IATA Code"><input style={QS.inp} placeholder="e.g. DEL" value={f.retArrIATA || ""} onChange={e => updArr(setFlights, i, "retArrIATA", e.target.value)} /></Fl>
+                          </div>
+                          <div style={{ ...G2, marginTop: 8 }}>
+                            <Fl l="Date"><input type="date" style={QS.inp} value={f.retArrDate || ""} onChange={e => updArr(setFlights, i, "retArrDate", e.target.value)} /></Fl>
+                            <Fl l="Time"><input style={QS.inp} placeholder="e.g. 14:30 hrs" value={f.retArrTime || ""} onChange={e => updArr(setFlights, i, "retArrTime", e.target.value)} /></Fl>
+                          </div>
+                        </div>
+                      </div>
+                      {/* Return Price */}
                       {!isB2B && (
-                        <div style={{ ...G2, marginBottom: 10 }}>
+                        <div style={{ ...G2, marginBottom: 8 }}>
                           <Fl l="Return Price Per Pax (₹)">
                             <input type="number" style={QS.inp} value={f.returnPrice} onChange={e => updArr(setFlights, i, "returnPrice", e.target.value)} />
                           </Fl>
@@ -1460,6 +1541,34 @@ export default function QuotationBuilder({
                         </div>
                       )}
                     </div>
+                  )}
+
+                  {/* Round Trip: return layover (after return leg) */}
+                  {f.roundTrip && (
+                    <LayoverWidget
+                      label="Return Layover (after return leg)"
+                      has={f.hasReturnLayover}
+                      city={f.returnLayoverCity || ""}
+                      dur={f.returnLayoverDuration || ""}
+                      onEnable={() => updArr(setFlights, i, "hasReturnLayover", true)}
+                      onRemove={() => { updArr(setFlights, i, "hasReturnLayover", false); updArr(setFlights, i, "returnLayoverCity", ""); updArr(setFlights, i, "returnLayoverDuration", ""); }}
+                      onCity={v => updArr(setFlights, i, "returnLayoverCity", v)}
+                      onDur={v => updArr(setFlights, i, "returnLayoverDuration", v)}
+                    />
+                  )}
+
+                  {/* One Way: layover after this card (connects to next flight card) */}
+                  {!f.roundTrip && (
+                    <LayoverWidget
+                      label="Layover After This Segment"
+                      has={f.hasLayover}
+                      city={f.layoverCity || ""}
+                      dur={f.layoverDuration || ""}
+                      onEnable={() => updArr(setFlights, i, "hasLayover", true)}
+                      onRemove={() => { updArr(setFlights, i, "hasLayover", false); updArr(setFlights, i, "layoverCity", ""); updArr(setFlights, i, "layoverDuration", ""); }}
+                      onCity={v => updArr(setFlights, i, "layoverCity", v)}
+                      onDur={v => updArr(setFlights, i, "layoverDuration", v)}
+                    />
                   )}
                 </div>
               ))}
@@ -1650,58 +1759,52 @@ export default function QuotationBuilder({
                   <CR l="Margin % (auto)" v={`${c.mpct.toFixed(1)}%  ${g.g} Grade`} vc={g.c} />
                   <CR l="Cost Price" v={inr(c.cost)} />
                   <CR l="Margin" v={inr(c.margin)} />
-                  {/* Subtotal row — two Package-mode checkboxes: ÷pax (per person) | Total (no division) */}
+                  {/* Subtotal row — each tier has independent ÷pax / Total checkboxes */}
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "6px 0", margin: "4px 0", borderTop: "1px dashed #FECACA", borderBottom: "1px dashed #FECACA" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                      {isPackage && (
-                        <>
-                          {/* Per-person toggle */}
-                          <label title="Show subtotal per person in PDF" style={{ display: "flex", alignItems: "center", gap: 3, cursor: "pointer" }}>
-                            <input type="checkbox" checked={!!form.ppSubEnabled}
-                              onChange={e => { upd("ppSubEnabled", e.target.checked); if (e.target.checked) { upd("ppSellEnabled", false); upd("ppSubTotalEnabled", false); } }}
-                              style={{ width: 13, height: 13, accentColor: "#E8364A", cursor: "pointer", flexShrink: 0 }} />
-                            <span style={{ fontSize: 10, color: "#E8364A", fontWeight: 700 }}>÷pax</span>
-                          </label>
-                          {/* Total toggle (no division) */}
-                          <label title="Show total subtotal in PDF (no division)" style={{ display: "flex", alignItems: "center", gap: 3, cursor: "pointer" }}>
-                            <input type="checkbox" checked={!!form.ppSubTotalEnabled}
-                              onChange={e => { upd("ppSubTotalEnabled", e.target.checked); if (e.target.checked) { upd("ppSubEnabled", false); upd("ppSellEnabled", false); } }}
-                              style={{ width: 13, height: 13, accentColor: "#F59E0B", cursor: "pointer", flexShrink: 0 }} />
-                            <span style={{ fontSize: 10, color: "#F59E0B", fontWeight: 700 }}>Total</span>
-                          </label>
-                        </>
-                      )}
+                      {/* Per-person toggle */}
+                      <label title="Show subtotal per person in PDF" style={{ display: "flex", alignItems: "center", gap: 3, cursor: "pointer" }}>
+                        <input type="checkbox" checked={ppSubLocal}
+                          onChange={e => updPP("ppSubEnabled", e.target.checked, e.target.checked ? { ppSellEnabled: false, ppSubTotalEnabled: false } : {})}
+                          style={{ width: 13, height: 13, accentColor: "#E8364A", cursor: "pointer", flexShrink: 0 }} />
+                        <span style={{ fontSize: 10, color: "#E8364A", fontWeight: 700 }}>÷pax</span>
+                      </label>
+                      {/* Total toggle (no division) */}
+                      <label title="Show total subtotal in PDF (no division)" style={{ display: "flex", alignItems: "center", gap: 3, cursor: "pointer" }}>
+                        <input type="checkbox" checked={ppSubTotalLocal}
+                          onChange={e => updPP("ppSubTotalEnabled", e.target.checked, e.target.checked ? { ppSubEnabled: false, ppSellEnabled: false } : {})}
+                          style={{ width: 13, height: 13, accentColor: "#F59E0B", cursor: "pointer", flexShrink: 0 }} />
+                        <span style={{ fontSize: 10, color: "#F59E0B", fontWeight: 700 }}>Total</span>
+                      </label>
                       <span style={{ fontSize: 12.5, fontWeight: 700, color: "#0F1B33" }}>
-                        {isPackage && form.ppSubEnabled && leadPax > 0
+                        {ppSubLocal && leadPax > 0
                           ? `Subtotal per Person (÷ ${leadPax})`
                           : "Subtotal (before GST)"}
                       </span>
                     </div>
                     <span style={{ fontSize: 13, fontWeight: 800, color: "#0F1B33" }}>
-                      {isPackage && form.ppSubEnabled && leadPax > 0 ? inr(c.base / leadPax) : inr(c.base)}
+                      {ppSubLocal && leadPax > 0 ? inr(c.base / leadPax) : inr(c.base)}
                     </span>
                   </div>
                   <CR l={`GST Amount (${form.gstPct}%)`} v={inr(c.gst)} />
                   {intl && <CR l="TCS Amount" v={inr(c.tcs)} />}
-                  {/* Selling Price row with optional per-person toggle */}
+                  {/* Selling Price row — per-tier selling price toggle */}
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: 10, marginTop: 4, borderTop: "1px dashed #FECACA" }}>
-                    <label style={{ display: "flex", alignItems: "center", gap: isPackage ? 6 : 0, cursor: isPackage ? "pointer" : "default" }}>
-                      {isPackage && (
-                        <input
-                          type="checkbox"
-                          checked={!!form.ppSellEnabled}
-                          onChange={e => { upd("ppSellEnabled", e.target.checked); if (e.target.checked) { upd("ppSubEnabled", false); upd("ppSubTotalEnabled", false); } }}
-                          style={{ width: 14, height: 14, accentColor: "#2563EB", cursor: "pointer", flexShrink: 0 }}
-                        />
-                      )}
+                    <label style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer" }}>
+                      <input
+                        type="checkbox"
+                        checked={ppSellLocal}
+                        onChange={e => updPP("ppSellEnabled", e.target.checked, e.target.checked ? { ppSubEnabled: false, ppSubTotalEnabled: false } : {})}
+                        style={{ width: 14, height: 14, accentColor: "#2563EB", cursor: "pointer", flexShrink: 0 }}
+                      />
                       <b style={{ color: "#0F1B33", fontSize: 13 }}>
-                        {isPackage && form.ppSellEnabled && leadPax > 0
-                          ? `Selling Price per Person${leadPax > 0 ? ` (÷ ${leadPax})` : ""}`
+                        {ppSellLocal && leadPax > 0
+                          ? `Selling Price per Person (÷ ${leadPax})`
                           : `Selling Price${intl ? " (incl. GST + TCS)" : " (incl. GST)"}`}
                       </b>
                     </label>
                     <b style={{ fontSize: 20, color: "#2563EB" }}>
-                      {isPackage && form.ppSellEnabled && leadPax > 0 ? inr(c.selling / leadPax) : inr(c.selling)}
+                      {ppSellLocal && leadPax > 0 ? inr(c.selling / leadPax) : inr(c.selling)}
                     </b>
                   </div>
                 </div>
@@ -1835,6 +1938,29 @@ function RoomCatSelect({ value, extra = [], onChange, onAdd, onDelete }) {
     </div>
   );
 }
+/* Reusable layover toggle + inputs widget */
+function LayoverWidget({ label, has, city, dur, onEnable, onRemove, onCity, onDur }) {
+  return !has ? (
+    <button
+      onClick={onEnable}
+      style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, width: "100%", marginTop: 10, padding: "5px 0", background: "none", border: "1px dashed #9CA3AF", borderRadius: 6, cursor: "pointer", fontSize: 11, color: "#6B7280", fontWeight: 600 }}
+    >
+      ＋ Add {label}
+    </button>
+  ) : (
+    <div style={{ marginTop: 10, padding: "10px 12px", background: "#FFFBEB", border: "1px solid #FDE68A", borderRadius: 8 }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+        <span style={{ fontSize: 11, fontWeight: 800, color: "#92400E", textTransform: "uppercase", letterSpacing: ".05em" }}>🕐 {label}</span>
+        <button onClick={onRemove} style={{ background: "none", border: "none", cursor: "pointer", color: "#DC2626", fontSize: 14, lineHeight: 1 }}>✕</button>
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+        <Fl l="City"><input style={QS.inp} placeholder="e.g. Bangalore" value={city} onChange={e => onCity(e.target.value)} /></Fl>
+        <Fl l="Duration"><input style={QS.inp} placeholder="e.g. 4h 15m" value={dur} onChange={e => onDur(e.target.value)} /></Fl>
+      </div>
+    </div>
+  );
+}
+
 function TripTypeToggle({ value, onChange }) {
   return (
     <div style={{ display: "inline-flex", border: "1px solid #BFD3FE", borderRadius: 999, padding: 3, background: "#F8FAFD", marginBottom: 12 }}>
@@ -1868,12 +1994,20 @@ const FONT_SIZES    = ["Default", "10px", "12px", "13px", "14px", "16px", "18px"
 function MiniRTE({ value, onChange, placeholder }) {
   const ref = useRef(null);
   useEffect(() => { if (ref.current) ref.current.innerHTML = value || ""; }, []);
-  const exec = cmd => { document.execCommand(cmd, false, null); if (ref.current) onChange(ref.current.innerHTML); ref.current?.focus(); };
+  const exec    = cmd => { document.execCommand(cmd, false, null); if (ref.current) onChange(ref.current.innerHTML); ref.current?.focus(); };
+  const execVal = (cmd, val) => { document.execCommand(cmd, false, val); if (ref.current) onChange(ref.current.innerHTML); ref.current?.focus(); };
   return (
     <div style={{ border: "1px solid #E4E9F2", borderRadius: 9, overflow: "hidden", background: "#F8FAFD", flex: 1 }}>
-      <div style={{ display: "flex", gap: 3, padding: "3px 7px", background: "#EFF4FF", borderBottom: "1px solid #E4E9F2" }}>
+      <div style={{ display: "flex", gap: 3, padding: "3px 7px", background: "#EFF4FF", borderBottom: "1px solid #E4E9F2", flexWrap: "wrap", alignItems: "center" }}>
+        <select defaultValue="" onMouseDown={e => e.stopPropagation()}
+          onChange={e => { const v = e.target.value; e.target.value = ""; if (v) execVal("fontName", v); else exec("removeFormat"); ref.current?.focus(); }}
+          style={{ ...QS.rteBtn, padding: "2px 4px", cursor: "pointer", width: 105, fontSize: 11 }}>
+          <option value="">Font</option>
+          {FONT_FAMILIES.map(f => <option key={f} value={f === "Default" ? "" : f}>{f}</option>)}
+        </select>
         <button type="button" onMouseDown={e => { e.preventDefault(); exec("bold"); }} style={{ ...QS.rteBtn, padding: "1px 7px", fontWeight: 800 }}>B</button>
         <button type="button" onMouseDown={e => { e.preventDefault(); exec("italic"); }} style={{ ...QS.rteBtn, padding: "1px 7px", fontStyle: "italic" }}>I</button>
+        <button type="button" onMouseDown={e => { e.preventDefault(); exec("insertUnorderedList"); }} style={{ ...QS.rteBtn, padding: "1px 7px" }}>• List</button>
         <button type="button" onMouseDown={e => { e.preventDefault(); exec("removeFormat"); }} style={{ ...QS.rteBtn, padding: "1px 7px", color: "#BE123C", fontSize: 10 }}>Clear</button>
       </div>
       <div
