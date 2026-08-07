@@ -348,11 +348,22 @@ function Pill({ label }) {
   );
 }
 
-/* Single flight segment row (dep → arr) */
-function SegmentRow({ depCity, depFrom, depIATA, depDate, depTime, arrCity, arrTo, arrIATA, arrDate, arrTime, flightNo, accent }) {
+/* Single flight segment row (dep → arr); reverse=true flips arrow ←── for return legs */
+function SegmentRow({ depCity, depFrom, depIATA, depDate, depTime, arrCity, arrTo, arrIATA, arrDate, arrTime, flightNo, accent, reverse }) {
   const bg      = accent === "blue" ? "#EFF6FF" : "#F5FBFB";
   const border  = accent === "blue" ? "1px solid #93C5FD" : `1px solid ${TEAL_BORDER}`;
   const clr     = accent === "blue" ? "#1D4ED8" : TEAL;
+  const arrow = reverse
+    ? <>
+        <div style={{ width: 0, height: 0, borderTop: "5px solid transparent", borderBottom: "5px solid transparent", borderRight: `8px solid ${clr}`, flexShrink: 0 }} />
+        <div style={{ flex: 1, height: 2, background: clr }} />
+        <div style={{ width: 8, height: 8, borderRadius: "50%", background: clr, flexShrink: 0 }} />
+      </>
+    : <>
+        <div style={{ width: 8, height: 8, borderRadius: "50%", background: clr, flexShrink: 0 }} />
+        <div style={{ flex: 1, height: 2, background: clr }} />
+        <div style={{ width: 0, height: 0, borderTop: "5px solid transparent", borderBottom: "5px solid transparent", borderLeft: `8px solid ${clr}`, flexShrink: 0 }} />
+      </>;
   return (
     <div style={{ display: "flex", alignItems: "center", background: bg, border, borderRadius: 8, padding: "12px 16px" }}>
       <div style={{ flex: 1, minWidth: 0 }}>
@@ -363,11 +374,7 @@ function SegmentRow({ depCity, depFrom, depIATA, depDate, depTime, arrCity, arrT
       </div>
       <div style={{ flex: 1, textAlign: "center", padding: "0 8px" }}>
         {flightNo && <div style={{ fontSize: 11, color: "#666", marginBottom: 4 }}>{flightNo}</div>}
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <div style={{ width: 8, height: 8, borderRadius: "50%", background: clr, flexShrink: 0 }} />
-          <div style={{ flex: 1, height: 2, background: clr }} />
-          <div style={{ width: 0, height: 0, borderTop: "5px solid transparent", borderBottom: "5px solid transparent", borderLeft: `8px solid ${clr}`, flexShrink: 0 }} />
-        </div>
+        <div style={{ display: "flex", alignItems: "center" }}>{arrow}</div>
       </div>
       <div style={{ flex: 1, minWidth: 0, textAlign: "right" }}>
         <div style={{ fontSize: 14, fontWeight: 800, color: DARK }}>{arrCity || arrTo || "—"}</div>
@@ -409,6 +416,26 @@ function FlightCard({ f }) {
           {f.layoverDuration && <span style={{ marginLeft: "auto", fontWeight: 700, color: "#B45309" }}>Duration: {f.layoverDuration}</span>}
         </div>
       )}
+      {/* Connecting onward flight (after outward layover, before return leg) */}
+      {f.roundTrip && f.hasOnwardConn && f.onwardConnDepCity && (
+        <>
+          <div style={{ fontSize: 10, fontWeight: 800, color: "#2563EB", textTransform: "uppercase", letterSpacing: ".05em", margin: "6px 0 4px" }}>✈ Connecting Onward Flight</div>
+          {(f.onwardConnPnr || f.onwardConnFlightNo) && (
+            <div style={{ display: "flex", gap: 16, marginBottom: 4, fontSize: 12, color: "#444" }}>
+              {f.onwardConnPnr     && <span><strong>PNR:</strong> <span style={{ fontWeight: 800, letterSpacing: 1, color: DARK }}>{f.onwardConnPnr}</span></span>}
+              {f.onwardConnFlightNo && <span><strong>Flight:</strong> {f.onwardConnFlightNo}</span>}
+              {f.onwardConnPax > 0  && <span style={{ marginLeft: "auto" }}>{f.onwardConnPax} Pax</span>}
+            </div>
+          )}
+          <SegmentRow
+            depCity={f.onwardConnDepCity} depIATA={f.onwardConnDepIATA}
+            depDate={f.onwardConnDepDate} depTime={f.onwardConnDepTime}
+            arrCity={f.onwardConnArrCity} arrIATA={f.onwardConnArrIATA}
+            arrDate={f.onwardConnArrDate} arrTime={f.onwardConnArrTime}
+            flightNo={f.onwardConnFlightNo}
+          />
+        </>
+      )}
       {/* Return leg (round trip with full details) */}
       {hasReturnDetail && (
         <>
@@ -425,7 +452,7 @@ function FlightCard({ f }) {
             depDate={f.retDepDate} depTime={f.retDepTime}
             arrCity={f.retArrCity} arrIATA={f.retArrIATA}
             arrDate={f.retArrDate} arrTime={f.retArrTime}
-            flightNo={f.retFlightNo} accent="blue"
+            flightNo={f.retFlightNo} accent="blue" reverse
           />
           {/* Return layover (after return leg) */}
           {f.hasReturnLayover && f.returnLayoverCity && (
@@ -433,6 +460,26 @@ function FlightCard({ f }) {
               <span>🕐 Layover in <strong>{f.returnLayoverCity}</strong></span>
               {f.returnLayoverDuration && <span style={{ marginLeft: "auto", fontWeight: 700, color: "#B45309" }}>Duration: {f.returnLayoverDuration}</span>}
             </div>
+          )}
+          {/* Connecting return flight (after return layover) */}
+          {f.hasReturnConn && f.returnConnDepCity && (
+            <>
+              <div style={{ fontSize: 10, fontWeight: 800, color: "#065F46", textTransform: "uppercase", letterSpacing: ".05em", margin: "6px 0 4px" }}>✈ Connecting Return Flight</div>
+              {(f.returnConnPnr || f.returnConnFlightNo) && (
+                <div style={{ display: "flex", gap: 16, marginBottom: 4, fontSize: 12, color: "#444" }}>
+                  {f.returnConnPnr     && <span><strong>PNR:</strong> <span style={{ fontWeight: 800, letterSpacing: 1, color: DARK }}>{f.returnConnPnr}</span></span>}
+                  {f.returnConnFlightNo && <span><strong>Flight:</strong> {f.returnConnFlightNo}</span>}
+                  {f.returnConnPax > 0  && <span style={{ marginLeft: "auto" }}>{f.returnConnPax} Pax</span>}
+                </div>
+              )}
+              <SegmentRow
+                depCity={f.returnConnDepCity} depIATA={f.returnConnDepIATA}
+                depDate={f.returnConnDepDate} depTime={f.returnConnDepTime}
+                arrCity={f.returnConnArrCity} arrIATA={f.returnConnArrIATA}
+                arrDate={f.returnConnArrDate} arrTime={f.returnConnArrTime}
+                flightNo={f.returnConnFlightNo} accent="blue" reverse
+              />
+            </>
           )}
         </>
       )}

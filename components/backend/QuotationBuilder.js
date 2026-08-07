@@ -72,7 +72,19 @@ const DEF_FLIGHT   = { from: "", to: "", date: "", pax: "", price: "", roundTrip
   // Layover after outbound (one-way: between cards; round-trip: between onward & return)
   hasLayover: false, layoverCity: "", layoverDuration: "",
   // Layover after return leg (round-trip only)
-  hasReturnLayover: false, returnLayoverCity: "", returnLayoverDuration: "" };
+  hasReturnLayover: false, returnLayoverCity: "", returnLayoverDuration: "",
+  // Connecting flight after outward layover (round-trip only — shows inline before return leg)
+  hasOnwardConn: false,
+  onwardConnPnr: "", onwardConnFlightNo: "",
+  onwardConnDepCity: "", onwardConnDepIATA: "", onwardConnDepDate: "", onwardConnDepTime: "",
+  onwardConnArrCity: "", onwardConnArrIATA: "", onwardConnArrDate: "", onwardConnArrTime: "",
+  onwardConnPax: 0, onwardConnPrice: 0,
+  // Connecting flight after return layover (round-trip only)
+  hasReturnConn: false,
+  returnConnPnr: "", returnConnFlightNo: "",
+  returnConnDepCity: "", returnConnDepIATA: "", returnConnDepDate: "", returnConnDepTime: "",
+  returnConnArrCity: "", returnConnArrIATA: "", returnConnArrDate: "", returnConnArrTime: "",
+  returnConnPax: 0, returnConnPrice: 0 };
 const DEF_TRANSFER = { cab: "", perDay: "", days: "" };
 const DEF_MISC     = { name: "", amount: "" };
 
@@ -435,8 +447,9 @@ export default function QuotationBuilder({
   function updArr(setter, idx, field, value) {
     setter(prev => prev.map((x, i) => i === idx ? { ...x, [field]: value } : x));
   }
-  function addRow(setter, def)   { setter(p => [...p, { ...def }]); }
-  function remRow(setter, idx)   { setter(p => p.filter((_, i) => i !== idx)); }
+  function addRow(setter, def)        { setter(p => [...p, { ...def }]); }
+  function insertRow(setter, idx, def){ setter(p => [...p.slice(0, idx), { ...def }, ...p.slice(idx)]); }
+  function remRow(setter, idx)        { setter(p => p.filter((_, i) => i !== idx)); }
 
   /* ── per-tier sub-totals ── */
   function calcTierTotal(tier) {
@@ -470,7 +483,7 @@ export default function QuotationBuilder({
   function buildBody() {
     const normTier = tier => ({
       hotels:    tier.hotels.map(h => ({ name: h.name, location: h.location || "", rates: (h.rates || []).map(r => ({ occupancy: r.occupancy || "Double", roomCat: r.roomCat || "Deluxe", nights: toN(r.nights), rooms: toN(r.rooms, 1), price: toN(r.price) })) })),
-      flights:   tier.flights.map(f => ({ from: f.from, to: f.to, date: f.date, pax: toN(f.pax), price: toN(f.price), roundTrip: !!f.roundTrip, returnPrice: toN(f.returnPrice), pnr: f.pnr||"", flightNo: f.flightNo||"", depCity: f.depCity||"", depIATA: f.depIATA||"", depDate: f.depDate||"", depTime: f.depTime||"", arrCity: f.arrCity||"", arrIATA: f.arrIATA||"", arrDate: f.arrDate||"", arrTime: f.arrTime||"", retFlightNo: f.retFlightNo||"", retPnr: f.retPnr||"", retDepCity: f.retDepCity||"", retDepIATA: f.retDepIATA||"", retDepDate: f.retDepDate||"", retDepTime: f.retDepTime||"", retArrCity: f.retArrCity||"", retArrIATA: f.retArrIATA||"", retArrDate: f.retArrDate||"", retArrTime: f.retArrTime||"", hasLayover: !!f.hasLayover, layoverCity: f.layoverCity||"", layoverDuration: f.layoverDuration||"", hasReturnLayover: !!f.hasReturnLayover, returnLayoverCity: f.returnLayoverCity||"", returnLayoverDuration: f.returnLayoverDuration||"" })),
+      flights:   tier.flights.map(f => ({ from: f.from, to: f.to, date: f.date, pax: toN(f.pax), price: toN(f.price), roundTrip: !!f.roundTrip, returnPrice: toN(f.returnPrice), pnr: f.pnr||"", flightNo: f.flightNo||"", depCity: f.depCity||"", depIATA: f.depIATA||"", depDate: f.depDate||"", depTime: f.depTime||"", arrCity: f.arrCity||"", arrIATA: f.arrIATA||"", arrDate: f.arrDate||"", arrTime: f.arrTime||"", retFlightNo: f.retFlightNo||"", retPnr: f.retPnr||"", retDepCity: f.retDepCity||"", retDepIATA: f.retDepIATA||"", retDepDate: f.retDepDate||"", retDepTime: f.retDepTime||"", retArrCity: f.retArrCity||"", retArrIATA: f.retArrIATA||"", retArrDate: f.retArrDate||"", retArrTime: f.retArrTime||"", hasLayover: !!f.hasLayover, layoverCity: f.layoverCity||"", layoverDuration: f.layoverDuration||"", hasReturnLayover: !!f.hasReturnLayover, returnLayoverCity: f.returnLayoverCity||"", returnLayoverDuration: f.returnLayoverDuration||"", hasOnwardConn: !!f.hasOnwardConn, onwardConnPnr: f.onwardConnPnr||"", onwardConnFlightNo: f.onwardConnFlightNo||"", onwardConnDepCity: f.onwardConnDepCity||"", onwardConnDepIATA: f.onwardConnDepIATA||"", onwardConnDepDate: f.onwardConnDepDate||"", onwardConnDepTime: f.onwardConnDepTime||"", onwardConnArrCity: f.onwardConnArrCity||"", onwardConnArrIATA: f.onwardConnArrIATA||"", onwardConnArrDate: f.onwardConnArrDate||"", onwardConnArrTime: f.onwardConnArrTime||"", onwardConnPax: toN(f.onwardConnPax), onwardConnPrice: toN(f.onwardConnPrice), hasReturnConn: !!f.hasReturnConn, returnConnPnr: f.returnConnPnr||"", returnConnFlightNo: f.returnConnFlightNo||"", returnConnDepCity: f.returnConnDepCity||"", returnConnDepIATA: f.returnConnDepIATA||"", returnConnDepDate: f.returnConnDepDate||"", returnConnDepTime: f.returnConnDepTime||"", returnConnArrCity: f.returnConnArrCity||"", returnConnArrIATA: f.returnConnArrIATA||"", returnConnArrDate: f.returnConnArrDate||"", returnConnArrTime: f.returnConnArrTime||"", returnConnPax: toN(f.returnConnPax), returnConnPrice: toN(f.returnConnPrice) })),
       transfers: tier.transfers.map(t => ({ cab: (toN(t.perDay) > 0 || toN(t.days) > 0) ? t.cab : "", perDay: toN(t.perDay), days: toN(t.days) })),
       miscs:     tier.miscs.filter(m => m.name || m.amount).map(m => ({ name: m.name, amount: toN(m.amount) })),
       margin:    toN(tier.margin),
@@ -1475,16 +1488,62 @@ export default function QuotationBuilder({
 
                   {/* Outbound layover — only for Round Trip (placed between onward and return sections) */}
                   {f.roundTrip && (
-                    <LayoverWidget
-                      label="Outward Layover (after onward leg)"
-                      has={f.hasLayover}
-                      city={f.layoverCity || ""}
-                      dur={f.layoverDuration || ""}
-                      onEnable={() => updArr(setFlights, i, "hasLayover", true)}
-                      onRemove={() => { updArr(setFlights, i, "hasLayover", false); updArr(setFlights, i, "layoverCity", ""); updArr(setFlights, i, "layoverDuration", ""); }}
-                      onCity={v => updArr(setFlights, i, "layoverCity", v)}
-                      onDur={v => updArr(setFlights, i, "layoverDuration", v)}
-                    />
+                    <>
+                      <LayoverWidget
+                        label="Outward Layover (after onward leg)"
+                        has={f.hasLayover}
+                        city={f.layoverCity || ""}
+                        dur={f.layoverDuration || ""}
+                        onEnable={() => updArr(setFlights, i, "hasLayover", true)}
+                        onRemove={() => { updArr(setFlights, i, "hasLayover", false); updArr(setFlights, i, "layoverCity", ""); updArr(setFlights, i, "layoverDuration", ""); }}
+                        onCity={v => updArr(setFlights, i, "layoverCity", v)}
+                        onDur={v => updArr(setFlights, i, "layoverDuration", v)}
+                      />
+                      {f.hasLayover && !f.hasOnwardConn && (
+                        <button
+                          onClick={() => updArr(setFlights, i, "hasOnwardConn", true)}
+                          style={{ marginTop: 8, width: "100%", padding: "9px 0", borderRadius: 8, border: "1.5px dashed #2563EB", background: "#EFF6FF", color: "#2563EB", fontWeight: 700, fontSize: 13, cursor: "pointer" }}
+                        >
+                          ✈ Add Connecting Flight After Outward Layover
+                        </button>
+                      )}
+                      {f.hasLayover && f.hasOnwardConn && (
+                        <div style={{ marginTop: 8, border: "1.5px solid #93C5FD", borderRadius: 10, background: "#F0F7FF", padding: "12px 14px" }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+                            <div style={{ fontSize: 11, fontWeight: 800, color: "#1D4ED8", textTransform: "uppercase", letterSpacing: ".06em" }}>✈ Connecting Onward Flight</div>
+                            <button onClick={() => { updArr(setFlights, i, "hasOnwardConn", false); ["onwardConnPnr","onwardConnFlightNo","onwardConnDepCity","onwardConnDepIATA","onwardConnDepDate","onwardConnDepTime","onwardConnArrCity","onwardConnArrIATA","onwardConnArrDate","onwardConnArrTime","onwardConnPax","onwardConnPrice"].forEach(k => updArr(setFlights, i, k, k.includes("Pax")||k.includes("Price") ? 0 : "")); }} style={{ background: "none", border: "none", color: "#DC2626", fontWeight: 800, fontSize: 15, cursor: "pointer" }}>✕</button>
+                          </div>
+                          <div style={{ ...G2, marginBottom: 10 }}>
+                            <Fl l="PNR (Connecting)"><input style={QS.inp} placeholder="e.g. A1B2C3" value={f.onwardConnPnr||""} onChange={e => updArr(setFlights, i, "onwardConnPnr", e.target.value)} /></Fl>
+                            <Fl l="Flight No. (Connecting)"><input style={QS.inp} placeholder="e.g. AI 202" value={f.onwardConnFlightNo||""} onChange={e => updArr(setFlights, i, "onwardConnFlightNo", e.target.value)} /></Fl>
+                          </div>
+                          <div style={{ ...G2, marginBottom: 10 }}>
+                            <div style={{ border: "1px solid #BFDBFE", borderRadius: 8, padding: "10px 10px 6px" }}>
+                              <div style={{ fontSize: 10, fontWeight: 800, color: "#DC2626", textTransform: "uppercase", marginBottom: 6 }}>✈ Departure</div>
+                              <Fl l="City"><input style={QS.inp} placeholder="e.g. Bangalore" value={f.onwardConnDepCity||""} onChange={e => updArr(setFlights, i, "onwardConnDepCity", e.target.value)} /></Fl>
+                              <div style={{ marginTop: 6 }}><Fl l="IATA"><input style={QS.inp} placeholder="e.g. BLR" value={f.onwardConnDepIATA||""} onChange={e => updArr(setFlights, i, "onwardConnDepIATA", e.target.value)} /></Fl></div>
+                              <div style={{ ...G2, marginTop: 6 }}>
+                                <Fl l="Date"><input type="date" style={QS.inp} value={f.onwardConnDepDate||""} onChange={e => updArr(setFlights, i, "onwardConnDepDate", e.target.value)} /></Fl>
+                                <Fl l="Time"><input style={QS.inp} placeholder="e.g. 14:30 hrs" value={f.onwardConnDepTime||""} onChange={e => updArr(setFlights, i, "onwardConnDepTime", e.target.value)} /></Fl>
+                              </div>
+                            </div>
+                            <div style={{ border: "1px solid #BFDBFE", borderRadius: 8, padding: "10px 10px 6px" }}>
+                              <div style={{ fontSize: 10, fontWeight: 800, color: "#0369A1", textTransform: "uppercase", marginBottom: 6 }}>🛬 Arrival</div>
+                              <Fl l="City"><input style={QS.inp} placeholder="e.g. Delhi" value={f.onwardConnArrCity||""} onChange={e => updArr(setFlights, i, "onwardConnArrCity", e.target.value)} /></Fl>
+                              <div style={{ marginTop: 6 }}><Fl l="IATA"><input style={QS.inp} placeholder="e.g. DEL" value={f.onwardConnArrIATA||""} onChange={e => updArr(setFlights, i, "onwardConnArrIATA", e.target.value)} /></Fl></div>
+                              <div style={{ ...G2, marginTop: 6 }}>
+                                <Fl l="Date"><input type="date" style={QS.inp} value={f.onwardConnArrDate||""} onChange={e => updArr(setFlights, i, "onwardConnArrDate", e.target.value)} /></Fl>
+                                <Fl l="Time"><input style={QS.inp} placeholder="e.g. 16:45 hrs" value={f.onwardConnArrTime||""} onChange={e => updArr(setFlights, i, "onwardConnArrTime", e.target.value)} /></Fl>
+                              </div>
+                            </div>
+                          </div>
+                          <div style={{ ...G2 }}>
+                            <Fl l="Pax"><input type="number" style={QS.inp} placeholder="0" value={f.onwardConnPax||""} onChange={e => updArr(setFlights, i, "onwardConnPax", e.target.value)} /></Fl>
+                            <Fl l="Price Per Pax (₹)"><input type="number" style={QS.inp} placeholder="0" value={f.onwardConnPrice||""} onChange={e => updArr(setFlights, i, "onwardConnPrice", e.target.value)} /></Fl>
+                          </div>
+                        </div>
+                      )}
+                    </>
                   )}
 
                   {f.roundTrip && (
@@ -1545,30 +1604,86 @@ export default function QuotationBuilder({
 
                   {/* Round Trip: return layover (after return leg) */}
                   {f.roundTrip && (
-                    <LayoverWidget
-                      label="Return Layover (after return leg)"
-                      has={f.hasReturnLayover}
-                      city={f.returnLayoverCity || ""}
-                      dur={f.returnLayoverDuration || ""}
-                      onEnable={() => updArr(setFlights, i, "hasReturnLayover", true)}
-                      onRemove={() => { updArr(setFlights, i, "hasReturnLayover", false); updArr(setFlights, i, "returnLayoverCity", ""); updArr(setFlights, i, "returnLayoverDuration", ""); }}
-                      onCity={v => updArr(setFlights, i, "returnLayoverCity", v)}
-                      onDur={v => updArr(setFlights, i, "returnLayoverDuration", v)}
-                    />
+                    <>
+                      <LayoverWidget
+                        label="Return Layover (after return leg)"
+                        has={f.hasReturnLayover}
+                        city={f.returnLayoverCity || ""}
+                        dur={f.returnLayoverDuration || ""}
+                        onEnable={() => updArr(setFlights, i, "hasReturnLayover", true)}
+                        onRemove={() => { updArr(setFlights, i, "hasReturnLayover", false); updArr(setFlights, i, "returnLayoverCity", ""); updArr(setFlights, i, "returnLayoverDuration", ""); }}
+                        onCity={v => updArr(setFlights, i, "returnLayoverCity", v)}
+                        onDur={v => updArr(setFlights, i, "returnLayoverDuration", v)}
+                      />
+                      {f.hasReturnLayover && !f.hasReturnConn && (
+                        <button
+                          onClick={() => updArr(setFlights, i, "hasReturnConn", true)}
+                          style={{ marginTop: 8, width: "100%", padding: "9px 0", borderRadius: 8, border: "1.5px dashed #059669", background: "#ECFDF5", color: "#059669", fontWeight: 700, fontSize: 13, cursor: "pointer" }}
+                        >
+                          ✈ Add Connecting Return Flight After Layover
+                        </button>
+                      )}
+                      {f.hasReturnLayover && f.hasReturnConn && (
+                        <div style={{ marginTop: 8, border: "1.5px solid #6EE7B7", borderRadius: 10, background: "#F0FDF4", padding: "12px 14px" }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+                            <div style={{ fontSize: 11, fontWeight: 800, color: "#065F46", textTransform: "uppercase", letterSpacing: ".06em" }}>✈ Connecting Return Flight</div>
+                            <button onClick={() => { updArr(setFlights, i, "hasReturnConn", false); ["returnConnPnr","returnConnFlightNo","returnConnDepCity","returnConnDepIATA","returnConnDepDate","returnConnDepTime","returnConnArrCity","returnConnArrIATA","returnConnArrDate","returnConnArrTime","returnConnPax","returnConnPrice"].forEach(k => updArr(setFlights, i, k, k.includes("Pax")||k.includes("Price") ? 0 : "")); }} style={{ background: "none", border: "none", color: "#DC2626", fontWeight: 800, fontSize: 15, cursor: "pointer" }}>✕</button>
+                          </div>
+                          <div style={{ ...G2, marginBottom: 10 }}>
+                            <Fl l="PNR (Connecting)"><input style={QS.inp} placeholder="e.g. A1B2C3" value={f.returnConnPnr||""} onChange={e => updArr(setFlights, i, "returnConnPnr", e.target.value)} /></Fl>
+                            <Fl l="Flight No. (Connecting)"><input style={QS.inp} placeholder="e.g. AI 303" value={f.returnConnFlightNo||""} onChange={e => updArr(setFlights, i, "returnConnFlightNo", e.target.value)} /></Fl>
+                          </div>
+                          <div style={{ ...G2, marginBottom: 10 }}>
+                            <div style={{ border: "1px solid #A7F3D0", borderRadius: 8, padding: "10px 10px 6px" }}>
+                              <div style={{ fontSize: 10, fontWeight: 800, color: "#DC2626", textTransform: "uppercase", marginBottom: 6 }}>✈ Departure</div>
+                              <Fl l="City"><input style={QS.inp} placeholder="e.g. Mumbai" value={f.returnConnDepCity||""} onChange={e => updArr(setFlights, i, "returnConnDepCity", e.target.value)} /></Fl>
+                              <div style={{ marginTop: 6 }}><Fl l="IATA"><input style={QS.inp} placeholder="e.g. BOM" value={f.returnConnDepIATA||""} onChange={e => updArr(setFlights, i, "returnConnDepIATA", e.target.value)} /></Fl></div>
+                              <div style={{ ...G2, marginTop: 6 }}>
+                                <Fl l="Date"><input type="date" style={QS.inp} value={f.returnConnDepDate||""} onChange={e => updArr(setFlights, i, "returnConnDepDate", e.target.value)} /></Fl>
+                                <Fl l="Time"><input style={QS.inp} placeholder="e.g. 18:00 hrs" value={f.returnConnDepTime||""} onChange={e => updArr(setFlights, i, "returnConnDepTime", e.target.value)} /></Fl>
+                              </div>
+                            </div>
+                            <div style={{ border: "1px solid #A7F3D0", borderRadius: 8, padding: "10px 10px 6px" }}>
+                              <div style={{ fontSize: 10, fontWeight: 800, color: "#0369A1", textTransform: "uppercase", marginBottom: 6 }}>🛬 Arrival</div>
+                              <Fl l="City"><input style={QS.inp} placeholder="e.g. Lucknow" value={f.returnConnArrCity||""} onChange={e => updArr(setFlights, i, "returnConnArrCity", e.target.value)} /></Fl>
+                              <div style={{ marginTop: 6 }}><Fl l="IATA"><input style={QS.inp} placeholder="e.g. LKO" value={f.returnConnArrIATA||""} onChange={e => updArr(setFlights, i, "returnConnArrIATA", e.target.value)} /></Fl></div>
+                              <div style={{ ...G2, marginTop: 6 }}>
+                                <Fl l="Date"><input type="date" style={QS.inp} value={f.returnConnArrDate||""} onChange={e => updArr(setFlights, i, "returnConnArrDate", e.target.value)} /></Fl>
+                                <Fl l="Time"><input style={QS.inp} placeholder="e.g. 20:30 hrs" value={f.returnConnArrTime||""} onChange={e => updArr(setFlights, i, "returnConnArrTime", e.target.value)} /></Fl>
+                              </div>
+                            </div>
+                          </div>
+                          <div style={{ ...G2 }}>
+                            <Fl l="Pax"><input type="number" style={QS.inp} placeholder="0" value={f.returnConnPax||""} onChange={e => updArr(setFlights, i, "returnConnPax", e.target.value)} /></Fl>
+                            <Fl l="Price Per Pax (₹)"><input type="number" style={QS.inp} placeholder="0" value={f.returnConnPrice||""} onChange={e => updArr(setFlights, i, "returnConnPrice", e.target.value)} /></Fl>
+                          </div>
+                        </div>
+                      )}
+                    </>
                   )}
 
                   {/* One Way: layover after this card (connects to next flight card) */}
                   {!f.roundTrip && (
-                    <LayoverWidget
-                      label="Layover After This Segment"
-                      has={f.hasLayover}
-                      city={f.layoverCity || ""}
-                      dur={f.layoverDuration || ""}
-                      onEnable={() => updArr(setFlights, i, "hasLayover", true)}
-                      onRemove={() => { updArr(setFlights, i, "hasLayover", false); updArr(setFlights, i, "layoverCity", ""); updArr(setFlights, i, "layoverDuration", ""); }}
-                      onCity={v => updArr(setFlights, i, "layoverCity", v)}
-                      onDur={v => updArr(setFlights, i, "layoverDuration", v)}
-                    />
+                    <>
+                      <LayoverWidget
+                        label="Layover After This Segment"
+                        has={f.hasLayover}
+                        city={f.layoverCity || ""}
+                        dur={f.layoverDuration || ""}
+                        onEnable={() => updArr(setFlights, i, "hasLayover", true)}
+                        onRemove={() => { updArr(setFlights, i, "hasLayover", false); updArr(setFlights, i, "layoverCity", ""); updArr(setFlights, i, "layoverDuration", ""); }}
+                        onCity={v => updArr(setFlights, i, "layoverCity", v)}
+                        onDur={v => updArr(setFlights, i, "layoverDuration", v)}
+                      />
+                      {f.hasLayover && (
+                        <button
+                          onClick={() => insertRow(setFlights, i + 1, { ...DEF_FLIGHT })}
+                          style={{ marginTop: 8, width: "100%", padding: "9px 0", borderRadius: 8, border: "1.5px dashed #2563EB", background: "#EFF6FF", color: "#2563EB", fontWeight: 700, fontSize: 13, cursor: "pointer" }}
+                        >
+                          ✈ Add Connecting Flight After Layover
+                        </button>
+                      )}
+                    </>
                   )}
                 </div>
               ))}
