@@ -144,8 +144,10 @@ function fmtDate(v) {
   catch { return v; }
 }
 function fmtCreated(iso) {
+  if (!iso) return "";
   try {
     const d = new Date(iso);
+    if (isNaN(d.getTime())) return "";
     return d.toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })
       + " " + d.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hour12: true }).toUpperCase();
   } catch { return ""; }
@@ -715,40 +717,7 @@ export default function QuotationPreview({ data, id }) {
           </div>
         )}
 
-        {/* Flat price fallback — non-tier quotations; hidden for B2B (price shown in detail section below) */}
-        {selling > 0 && (!useTiers || activeTiers.length === 0) && !isB2B && (() => {
-          const base = (+form.cost || 0) + (+form.margin || 0);
-          const legacyVal = ppSell && leadPax > 0
-            ? Math.round(selling / leadPax)
-            : ppSub && leadPax > 0
-              ? Math.round(base / leadPax)
-              : ppSubTotal
-                ? Math.round(base)
-                : Math.round(selling);
-          const legacyLabel = ppSell && leadPax > 0
-            ? <>Per Person Price <span style={{ fontWeight: 400, fontSize: 14, color: DARK }}>(Incl. Tax)</span></>
-            : ppSub && leadPax > 0
-              ? <>Per Person Price <span style={{ fontWeight: 400, fontSize: 14, color: DARK }}>(Excl. GST)</span></>
-              : ppSubTotal
-                ? <>Total Cost <span style={{ fontWeight: 400, fontSize: 14, color: DARK }}>(Excl. GST)</span></>
-                : isPackage
-                  ? <>Total Package Cost <span style={{ fontWeight: 400, fontSize: 14, color: DARK }}>(Incl. Tax)</span></>
-                  : <>Total Cost Price <span style={{ fontWeight: 400, fontSize: 14, color: DARK }}>(Incl. Tax)</span></>;
-          const legacySuffix = (ppSell || ppSub) && leadPax > 0
-            ? <span style={{ fontSize: 20, color: DARK }}>Per Person</span>
-            : leadPax > 0
-              ? <span style={{ fontSize: 20, color: DARK }}>For {leadPax} {leadPax === 1 ? "Person" : "Persons"}</span>
-              : paxLabel && <span style={{ fontSize: 20, color: DARK }}>For {paxLabel}</span>;
-          return (
-            <div style={{ border: "1px solid #26828D", borderRadius: 12, padding: "16px 22px", marginBottom: 18, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <div style={{ fontSize: 22, fontWeight: 700, color: TEAL }}>{legacyLabel}</div>
-              <div style={{ display: "flex", alignItems: "baseline", gap: 10 }}>
-                <span style={{ fontSize: 34, fontWeight: 900, color: "#26828D" }}>₹ {legacyVal.toLocaleString("en-IN")}</span>
-                {legacySuffix}
-              </div>
-            </div>
-          );
-        })()}
+        {/* Flat price removed from cover — shown in detail section below for all modes */}
 
         {/* Note box — moved to detail section below price for all modes */}
       </div>
@@ -1057,51 +1026,7 @@ export default function QuotationPreview({ data, id }) {
               );
             })}
 
-            {/* Standard/Package: Note below price in tier detail section */}
-            {!isB2B && (
-              <div style={{ marginTop: 8, border: "1px solid #ddd", borderRadius: 10, padding: "14px 18px", background: "#F3FDFF" }}>
-                <div style={{ fontSize: 13, color: DARK, lineHeight: 1.75 }}>
-                  <strong>Note:</strong>{" "}
-                  This is a tentative and estimated quote and may vary based on selected hotels, inclusions, and customizations. Our Travel Expert will assist with any modifications.
-                </div>
-              </div>
-            )}
-
-            {/* B2B: price + note at end of tier detail section */}
-            {isB2B && selling > 0 && (() => {
-              // B2B stores pp* flags per-tier (in pkgTiers["Economy"]), NOT on form
-              const b2bTier   = (dataTiers.length > 0 ? pkgTiers[dataTiers[0]] : null) || pkgTiers["Economy"] || {};
-              const ppSellB   = b2bTier.ppSellEnabled     || false;
-              const ppSubB    = b2bTier.ppSubEnabled      || false;
-              const ppSubTotalB = b2bTier.ppSubTotalEnabled || false;
-              const gstRate   = (+form.gstPct || 5) / 100;
-              const base      = Math.round(selling / (1 + gstRate)); // excl. GST
-              const gstWord   = (ppSubB || ppSubTotalB) ? "Excl. GST" : "Incl. GST";
-              const dispVal   = ppSellB && leadPax > 0 ? Math.round(selling / leadPax)
-                : ppSubB   && leadPax > 0 ? Math.round(base / leadPax)
-                : ppSubTotalB              ? base
-                : Math.round(selling);
-              const showPP    = (ppSellB || ppSubB) && leadPax > 0;
-              return (
-                <div style={{ marginTop: 16 }}>
-                  <div style={{ border: `1px solid ${TEAL_BORDER}`, borderRadius: 10, padding: "14px 18px", background: "transparent", marginBottom: 12 }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <div style={{ fontSize: 14, fontWeight: 700, color: TEAL }}>Total Package Cost ({gstWord})</div>
-                      <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
-                        <span style={{ fontSize: 20, fontWeight: 900, color: DARK }}>₹ {dispVal.toLocaleString("en-IN")}/-</span>
-                        {showPP && <span style={{ fontSize: 13, fontWeight: 600, color: "#555" }}>Per Person</span>}
-                      </div>
-                    </div>
-                  </div>
-                  <div style={{ border: "1px solid #ddd", borderRadius: 10, padding: "14px 18px", background: "#F3FDFF" }}>
-                    <div style={{ fontSize: 13, color: DARK, lineHeight: 1.75 }}>
-                      <strong>Note:</strong>{" "}
-                      This is a tentative and estimated quote and may vary based on selected hotels, inclusions, and customizations. Our Travel Expert will assist with any modifications.
-                    </div>
-                  </div>
-                </div>
-              );
-            })()}
+            {/* Price + Note moved to unified block below Inclusions & Exclusions */}
 
           </div>
         </div>
@@ -1195,51 +1120,7 @@ export default function QuotationPreview({ data, id }) {
               </div>
             )}
 
-            {/* Standard/Package: Note below price in legacy detail section */}
-            {!isB2B && (
-              <div style={{ marginTop: 8, border: "1px solid #ddd", borderRadius: 10, padding: "14px 18px", background: "#F3FDFF" }}>
-                <div style={{ fontSize: 13, color: DARK, lineHeight: 1.75 }}>
-                  <strong>Note:</strong>{" "}
-                  This is a tentative and estimated quote and may vary based on selected hotels, inclusions, and customizations. Our Travel Expert will assist with any modifications.
-                </div>
-              </div>
-            )}
-
-            {/* B2B: price + note at end of detail section, above Inclusions */}
-            {isB2B && selling > 0 && (() => {
-              // B2B stores pp* flags per-tier (pkgTiers["Economy"]), NOT on form
-              const b2bTier     = pkgTiers["Economy"] || {};
-              const ppSellB     = b2bTier.ppSellEnabled     || false;
-              const ppSubB      = b2bTier.ppSubEnabled      || false;
-              const ppSubTotalB = b2bTier.ppSubTotalEnabled || false;
-              const gstRate     = (+form.gstPct || 5) / 100;
-              const base        = Math.round(selling / (1 + gstRate)); // excl. GST
-              const gstWord     = (ppSubB || ppSubTotalB) ? "Excl. GST" : "Incl. GST";
-              const dispVal     = ppSellB && leadPax > 0 ? Math.round(selling / leadPax)
-                : ppSubB   && leadPax > 0 ? Math.round(base / leadPax)
-                : ppSubTotalB              ? base
-                : Math.round(selling);
-              const showPP      = (ppSellB || ppSubB) && leadPax > 0;
-              return (
-                <div style={{ marginTop: 16 }}>
-                  <div style={{ border: `1px solid ${TEAL_BORDER}`, borderRadius: 10, padding: "14px 18px", background: "transparent", marginBottom: 12 }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <div style={{ fontSize: 14, fontWeight: 700, color: TEAL }}>Total Package Cost ({gstWord})</div>
-                      <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
-                        <span style={{ fontSize: 20, fontWeight: 900, color: DARK }}>₹ {dispVal.toLocaleString("en-IN")}/-</span>
-                        {showPP && <span style={{ fontSize: 13, fontWeight: 600, color: "#555" }}>Per Person</span>}
-                      </div>
-                    </div>
-                  </div>
-                  <div style={{ border: "1px solid #ddd", borderRadius: 10, padding: "14px 18px", background: "#F3FDFF" }}>
-                    <div style={{ fontSize: 13, color: DARK, lineHeight: 1.75 }}>
-                      <strong>Note:</strong>{" "}
-                      This is a tentative and estimated quote and may vary based on selected hotels, inclusions, and customizations. Our Travel Expert will assist with any modifications.
-                    </div>
-                  </div>
-                </div>
-              );
-            })()}
+            {/* Price + Note moved to unified block below Inclusions & Exclusions */}
 
           </div>
         </div>
@@ -1265,6 +1146,47 @@ export default function QuotationPreview({ data, id }) {
           </div>
         </div>
       )}
+
+      {/* ══════════════════════════════
+          PRICE + NOTE — ALL MODES
+      ══════════════════════════════ */}
+      {selling > 0 && (() => {
+        // Determine pp* flags by mode
+        const tierForPP   = !isPackage ? (pkgTiers["Economy"] || {}) : form;
+        const ppSellF     = tierForPP.ppSellEnabled     || false;
+        const ppSubF      = tierForPP.ppSubEnabled      || false;
+        const ppSubTotalF = tierForPP.ppSubTotalEnabled || false;
+        const gstRate     = (+form.gstPct || 5) / 100;
+        const base        = Math.round(selling / (1 + gstRate));
+        const gstWord     = (ppSubF || ppSubTotalF) ? "Excl. GST" : "Incl. GST";
+        const dispVal     = ppSellF && leadPax > 0 ? Math.round(selling / leadPax)
+          : ppSubF   && leadPax > 0 ? Math.round(base / leadPax)
+          : ppSubTotalF              ? base
+          : Math.round(selling);
+        const showPP      = (ppSellF || ppSubF) && leadPax > 0;
+        return (
+          <div data-pdf-section="true">
+            <MiniHeader />
+            <div style={{ padding: "28px 32px" }}>
+              <div style={{ border: `1px solid ${TEAL_BORDER}`, borderRadius: 10, padding: "14px 18px", background: "transparent", marginBottom: 12 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: TEAL }}>Total Package Cost ({gstWord})</div>
+                  <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+                    <span style={{ fontSize: 20, fontWeight: 900, color: DARK }}>₹ {dispVal.toLocaleString("en-IN")}/-</span>
+                    {showPP && <span style={{ fontSize: 13, fontWeight: 600, color: "#555" }}>Per Person</span>}
+                  </div>
+                </div>
+              </div>
+              <div style={{ border: "1px solid #ddd", borderRadius: 10, padding: "14px 18px", background: "#F3FDFF" }}>
+                <div style={{ fontSize: 13, color: DARK, lineHeight: 1.75 }}>
+                  <strong>Note:</strong>{" "}
+                  This is a tentative and estimated quote and may vary based on selected hotels, inclusions, and customizations. Our Travel Expert will assist with any modifications.
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* ══════════════════════════════
           IMPORTANT NOTES
