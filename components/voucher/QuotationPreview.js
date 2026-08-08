@@ -350,39 +350,81 @@ function Pill({ label }) {
   );
 }
 
+/* ── Layover banner ─────────────────────────── */
+function LayoverBanner({ city, duration }) {
+  return (
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", margin: "8px 0", padding: "9px 14px", background: "#F3FDFF", borderRadius: 8, fontSize: 12 }}>
+      <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+        {/* Clock icon */}
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#26828D" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+        </svg>
+        <span style={{ color: "#111", fontWeight: 500 }}>Layover in <strong style={{ fontWeight: 700 }}>{city}</strong></span>
+      </span>
+      {duration && (
+        <span style={{ fontSize: 12 }}>
+          <span style={{ color: "#9CA3AF", fontWeight: 400 }}>Duration: </span>
+          <span style={{ color: "#111", fontWeight: 700 }}>{duration}</span>
+        </span>
+      )}
+    </div>
+  );
+}
+
+/* ── Section label (Connecting Onward / Return) ── */
+function FlightSectionLabel({ text, isReturn }) {
+  const icon = isReturn
+    ? (
+      /* Return circular arrow */
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#26828D" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/>
+      </svg>
+    )
+    : (
+      /* Plane icon */
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="#26828D">
+        <path d="M21 16V14L13 9V3.5C13 2.67 12.33 2 11.5 2S10 2.67 10 3.5V9L2 14V16L10 13.5V19L8 20.5V22L11.5 21 15 22V20.5L13 19V13.5Z"/>
+      </svg>
+    );
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12, fontWeight: 700, color: "#26828D", margin: "10px 0 4px" }}>
+      {icon}
+      <span>{text}</span>
+    </div>
+  );
+}
+
 /* Single flight segment row (dep → arr); reverse=true flips arrow ←── for return legs */
 function SegmentRow({ depCity, depFrom, depIATA, depDate, depTime, arrCity, arrTo, arrIATA, arrDate, arrTime, flightNo, accent, reverse }) {
-  const bg      = accent === "blue" ? "#EFF6FF" : "#F5FBFB";
-  const border  = accent === "blue" ? "1px solid #93C5FD" : `1px solid ${TEAL_BORDER}`;
-  const clr     = accent === "blue" ? "#1D4ED8" : TEAL;
+  const arrowClr = "#E0E0E0";
   const arrow = reverse
     ? <>
-        <div style={{ width: 0, height: 0, borderTop: "5px solid transparent", borderBottom: "5px solid transparent", borderRight: `8px solid ${clr}`, flexShrink: 0 }} />
-        <div style={{ flex: 1, height: 2, background: clr }} />
-        <div style={{ width: 8, height: 8, borderRadius: "50%", background: clr, flexShrink: 0 }} />
+        <div style={{ width: 0, height: 0, borderTop: "5px solid transparent", borderBottom: "5px solid transparent", borderRight: `8px solid ${arrowClr}`, flexShrink: 0 }} />
+        <div style={{ flex: 1, height: 1.5, background: arrowClr }} />
+        <div style={{ width: 6, height: 6, borderRadius: "50%", background: arrowClr, flexShrink: 0 }} />
       </>
     : <>
-        <div style={{ width: 8, height: 8, borderRadius: "50%", background: clr, flexShrink: 0 }} />
-        <div style={{ flex: 1, height: 2, background: clr }} />
-        <div style={{ width: 0, height: 0, borderTop: "5px solid transparent", borderBottom: "5px solid transparent", borderLeft: `8px solid ${clr}`, flexShrink: 0 }} />
+        <div style={{ width: 6, height: 6, borderRadius: "50%", background: arrowClr, flexShrink: 0 }} />
+        <div style={{ flex: 1, height: 1.5, background: arrowClr }} />
+        <div style={{ width: 0, height: 0, borderTop: "5px solid transparent", borderBottom: "5px solid transparent", borderLeft: `8px solid ${arrowClr}`, flexShrink: 0 }} />
       </>;
+  const depStr = [depDate ? fmtDate(depDate) : "", depTime].filter(Boolean).join(" ");
+  const arrStr = [arrDate ? fmtDate(arrDate) : "", arrTime].filter(Boolean).join(" ");
   return (
-    <div style={{ display: "flex", alignItems: "center", background: bg, border, borderRadius: 8, padding: "12px 16px" }}>
+    <div style={{ display: "flex", alignItems: "center", padding: "8px 2px" }}>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: 14, fontWeight: 800, color: DARK }}>{depCity || depFrom || "—"}</div>
-        {depIATA && <div style={{ fontSize: 11, color: "#888" }}>({depIATA})</div>}
-        {(depDate) && <div style={{ fontSize: 11, color: "#555", marginTop: 3 }}>{fmtDate(depDate)}</div>}
-        {depTime && <div style={{ fontSize: 12, fontWeight: 700, color: clr, marginTop: 2 }}>{depTime}</div>}
+        <div style={{ fontSize: 15, fontWeight: 800, color: DARK }}>{depCity || depFrom || "—"}</div>
+        {depIATA && <div style={{ fontSize: 11, color: "#9CA3AF", marginTop: 1 }}>({depIATA})</div>}
+        {depStr  && <div style={{ fontSize: 11, color: "#6B7280", marginTop: 3 }}>{depStr}</div>}
       </div>
-      <div style={{ flex: 1, textAlign: "center", padding: "0 8px" }}>
-        {flightNo && <div style={{ fontSize: 11, color: "#666", marginBottom: 4 }}>{flightNo}</div>}
+      <div style={{ flex: "0 0 130px", textAlign: "center", padding: "0 10px" }}>
+        {flightNo && <div style={{ fontSize: 11, color: "#6B7280", marginBottom: 5 }}>{flightNo}</div>}
         <div style={{ display: "flex", alignItems: "center" }}>{arrow}</div>
       </div>
       <div style={{ flex: 1, minWidth: 0, textAlign: "right" }}>
-        <div style={{ fontSize: 14, fontWeight: 800, color: DARK }}>{arrCity || arrTo || "—"}</div>
-        {arrIATA && <div style={{ fontSize: 11, color: "#888" }}>({arrIATA})</div>}
-        {arrDate && <div style={{ fontSize: 11, color: "#555", marginTop: 3 }}>{fmtDate(arrDate)}</div>}
-        {arrTime && <div style={{ fontSize: 12, fontWeight: 700, color: clr, marginTop: 2 }}>{arrTime}</div>}
+        <div style={{ fontSize: 15, fontWeight: 800, color: DARK }}>{arrCity || arrTo || "—"}</div>
+        {arrIATA && <div style={{ fontSize: 11, color: "#9CA3AF", marginTop: 1 }}>({arrIATA})</div>}
+        {arrStr  && <div style={{ fontSize: 11, color: "#6B7280", marginTop: 3 }}>{arrStr}</div>}
       </div>
     </div>
   );
@@ -391,19 +433,8 @@ function SegmentRow({ depCity, depFrom, depIATA, depDate, depTime, arrCity, arrT
 function FlightCard({ f }) {
   const hasReturnDetail = f.roundTrip && (f.retDepCity || f.retArrCity || f.retDepDate || f.retArrDate);
   return (
-    <div style={{ marginBottom: 12 }}>
-      {/* Outbound meta row */}
-      {(f.pnr || f.flightNo) && (
-        <div style={{ display: "flex", gap: 20, marginBottom: 4, fontSize: 12, color: "#444" }}>
-          {f.pnr     && <span><strong>PNR:</strong> <span style={{ fontWeight: 800, letterSpacing: 1, color: DARK }}>{f.pnr}</span></span>}
-          {f.flightNo && <span><strong>Flight:</strong> {f.flightNo}</span>}
-          <span style={{ marginLeft: "auto" }}>{f.roundTrip ? "Round Trip" : "One-way"} · {f.pax || "—"} Pax</span>
-        </div>
-      )}
-      {/* Outbound segment label (only when return leg has details) */}
-      {hasReturnDetail && (
-        <div style={{ fontSize: 10, fontWeight: 800, color: "#DC2626", textTransform: "uppercase", letterSpacing: ".05em", marginBottom: 4 }}>✈ Onward</div>
-      )}
+    <div style={{ marginBottom: 8 }}>
+      {/* Outward segment */}
       <SegmentRow
         depCity={f.depCity} depFrom={f.from} depIATA={f.depIATA}
         depDate={f.depDate || f.date} depTime={f.depTime}
@@ -411,24 +442,14 @@ function FlightCard({ f }) {
         arrDate={f.arrDate} arrTime={f.arrTime}
         flightNo={f.flightNo}
       />
-      {/* Onward layover (round-trip only — between onward and return legs) */}
+      {/* Onward layover */}
       {f.roundTrip && f.hasLayover && f.layoverCity && (
-        <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "6px 0", padding: "7px 14px", background: "#FFFBEB", border: "1px solid #FDE68A", borderRadius: 8, fontSize: 12, color: "#92400E", fontWeight: 600 }}>
-          <span>🕐 Layover in <strong>{f.layoverCity}</strong></span>
-          {f.layoverDuration && <span style={{ marginLeft: "auto", fontWeight: 700, color: "#B45309" }}>Duration: {f.layoverDuration}</span>}
-        </div>
+        <LayoverBanner city={f.layoverCity} duration={f.layoverDuration} />
       )}
-      {/* Connecting onward flight (after outward layover, before return leg) */}
+      {/* Connecting onward flight */}
       {f.roundTrip && f.hasOnwardConn && f.onwardConnDepCity && (
         <>
-          <div style={{ fontSize: 10, fontWeight: 800, color: "#2563EB", textTransform: "uppercase", letterSpacing: ".05em", margin: "6px 0 4px" }}>✈ Connecting Onward Flight</div>
-          {(f.onwardConnPnr || f.onwardConnFlightNo) && (
-            <div style={{ display: "flex", gap: 16, marginBottom: 4, fontSize: 12, color: "#444" }}>
-              {f.onwardConnPnr     && <span><strong>PNR:</strong> <span style={{ fontWeight: 800, letterSpacing: 1, color: DARK }}>{f.onwardConnPnr}</span></span>}
-              {f.onwardConnFlightNo && <span><strong>Flight:</strong> {f.onwardConnFlightNo}</span>}
-              {f.onwardConnPax > 0  && <span style={{ marginLeft: "auto" }}>{f.onwardConnPax} Pax</span>}
-            </div>
-          )}
+          <FlightSectionLabel text="Connecting Onward Flight" />
           <SegmentRow
             depCity={f.onwardConnDepCity} depIATA={f.onwardConnDepIATA}
             depDate={f.onwardConnDepDate} depTime={f.onwardConnDepTime}
@@ -438,17 +459,10 @@ function FlightCard({ f }) {
           />
         </>
       )}
-      {/* Return leg (round trip with full details) */}
+      {/* Return leg */}
       {hasReturnDetail && (
         <>
-          {(f.retPnr || f.retFlightNo) && (
-            <div style={{ display: "flex", gap: 20, marginTop: 10, marginBottom: 4, fontSize: 12, color: "#444" }}>
-              {f.retPnr    && <span><strong>PNR:</strong> <span style={{ fontWeight: 800, letterSpacing: 1, color: DARK }}>{f.retPnr}</span></span>}
-              {f.retFlightNo && <span><strong>Flight:</strong> {f.retFlightNo}</span>}
-              <span style={{ marginLeft: "auto" }}>Return · {f.pax || "—"} Pax</span>
-            </div>
-          )}
-          <div style={{ fontSize: 10, fontWeight: 800, color: "#1D4ED8", textTransform: "uppercase", letterSpacing: ".05em", marginBottom: 4, marginTop: 8 }}>🔁 Return</div>
+          <FlightSectionLabel text="Return" isReturn />
           <SegmentRow
             depCity={f.retDepCity} depIATA={f.retDepIATA}
             depDate={f.retDepDate} depTime={f.retDepTime}
@@ -456,24 +470,14 @@ function FlightCard({ f }) {
             arrDate={f.retArrDate} arrTime={f.retArrTime}
             flightNo={f.retFlightNo} accent="blue" reverse
           />
-          {/* Return layover (after return leg) */}
+          {/* Return layover */}
           {f.hasReturnLayover && f.returnLayoverCity && (
-            <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "6px 0 0", padding: "7px 14px", background: "#FFFBEB", border: "1px solid #FDE68A", borderRadius: 8, fontSize: 12, color: "#92400E", fontWeight: 600 }}>
-              <span>🕐 Layover in <strong>{f.returnLayoverCity}</strong></span>
-              {f.returnLayoverDuration && <span style={{ marginLeft: "auto", fontWeight: 700, color: "#B45309" }}>Duration: {f.returnLayoverDuration}</span>}
-            </div>
+            <LayoverBanner city={f.returnLayoverCity} duration={f.returnLayoverDuration} />
           )}
-          {/* Connecting return flight (after return layover) */}
+          {/* Connecting return flight */}
           {f.hasReturnConn && f.returnConnDepCity && (
             <>
-              <div style={{ fontSize: 10, fontWeight: 800, color: "#065F46", textTransform: "uppercase", letterSpacing: ".05em", margin: "6px 0 4px" }}>✈ Connecting Return Flight</div>
-              {(f.returnConnPnr || f.returnConnFlightNo) && (
-                <div style={{ display: "flex", gap: 16, marginBottom: 4, fontSize: 12, color: "#444" }}>
-                  {f.returnConnPnr     && <span><strong>PNR:</strong> <span style={{ fontWeight: 800, letterSpacing: 1, color: DARK }}>{f.returnConnPnr}</span></span>}
-                  {f.returnConnFlightNo && <span><strong>Flight:</strong> {f.returnConnFlightNo}</span>}
-                  {f.returnConnPax > 0  && <span style={{ marginLeft: "auto" }}>{f.returnConnPax} Pax</span>}
-                </div>
-              )}
+              <FlightSectionLabel text="Connecting Return Flight" />
               <SegmentRow
                 depCity={f.returnConnDepCity} depIATA={f.returnConnDepIATA}
                 depDate={f.returnConnDepDate} depTime={f.returnConnDepTime}
@@ -652,7 +656,7 @@ export default function QuotationPreview({ data, id }) {
         </div>
 
         {/* Highlights */}
-        <div style={{ marginBottom: 22 }}>
+        <div style={{ marginBottom: 16 }}>
           <div style={{ fontSize: 16, fontWeight: 700, color: DARK, marginBottom: 12 }}>Highlights</div>
           <div>
             {showHL("hotel")    && <Pill iconKey="hotel"    label={labelHL("hotel",    "Hotel")} />}
@@ -660,6 +664,13 @@ export default function QuotationPreview({ data, id }) {
             {showHL("transfer") && <Pill iconKey="transfer" label={labelHL("transfer", "Transfers")} />}
             {showHL("meals")    && <Pill iconKey="meals"    label={labelHL("meals",    "Selected Meals Included")} />}
             {showHL("flight")   && <Pill iconKey="flight"   label={labelHL("flight",   "Flights")} />}
+          </div>
+        </div>
+
+        {/* CTA Banner — below Highlights on cover page */}
+        <div style={{ marginBottom: 8 }}>
+          <div data-pdf-link="https://tourwatchout.com/contact-us" style={{ display: "block", cursor: "pointer" }}>
+            <img src="/assets/icons/quotation/cta.png" alt="Get a Callback" crossOrigin="anonymous" style={{ width: "100%", borderRadius: 12, display: "block" }} />
           </div>
         </div>
 
@@ -962,10 +973,7 @@ export default function QuotationPreview({ data, id }) {
                             <FlightCard f={f} />
                             {/* One-way inter-card layover (round-trip layovers are rendered inside FlightCard) */}
                             {!f.roundTrip && f.hasLayover && f.layoverCity && (
-                              <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "4px 0 10px", padding: "7px 14px", background: "#FFFBEB", border: "1px solid #FDE68A", borderRadius: 8, fontSize: 12, color: "#92400E", fontWeight: 600 }}>
-                                <span>🕐 Layover in <strong>{f.layoverCity}</strong></span>
-                                {f.layoverDuration && <span style={{ marginLeft: "auto", fontWeight: 700, color: "#B45309" }}>Duration: {f.layoverDuration}</span>}
-                              </div>
+                              <LayoverBanner city={f.layoverCity} duration={f.layoverDuration} />
                             )}
                           </div>
                         ))}
@@ -1097,10 +1105,7 @@ export default function QuotationPreview({ data, id }) {
                     <div key={fi}>
                       <FlightCard f={f} />
                       {f.hasLayover && f.layoverCity && (
-                        <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "4px 0 10px", padding: "7px 14px", background: "#FFFBEB", border: "1px solid #FDE68A", borderRadius: 8, fontSize: 12, color: "#92400E", fontWeight: 600 }}>
-                          <span>🕐 Layover in <strong>{f.layoverCity}</strong></span>
-                          {f.layoverDuration && <span style={{ marginLeft: "auto", fontWeight: 700, color: "#B45309" }}>Duration: {f.layoverDuration}</span>}
-                        </div>
+                        <LayoverBanner city={f.layoverCity} duration={f.layoverDuration} />
                       )}
                     </div>
                   ))}
@@ -1188,9 +1193,7 @@ export default function QuotationPreview({ data, id }) {
         );
       })()}
 
-      {/* ══════════════════════════════
-          IMPORTANT NOTES
-      ══════════════════════════════ */}
+      {/* IMPORTANT NOTES */}
       {form.notes && (
         <div data-pdf-section="true">
           <MiniHeader />
@@ -1201,13 +1204,6 @@ export default function QuotationPreview({ data, id }) {
           </div>
         </div>
       )}
-
-      {/* CTA Banner */}
-      <div style={{ padding: "0 32px 24px" }}>
-        <div data-pdf-link="https://tourwatchout.com/contact-us" style={{ display: "block", cursor: "pointer" }}>
-          <img src="/assets/icons/quotation/cta.png" alt="Get a Callback" crossOrigin="anonymous" style={{ width: "100%", borderRadius: 12, display: "block" }} />
-        </div>
-      </div>
 
       {/* ══════════════════════════════
           HOW TO BOOK
