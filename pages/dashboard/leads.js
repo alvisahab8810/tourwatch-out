@@ -30,7 +30,7 @@ const SCORE_QS = [
   "Has the customer shared specific requirements like hotel category, pax or sightseeing?",
 ];
 const EMPTY_BRR = { adults: 1, children: 0, childAge1: "", childAge2: "", duration: "", tripDate: "", mealPlan: "C.P.", flight: false, train: false, transfers: false, sightseeing: false, hotelCategory: "Deluxe", budgetRange: "", notes: "" };
-const EMPTY_LEAD = { name: "", phone: "", email: "", destination: "", travelDate: "", pax: "", message: "", budgetBracket: "", source: "" };
+const EMPTY_LEAD = { name: "", phone: "", email: "", destination: "", travelDate: "", pax: "", message: "", budgetBracket: "", source: "", tripType: "Domestic" };
 
 function parsePax(pax = "") {
   const adultM  = pax.match(/(\d+)\s*(?:adult|adults)/i);
@@ -490,6 +490,23 @@ export default function LeadsPage() {
           <div style={{ ...S.modal, maxWidth: 620 }}>
             <div style={S.modalHead}><h3 style={S.modalTitle}>Add New Lead</h3><button style={S.modalX} onClick={() => !addSaving && setShowAdd(false)}>✕</button></div>
             <div style={S.modalBody}>
+              {/* Trip type toggle */}
+              <div style={{ marginBottom: 16 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: "#6B7A99", letterSpacing: ".06em", textTransform: "uppercase", marginBottom: 8 }}>Where is this trip going?</div>
+                <div style={{ display: "flex", gap: 10 }}>
+                  {["Domestic", "International"].map(opt => {
+                    const active = addForm.tripType === opt;
+                    return (
+                      <button key={opt} type="button"
+                        onClick={() => setAddForm(f => ({ ...f, tripType: opt }))}
+                        style={{ flex: 1, padding: "10px 0", border: `2px solid ${active ? "#2563EB" : "#E2E8F0"}`, borderRadius: 10, background: active ? "#EFF4FF" : "#fff", color: active ? "#2563EB" : "#64748B", fontWeight: active ? 700 : 500, fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, transition: ".15s" }}>
+                        <span>{opt === "Domestic" ? "🇮🇳" : "🌍"}</span>
+                        <span>{opt}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 14 }}>
                 <Field label="Full Name *"><input style={S.inp} placeholder="Rajesh Kumar" value={addForm.name} onChange={e => setAddForm(f => ({ ...f, name: e.target.value }))} /></Field>
                 <Field label="Phone *">

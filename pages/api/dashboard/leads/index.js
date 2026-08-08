@@ -53,7 +53,7 @@ export default async function handler(req, res) {
 
     const { name, email, phone, destination, travelDate, pax, message, formType,
             source, medium, campaign, adset, adContent, campaignId, budgetBracket,
-            fbc, fbp } = body;
+            tripType, fbc, fbp } = body;
 
     if (!name?.trim())    return res.status(400).json({ error: "validation", message: "Name is required." });
     if (!email?.trim())   return res.status(400).json({ error: "validation", message: "Email is required." });
@@ -78,6 +78,7 @@ export default async function handler(req, res) {
       message:       message?.trim()     || "",
       formType:      adminCreate ? "Manual" : (formType || "Popup Form"),
       budgetBracket: budgetBracket?.trim() || "",
+      tripType:      tripType === "International" ? "International" : "Domestic",
       isManual:      !!adminCreate,
       source, medium, campaign, adset, adContent, campaignId,
       fbc:       fbc       || req.cookies?._fbc || "",

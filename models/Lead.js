@@ -60,6 +60,8 @@ const LeadSchema = new mongoose.Schema(
     fbp:       { type: String, default: "" },
     clientIp:  { type: String, default: "" },
     userAgent: { type: String, default: "" },
+    // Trip type
+    tripType: { type: String, enum: ["Domestic", "International"], default: "Domestic" },
     // CRM fields
     connects: { type: Number, default: 0 },
     score:    { type: ScoreSchema, default: null },
