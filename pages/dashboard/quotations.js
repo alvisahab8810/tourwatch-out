@@ -353,7 +353,10 @@ export default function QuotationsPage() {
       {/* Toolbar row */}
       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
         <input style={S.searchInp} placeholder="Search by name, destination, quote ID…" value={search} onChange={e => setSearch(e.target.value)} />
-        <button style={{ ...S.newBtn, marginLeft: "auto", whiteSpace: "nowrap" }} onClick={() => setNewStep({ leadId: qualifiedLeads[0]?._id || "", type: "Domestic", pkgMode: "Complete Package" })}>
+        <button style={{ ...S.newBtn, marginLeft: "auto", whiteSpace: "nowrap" }} onClick={() => {
+          const firstLead = qualifiedLeads[0];
+          setNewStep({ leadId: firstLead?._id || "", type: firstLead?.tripType || "Domestic", pkgMode: "Complete Package" });
+        }}>
           ＋ New Quotation
         </button>
       </div>
@@ -617,7 +620,10 @@ export default function QuotationsPage() {
             <div style={{ padding: 22 }}>
               <div style={{ marginBottom: 18 }}>
                 <label style={S.lbl}>Select Lead (Qualified)</label>
-                <select style={S.inp} value={newStep.leadId} onChange={e => setNewStep(p => ({ ...p, leadId: e.target.value }))}>
+                <select style={S.inp} value={newStep.leadId} onChange={e => {
+                  const sel = leads.find(l => l._id === e.target.value);
+                  setNewStep(p => ({ ...p, leadId: e.target.value, type: sel?.tripType || p.type }));
+                }}>
                   <option value="">— Select a qualified lead —</option>
                   {qualifiedLeads.map(l => <option key={l._id} value={l._id}>{l.name} · {l.destination} · {leadIdMap[l._id]}</option>)}
                 </select>

@@ -1857,6 +1857,16 @@ export default function QuotationBuilder({
                 🔒 Company Side · Internal Only, never printed on the customer PDF
               </div>
               <div style={{ background: "#fff", padding: 14 }}>
+                {/* Trip type toggle — Domestic / International (controls TCS) */}
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: "#6B7A99", textTransform: "uppercase", letterSpacing: ".05em", flexShrink: 0 }}>Trip Type:</span>
+                  {["Domestic", "International"].map(t => (
+                    <button key={t} type="button" onClick={() => upd("type", t)}
+                      style={{ padding: "4px 12px", border: `1.5px solid ${form.type === t ? "#2563EB" : "#E2E8F0"}`, borderRadius: 7, background: form.type === t ? "#EFF4FF" : "#fff", color: form.type === t ? "#2563EB" : "#64748B", fontWeight: form.type === t ? 700 : 500, fontSize: 12, cursor: "pointer", transition: ".12s" }}>
+                      {t === "Domestic" ? "🇮🇳" : "🌍"} {t}
+                    </button>
+                  ))}
+                </div>
                 <div style={{ display: "grid", gridTemplateColumns: `repeat(${intl ? 4 : 3}, 1fr)`, gap: 12, marginBottom: 14 }}>
                   <Fl l="Cost Price (₹) — auto from components"><input type="number" style={{ ...QS.inp, background: "#F0FDF4", fontWeight: 700 }} value={form.cost} onChange={e => upd("cost", e.target.value)} /></Fl>
                   <Fl l={`Margin (₹)${tierSuffix}`}><input type="number" style={QS.inp} value={tierMargin} onChange={e => setTierMargin(e.target.value)} /></Fl>
