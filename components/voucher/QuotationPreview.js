@@ -891,13 +891,13 @@ export default function QuotationPreview({ data, id }) {
               const tTransfers= (tier.transfers|| []).filter(t => t.cab && (+t.perDay > 0 || +t.days > 0));
               const tMiscs    = (tier.miscs    || []).filter(m => m.name);
               // B2B: hotel/flight prices aren't stored per-tier (no price fields in B2B forms),
-              // so calcTierCost returns 0. Instead, use Company Side cost (form.cost) + tier margin.
+              // so calcTierCost returns 0. Instead, use per-tier cost (tier.cost, fallback to form.cost) + tier margin.
               const tierBase  = isB2B
-                ? (() => { const cost = +form.cost || 0; const mgn = +tier.margin || 0; return cost + mgn; })()
+                ? (() => { const cost = +tier.cost || +form.cost || 0; const mgn = +tier.margin || 0; return cost + mgn; })()
                 : calcTierBase(tier, form);
               const tierSell  = isB2B
                 ? (() => {
-                    const cost = +form.cost || 0; const mgn = +tier.margin || 0;
+                    const cost = +tier.cost || +form.cost || 0; const mgn = +tier.margin || 0;
                     const base = cost + mgn;
                     const gst  = base * (+form.gstPct || 0) / 100;
                     const tcs  = intl ? (base + gst) * (+form.tcsPct || 0) / 100 : 0;

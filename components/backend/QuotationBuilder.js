@@ -96,6 +96,7 @@ const DEF_PKG = () => ({
   transfers: [{ ...DEF_TRANSFER }],
   miscs: [],
   margin: 0,
+  cost: 0,
 });
 
 function normHotels(arr) {
@@ -252,6 +253,7 @@ function initArrays(initialData, lead) {
           transfers: d.transfers?.length ? [...d.transfers] : [{ ...DEF_TRANSFER }],
           miscs:     d.miscs?.length     ? [...d.miscs]     : [],
           margin:    d.margin !== undefined ? d.margin : fallbackMargin,
+          cost:      d.cost !== undefined ? d.cost : (lbl === "Economy" ? (+initialData.cost || 0) : 0),
           ppSubEnabled:      d.ppSubEnabled      || false,
           ppSubTotalEnabled: d.ppSubTotalEnabled || false,
           ppSellEnabled:     d.ppSellEnabled     || false,
@@ -330,6 +332,7 @@ export default function QuotationBuilder({
 
   const [form,      setForm]      = useState(baseForm);
   const [activePkg, setActivePkg] = useState("Economy");
+  const activePkgRef = useRef("Economy");           // always-current ref avoids stale closures
   const [pkgTiers,  setPkgTiers]  = useState(arrInit.pkgTiers);
 
   // Proxy access — always read/write the active tier
@@ -415,15 +418,33 @@ export default function QuotationBuilder({
 
   const upd = (k, v) => setForm(f => ({ ...f, [k]: v }));
 
-  // Per-tier margin proxy
-  const tierMargin    = pkgTiers[activePkg]?.margin ?? "";
-  const setTierMargin = v => setPkgTiers(p => ({ ...p, [activePkg]: { ...p[activePkg], margin: v } }));
+  // Keep ref always current so setTierMargin never captures a stale activePkg
+  activePkgRef.current = activePkg;
 
-  const c         = calcQ({ ...form, margin: tierMargin });
-  const g         = gradeColor(c.mpct);
-  const intl      = form.type === "International";
   const isB2B     = form.quoteType === "b2b";
   const isPackage = form.quoteType === "package";
+
+  // Per-tier margin proxy — uses ref so it always writes to the tier the user intends
+  const tierMargin    = pkgTiers[activePkg]?.margin ?? "";
+  const setTierMargin = v => {
+    const pkg = activePkgRef.current;
+    setPkgTiers(p => ({ ...p, [pkg]: { ...p[pkg], margin: v } }));
+  };
+
+  // Per-tier cost proxy — B2B stores cost per tier; Standard uses shared form.cost
+  const tierCost    = isB2B ? (pkgTiers[activePkg]?.cost ?? "") : form.cost;
+  const setTierCost = v => {
+    if (isB2B) {
+      const pkg = activePkgRef.current;
+      setPkgTiers(p => ({ ...p, [pkg]: { ...p[pkg], cost: v } }));
+    } else {
+      upd("cost", v);
+    }
+  };
+
+  const c         = calcQ({ ...form, cost: isB2B ? (+tierCost || 0) : (+form.cost || 0), margin: tierMargin });
+  const g         = gradeColor(c.mpct);
+  const intl      = form.type === "International";
 
   // Per-tier pp* flags: Standard/B2B use tier-level (independent per tier);
   // Package mode uses form-level (single flat tier controlled from the form).
@@ -435,13 +456,14 @@ export default function QuotationBuilder({
   // Setter: writes to tier object (Standard/B2B) or form (Package)
   const updPP = (key, val, also = {}) => {
     if (!isPackage) {
-      setPkgTiers(p => ({ ...p, [activePkg]: { ...p[activePkg], [key]: val, ...also } }));
+      const pkg = activePkgRef.current;
+      setPkgTiers(p => ({ ...p, [pkg]: { ...p[pkg], [key]: val, ...also } }));
     } else {
       upd(key, val);
       Object.entries(also).forEach(([k, v]) => upd(k, v));
     }
   };
-  const tierSuffix = (isPackage || isB2B) ? "" : ` — ${activePkg}`;
+  const tierSuffix = isPackage ? "" : ` — ${activePkg}`;
 
   /* ── array helpers ── */
   function updArr(setter, idx, field, value) {
@@ -467,11 +489,11 @@ export default function QuotationBuilder({
   const miscTotal     = tierTotals[activePkg].m;
   const grandComponentTotal = tierTotals[activePkg].total;
 
-  /* ── auto-sync Cost Price from component grand total ── */
+  /* ── auto-sync Cost Price from component grand total (Standard/Package only) ── */
   useEffect(() => {
-    if (grandComponentTotal > 0) upd("cost", grandComponentTotal);
+    if (form.quoteType !== "b2b" && grandComponentTotal > 0) upd("cost", grandComponentTotal);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [grandComponentTotal]);
+  }, [grandComponentTotal, form.quoteType]);
 
   /* ── in Package mode always use Economy tier ── */
   useEffect(() => {
@@ -487,6 +509,7 @@ export default function QuotationBuilder({
       transfers: tier.transfers.map(t => ({ cab: (toN(t.perDay) > 0 || toN(t.days) > 0) ? t.cab : "", perDay: toN(t.perDay), days: toN(t.days) })),
       miscs:     tier.miscs.filter(m => m.name || m.amount).map(m => ({ name: m.name, amount: toN(m.amount) })),
       margin:    toN(tier.margin),
+      cost:      toN(tier.cost),
       ppSubEnabled:      tier.ppSubEnabled      || false,
       ppSubTotalEnabled: tier.ppSubTotalEnabled || false,
       ppSellEnabled:     tier.ppSellEnabled     || false,
@@ -1001,25 +1024,34 @@ export default function QuotationBuilder({
               const tierBg    = lbl === "Economy" ? "#F0FDF4" : lbl === "Deluxe" ? "#EFF4FF" : "#FAF5FF";
               const tierBorder= lbl === "Economy" ? "#86EFAC" : lbl === "Deluxe" ? "#93C5FD" : "#D8B4FE";
               const tMgn  = +pkgTiers[lbl].margin || 0;
-              const tBase = tt.total + tMgn;
+              // B2B: no price fields in hotel/transfer forms → tt.total is always 0.
+              // Use per-tier cost (pkgTiers[lbl].cost) as the cost base for each tier.
+              const tCost = isB2B ? (+pkgTiers[lbl].cost || 0) : tt.total;
+              const tBase = tCost + tMgn;
               const tGst  = tBase * (+form.gstPct || 0) / 100;
               const tTcs  = intl ? (tBase + tGst) * (+form.tcsPct || 0) / 100 : 0;
               const tSell = Math.round(tBase + tGst + tTcs);
+              // For B2B: card is non-empty when margin is set; for Standard: non-empty when component prices exist
+              const hasData = isB2B ? (tMgn > 0 || tCost > 0) : tt.total > 0;
               return (
                 <div
                   key={lbl}
-                  onClick={() => setActivePkg(lbl)}
-                  style={{ background: tierBg, border: `2px solid ${isActive ? tierColor : tierBorder}`, borderRadius: 10, padding: "8px 10px", cursor: "pointer", opacity: tt.total === 0 ? 0.55 : 1, transition: "border .15s" }}
+                  onClick={() => { activePkgRef.current = lbl; setActivePkg(lbl); }}
+                  style={{ background: tierBg, border: `2px solid ${isActive ? tierColor : tierBorder}`, borderRadius: 10, padding: "8px 10px", cursor: "pointer", opacity: hasData ? 1 : 0.55, transition: "border .15s" }}
                 >
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: tt.total > 0 ? 5 : 0 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: hasData ? 5 : 0 }}>
                     <span style={{ fontSize: 11, fontWeight: 800, color: tierColor, textTransform: "uppercase", letterSpacing: ".05em" }}>{TIER_ICONS[lbl]} {lbl}</span>
-                    <span style={{ fontSize: 13, fontWeight: 900, color: tierColor }}>{tt.total > 0 ? inr(tt.total) : <span style={{ fontSize: 10, color: "#9CA3AF" }}>empty</span>}</span>
+                    <span style={{ fontSize: 13, fontWeight: 900, color: tierColor }}>
+                      {hasData ? inr(isB2B ? tCost : tt.total) : <span style={{ fontSize: 10, color: "#9CA3AF" }}>empty</span>}
+                    </span>
                   </div>
-                  {tt.h > 0 && <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10.5, color: "#6B7A99", marginBottom: 2 }}><span>🏨 Hotels</span><span style={{ fontWeight: 700 }}>{inr(tt.h)}</span></div>}
-                  {tt.f > 0 && <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10.5, color: "#6B7A99", marginBottom: 2 }}><span>✈️ Flights</span><span style={{ fontWeight: 700 }}>{inr(tt.f)}</span></div>}
-                  {tt.t > 0 && <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10.5, color: "#6B7A99", marginBottom: 2 }}><span>🚐 Transfer</span><span style={{ fontWeight: 700 }}>{inr(tt.t)}</span></div>}
-                  {tt.m > 0 && <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10.5, color: "#6B7A99", marginBottom: 2 }}><span>➕ Misc</span><span style={{ fontWeight: 700 }}>{inr(tt.m)}</span></div>}
-                  {tt.total > 0 && tMgn > 0 && (
+                  {/* Standard mode: show component breakdown */}
+                  {!isB2B && tt.h > 0 && <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10.5, color: "#6B7A99", marginBottom: 2 }}><span>🏨 Hotels</span><span style={{ fontWeight: 700 }}>{inr(tt.h)}</span></div>}
+                  {!isB2B && tt.f > 0 && <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10.5, color: "#6B7A99", marginBottom: 2 }}><span>✈️ Flights</span><span style={{ fontWeight: 700 }}>{inr(tt.f)}</span></div>}
+                  {!isB2B && tt.t > 0 && <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10.5, color: "#6B7A99", marginBottom: 2 }}><span>🚐 Transfer</span><span style={{ fontWeight: 700 }}>{inr(tt.t)}</span></div>}
+                  {!isB2B && tt.m > 0 && <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10.5, color: "#6B7A99", marginBottom: 2 }}><span>➕ Misc</span><span style={{ fontWeight: 700 }}>{inr(tt.m)}</span></div>}
+                  {/* Margin + selling — Standard: only when component cost > 0; B2B: always when hasData */}
+                  {hasData && tMgn > 0 && (
                     <div style={{ borderTop: `1px dashed ${tierBorder}`, marginTop: 5, paddingTop: 5 }}>
                       <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10.5, color: "#6B7A99", marginBottom: 2 }}><span>💰 Margin</span><span style={{ fontWeight: 700 }}>{inr(tMgn)}</span></div>
                       <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, fontWeight: 800, color: tierColor }}><span>Selling (incl. GST)</span><span>{inr(tSell)}</span></div>
@@ -1030,9 +1062,14 @@ export default function QuotationBuilder({
               );
             })}
 
-            {!isPackage && TIER_LABELS.every(lbl => tierTotals[lbl].total === 0) && (
+            {!isPackage && !isB2B && TIER_LABELS.every(lbl => tierTotals[lbl].total === 0) && (
               <div style={{ fontSize: 11, color: "#9CA3AF", textAlign: "center", marginTop: 16, lineHeight: 1.6 }}>
                 Enter prices in Hotels, Flights or Transfers to see a live preview here.
+              </div>
+            )}
+            {!isPackage && isB2B && !form.cost && (
+              <div style={{ fontSize: 11, color: "#9CA3AF", textAlign: "center", marginTop: 16, lineHeight: 1.6 }}>
+                Set Cost Price and Margin in the Company Side to see a live preview here.
               </div>
             )}
           </div>
@@ -1238,7 +1275,7 @@ export default function QuotationBuilder({
                     return (
                       <button
                         key={lbl}
-                        onClick={() => setActivePkg(lbl)}
+                        onClick={() => { activePkgRef.current = lbl; setActivePkg(lbl); }}
                         style={{
                           flex: 1, padding: "9px 0", border: "none", cursor: "pointer",
                           fontWeight: 700, fontSize: 13,
@@ -1860,7 +1897,7 @@ export default function QuotationBuilder({
                   ))}
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: `repeat(${intl ? 4 : 3}, 1fr)`, gap: 12, marginBottom: 14 }}>
-                  <Fl l="Cost Price (₹) — auto from components"><input type="number" style={{ ...QS.inp, background: "#F0FDF4", fontWeight: 700 }} value={form.cost} onChange={e => upd("cost", e.target.value)} /></Fl>
+                  <Fl l={`Cost Price (₹)${isB2B ? ` — ${activePkg}` : " — auto from components"}`}><input type="number" style={{ ...QS.inp, background: "#F0FDF4", fontWeight: 700 }} value={tierCost} onChange={e => setTierCost(e.target.value)} /></Fl>
                   <Fl l={`Margin (₹)${tierSuffix}`}><input type="number" style={QS.inp} value={tierMargin} onChange={e => setTierMargin(e.target.value)} /></Fl>
                   <Fl l="GST %"><input type="number" style={QS.inp} value={form.gstPct} onChange={e => upd("gstPct", e.target.value)} /></Fl>
                   {intl && (
