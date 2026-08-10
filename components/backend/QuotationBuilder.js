@@ -282,7 +282,7 @@ function initArrays(initialData, lead) {
   const ecoMiscs     = initialData?.miscs?.length     ? [...initialData.miscs]     : [];
   return {
     pkgTiers: {
-      Economy: { hotels: ecoHotels, flights: ecoFlights, transfers: ecoTransfers, miscs: ecoMiscs, margin: +initialData?.margin || 0 },
+      Economy: { hotels: ecoHotels, flights: ecoFlights, transfers: ecoTransfers, miscs: ecoMiscs, margin: +initialData?.margin || 0, cost: +initialData?.cost || 0 },
       Deluxe:  DEF_PKG(),
       Premium: DEF_PKG(),
     },
@@ -1067,9 +1067,9 @@ export default function QuotationBuilder({
                 Enter prices in Hotels, Flights or Transfers to see a live preview here.
               </div>
             )}
-            {!isPackage && isB2B && !form.cost && (
+            {!isPackage && isB2B && !TIER_LABELS.some(lbl => +pkgTiers[lbl]?.cost > 0 || +pkgTiers[lbl]?.margin > 0) && (
               <div style={{ fontSize: 11, color: "#9CA3AF", textAlign: "center", marginTop: 16, lineHeight: 1.6 }}>
-                Set Cost Price and Margin in the Company Side to see a live preview here.
+                Select a tier, then set its Cost Price and Margin in Company Side to see a live preview here.
               </div>
             )}
           </div>
