@@ -890,8 +890,20 @@ export default function QuotationPreview({ data, id }) {
               const tFlights  = (tier.flights  || []).filter(hasFlightData);
               const tTransfers= (tier.transfers|| []).filter(t => t.cab && (+t.perDay > 0 || +t.days > 0));
               const tMiscs    = (tier.miscs    || []).filter(m => m.name);
-              const tierSell  = calcTierSelling(tier, form);
-              const tierBase  = calcTierBase(tier, form);
+              // B2B: hotel/flight prices aren't stored per-tier (no price fields in B2B forms),
+              // so calcTierCost returns 0. Instead, use Company Side cost (form.cost) + tier margin.
+              const tierBase  = isB2B
+                ? (() => { const cost = +form.cost || 0; const mgn = +tier.margin || 0; return cost + mgn; })()
+                : calcTierBase(tier, form);
+              const tierSell  = isB2B
+                ? (() => {
+                    const cost = +form.cost || 0; const mgn = +tier.margin || 0;
+                    const base = cost + mgn;
+                    const gst  = base * (+form.gstPct || 0) / 100;
+                    const tcs  = intl ? (base + gst) * (+form.tcsPct || 0) / 100 : 0;
+                    return Math.round(base + gst + tcs);
+                  })()
+                : calcTierSelling(tier, form);
               const tierPax   = getTierPax(tier);
               // Per-tier pp* flags for detail section (same logic as cover page)
               const dPpSell     = !isPackage ? (tier.ppSellEnabled || false) : ppSell;
@@ -1017,18 +1029,29 @@ export default function QuotationPreview({ data, id }) {
                     // "Per Person" suffix — only when ÷pax checkbox is active
                     const showPerPerson = (dPpSell || dPpSub) && effPax > 0;
                     return (
-                      <div style={{ border: `1px solid ${TEAL_BORDER}`, borderRadius: 10, padding: "14px 18px", background: "transparent", marginBottom: 14 }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                          <div style={{ fontSize: 14, fontWeight: 700, color: TEAL }}>{detailLabel}</div>
-                          <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
-                            <span style={{ fontSize: 20, fontWeight: 900, color: DARK }}>
-                              ₹ {detailVal.toLocaleString("en-IN")}/-
-                            </span>
-                            {showPerPerson && (
-                              <span style={{ fontSize: 13, fontWeight: 600, color: "#555" }}>Per Person</span>
-                            )}
+                      <div>
+                        <div style={{ border: `1px solid ${TEAL_BORDER}`, borderRadius: 10, padding: "14px 18px", background: "transparent", marginBottom: isB2B ? 12 : 14 }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                            <div style={{ fontSize: 14, fontWeight: 700, color: TEAL }}>{detailLabel}</div>
+                            <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+                              <span style={{ fontSize: 20, fontWeight: 900, color: DARK }}>
+                                ₹ {detailVal.toLocaleString("en-IN")}/-
+                              </span>
+                              {showPerPerson && (
+                                <span style={{ fontSize: 13, fontWeight: 600, color: "#555" }}>Per Person</span>
+                              )}
+                            </div>
                           </div>
                         </div>
+                        {/* Note box — shown after every tier's price stripe in B2B mode */}
+                        {isB2B && (
+                          <div style={{ border: "1px solid #ddd", borderRadius: 10, padding: "14px 18px", background: "#F3FDFF", marginBottom: 14 }}>
+                            <div style={{ fontSize: 13, color: DARK, lineHeight: 1.75 }}>
+                              <strong>Note:</strong>{" "}
+                              This is a tentative and estimated quote and may vary based on selected hotels, inclusions, and customizations. Our Travel Expert will assist with any modifications.
+                            </div>
+                          </div>
+                        )}
                       </div>
                     );
                   })()}
@@ -1161,7 +1184,7 @@ export default function QuotationPreview({ data, id }) {
       {/* ══════════════════════════════
           PRICE + NOTE — ALL MODES
       ══════════════════════════════ */}
-      {selling > 0 && (() => {
+      {selling > 0 && !isB2B && (() => {
         // Determine pp* flags by mode
         const tierForPP   = !isPackage ? (pkgTiers["Economy"] || {}) : form;
         const ppSellF     = tierForPP.ppSellEnabled     || false;
