@@ -517,6 +517,9 @@ export default function QuotationPreview({ data, id }) {
     ? TIER_LABELS.filter(lbl => hasTierData(pkgTiers[lbl]))
     : [];
   const isPackage   = form.quoteType === "package";
+  const intl        = form.type === "International";
+  const tcsRate     = intl ? (+form.tcsPct || 2) / 100 : 0;
+  const tcsInPrice  = form.tcsInPrice !== false; // default true — TCS included in displayed price
 
   /* per-person / GST display mode — applies to Standard, Package, and B2B */
   const ppSell     = !!form.ppSellEnabled;
@@ -1000,13 +1003,16 @@ export default function QuotationPreview({ data, id }) {
                     // Tier name prefix: matches cover page
                     // tierName used only for section heading (ECONOMY / DELUXE / PREMIUM divider), not in the price label
                     // Value: uses this tier's own pp* flags (dPp*) — independent per tier
-                    const detailVal  = dPpSell && effPax > 0 ? Math.round(tierSell / effPax)
+                    // If tcsInPrice=false, back out TCS from tierSell for display
+                    const tierSellDisp = (intl && !tcsInPrice) ? Math.round(tierSell / (1 + tcsRate)) : tierSell;
+                    const detailVal  = dPpSell && effPax > 0 ? Math.round(tierSellDisp / effPax)
                       : dPpSub  && effPax > 0 ? Math.round(tierBase / effPax)
                       : dPpSubTotal            ? Math.round(tierBase)
-                      : Math.round(tierSell);
-                    // Label: always "Total Package Cost (Incl./Excl. GST)" for all modes
-                    // Title stays same regardless of pp* mode — only GST inclusion changes
-                    const gstWord     = (dPpSub || dPpSubTotal) ? "Excl. GST" : "Incl. GST";
+                      : Math.round(tierSellDisp);
+                    // Label: always "Total Package Cost (Incl./Excl. GST[&TCS])" for all modes
+                    const gstWord     = (dPpSub || dPpSubTotal) ? "Excl. GST"
+                      : (intl && tcsInPrice)                    ? "Incl. GST & TCS"
+                      :                                           "Incl. GST";
                     const detailLabel = `Total Package Cost (${gstWord})`;
                     // "Per Person" suffix — only when ÷pax checkbox is active
                     const showPerPerson = (dPpSell || dPpSub) && effPax > 0;
@@ -1162,12 +1168,16 @@ export default function QuotationPreview({ data, id }) {
         const ppSubF      = tierForPP.ppSubEnabled      || false;
         const ppSubTotalF = tierForPP.ppSubTotalEnabled || false;
         const gstRate     = (+form.gstPct || 5) / 100;
-        const base        = Math.round(selling / (1 + gstRate));
-        const gstWord     = (ppSubF || ppSubTotalF) ? "Excl. GST" : "Incl. GST";
-        const dispVal     = ppSellF && leadPax > 0 ? Math.round(selling / leadPax)
+        // If tcsInPrice=false, back out TCS from the selling price for display
+        const sellForDisp = (intl && !tcsInPrice) ? Math.round(selling / (1 + tcsRate)) : selling;
+        const base        = Math.round(sellForDisp / (1 + gstRate));
+        const gstWord     = (ppSubF || ppSubTotalF) ? "Excl. GST"
+          : (intl && tcsInPrice)                    ? "Incl. GST & TCS"
+          :                                           "Incl. GST";
+        const dispVal     = ppSellF && leadPax > 0 ? Math.round(sellForDisp / leadPax)
           : ppSubF   && leadPax > 0 ? Math.round(base / leadPax)
           : ppSubTotalF              ? base
-          : Math.round(selling);
+          : Math.round(sellForDisp);
         const showPP      = (ppSellF || ppSubF) && leadPax > 0;
         return (
           <div data-pdf-section="true">

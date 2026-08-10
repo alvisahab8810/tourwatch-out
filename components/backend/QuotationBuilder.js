@@ -233,7 +233,7 @@ const DEF_FORM = {
     { days: 15, pct: 50 },
     { days: 7,  pct: 100 },
   ]},
-  cost: "", margin: "", gstPct: 5, tcsPct: 2, tripExpense: 0,
+  cost: "", margin: "", gstPct: 5, tcsPct: 2, tcsInPrice: true, tripExpense: 0,
   ppSubEnabled: false, ppSubTotalEnabled: false, ppSellEnabled: false,
 };
 
@@ -965,14 +965,6 @@ export default function QuotationBuilder({
           <div style={{ width: 215, flexShrink: 0, overflowY: "auto", background: "#fff", borderRight: "1px solid #E4E9F2", padding: "14px 12px", display: "flex", flexDirection: "column", gap: 10 }}>
             <div style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: ".06em", color: "#6B7A99", marginBottom: 2 }}>💰 Package Preview</div>
 
-            {/* B2B: show structure without pricing */}
-            {isB2B && (
-              <div style={{ background: "#EFF4FF", border: "2px solid #93C5FD", borderRadius: 10, padding: "10px 12px" }}>
-                <div style={{ fontSize: 11, fontWeight: 800, color: "#2563EB", textTransform: "uppercase", letterSpacing: ".05em", marginBottom: 8 }}>🤝 B2B Mode</div>
-                <div style={{ fontSize: 10.5, color: "#6B7A99", lineHeight: 1.6 }}>Pricing fields are hidden in B2B mode. Only itinerary and service details are shown to partners.</div>
-              </div>
-            )}
-
             {/* Package: single tier preview */}
             {isPackage && (() => {
               const tt = tierTotals["Economy"];
@@ -1001,8 +993,8 @@ export default function QuotationBuilder({
               );
             })()}
 
-            {/* Standard: 3-tier pricing cards */}
-            {!isB2B && !isPackage && TIER_LABELS.map(lbl => {
+            {/* Standard / B2B: 3-tier pricing cards */}
+            {!isPackage && TIER_LABELS.map(lbl => {
               const tt = tierTotals[lbl];
               const isActive = lbl === activePkg;
               const tierColor = lbl === "Economy" ? "#15803D" : lbl === "Deluxe" ? "#2563EB" : "#7C3AED";
@@ -1038,7 +1030,7 @@ export default function QuotationBuilder({
               );
             })}
 
-            {!isB2B && !isPackage && TIER_LABELS.every(lbl => tierTotals[lbl].total === 0) && (
+            {!isPackage && TIER_LABELS.every(lbl => tierTotals[lbl].total === 0) && (
               <div style={{ fontSize: 11, color: "#9CA3AF", textAlign: "center", marginTop: 16, lineHeight: 1.6 }}>
                 Enter prices in Hotels, Flights or Transfers to see a live preview here.
               </div>
@@ -1873,10 +1865,19 @@ export default function QuotationBuilder({
                   <Fl l="GST %"><input type="number" style={QS.inp} value={form.gstPct} onChange={e => upd("gstPct", e.target.value)} /></Fl>
                   {intl && (
                     <Fl l="TCS % (Intl only)">
-                      <select style={QS.inp} value={form.tcsPct} onChange={e => upd("tcsPct", +e.target.value)}>
-                        <option value={2}>2% (up to ₹7L)</option>
-                        <option value={20}>20% (above ₹7L)</option>
-                      </select>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                        <div style={{ ...QS.inp, background: "#F0FDF4", fontWeight: 600, color: "#15803D", display: "flex", alignItems: "center", gap: 5 }}>
+                          2% TCS (Fixed)
+                        </div>
+                        <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, cursor: "pointer", userSelect: "none" }}>
+                          <input
+                            type="checkbox"
+                            checked={form.tcsInPrice !== false}
+                            onChange={e => upd("tcsInPrice", e.target.checked)}
+                          />
+                          <span style={{ color: "#374151", fontWeight: 500 }}>Include TCS in price</span>
+                        </label>
+                      </div>
                     </Fl>
                   )}
                 </div>
@@ -1914,24 +1915,32 @@ export default function QuotationBuilder({
                   <CR l={`GST Amount (${form.gstPct}%)`} v={inr(c.gst)} />
                   {intl && <CR l="TCS Amount" v={inr(c.tcs)} />}
                   {/* Selling Price row — per-tier selling price toggle */}
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: 10, marginTop: 4, borderTop: "1px dashed #FECACA" }}>
-                    <label style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer" }}>
-                      <input
-                        type="checkbox"
-                        checked={ppSellLocal}
-                        onChange={e => updPP("ppSellEnabled", e.target.checked, e.target.checked ? { ppSubEnabled: false, ppSubTotalEnabled: false } : {})}
-                        style={{ width: 14, height: 14, accentColor: "#2563EB", cursor: "pointer", flexShrink: 0 }}
-                      />
-                      <b style={{ color: "#0F1B33", fontSize: 13 }}>
-                        {ppSellLocal && leadPax > 0
-                          ? `Selling Price per Person (÷ ${leadPax})`
-                          : `Selling Price${intl ? " (incl. GST + TCS)" : " (incl. GST)"}`}
-                      </b>
-                    </label>
-                    <b style={{ fontSize: 20, color: "#2563EB" }}>
-                      {ppSellLocal && leadPax > 0 ? inr(c.selling / leadPax) : inr(c.selling)}
-                    </b>
-                  </div>
+                  {(() => {
+                    const tcsIncluded = form.tcsInPrice !== false;
+                    // Display selling: with TCS when tcsInPrice=true, without TCS when false
+                    const sellDisp = intl && !tcsIncluded ? c.selling - c.tcs : c.selling;
+                    const sellLabel = ppSellLocal && leadPax > 0
+                      ? `Selling Price per Person (÷ ${leadPax})`
+                      : intl && tcsIncluded
+                        ? "Selling Price (incl. GST + TCS)"
+                        : "Selling Price (incl. GST)";
+                    return (
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: 10, marginTop: 4, borderTop: "1px dashed #FECACA" }}>
+                        <label style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer" }}>
+                          <input
+                            type="checkbox"
+                            checked={ppSellLocal}
+                            onChange={e => updPP("ppSellEnabled", e.target.checked, e.target.checked ? { ppSubEnabled: false, ppSubTotalEnabled: false } : {})}
+                            style={{ width: 14, height: 14, accentColor: "#2563EB", cursor: "pointer", flexShrink: 0 }}
+                          />
+                          <b style={{ color: "#0F1B33", fontSize: 13 }}>{sellLabel}</b>
+                        </label>
+                        <b style={{ fontSize: 20, color: "#2563EB" }}>
+                          {ppSellLocal && leadPax > 0 ? inr(sellDisp / leadPax) : inr(sellDisp)}
+                        </b>
+                      </div>
+                    );
+                  })()}
                 </div>
               </div>
             </div>
