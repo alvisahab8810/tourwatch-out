@@ -423,7 +423,17 @@ export default function QuotationsPage() {
               {filtered.map((q, idx) => {
                 const lead   = q.leadId || {};
                 const qid    = qDispId(q);
-                const cr     = calcQ(q);
+                // For B2B quotes saved before per-tier cost fix, q.cost may be 0.
+                // Fall back to pkgTiers to compute a real selling price for the table.
+                const cr = (() => {
+                  if (q.quoteType === "b2b" && !q.cost && q.pkgTiers) {
+                    const repTier = ["Economy", "Deluxe", "Premium"]
+                      .map(l => q.pkgTiers[l])
+                      .find(t => +t?.cost > 0);
+                    if (repTier) return calcQ({ ...q, cost: +repTier.cost || 0, margin: +repTier.margin || 0 });
+                  }
+                  return calcQ(q);
+                })();
                 const spVal  = newSP[q._id];
                 const liveMp = spVal !== undefined && spVal !== "" ? reverseCalc(spVal, q) : null;
                 const lGrd   = liveMp !== null ? mpctBadge(liveMp) : null;
@@ -807,6 +817,8 @@ export default function QuotationsPage() {
                     <tbody>
                       {vers.map((v, i) => {
                         const isFinal = i === vers.length - 1;
+                        // B2B old versions were saved with cost=0 (pre-fix). Show "—" for those.
+                        const isB2BZero = verModal.quoteType === "b2b" && !v.cost && !v.margin;
                         const base    = (v.cost || 0) + (v.margin || 0);
                         const gst     = base * ((verModal.gstPct || 5) / 100);
                         const tcs     = verModal.type === "International" ? (base + gst) * ((verModal.tcsPct || 0) / 100) : 0;
@@ -819,10 +831,10 @@ export default function QuotationsPage() {
                               {isFinal && <span style={{ marginLeft: 8, fontSize: 10, fontWeight: 800, background: "#15803D", color: "#fff", borderRadius: 99, padding: "2px 7px" }}>Final</span>}
                             </td>
                             <td style={S.td}>{fmtDate(v.date)}</td>
-                            <td style={{ ...S.td, fontWeight: 600 }}>{inrFmt(v.cost)}</td>
-                            <td style={{ ...S.td, fontWeight: 600 }}>{inrFmt(v.margin)}</td>
-                            <td style={{ ...S.td, color: "#6B7A99" }}>{mpct !== "—" ? `${mpct}%` : "—"}</td>
-                            <td style={{ ...S.td, fontWeight: 700, color: "#0F1B33" }}>{inrFmt(selling)}</td>
+                            <td style={{ ...S.td, fontWeight: 600 }}>{isB2BZero ? <span style={{ color: "#94A3B8", fontSize: 11 }}>—</span> : inrFmt(v.cost)}</td>
+                            <td style={{ ...S.td, fontWeight: 600 }}>{isB2BZero ? <span style={{ color: "#94A3B8", fontSize: 11 }}>—</span> : inrFmt(v.margin)}</td>
+                            <td style={{ ...S.td, color: "#6B7A99" }}>{isB2BZero ? <span style={{ fontSize: 11 }}>—</span> : (mpct !== "—" ? `${mpct}%` : "—")}</td>
+                            <td style={{ ...S.td, fontWeight: 700, color: "#0F1B33" }}>{isB2BZero ? <span style={{ color: "#94A3B8", fontSize: 11 }}>old data</span> : inrFmt(selling)}</td>
                             <td style={{ ...S.td, color: "#6B7A99", maxWidth: 180, whiteSpace: "normal" }}>{v.note || "—"}</td>
                             <td style={{ ...S.td, textAlign: "right", whiteSpace: "nowrap" }}>
                               <button onClick={() => { setOpenBuilder({ quote: { ...verModal, ...v.snapshot }, isNew: false, lead: verModal.leadId }); setVerModal(null); }}

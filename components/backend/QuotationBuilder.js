@@ -515,10 +515,17 @@ export default function QuotationBuilder({
       ppSellEnabled:     tier.ppSellEnabled     || false,
     });
     const ecoNorm = normTier(pkgTiers.Economy);
+    // For B2B: derive top-level cost/margin from the first non-zero tier
+    // so the quotations table (which reads q.cost via calcQ) shows a real price instead of ₹0.
+    const b2bRepTier = isB2B
+      ? (TIER_LABELS.map(l => pkgTiers[l]).find(t => +t?.cost > 0) || pkgTiers.Economy)
+      : null;
+    const topLevelCost   = isB2B ? toN(b2bRepTier?.cost)   : toN(form.cost);
+    const topLevelMargin = isB2B ? toN(b2bRepTier?.margin) : toN(pkgTiers.Economy.margin);
     return {
       ...form,
       assignedTo: form.assignedTo || null,
-      cost: toN(form.cost), margin: toN(pkgTiers.Economy.margin), gstPct: toN(form.gstPct, 5), tcsPct: toN(form.tcsPct),
+      cost: topLevelCost, margin: topLevelMargin, gstPct: toN(form.gstPct, 5), tcsPct: toN(form.tcsPct),
       pkgTiers: Object.fromEntries(TIER_LABELS.map(lbl => [lbl, normTier(pkgTiers[lbl])])),
       // backward-compat flat fields = Economy tier (used by PDF preview)
       hotels: ecoNorm.hotels, flights: ecoNorm.flights, transfers: ecoNorm.transfers, miscs: ecoNorm.miscs,
@@ -572,7 +579,11 @@ export default function QuotationBuilder({
   async function save() {
     setSaving(true);
     try {
-      const newVer = { v: (initialData?.versions?.length || 0) + 1, date: todayISO(), cost: toN(form.cost), margin: toN(pkgTiers.Economy.margin), note: (initialData?.versions?.length || 0) === 0 ? "First quote created" : "Quote revised" };
+      // For B2B: version cost/margin should reflect the first non-zero tier (same logic as buildBody)
+      const _verRepTier = isB2B
+        ? (TIER_LABELS.map(l => pkgTiers[l]).find(t => +t?.cost > 0) || pkgTiers.Economy)
+        : null;
+      const newVer = { v: (initialData?.versions?.length || 0) + 1, date: todayISO(), cost: isB2B ? toN(_verRepTier?.cost) : toN(form.cost), margin: isB2B ? toN(_verRepTier?.margin) : toN(pkgTiers.Economy.margin), note: (initialData?.versions?.length || 0) === 0 ? "First quote created" : "Quote revised" };
       const body = { ...buildBody(), versions: [...(initialData?.versions || []), newVer] };
       let res;
       const currentId = savedIdRef.current;
