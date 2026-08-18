@@ -5,7 +5,7 @@ import {
   MdPeople, MdNotificationsNone, MdStore,
   MdConfirmationNumber, MdReceipt, MdLogout, MdComment, MdStar, MdRateReview,
   MdManageAccounts, MdSupervisedUserCircle, MdAssignment, MdRequestQuote,
-  MdAccountBalance, MdBarChart, MdFlight, MdPersonSearch,
+  MdAccountBalance, MdBarChart, MdFlight, MdPersonSearch, MdTrackChanges,
 } from "react-icons/md";
 import { logout, getSalespersonData } from "../../utils/voucherAuth";
 
@@ -27,6 +27,7 @@ const CRM = [
   { label: "Leads",      Icon: MdPeople,               href: "/dashboard/leads",      permKey: "leads" },
   { label: "BRR",        Icon: MdAssignment,            href: "/dashboard/brr",        permKey: "brr" },
   { label: "Quotation",  Icon: MdRequestQuote,          href: "/dashboard/quotations", permKey: "quotation" },
+  { label: "Follow-ups", Icon: MdTrackChanges,          href: "/dashboard/follow-ups", permKey: "quotation" },
   { label: "Invoice",    Icon: MdReceipt,               href: "/dashboard/invoices",   permKey: "invoice" },
   { label: "Voucher",    Icon: MdConfirmationNumber,    href: "/dashboard/vouchers",   permKey: "voucher" },
   { label: "Reminder",   Icon: MdNotificationsNone,     href: "/dashboard/reminders",  permKey: "reminders" },

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import QuotationPreview from "../voucher/QuotationPreview";
 
 /* ── helpers ── */
@@ -60,7 +60,13 @@ function initItin(initialData) {
 }
 
 const DEF_RATE     = { occupancy: "Double", roomCat: "Deluxe", nights: "", rooms: "", price: "" };
-const DEF_HOTEL    = { name: "", location: "", rates: [{ ...DEF_RATE }] };
+const DEF_HOTEL    = { name: "", location: "", mealPlan: "CPAI", rates: [{ ...DEF_RATE }] };
+const MEAL_PLANS   = [
+  { value: "EPAI",  label: "EPAI — Room Only" },
+  { value: "CPAI",  label: "CPAI — Room + Breakfast" },
+  { value: "MAPAI", label: "MAPAI — Breakfast & Dinner" },
+  { value: "APAI",  label: "APAI — Breakfast, Lunch & Dinner" },
+];
 const DEF_FLIGHT   = { from: "", to: "", date: "", pax: "", price: "", roundTrip: false, returnPrice: "",
   pnr: "", flightNo: "",
   depCity: "", depIATA: "", depDate: "", depTime: "",
@@ -104,6 +110,7 @@ function normHotels(arr) {
   return arr.map(h => ({
     name: h.name || "",
     location: h.location || "",
+    mealPlan: h.mealPlan || "CPAI",
     rates: h.rates?.length
       ? h.rates.map(r => ({ occupancy: r.occupancy || "Double", roomCat: r.roomCat || h.roomCat || "Deluxe", nights: r.nights ?? "", rooms: r.rooms ?? 1, price: r.price ?? "" }))
       : [{ occupancy: h.occupancy || "Double", roomCat: h.roomCat || "Deluxe", nights: h.nights || "", rooms: h.rooms || 1, price: h.price || "" }],
@@ -330,6 +337,9 @@ export default function QuotationBuilder({
 
   const arrInit = initArrays(initialData, lead);
 
+  /* ── original quote type — locked when editing an existing quotation ── */
+  const origQuoteType = initialData?.quoteType || null;
+
   const [form,      setForm]      = useState(baseForm);
   const [activePkg, setActivePkg] = useState("Economy");
   const activePkgRef = useRef("Economy");           // always-current ref avoids stale closures
@@ -350,13 +360,44 @@ export default function QuotationBuilder({
   const [extraRoomCats, setExtraRoomCats] = useState([]);
   const [preview,    setPreview]    = useState(false);
 
-  /* ── auto-save ── */
+  /* ── quotation email modal ── */
+  const [emailModal,    setEmailModal]   = useState(false);
+  const [emailModalKey, setEmailModalKey]= useState(0);  // forces RTE remount on open
+  const [emailTo,       setEmailTo]      = useState([]);   // array of email strings
+  const [emailCc,       setEmailCc]      = useState(["ivan@tourwatchout.com"]);
+  const [emailBcc,      setEmailBcc]     = useState([]);
+  const [emailSubject,  setEmailSubject] = useState("");
+  const [emailMsg,      setEmailMsg]     = useState("");   // HTML from RTE
+  const [attachPdf,     setAttachPdf]    = useState(true);
+  const [emailSending,  setEmailSending] = useState(false);
+  const [emailSent,     setEmailSent]    = useState(false);
+  const [emailError,    setEmailError]   = useState("");
+
+  /* ── copy-from-existing (new quotation only) ── */
+  const [tmplOpen,    setTmplOpen]    = useState(false);
+  const [tmplSearch,  setTmplSearch]  = useState("");
+  const [tmplList,    setTmplList]    = useState([]);
+  const [tmplLoading, setTmplLoading] = useState(false);
+  const [tmplPreview, setTmplPreview] = useState(null);
+  const [tmplApplied, setTmplApplied] = useState(null); // which quotation is used as template
+
+  /* ── snapshot of original state so "Clear template" can fully reset ── */
+  const origFormSnap    = useRef(baseForm);
+  const origItinSnap    = useRef(initItin(initialData));
+  const origPkgSnap     = useRef(arrInit.pkgTiers);
+
+  /* ── save tracking ── */
   const [savedId,   setSavedId]   = useState(initialData?._id || null);
   const savedIdRef    = useRef(initialData?._id || null);   // always current — avoids stale-closure duplicates
-  const autoSaving    = useRef(false);                      // mutex: prevents concurrent POSTs
-  const [autoState, setAutoState] = useState(""); // "" | "saving" | "saved"
-  const skipFirstAuto = useRef(true);
-  const autoTimer     = useRef(null);
+
+  /* ── original price fingerprint — used to detect price changes for smart save ── */
+  const origPriceKey = useMemo(() => {
+    if (!initialData) return null;
+    const tiers = initialData.pkgTiers || {};
+    const tierKey = TIER_LABELS.map(l => `${tiers[l]?.cost||0}:${tiers[l]?.margin||0}`).join("|");
+    return `${initialData.cost||0}:${initialData.margin||0}:${tierKey}`;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   /* ── shared cab/transfer detail: Day 1 itinerary's "Transfer Type" is the source for ──
      (a) every other itinerary day (unless that day was customised), and
@@ -390,6 +431,18 @@ export default function QuotationBuilder({
       .catch(() => {});
   }, []);
 
+  /* ── fetch existing quotations for template picker (only when creating new) ── */
+  useEffect(() => {
+    if (!isNew) return;
+    setTmplLoading(true);
+    fetch("/api/dashboard/quotations")
+      .then(r => r.ok ? r.json() : [])
+      .then(list => setTmplList(Array.isArray(list) ? list : []))
+      .catch(() => {})
+      .finally(() => setTmplLoading(false));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   async function addRoomCategory(name) {
     const clean = String(name || "").trim();
     if (!clean) return;
@@ -418,11 +471,124 @@ export default function QuotationBuilder({
 
   const upd = (k, v) => setForm(f => ({ ...f, [k]: v }));
 
+  /* ── template: filter list by search / same destination ── */
+  const filteredTmpls = useMemo(() => {
+    const dest = (lead?.destination || "").toLowerCase().trim();
+    if (tmplSearch.trim()) {
+      const s = tmplSearch.toLowerCase();
+      return tmplList.filter(q =>
+        (q.quotationNo || "").toLowerCase().includes(s) ||
+        (q.leadId?.destination || "").toLowerCase().includes(s) ||
+        (q.leadId?.name || "").toLowerCase().includes(s)
+      );
+    }
+    if (dest) {
+      return [...tmplList].sort((a, b) => {
+        const aM = (a.leadId?.destination || "").toLowerCase().includes(dest) ? 1 : 0;
+        const bM = (b.leadId?.destination || "").toLowerCase().includes(dest) ? 1 : 0;
+        return bM - aM;
+      });
+    }
+    return tmplList;
+  }, [tmplList, tmplSearch, lead?.destination]);
+
+  /* ── template: apply selected quotation as starting point ── */
+  function applyTemplate(q) {
+    setForm(prev => ({
+      ...prev,
+      quoteType:          q.quoteType          || prev.quoteType,
+      type:               q.type               || prev.type,
+      pkgMode:            q.pkgMode            || prev.pkgMode,
+      days:               q.days               || prev.days,
+      gstPct:             q.gstPct             ?? prev.gstPct,
+      tcsPct:             q.tcsPct             ?? prev.tcsPct,
+      tcsInPrice:         q.tcsInPrice         ?? prev.tcsInPrice,
+      highlights:         q.highlights?.length  ? q.highlights : prev.highlights,
+      inclusions:         q.inclusions          || prev.inclusions,
+      exclusions:         q.exclusions          || prev.exclusions,
+      notes:              q.notes              || prev.notes,
+      termsConditions:    !isBlankRichText(q.termsConditions)    ? q.termsConditions    : prev.termsConditions,
+      bookingPolicy:      !isBlankRichText(q.bookingPolicy)      ? q.bookingPolicy      : prev.bookingPolicy,
+      cancellationPolicy: !isBlankRichText(q.cancellationPolicy) ? q.cancellationPolicy : prev.cancellationPolicy,
+      canxBar:            q.canxBar            || prev.canxBar,
+      ppSubEnabled:       q.ppSubEnabled        || false,
+      ppSubTotalEnabled:  q.ppSubTotalEnabled   || false,
+      ppSellEnabled:      q.ppSellEnabled       || false,
+      // Deliberately NOT copying: travelDate, assignedTo (lead-specific)
+    }));
+
+    // Apply itinerary
+    if (q.itinerary?.length) {
+      setItin(q.itinerary.map(day => ({
+        _k:         uid(),
+        date:       day.date       || "",
+        title:      day.title      || "",
+        transfer:   day.transfer   || "",
+        tour:       day.tour       || "",
+        pickup_time:day.pickup_time|| "",
+        itinerary:  day.itinerary  || "",
+        activities: (day.activities || []).map(a => ({ type: a.type || "transfer", text: a.text || "" })),
+      })));
+    }
+
+    // Apply tier data
+    const srcTiers = q.pkgTiers && Object.keys(q.pkgTiers).length ? q.pkgTiers : null;
+    if (srcTiers) {
+      setPkgTiers(Object.fromEntries(TIER_LABELS.map(lbl => {
+        const d = srcTiers[lbl] || DEF_PKG();
+        return [lbl, {
+          hotels:            normHotels(d.hotels),
+          flights:           d.flights?.length   ? [...d.flights]   : [{ ...DEF_FLIGHT }],
+          transfers:         d.transfers?.length ? [...d.transfers] : [{ ...DEF_TRANSFER }],
+          miscs:             d.miscs?.length     ? [...d.miscs]     : [],
+          margin:            d.margin            ?? 0,
+          cost:              d.cost              ?? 0,
+          ppSubEnabled:      d.ppSubEnabled      || false,
+          ppSubTotalEnabled: d.ppSubTotalEnabled || false,
+          ppSellEnabled:     d.ppSellEnabled     || false,
+        }];
+      })));
+    } else if (q.hotels?.length || q.transfers?.length) {
+      // Legacy flat-field quotation — seed Economy tier
+      setPkgTiers(prev => ({
+        ...prev,
+        Economy: {
+          ...prev.Economy,
+          hotels:    normHotels(q.hotels),
+          flights:   q.flights?.length   ? [...q.flights]   : prev.Economy.flights,
+          transfers: q.transfers?.length ? [...q.transfers] : prev.Economy.transfers,
+          miscs:     q.miscs?.length     ? [...q.miscs]     : prev.Economy.miscs,
+          margin:    q.margin  ?? prev.Economy.margin,
+          cost:      q.cost    ?? prev.Economy.cost,
+        },
+      }));
+    }
+
+    setTmplApplied(q);
+    setTmplOpen(false);
+  }
+
+  /* ── clear applied template — restore original blank state ── */
+  function clearTemplate() {
+    setForm(origFormSnap.current);
+    setItin(origItinSnap.current);
+    setPkgTiers(origPkgSnap.current);
+    setTmplApplied(null);
+    setTmplOpen(false);
+  }
+
   // Keep ref always current so setTierMargin never captures a stale activePkg
   activePkgRef.current = activePkg;
 
   const isB2B     = form.quoteType === "b2b";
   const isPackage = form.quoteType === "package";
+
+  /* ── smart save: detect if price has changed from when builder was opened ── */
+  const currentPriceKey = useMemo(() => {
+    const tierKey = TIER_LABELS.map(l => `${pkgTiers[l]?.cost||0}:${pkgTiers[l]?.margin||0}`).join("|");
+    return `${form.cost||0}:${form.margin||0}:${tierKey}`;
+  }, [form.cost, form.margin, pkgTiers]);
+  const priceChanged = !initialData || origPriceKey === null || currentPriceKey !== origPriceKey;
 
   // Per-tier margin proxy — uses ref so it always writes to the tier the user intends
   const tierMargin    = pkgTiers[activePkg]?.margin ?? "";
@@ -504,7 +670,7 @@ export default function QuotationBuilder({
   /* ── shared body builder (used by manual save + auto-save) ── */
   function buildBody() {
     const normTier = tier => ({
-      hotels:    tier.hotels.map(h => ({ name: h.name, location: h.location || "", rates: (h.rates || []).map(r => ({ occupancy: r.occupancy || "Double", roomCat: r.roomCat || "Deluxe", nights: toN(r.nights), rooms: toN(r.rooms, 1), price: toN(r.price) })) })),
+      hotels:    tier.hotels.map(h => ({ name: h.name, location: h.location || "", mealPlan: h.mealPlan || "CPAI", rates: (h.rates || []).map(r => ({ occupancy: r.occupancy || "Double", roomCat: r.roomCat || "Deluxe", nights: toN(r.nights), rooms: toN(r.rooms, 1), price: toN(r.price) })) })),
       flights:   tier.flights.map(f => ({ from: f.from, to: f.to, date: f.date, pax: toN(f.pax), price: toN(f.price), roundTrip: !!f.roundTrip, returnPrice: toN(f.returnPrice), pnr: f.pnr||"", flightNo: f.flightNo||"", depCity: f.depCity||"", depIATA: f.depIATA||"", depDate: f.depDate||"", depTime: f.depTime||"", arrCity: f.arrCity||"", arrIATA: f.arrIATA||"", arrDate: f.arrDate||"", arrTime: f.arrTime||"", retFlightNo: f.retFlightNo||"", retPnr: f.retPnr||"", retDepCity: f.retDepCity||"", retDepIATA: f.retDepIATA||"", retDepDate: f.retDepDate||"", retDepTime: f.retDepTime||"", retArrCity: f.retArrCity||"", retArrIATA: f.retArrIATA||"", retArrDate: f.retArrDate||"", retArrTime: f.retArrTime||"", hasLayover: !!f.hasLayover, layoverCity: f.layoverCity||"", layoverDuration: f.layoverDuration||"", hasReturnLayover: !!f.hasReturnLayover, returnLayoverCity: f.returnLayoverCity||"", returnLayoverDuration: f.returnLayoverDuration||"", hasOnwardConn: !!f.hasOnwardConn, onwardConnPnr: f.onwardConnPnr||"", onwardConnFlightNo: f.onwardConnFlightNo||"", onwardConnDepCity: f.onwardConnDepCity||"", onwardConnDepIATA: f.onwardConnDepIATA||"", onwardConnDepDate: f.onwardConnDepDate||"", onwardConnDepTime: f.onwardConnDepTime||"", onwardConnArrCity: f.onwardConnArrCity||"", onwardConnArrIATA: f.onwardConnArrIATA||"", onwardConnArrDate: f.onwardConnArrDate||"", onwardConnArrTime: f.onwardConnArrTime||"", onwardConnPax: toN(f.onwardConnPax), onwardConnPrice: toN(f.onwardConnPrice), hasReturnConn: !!f.hasReturnConn, returnConnPnr: f.returnConnPnr||"", returnConnFlightNo: f.returnConnFlightNo||"", returnConnDepCity: f.returnConnDepCity||"", returnConnDepIATA: f.returnConnDepIATA||"", returnConnDepDate: f.returnConnDepDate||"", returnConnDepTime: f.returnConnDepTime||"", returnConnArrCity: f.returnConnArrCity||"", returnConnArrIATA: f.returnConnArrIATA||"", returnConnArrDate: f.returnConnArrDate||"", returnConnArrTime: f.returnConnArrTime||"", returnConnPax: toN(f.returnConnPax), returnConnPrice: toN(f.returnConnPrice) })),
       transfers: tier.transfers.map(t => ({ cab: (toN(t.perDay) > 0 || toN(t.days) > 0) ? t.cab : "", perDay: toN(t.perDay), days: toN(t.days) })),
       miscs:     tier.miscs.filter(m => m.name || m.amount).map(m => ({ name: m.name, amount: toN(m.amount) })),
@@ -533,48 +699,6 @@ export default function QuotationBuilder({
     };
   }
 
-  /* ── auto-save while editing (debounced, silent) ── */
-  useEffect(() => {
-    if (skipFirstAuto.current) { skipFirstAuto.current = false; return; }
-    if (!lead?._id) return;
-    setAutoState("");
-    if (autoTimer.current) clearTimeout(autoTimer.current);
-    autoTimer.current = setTimeout(async () => {
-      if (autoSaving.current) return; // already in-flight — skip to avoid duplicate POST
-      autoSaving.current = true;
-      setAutoState("saving");
-      try {
-        const body = buildBody();
-        let res;
-        const currentId = savedIdRef.current; // always read ref, never stale closure
-        if (!currentId) {
-          res = await fetch("/api/dashboard/quotations", {
-            method: "POST", headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ ...body, leadId: lead._id }),
-          });
-        } else {
-          res = await fetch(`/api/dashboard/quotations/${currentId}`, {
-            method: "PATCH", headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(body),
-          });
-        }
-        if (res.ok) {
-          const data = await res.json();
-          if (!savedIdRef.current) {
-            savedIdRef.current = data._id;
-            setSavedId(data._id);
-          }
-          setAutoState("saved");
-        } else {
-          setAutoState("");
-        }
-      } catch { setAutoState(""); }
-      finally { autoSaving.current = false; }
-    }, 1200);
-    return () => clearTimeout(autoTimer.current);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [form, pkgTiers, itin]);
-
   /* ── save (explicit, creates a new version) ── */
   async function save() {
     setSaving(true);
@@ -602,9 +726,111 @@ export default function QuotationBuilder({
     } finally { setSaving(false); }
   }
 
+  /* ── save current version (no new version — for non-price changes) ── */
+  async function saveCurrentVersion() {
+    setSaving(true);
+    try {
+      const body = { ...buildBody(), versions: initialData?.versions || [] };
+      const currentId = savedIdRef.current;
+      let res;
+      if (!currentId) {
+        body.leadId = lead._id;
+        res = await fetch("/api/dashboard/quotations", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+      } else {
+        res = await fetch(`/api/dashboard/quotations/${currentId}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+      }
+      if (res.ok) {
+        const data = await res.json();
+        savedIdRef.current = data._id;
+        setSavedId(data._id);
+        onSaved?.(data); onClose();
+      }
+    } finally { setSaving(false); }
+  }
+
+  /* ── open email modal with pre-filled fields ── */
+  function openEmailModal() {
+    setEmailTo(lead?.email ? [lead.email] : []);
+    setEmailCc(["ivan@tourwatchout.com"]);
+    setEmailBcc([]);
+    setEmailSubject(`Your ${lead?.destination || "Holiday"} Package Quotation · ${quoteDisplayId}`);
+    setEmailMsg(
+      `<p>Dear <strong>${lead?.name || ""}</strong>,</p>` +
+      `<p>Thank you for considering <strong>Tourwatchout</strong> for your ${lead?.destination || "holiday"} trip.</p>` +
+      `<p>We are pleased to share your personalized package quotation. Please find the detailed PDF attached to this email.</p>` +
+      `<p>Our travel expert is available to assist you with any queries, changes, or customizations.</p>` +
+      `<p>Warm regards,<br><strong>Tourwatchout Team</strong></p>`
+    );
+    setAttachPdf(true);
+    setEmailSent(false);
+    setEmailError("");
+    setEmailModalKey(k => k + 1);  // forces RTE to re-initialize with fresh content
+    setEmailModal(true);
+  }
+
+  /* ── generate PDF → base64 → POST to mailer API ── */
+  async function handleSendEmail() {
+    if (!emailTo.length) return;
+    setEmailError("");
+
+    /* Snapshot all values now — state will be gone after modal closes */
+    const snap = {
+      to:      emailTo.join(", "),
+      cc:      emailCc.length  ? emailCc.join(", ")  : undefined,
+      bcc:     emailBcc.length ? emailBcc.join(", ") : undefined,
+      subject: emailSubject,
+      message: emailMsg,
+      doAttach: attachPdf,
+      quotationData: {
+        name:        lead?.name        || "",
+        destination: lead?.destination || "",
+        days:        form.days         || "",
+        travelDate:  form.travelDate   || "",
+        selling:     c.selling,
+        quoteId:     quoteDisplayId    || "",
+        phone:       lead?.phone       || "",
+        email:       emailTo[0]        || "",
+      },
+      pdfName: `quotation-${quoteDisplayId || "tw"}.pdf`,
+    };
+
+    /* ── Optimistic UI: show success & close immediately ── */
+    setEmailSent(true);
+    setTimeout(() => setEmailModal(false), 1500);
+
+    /* ── Background: generate PDF then send ── */
+    (async () => {
+      try {
+        const fd = new FormData();
+        fd.append("to",      snap.to);
+        fd.append("cc",      snap.cc  || "");
+        fd.append("bcc",     snap.bcc || "");
+        fd.append("subject", snap.subject);
+        fd.append("message", snap.message);
+        fd.append("quotationData", JSON.stringify(snap.quotationData));
+
+        if (snap.doAttach) {
+          const pdf = await generatePDF();
+          if (pdf) {
+            /* output as blob — no base64 overhead, no JSON size limit */
+            const blob = pdf.output("blob");
+            fd.append("pdf", blob, snap.pdfName);
+          }
+        }
+
+        await fetch("/api/dashboard/send-quotation-email", {
+          method: "POST",
+          body:   fd,   /* browser sets correct multipart Content-Type + boundary */
+        });
+      } catch (e) {
+        console.error("Background email send failed:", e);
+      }
+    })();
+  }
+
   const waHref = () => {
     const n   = String(lead?.phone || "").replace(/\D/g, "");
-    const msg = `Hi ${lead?.name || ""}, greetings from Tourwatchout! Your ${lead?.destination || ""} quotation ${quoteDisplayId} is ready. ${form.days} starting ${fmtDate(form.travelDate)} at ${inr(c.selling)} all inclusive. Your travel expert is a call away.`;
+    const msg = `Hi ${lead?.name || ""}, greetings from Tourwatchout! Your ${lead?.destination || ""} quotation ${quoteDisplayId} is ready. ${form.days}${form.travelDate ? ` starting ${fmtDate(form.travelDate)}` : ""}. Please find the detailed PDF in your email. Your travel expert is a call away.`;
     return `https://wa.me/${n}?text=${encodeURIComponent(msg)}`;
   };
   const emailHref = () => {
@@ -784,7 +1010,7 @@ export default function QuotationBuilder({
       sectionTops = [...headerSectionTops, ...fullpageSectionTops].sort((a, b) => a - b);
       coverEnd    = sectionTops.length > 0 ? sectionTops[0] : Infinity;
 
-      const pdf     = new jsPDF("p", "mm", "a4");
+      const pdf     = new jsPDF({ orientation: "p", unit: "mm", format: "a4", compress: true });
       const pageW   = pdf.internal.pageSize.getWidth();
       const pageH   = pdf.internal.pageSize.getHeight();
       const pxPerMm = canvas.width / pageW;
@@ -972,6 +1198,15 @@ export default function QuotationBuilder({
 
   return (
     <>
+      {/* ── Hidden off-screen PDF target — always in DOM so generatePDF() works
+           even when the preview panel is closed (e.g. while email modal is open) ── */}
+      <div style={{ position: "fixed", left: -9999, top: 0, width: 794, zIndex: -1, pointerEvents: "none", opacity: 0 }}>
+        <QuotationPreview
+          id="qb-pdf-target"
+          data={{ quoteId: quoteDisplayId, lead, form, pkgTiers, hotels, flights, transfers, miscs, itin, selling: c.selling }}
+        />
+      </div>
+
       <Ov>
         <div style={{ ...QS.modal, maxWidth: 960 }}>
           {/* Header */}
@@ -984,12 +1219,7 @@ export default function QuotationBuilder({
                 Linked to Lead {leadDisplayId} · {lead?.name} · {lead?.phone} · {lead?.destination}
               </div>
             </div>
-            {autoState && (
-              <div style={{ fontSize: 11.5, color: "#BFD3FE", fontWeight: 700, display: "flex", alignItems: "center", gap: 5, marginLeft: "auto" }}>
-                {autoState === "saving" ? "⏳ Saving…" : "✓ All changes auto-saved"}
-              </div>
-            )}
-            <button style={{ ...QS.x, marginLeft: autoState ? 14 : "auto" }} onClick={onClose}>✕</button>
+            <button style={{ ...QS.x, marginLeft: "auto" }} onClick={onClose}>✕</button>
           </div>
 
           {/* Body — two columns: sticky price panel left + scrollable form right */}
@@ -1027,23 +1257,19 @@ export default function QuotationBuilder({
               );
             })()}
 
-            {/* Standard / B2B: 3-tier pricing cards */}
-            {!isPackage && TIER_LABELS.map(lbl => {
+            {/* Package Category / Package: 3-tier pricing cards */}
+            {!isPackage && !isB2B && TIER_LABELS.map(lbl => {
               const tt = tierTotals[lbl];
               const isActive = lbl === activePkg;
               const tierColor = lbl === "Economy" ? "#15803D" : lbl === "Deluxe" ? "#2563EB" : "#7C3AED";
               const tierBg    = lbl === "Economy" ? "#F0FDF4" : lbl === "Deluxe" ? "#EFF4FF" : "#FAF5FF";
               const tierBorder= lbl === "Economy" ? "#86EFAC" : lbl === "Deluxe" ? "#93C5FD" : "#D8B4FE";
               const tMgn  = +pkgTiers[lbl].margin || 0;
-              // B2B: no price fields in hotel/transfer forms → tt.total is always 0.
-              // Use per-tier cost (pkgTiers[lbl].cost) as the cost base for each tier.
-              const tCost = isB2B ? (+pkgTiers[lbl].cost || 0) : tt.total;
-              const tBase = tCost + tMgn;
+              const tBase = tt.total + tMgn;
               const tGst  = tBase * (+form.gstPct || 0) / 100;
               const tTcs  = intl ? (tBase + tGst) * (+form.tcsPct || 0) / 100 : 0;
               const tSell = Math.round(tBase + tGst + tTcs);
-              // For B2B: card is non-empty when margin is set; for Standard: non-empty when component prices exist
-              const hasData = isB2B ? (tMgn > 0 || tCost > 0) : tt.total > 0;
+              const hasData = tt.total > 0;
               return (
                 <div
                   key={lbl}
@@ -1053,15 +1279,13 @@ export default function QuotationBuilder({
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: hasData ? 5 : 0 }}>
                     <span style={{ fontSize: 11, fontWeight: 800, color: tierColor, textTransform: "uppercase", letterSpacing: ".05em" }}>{TIER_ICONS[lbl]} {lbl}</span>
                     <span style={{ fontSize: 13, fontWeight: 900, color: tierColor }}>
-                      {hasData ? inr(isB2B ? tCost : tt.total) : <span style={{ fontSize: 10, color: "#9CA3AF" }}>empty</span>}
+                      {hasData ? inr(tt.total) : <span style={{ fontSize: 10, color: "#9CA3AF" }}>empty</span>}
                     </span>
                   </div>
-                  {/* Standard mode: show component breakdown */}
-                  {!isB2B && tt.h > 0 && <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10.5, color: "#6B7A99", marginBottom: 2 }}><span>🏨 Hotels</span><span style={{ fontWeight: 700 }}>{inr(tt.h)}</span></div>}
-                  {!isB2B && tt.f > 0 && <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10.5, color: "#6B7A99", marginBottom: 2 }}><span>✈️ Flights</span><span style={{ fontWeight: 700 }}>{inr(tt.f)}</span></div>}
-                  {!isB2B && tt.t > 0 && <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10.5, color: "#6B7A99", marginBottom: 2 }}><span>🚐 Transfer</span><span style={{ fontWeight: 700 }}>{inr(tt.t)}</span></div>}
-                  {!isB2B && tt.m > 0 && <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10.5, color: "#6B7A99", marginBottom: 2 }}><span>➕ Misc</span><span style={{ fontWeight: 700 }}>{inr(tt.m)}</span></div>}
-                  {/* Margin + selling — Standard: only when component cost > 0; B2B: always when hasData */}
+                  {tt.h > 0 && <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10.5, color: "#6B7A99", marginBottom: 2 }}><span>🏨 Hotels</span><span style={{ fontWeight: 700 }}>{inr(tt.h)}</span></div>}
+                  {tt.f > 0 && <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10.5, color: "#6B7A99", marginBottom: 2 }}><span>✈️ Flights</span><span style={{ fontWeight: 700 }}>{inr(tt.f)}</span></div>}
+                  {tt.t > 0 && <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10.5, color: "#6B7A99", marginBottom: 2 }}><span>🚐 Transfer</span><span style={{ fontWeight: 700 }}>{inr(tt.t)}</span></div>}
+                  {tt.m > 0 && <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10.5, color: "#6B7A99", marginBottom: 2 }}><span>➕ Misc</span><span style={{ fontWeight: 700 }}>{inr(tt.m)}</span></div>}
                   {hasData && tMgn > 0 && (
                     <div style={{ borderTop: `1px dashed ${tierBorder}`, marginTop: 5, paddingTop: 5 }}>
                       <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10.5, color: "#6B7A99", marginBottom: 2 }}><span>💰 Margin</span><span style={{ fontWeight: 700 }}>{inr(tMgn)}</span></div>
@@ -1073,14 +1297,34 @@ export default function QuotationBuilder({
               );
             })}
 
+            {/* B2B: single pricing summary (no tier switching) */}
+            {isB2B && (() => {
+              const b2bCost = +pkgTiers.Economy?.cost || 0;
+              const b2bMgn  = +pkgTiers.Economy?.margin || 0;
+              const b2bBase = b2bCost + b2bMgn;
+              const b2bGst  = b2bBase * (+form.gstPct || 0) / 100;
+              const b2bTcs  = intl ? (b2bBase + b2bGst) * (+form.tcsPct || 0) / 100 : 0;
+              const b2bSell = Math.round(b2bBase + b2bGst + b2bTcs);
+              const hasData = b2bCost > 0 || b2bMgn > 0;
+              return (
+                <div style={{ background: "#EFF4FF", border: "2px solid #2563EB", borderRadius: 10, padding: "10px 12px" }}>
+                  <div style={{ fontSize: 11, fontWeight: 800, color: "#2563EB", textTransform: "uppercase", letterSpacing: ".05em", marginBottom: 6 }}>🤝 B2B Quotation</div>
+                  {hasData ? (
+                    <>
+                      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#64748B", marginBottom: 4 }}><span>Cost Price</span><span style={{ fontWeight: 700 }}>{inr(b2bCost)}</span></div>
+                      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#64748B", marginBottom: 4 }}><span>Margin</span><span style={{ fontWeight: 700 }}>{inr(b2bMgn)}</span></div>
+                      {b2bSell > 0 && <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, fontWeight: 800, color: "#2563EB", borderTop: "1px dashed #93C5FD", paddingTop: 5, marginTop: 3 }}><span>Selling (incl. GST)</span><span>{inr(b2bSell)}</span></div>}
+                    </>
+                  ) : (
+                    <div style={{ fontSize: 11, color: "#9CA3AF" }}>Set Cost Price & Margin in Company Side →</div>
+                  )}
+                </div>
+              );
+            })()}
+
             {!isPackage && !isB2B && TIER_LABELS.every(lbl => tierTotals[lbl].total === 0) && (
               <div style={{ fontSize: 11, color: "#9CA3AF", textAlign: "center", marginTop: 16, lineHeight: 1.6 }}>
                 Enter prices in Hotels, Flights or Transfers to see a live preview here.
-              </div>
-            )}
-            {!isPackage && isB2B && !TIER_LABELS.some(lbl => +pkgTiers[lbl]?.cost > 0 || +pkgTiers[lbl]?.margin > 0) && (
-              <div style={{ fontSize: 11, color: "#9CA3AF", textAlign: "center", marginTop: 16, lineHeight: 1.6 }}>
-                Select a tier, then set its Cost Price and Margin in Company Side to see a live preview here.
               </div>
             )}
           </div>
@@ -1088,30 +1332,150 @@ export default function QuotationBuilder({
           {/* ── RIGHT: scrollable form ── */}
           <div style={{ flex: 1, overflowY: "auto", padding: "18px 20px" }}>
 
+            {/* ── Copy from existing quotation (new only) ── */}
+            {isNew && (
+              <div style={{ marginBottom: 16, border: `1.5px solid ${tmplApplied ? "#86EFAC" : "#BFDBFE"}`, borderRadius: 12, overflow: "hidden" }}>
+                {/* ── Banner: shows applied state or browse prompt ── */}
+                <div
+                  style={{ background: tmplApplied ? "#F0FDF4" : (tmplOpen ? "#EFF4FF" : "#F0F6FF"), padding: "10px 14px", display: "flex", alignItems: "center", gap: 8, justifyContent: "space-between", userSelect: "none" }}
+                >
+                  {tmplApplied ? (
+                    <>
+                      <span style={{ fontSize: 12.5, fontWeight: 700, color: "#15803D" }}>
+                        ✓ Template applied:&nbsp;
+                        <span style={{ color: "#2563EB" }}>{tmplApplied.quotationNo}</span>
+                        <span style={{ fontWeight: 500, color: "#64748B", marginLeft: 6 }}>
+                          {tmplApplied.leadId?.destination || "—"} · {tmplApplied.days || "??"}
+                        </span>
+                      </span>
+                      <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                        <button
+                          onClick={() => setTmplOpen(p => !p)}
+                          style={{ fontSize: 11, fontWeight: 700, padding: "3px 9px", border: "1px solid #BFDBFE", borderRadius: 5, background: "#EFF4FF", color: "#2563EB", cursor: "pointer" }}
+                        >{tmplOpen ? "▲ Close" : "Browse another"}</button>
+                        <button
+                          onClick={clearTemplate}
+                          style={{ fontSize: 11, fontWeight: 700, padding: "3px 9px", border: "1px solid #FCA5A5", borderRadius: 5, background: "#FFF5F5", color: "#DC2626", cursor: "pointer" }}
+                        >✕ Clear</button>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <span style={{ fontSize: 12.5, fontWeight: 700, color: "#2563EB" }}>
+                        📋 Copy from existing quotation
+                        <span style={{ fontSize: 11, fontWeight: 500, color: "#64748B", marginLeft: 8 }}>optional — fills itinerary, hotels, highlights, terms…</span>
+                      </span>
+                      <span
+                        onClick={() => setTmplOpen(p => !p)}
+                        style={{ fontSize: 11, color: "#2563EB", fontWeight: 700, cursor: "pointer" }}
+                      >{tmplOpen ? "▲ Close" : "▼ Browse"}</span>
+                    </>
+                  )}
+                </div>
+
+                {tmplOpen && (
+                  <div style={{ background: "#fff", padding: 12 }}>
+                    {tmplApplied && (
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "7px 10px", background: "#FFF5F5", border: "1px solid #FCA5A5", borderRadius: 8, marginBottom: 10 }}>
+                        <span style={{ fontSize: 11, color: "#7F1D1D", fontWeight: 600 }}>
+                          Currently using <b>{tmplApplied.quotationNo}</b> as template
+                        </span>
+                        <button
+                          onClick={clearTemplate}
+                          style={{ fontSize: 11, fontWeight: 700, padding: "2px 9px", border: "1px solid #FCA5A5", borderRadius: 5, background: "#fff", color: "#DC2626", cursor: "pointer" }}
+                        >✕ Clear template</button>
+                      </div>
+                    )}
+                    <input
+                      placeholder="Search by destination, quote ID, or guest name…"
+                      value={tmplSearch}
+                      onChange={e => setTmplSearch(e.target.value)}
+                      style={{ width: "100%", border: "1px solid #E4E9F2", borderRadius: 8, padding: "8px 12px", fontSize: 13, marginBottom: 10, outline: "none", boxSizing: "border-box" }}
+                    />
+
+                    {tmplLoading && (
+                      <div style={{ fontSize: 12, color: "#94A3B8", textAlign: "center", padding: "14px 0" }}>Loading quotations…</div>
+                    )}
+
+                    {!tmplLoading && filteredTmpls.length === 0 && (
+                      <div style={{ fontSize: 12, color: "#94A3B8", textAlign: "center", padding: "14px 0" }}>No quotations found</div>
+                    )}
+
+                    {!tmplLoading && filteredTmpls.slice(0, 12).map(q => {
+                      const dest = q.leadId?.destination || "—";
+                      const guestName = q.leadId?.name || "—";
+                      const sameDestMatch = lead?.destination &&
+                        (q.leadId?.destination || "").toLowerCase().includes((lead.destination || "").toLowerCase());
+                      return (
+                        <div
+                          key={q._id}
+                          style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 10px", border: `1px solid ${sameDestMatch ? "#BFDBFE" : "#E4E9F2"}`, borderRadius: 8, marginBottom: 6, background: sameDestMatch ? "#F5F8FF" : "#FAFBFF" }}
+                        >
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 2 }}>
+                              <span style={{ fontSize: 12, fontWeight: 700, color: "#2563EB" }}>{q.quotationNo}</span>
+                              {sameDestMatch && (
+                                <span style={{ fontSize: 9, fontWeight: 700, background: "#BFDBFE", color: "#1D4ED8", borderRadius: 4, padding: "1px 5px", letterSpacing: ".03em" }}>SAME DEST</span>
+                              )}
+                              <span style={{ fontSize: 10, color: "#94A3B8", fontWeight: 600, textTransform: "uppercase" }}>{q.quoteType || "standard"}</span>
+                            </div>
+                            <div style={{ fontSize: 11, color: "#6B7A99", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: 240 }}>
+                              {dest} · {guestName} · {q.days || "??"} · v{q.versions?.length || 1}
+                            </div>
+                          </div>
+                          <button
+                            onClick={() => setTmplPreview(q)}
+                            style={{ fontSize: 11, fontWeight: 700, padding: "4px 9px", border: "1px solid #BFDBFE", borderRadius: 6, background: "#F0F6FF", color: "#2563EB", cursor: "pointer", flexShrink: 0 }}
+                          >👁 Preview</button>
+                          <button
+                            onClick={() => applyTemplate(q)}
+                            style={{ fontSize: 11, fontWeight: 700, padding: "4px 10px", border: "none", borderRadius: 6, background: "#2563EB", color: "#fff", cursor: "pointer", flexShrink: 0 }}
+                          >Use ✓</button>
+                        </div>
+                      );
+                    })}
+
+                    {!tmplLoading && filteredTmpls.length > 12 && (
+                      <div style={{ fontSize: 11, color: "#94A3B8", textAlign: "center", paddingTop: 4 }}>
+                        Showing 12 of {filteredTmpls.length} — search to narrow down
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* ── Quotation Type Toggle ── */}
             <div style={{ marginBottom: 16 }}>
               <div style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: ".06em", color: "#6B7A99", marginBottom: 8 }}>Quotation Type</div>
               <div style={{ display: "flex", border: "1.5px solid #E4E9F2", borderRadius: 10, overflow: "hidden" }}>
                 {[
-                  { key: "standard", label: "Standard" },
+                  { key: "standard", label: "Package Category" },
                   { key: "b2b",      label: "B2B" },
                   { key: "package",  label: "Package" },
-                ].map((t, idx) => (
-                  <button
-                    key={t.key}
-                    onClick={() => upd("quoteType", t.key)}
-                    style={{
-                      flex: 1, padding: "9px 0", border: "none", cursor: "pointer",
-                      fontWeight: 700, fontSize: 13,
-                      background: form.quoteType === t.key ? "#2563EB" : "#F8FAFF",
-                      color: form.quoteType === t.key ? "#fff" : "#6B7A99",
-                      borderRight: idx < 2 ? "1.5px solid #E4E9F2" : "none",
-                      transition: "all .15s",
-                    }}
-                  >
-                    {t.label}
-                  </button>
-                ))}
+                ].map((t, idx) => {
+                  const isActive = form.quoteType === t.key;
+                  const isLocked = !isNew && origQuoteType !== null && t.key !== origQuoteType;
+                  return (
+                    <button
+                      key={t.key}
+                      onClick={() => { if (!isLocked) upd("quoteType", t.key); }}
+                      disabled={isLocked}
+                      title={isLocked ? "Quote type cannot be changed after creation" : undefined}
+                      style={{
+                        flex: 1, padding: "9px 0", border: "none",
+                        cursor: isLocked ? "not-allowed" : "pointer",
+                        fontWeight: 700, fontSize: 13,
+                        background: isActive ? "#2563EB" : isLocked ? "#F1F5F9" : "#F8FAFF",
+                        color: isActive ? "#fff" : isLocked ? "#CBD5E1" : "#6B7A99",
+                        borderRight: idx < 2 ? "1.5px solid #E4E9F2" : "none",
+                        transition: "all .15s",
+                      }}
+                    >
+                      {t.label}{isLocked ? " 🔒" : ""}
+                    </button>
+                  );
+                })}
               </div>
               {isB2B && <div style={{ marginTop: 6, fontSize: 11, color: "#2563EB", fontWeight: 600 }}>B2B mode: pricing fields are hidden. Itinerary & service details only.</div>}
               {isPackage && <div style={{ marginTop: 6, fontSize: 11, color: "#15803D", fontWeight: 600 }}>Package mode: single flat package — no Economy/Deluxe/Premium tiers.</div>}
@@ -1287,20 +1651,25 @@ export default function QuotationBuilder({
                       <button
                         key={lbl}
                         onClick={() => { activePkgRef.current = lbl; setActivePkg(lbl); }}
+                        disabled={isB2B}
+                        title={isB2B ? "Tier switching is disabled in B2B mode" : undefined}
                         style={{
-                          flex: 1, padding: "9px 0", border: "none", cursor: "pointer",
+                          flex: 1, padding: "9px 0", border: "none",
+                          cursor: isB2B ? "not-allowed" : "pointer",
                           fontWeight: 700, fontSize: 13,
-                          background: isActive ? tierColor : tierBg,
-                          color: isActive ? "#fff" : tierColor,
+                          background: isB2B ? (lbl === "Economy" ? tierColor : "#F1F5F9") : (isActive ? tierColor : tierBg),
+                          color: isB2B ? (lbl === "Economy" ? "#fff" : "#CBD5E1") : (isActive ? "#fff" : tierColor),
                           borderRight: idx < 2 ? "1.5px solid #E4E9F2" : "none",
                           transition: "all .15s",
+                          opacity: isB2B && lbl !== "Economy" ? 0.45 : 1,
                         }}
                       >
-                        {TIER_ICONS[lbl]} {lbl}
+                        {TIER_ICONS[lbl]} {lbl}{isB2B && lbl !== "Economy" ? " 🔒" : ""}
                       </button>
                     );
                   })}
                 </div>
+                {isB2B && <div style={{ marginTop: 6, fontSize: 11, color: "#64748B", fontStyle: "italic" }}>B2B mode uses a single pricing segment. Tier switching is disabled.</div>}
               </div>
             )}
 
@@ -1318,13 +1687,18 @@ export default function QuotationBuilder({
                   <div key={i} style={QS.rowBox}>
                     {hotels.length > 1 && <button style={QS.remBtn} onClick={() => remRow(setHotels, i)}>✕ Hotel</button>}
                     {hotels.length > 1 && <div style={QS.rowLabel}>Hotel {i + 1}</div>}
-                    {/* Hotel location + name */}
+                    {/* Hotel location + name + meal plan */}
                     <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
-                      <Fl l="Location / City" style={{ flex: "0 0 160px" }}>
+                      <Fl l="Location / City" style={{ flex: "0 0 150px" }}>
                         <input style={QS.inp} placeholder="e.g. Srinagar" value={h.location || ""} onChange={e => updArr(setHotels, i, "location", e.target.value)} />
                       </Fl>
                       <Fl l="Hotel Name" style={{ flex: 1 }}>
                         <input style={QS.inp} placeholder="Hotel name" value={h.name} onChange={e => updArr(setHotels, i, "name", e.target.value)} />
+                      </Fl>
+                      <Fl l="Meal Plan" style={{ flex: "0 0 210px" }}>
+                        <select style={QS.inp} value={h.mealPlan || "CPAI"} onChange={e => updArr(setHotels, i, "mealPlan", e.target.value)}>
+                          {MEAL_PLANS.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
+                        </select>
                       </Fl>
                     </div>
                     {/* Rate rows */}
@@ -1999,14 +2373,190 @@ export default function QuotationBuilder({
           <div style={QS.foot}>
             <button style={QS.fb} onClick={onClose}>Close</button>
             <button style={QS.fb} onClick={() => setPreview(true)}>👁 Preview PDF</button>
-            <a style={QS.fb} href={emailHref()}>✉️ Email Quote</a>
-            <a style={{ ...QS.fb, background: "#16A34A", color: "#fff", border: "1px solid #16A34A", textDecoration: "none" }} href={waHref()} target="_blank" rel="noreferrer">💬 WhatsApp Quote</a>
-            <button style={{ ...QS.fb, background: "#2563EB", color: "#fff", border: "none", opacity: saving ? 0.7 : 1 }} onClick={save} disabled={saving}>
-              💾 {saving ? "Saving…" : "Save as New Version"}
-            </button>
+            <button style={QS.fb} onClick={openEmailModal}>✉️ Email Quote</button>
+            {/* WhatsApp Quote button — hidden for now */}
+            {!isNew && !priceChanged ? (
+              <button
+                style={{ ...QS.fb, background: "#2563EB", color: "#fff", border: "none", opacity: saving ? 0.7 : 1 }}
+                onClick={saveCurrentVersion} disabled={saving}
+                title="Price unchanged — saves to current version without creating a new one"
+              >
+                💾 {saving ? "Saving…" : "Save"}
+              </button>
+            ) : (
+              <button
+                style={{ ...QS.fb, background: "#2563EB", color: "#fff", border: "none", opacity: saving ? 0.7 : 1 }}
+                onClick={save} disabled={saving}
+                title={isNew ? "Create first version" : "Price changed — saves as a new version"}
+              >
+                💾 {saving ? "Saving…" : "Save as New Version"}
+              </button>
+            )}
           </div>
         </div>
       </Ov>
+
+      {/* ── Quotation Email Modal ── */}
+      {emailModal && (
+        <Ov style={{ zIndex: 103 }} onClick={() => setEmailModal(false)}>
+          <div style={{ ...QS.modal, maxWidth: 600 }} onClick={e => e.stopPropagation()}>
+
+            {/* Header */}
+            <div style={QS.head}>
+              <div>
+                <div style={{ color: "#fff", fontWeight: 800, fontSize: 15 }}>✉️ Email Quotation</div>
+                <div style={{ fontSize: 11, color: "#BFD3FE", marginTop: 2, fontWeight: 600 }}>
+                  {quoteDisplayId} · {lead?.name} · {lead?.destination}
+                </div>
+              </div>
+              <button style={{ ...QS.x, marginLeft: "auto" }} onClick={() => setEmailModal(false)}>✕</button>
+            </div>
+
+            {/* Form */}
+            <div style={{ padding: "18px 22px", overflowY: "auto", maxHeight: "70vh" }}>
+
+              {emailSent ? (
+                /* ── Success state (auto-closes in 1.5s) ── */
+                <div style={{ textAlign: "center", padding: "48px 20px" }}>
+                  <div style={{ width: 56, height: 56, borderRadius: "50%", background: "#DCFCE7", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px", fontSize: 26 }}>✓</div>
+                  <div style={{ fontSize: 17, fontWeight: 800, color: "#15803D", marginBottom: 8 }}>Email Queued!</div>
+                  <div style={{ fontSize: 13, color: "#64748B" }}>
+                    Sending to <b>{emailTo.join(", ")}</b>
+                    {attachPdf && <span style={{ color: "#94A3B8" }}> · PDF being attached</span>}
+                  </div>
+                  <div style={{ fontSize: 11, color: "#94A3B8", marginTop: 10 }}>This window will close automatically…</div>
+                </div>
+              ) : (
+                <>
+                  {/* To */}
+                  <div style={{ marginBottom: 12 }}>
+                    <label style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".06em", color: "#6B7A99", display: "block", marginBottom: 4 }}>
+                      To * <span style={{ fontWeight: 500, textTransform: "none", letterSpacing: 0 }}>— type email & press Enter or comma to add</span>
+                    </label>
+                    <EmailChipInput tags={emailTo} onChange={setEmailTo} placeholder="recipient@email.com" />
+                  </div>
+
+                  {/* CC + BCC side by side */}
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
+                    <div>
+                      <label style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".06em", color: "#6B7A99", display: "block", marginBottom: 4 }}>CC</label>
+                      <EmailChipInput tags={emailCc} onChange={setEmailCc} placeholder="cc@email.com" />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".06em", color: "#6B7A99", display: "block", marginBottom: 4 }}>BCC</label>
+                      <EmailChipInput tags={emailBcc} onChange={setEmailBcc} placeholder="bcc@email.com" />
+                    </div>
+                  </div>
+
+                  {/* Subject */}
+                  <div style={{ marginBottom: 12 }}>
+                    <label style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".06em", color: "#6B7A99", display: "block", marginBottom: 4 }}>Subject</label>
+                    <input type="text" value={emailSubject} onChange={e => setEmailSubject(e.target.value)} style={{ ...QS.inp, width: "100%", boxSizing: "border-box" }} />
+                  </div>
+
+                  {/* Message — rich text editor */}
+                  <div style={{ marginBottom: 14 }}>
+                    <label style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".06em", color: "#6B7A99", display: "block", marginBottom: 4 }}>Message</label>
+                    <RTE key={emailModalKey} value={emailMsg} onChange={setEmailMsg} minHeight={160} />
+                  </div>
+
+                  {/* Attach PDF toggle */}
+                  <label style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer", padding: "10px 14px", background: attachPdf ? "#EFF4FF" : "#F8FAFC", border: `1.5px solid ${attachPdf ? "#BFDBFE" : "#E4E9F2"}`, borderRadius: 9, marginBottom: 14, userSelect: "none" }}>
+                    <input type="checkbox" checked={attachPdf} onChange={e => setAttachPdf(e.target.checked)} style={{ width: 16, height: 16, accentColor: "#2563EB", cursor: "pointer" }} />
+                    <div>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: attachPdf ? "#1D4ED8" : "#374151" }}>📎 Attach Quotation PDF</div>
+                      <div style={{ fontSize: 11, color: "#64748B", marginTop: 1 }}>
+                        {attachPdf ? "PDF will be generated & attached automatically" : "Send email only without PDF"}
+                      </div>
+                    </div>
+                  </label>
+
+                  {/* Summary bar */}
+                  <div style={{ background: "#F5F8FF", border: "1px solid #BFDBFE", borderRadius: 10, padding: "10px 14px", marginBottom: 14, fontSize: 12, color: "#374151", lineHeight: 1.7 }}>
+                    <span style={{ color: "#94A3B8", fontWeight: 600 }}>To: </span>{emailTo.join(", ") || "—"}
+                    {emailCc.length > 0 && <><span style={{ color: "#94A3B8", fontWeight: 600, marginLeft: 10 }}>CC: </span>{emailCc.join(", ")}</>}
+                    {emailBcc.length > 0 && <><span style={{ color: "#94A3B8", fontWeight: 600, marginLeft: 10 }}>BCC: </span>{emailBcc.join(", ")}</>}
+                    <div style={{ marginTop: 3 }}><span style={{ color: "#94A3B8", fontWeight: 600 }}>Attachment: </span>{attachPdf ? "✅ Quotation PDF" : "None"}</div>
+                  </div>
+
+                  {/* Error */}
+                  {emailError && (
+                    <div style={{ background: "#FFF5F5", border: "1px solid #FCA5A5", borderRadius: 8, padding: "10px 14px", marginBottom: 12, fontSize: 13, color: "#DC2626", fontWeight: 600 }}>
+                      ⚠️ {emailError}
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+
+            {/* Footer */}
+            {!emailSent && (
+              <div style={QS.foot}>
+                <button style={QS.fb} onClick={() => setEmailModal(false)}>Cancel</button>
+                <button
+                  onClick={handleSendEmail}
+                  disabled={emailTo.length === 0}
+                  style={{ ...QS.fb, background: "#2563EB", color: "#fff", border: "none", opacity: emailTo.length === 0 ? 0.65 : 1 }}
+                >
+                  {`Send${attachPdf ? " + PDF" : ""}`}
+                </button>
+              </div>
+            )}
+          </div>
+        </Ov>
+      )}
+
+      {/* ── Template PDF Preview ── */}
+      {tmplPreview && (
+        <Ov style={{ zIndex: 102 }} onClick={() => setTmplPreview(null)}>
+          <div style={{ ...QS.modal, maxWidth: 840 }} onClick={e => e.stopPropagation()}>
+            <div style={QS.head}>
+              <div>
+                <div style={{ color: "#fff", fontWeight: 800, fontSize: 14 }}>
+                  Preview · {tmplPreview.quotationNo}
+                </div>
+                <div style={{ fontSize: 11, color: "#BFD3FE", marginTop: 2, fontWeight: 600 }}>
+                  {tmplPreview.leadId?.destination || "—"} · {tmplPreview.leadId?.name || "—"} · {tmplPreview.days || "??"} days
+                </div>
+              </div>
+              <div style={{ marginLeft: "auto", display: "flex", gap: 8, alignItems: "center" }}>
+                <button
+                  onClick={() => { applyTemplate(tmplPreview); setTmplPreview(null); }}
+                  style={{ ...QS.fb, background: "#16A34A", color: "#fff", border: "none", fontWeight: 700 }}
+                >
+                  ✓ Use this template
+                </button>
+                <button style={QS.x} onClick={() => setTmplPreview(null)}>✕</button>
+              </div>
+            </div>
+            <div style={{ maxHeight: "70vh", overflowY: "auto", padding: 20 }}>
+              <QuotationPreview
+                data={{
+                  quoteId:   tmplPreview.quotationNo,
+                  lead:      tmplPreview.leadId || {},
+                  form:      tmplPreview,
+                  pkgTiers:  tmplPreview.pkgTiers || {},
+                  hotels:    tmplPreview.hotels    || [],
+                  flights:   tmplPreview.flights   || [],
+                  transfers: tmplPreview.transfers || [],
+                  miscs:     tmplPreview.miscs     || [],
+                  itin:      tmplPreview.itinerary || [],
+                  selling:   calcQ(tmplPreview).selling,
+                }}
+              />
+            </div>
+            <div style={QS.foot}>
+              <button style={QS.fb} onClick={() => setTmplPreview(null)}>← Back to list</button>
+              <button
+                onClick={() => { applyTemplate(tmplPreview); setTmplPreview(null); }}
+                style={{ ...QS.fb, background: "#2563EB", color: "#fff", border: "none", fontWeight: 700 }}
+              >
+                ✓ Use this template
+              </button>
+            </div>
+          </div>
+        </Ov>
+      )}
 
       {/* ── Preview PDF ── */}
       {preview && (
@@ -2018,15 +2568,12 @@ export default function QuotationBuilder({
                 <button style={{ ...QS.fb, background: "#2563EB", color: "#fff", border: "none", opacity: pdfLoading ? 0.6 : 1 }} onClick={handleDownload} disabled={pdfLoading}>
                   ⬇ {pdfLoading ? "…" : "Download PDF"}
                 </button>
-                <button style={{ ...QS.fb, background: "#7c3aed", color: "#fff", border: "none", opacity: pdfLoading ? 0.6 : 1 }} onClick={handlePrint} disabled={pdfLoading}>
-                  🖨 Print
-                </button>
+                {/* Print button — hidden for now */}
                 <button style={QS.x} onClick={() => setPreview(false)}>✕</button>
               </div>
             </div>
             <div style={{ padding: 22, maxHeight: "76vh", overflowY: "auto" }}>
               <QuotationPreview
-                id="qb-pdf-target"
                 data={{ quoteId: quoteDisplayId, lead, form, pkgTiers, hotels, flights, transfers, miscs, itin, selling: c.selling }}
               />
             </div>
@@ -2035,9 +2582,7 @@ export default function QuotationBuilder({
               <button style={{ ...QS.fb, background: "#2563EB", color: "#fff", border: "none", opacity: pdfLoading ? 0.6 : 1 }} onClick={handleDownload} disabled={pdfLoading}>
                 ⬇ {pdfLoading ? "Generating…" : "Download PDF"}
               </button>
-              <button style={{ ...QS.fb, background: "#7c3aed", color: "#fff", border: "none", opacity: pdfLoading ? 0.6 : 1 }} onClick={handlePrint} disabled={pdfLoading}>
-                🖨 Print
-              </button>
+              {/* Print button — hidden for now */}
             </div>
           </div>
         </Ov>
@@ -2172,6 +2717,77 @@ function CR({ l, v, vc }) {
 }
 const FONT_FAMILIES = ["Default", "Arial", "Georgia", "Tahoma", "Verdana", "Courier New", "Times New Roman"];
 const FONT_SIZES    = ["Default", "10px", "12px", "13px", "14px", "16px", "18px", "20px", "24px", "28px", "32px"];
+
+/* ── EmailChipInput ────────────────────────────────────────────────────── */
+function EmailChipInput({ tags = [], onChange, placeholder = "email@example.com" }) {
+  const [input, setInput] = React.useState("");
+  const inputRef = React.useRef(null);
+
+  function addTag(raw) {
+    const val = raw.trim().replace(/,$/, "").trim();
+    if (!val) return;
+    // basic email-like check (or just allow anything — user responsibility)
+    if (!tags.includes(val)) onChange([...tags, val]);
+    setInput("");
+  }
+
+  function handleKey(e) {
+    if (e.key === "Enter" || e.key === ",") {
+      e.preventDefault();
+      addTag(input);
+    } else if (e.key === "Backspace" && input === "" && tags.length > 0) {
+      onChange(tags.slice(0, -1));
+    }
+  }
+
+  function handleBlur() {
+    if (input.trim()) addTag(input);
+  }
+
+  function remove(idx) {
+    onChange(tags.filter((_, i) => i !== idx));
+  }
+
+  return (
+    <div
+      onClick={() => inputRef.current?.focus()}
+      style={{
+        display: "flex", flexWrap: "wrap", alignItems: "center", gap: 6,
+        minHeight: 38, padding: "5px 10px",
+        border: "1.5px solid #D0D7E8", borderRadius: 9,
+        background: "#fff", cursor: "text", boxSizing: "border-box",
+      }}
+    >
+      {tags.map((t, i) => (
+        <span key={i} style={{
+          display: "inline-flex", alignItems: "center", gap: 4,
+          background: "#EFF4FF", border: "1px solid #BFDBFE",
+          borderRadius: 6, padding: "2px 8px", fontSize: 12, color: "#1D4ED8", fontWeight: 600,
+          whiteSpace: "nowrap",
+        }}>
+          {t}
+          <span
+            onClick={e => { e.stopPropagation(); remove(i); }}
+            style={{ cursor: "pointer", color: "#93A3B8", fontWeight: 700, fontSize: 13, lineHeight: 1, marginLeft: 2 }}
+          >×</span>
+        </span>
+      ))}
+      <input
+        ref={inputRef}
+        type="text"
+        value={input}
+        onChange={e => setInput(e.target.value)}
+        onKeyDown={handleKey}
+        onBlur={handleBlur}
+        placeholder={tags.length === 0 ? placeholder : ""}
+        style={{
+          flex: "1 1 120px", minWidth: 100, border: "none", outline: "none",
+          fontSize: 13, background: "transparent", color: "#1E293B", padding: "2px 0",
+        }}
+      />
+    </div>
+  );
+}
 
 function MiniRTE({ value, onChange, placeholder }) {
   const ref = useRef(null);

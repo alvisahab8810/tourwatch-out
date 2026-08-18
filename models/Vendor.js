@@ -2,18 +2,34 @@ import mongoose from "mongoose";
 
 const imageSchema = new mongoose.Schema({ src: String, alt: String }, { _id: false });
 
+/* ── Season pricing (per room, per night, double occ.) ── */
+const seasonSchema = new mongoose.Schema({
+  label:  { type: String, default: "" },  // e.g. "Nov 2026 – Mar 2027"
+  cpai:   { type: Number, default: 0 },   // CPAI — Room + Breakfast
+  mapai:  { type: Number, default: 0 },   // MAPAI — Breakfast & Dinner
+  apai:   { type: Number, default: 0 },   // APAI — All Meals
+}, { _id: false });
+
 const hotelRoomSchema = new mongoose.Schema({
-  roomType:      String,
-  roomName:      String,   // display name e.g. "Standard Double"
-  bedType:       String,   // e.g. "1 queen bed or 2 Single beds"
-  roomSize:      String,   // e.g. "Normal Size Room"
+  roomType:        String,
+  roomName:        String,   // display name e.g. "Regal Classic Room"
+  bedType:         String,   // e.g. "1 Queen Bed"
+  roomSize:        String,   // e.g. "350 sq.ft"
+  totalRooms:      { type: Number, default: 0 },
+  // Extra person / child rates (flat per room, apply across all seasons)
+  extraPerson:     { type: Number, default: 0 },
+  childWithBed:    { type: Number, default: 0 },
+  childWithoutBed: { type: Number, default: 0 },
+  amenities:       [String],
+  gallery:         [imageSchema],
+  seasons:         [seasonSchema],  // Season-wise pricing
+  // Legacy flat fields kept for backward-compat reads
   pricePerNight: Number,
   cp:            Number,
   map:           Number,
   ap:            Number,
+  epai:          Number,
   guests:        { type: Number, default: 2 },
-  amenities:     [String],
-  gallery:       [imageSchema],
 }, { _id: false });
 
 const vehicleSchema = new mongoose.Schema({
@@ -49,7 +65,7 @@ const VendorSchema = new mongoose.Schema(
       countryCode:   { type: String, default: "+91" },
       contactNumber: String,
     },
-    starRating: { type: Number },   // hotel star rating e.g. 3.5
+    starRating: { type: Number },
     hotelRooms: [hotelRoomSchema],
     vehicles:   [vehicleSchema],
     activities: [activitySchema],

@@ -6,6 +6,15 @@ import DashboardLayout from "../../components/backend/DashboardLayout";
 import { getSalespersonData, isAdmin } from "../../utils/voucherAuth";
 
 /* ── constants ── */
+const CUR_YEAR = new Date().getFullYear();
+const MONTH_CHIPS = Array.from({ length: 12 }, (_, i) => ({
+  key: `${CUR_YEAR}-${String(i + 1).padStart(2, "0")}`,
+  label: new Date(CUR_YEAR, i, 1).toLocaleDateString("en-IN", { month: "short" }),
+}));
+function leadMonthKey(l) {
+  try { const d = new Date(l.createdAt); return isNaN(d) ? "" : `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`; } catch { return ""; }
+}
+
 const STATUS_OPTIONS = ["New", "Contacted", "Follow Up", "Not Interested", "No Answer", "Qualified", "Not Qualified"];
 const STATUS_STYLE = {
   New:              { bg: "#EEF1F6",  color: "#6B7A99" },
@@ -96,6 +105,7 @@ export default function LeadsPage() {
   const [page,        setPage]        = useState(1);
   const [filterStatus, setFilterStatus] = useState("");
   const [filterSource, setFilterSource] = useState("");
+  const [filterMonth,  setFilterMonth]  = useState("");
 
   /* add lead */
   const [showAdd,   setShowAdd]   = useState(false);
@@ -107,6 +117,9 @@ export default function LeadsPage() {
   /* delete */
   const [confirmId, setConfirmId] = useState(null);
   const [deleting,  setDeleting]  = useState(false);
+  const [expandedRow, setExpandedRow] = useState(null); // clicked row id to show UTM details
+  const [msgModal,    setMsgModal]    = useState(null); // { name, message } — full message popup
+  const [hoveredRow,  setHoveredRow]  = useState(null); // row hover for premium feel
 
   /* inline edits */
   const [updatingId, setUpdatingId] = useState(null);
@@ -217,7 +230,11 @@ export default function LeadsPage() {
   let filtered = leads.filter(l => {
     const q = search.toLowerCase();
     const m = !q || [l.name, l.phone, l.email, l.destination, leadIdMap[l._id]].join(" ").toLowerCase().includes(q);
-    return m && (!filterStatus || l.status === filterStatus) && (!filterSource || l.source === filterSource);
+    if (!m) return false;
+    if (filterStatus && l.status !== filterStatus) return false;
+    if (filterSource && l.source !== filterSource) return false;
+    if (filterMonth && leadMonthKey(l) !== filterMonth) return false;
+    return true;
   });
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
@@ -267,7 +284,25 @@ export default function LeadsPage() {
 
         {/* Automation banner */}
         <div style={S.banner}>
-          ⚡ <span><strong>Automations live on this screen:</strong> leads land here straight from website forms, Meta Lead Ads and Google Ads with full UTM data. Duplicate numbers are auto-merged. Marking a lead <strong>Contacted</strong> or <strong>Qualified</strong> unlocks the BRR button. Lead score is computed from 5 quick questions.</span>
+          <span style={{ color: "#F59E0B", marginRight: 6 }}>⚡</span>
+          <span style={{ color: "#6B7A99" }}><strong style={{ color: "#374151" }}>Automations live:</strong> Meta, Google & web leads auto-land here · Duplicates merged · <strong style={{ color: "#374151" }}>Contacted / Qualified</strong> unlocks BRR · Lead score from 5 questions.</span>
+        </div>
+
+        {/* Month filter chips */}
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14, background: "#fff", border: "1px solid #E8EDF5", borderRadius: 10, padding: "10px 14px", overflowX: "auto", boxShadow: "0 1px 3px rgba(15,27,51,.04)" }}>
+          <span style={{ fontSize: 11, fontWeight: 800, color: "#94A3B8", textTransform: "uppercase", letterSpacing: ".07em", flexShrink: 0 }}>Filters:</span>
+          {MONTH_CHIPS.map(m => (
+            <button key={m.key} onClick={() => setFilterMonth(filterMonth === m.key ? "" : m.key)}
+              style={{ padding: "4px 11px", borderRadius: 20, fontSize: 11, fontWeight: 700, cursor: "pointer", border: `1.5px solid ${filterMonth === m.key ? "#2563EB" : "#E8EDF5"}`, background: filterMonth === m.key ? "#2563EB" : "#fff", color: filterMonth === m.key ? "#fff" : "#6B7A99", whiteSpace: "nowrap", flexShrink: 0, transition: "all .12s" }}>
+              {m.label}
+            </button>
+          ))}
+          {filterMonth && (
+            <button onClick={() => setFilterMonth("")}
+              style={{ marginLeft: "auto", background: "#FEE2E2", color: "#BE123C", border: "none", borderRadius: 7, padding: "4px 12px", fontSize: 12, fontWeight: 700, cursor: "pointer", flexShrink: 0 }}>
+              ✕ Clear
+            </button>
+          )}
         </div>
 
         {/* Table panel */}
@@ -280,7 +315,7 @@ export default function LeadsPage() {
                 <input style={S.searchInput} placeholder="Search name, mobile, destination" value={search} onChange={e => { setSearch(e.target.value); setPage(1); }} />
               </div>
               <select style={{ ...S.filterSel, width: 140 }} value={filterStatus} onChange={e => { setFilterStatus(e.target.value); setPage(1); }}>
-                <option value="">All statuses</option>
+                <option value="">All Status</option>
                 {STATUS_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
               </select>
               <select style={{ ...S.filterSel, width: 130 }} value={filterSource} onChange={e => { setFilterSource(e.target.value); setPage(1); }}>
@@ -295,29 +330,55 @@ export default function LeadsPage() {
           <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }} className="tbl-wrap">
             <table style={S.tbl}>
               <thead>
-                <tr style={{ background: "#F6F8FC" }}>
-                  {["Lead ID","Name","Assigned To","Mobile","Email","Destination","Travel Date","Pax","Message","Form Type","Date · Time","Source","Medium","Campaign","Campaign ID","Adset","Ad Content","Connects","Status","BRR","Lead Score",...(isAdminUser?[""]:[])].map((h,i) => (
-                    <th key={i} style={{ ...S.th, ...(h === "Message" ? { minWidth: 190 } : h === "Name" ? { minWidth: 130 } : h === "Assigned To" ? { minWidth: 140 } : h === "Email" ? { minWidth: 150 } : h === "Campaign" ? { minWidth: 150 } : h === "Status" ? { minWidth: 130 } : {}) }}>{h}</th>
+                <tr style={{ background: "#fff" }}>
+                  {["Date · Time","Lead ID","Name",/* "Assigned To", // TODO: re-enable when needed */"Mobile","Email","Destination","Travel Date","Pax","Message","Source","Connects","Status","BRR","Lead Score","",...(isAdminUser?[""]:[])].map((h,i) => (
+                    <th key={i} style={{
+                      ...S.th,
+                      // ── frozen columns ──
+                      ...(h === "Lead ID"    ? { position: "sticky", left: 120, width: 88,  minWidth: 88,  zIndex: 3, background: "#fff" } : {}),
+                      ...(h === "Name"       ? { position: "sticky", left: 208, width: 110, minWidth: 110, zIndex: 3, background: "#fff" } : {}),
+                      ...(h === "Mobile"     ? { position: "sticky", left: 318, width: 142, minWidth: 142, zIndex: 3, background: "#fff", boxShadow: "3px 0 6px rgba(0,0,0,.06)" } : {}),
+                      // ── other column sizes ──
+                      ...(h === "Date · Time"? { position: "sticky", left: 0, width: 120, minWidth: 120, zIndex: 3, background: "#fff" } : {}),
+                      ...(h === "Message"    ? { minWidth: 140, maxWidth: 160 } : {}),
+                      ...(h === "Email"      ? { minWidth: 180 } : {}),
+                      ...(h === "Status"     ? { minWidth: 110 } : {}),
+                      ...(h === "Connects"   ? { minWidth: 80  } : {}),
+                      ...(h === ""           ? { minWidth: 32, width: 32 } : {}),
+                    }}>{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
-                  <tr><td colSpan={isAdminUser ? 23 : 22} style={S.emptyCell}>Loading…</td></tr>
+                  <tr><td colSpan={isAdminUser ? 17 : 16} style={S.emptyCell}>Loading…</td></tr>
                 ) : slice.length === 0 ? (
-                  <tr><td colSpan={isAdminUser ? 23 : 22} style={S.emptyCell}><MdPeople size={38} color="#CBD5E1" /><div style={{ marginTop: 8, fontSize: 13 }}>No leads match the filters.</div></td></tr>
+                  <tr><td colSpan={isAdminUser ? 17 : 16} style={S.emptyCell}><MdPeople size={38} color="#CBD5E1" /><div style={{ marginTop: 8, fontSize: 13 }}>No leads match the filters.</div></td></tr>
                 ) : slice.map(l => {
                   const ss = STATUS_STYLE[l.status] || STATUS_STYLE.New;
                   const ftBadge = formTypeBadge(l.formType);
                   const hasBrr = !!l.brr?.collectedOn;
                   const sc = l.score?.val != null ? scoreChipStyle(l.score.val) : null;
                   const disabled = updatingId === l._id;
+                  const isExpanded = expandedRow === l._id;
+                  const isHovered  = hoveredRow  === l._id;
                   return (
-                    <tr key={l._id} style={{ opacity: disabled ? 0.6 : 1, transition: "opacity .15s" }}>
-                      {/* Lead ID */}
-                      <td style={S.td}>
+                    <React.Fragment key={l._id}>
+                    <tr
+                      onMouseEnter={() => setHoveredRow(l._id)}
+                      onMouseLeave={() => setHoveredRow(null)}
+                      style={{ opacity: disabled ? 0.6 : 1, transition: "background .12s, opacity .15s", background: isExpanded ? "#EEF4FF" : isHovered ? "#F7F9FF" : "#fff" }}
+                    >
+                      {/* Date · Time — frozen col 0 */}
+                      <td style={{ ...S.td, position: "sticky", left: 0, zIndex: 1, width: 120, whiteSpace: "nowrap", background: isExpanded ? "#EEF4FF" : isHovered ? "#F7F9FF" : "#fff" }}>
+                        <span style={{ display: "block", color: "#36415A" }}>{fmtDate(l.createdAt)}</span>
+                        <span style={{ display: "block", fontSize: 11, color: "#94A3B8" }}>{fmtTime(l.createdAt)}</span>
+                      </td>
+
+                      {/* Lead ID — frozen col 1 */}
+                      <td style={{ ...S.td, position: "sticky", left: 120, zIndex: 1, width: 88, background: isExpanded ? "#EEF4FF" : isHovered ? "#F7F9FF" : "#fff" }}>
                         <span
-                          style={{ color: "#2563EB", fontWeight: 700, fontSize: 13, cursor: "pointer", textDecoration: "underline", textUnderlineOffset: 2 }}
+                          style={{ display: "inline-block", background: "#EFF6FF", color: "#2563EB", fontWeight: 600, fontSize: 10.5, cursor: "pointer", padding: "2px 7px", borderRadius: 5, border: "1px solid #BFDBFE", letterSpacing: ".01em" }}
                           title="View lead profile"
                           onClick={() => router.push(`/dashboard/lead-profiles?lead=${l._id}`)}
                         >
@@ -325,12 +386,12 @@ export default function LeadsPage() {
                         </span>
                       </td>
 
-                      {/* Name */}
-                      <td style={S.td}>
-                        <span style={{ fontWeight: 700, color: "#0F1B33" }}>{l.name}</span>
+                      {/* Name — frozen col 2 */}
+                      <td style={{ ...S.td, position: "sticky", left: 208, zIndex: 1, width: 110, background: isExpanded ? "#EEF4FF" : isHovered ? "#F7F9FF" : "#fff" }}>
+                        <span style={{ fontWeight: 600, color: "#0F1B33" }}>{l.name}</span>
                       </td>
 
-                      {/* Assigned To */}
+                      {/* Assigned To — hidden for now, re-enable when needed
                       <td style={S.td}>
                         {isAdminUser ? (
                           <select className="mini-sel" disabled={disabled}
@@ -346,9 +407,10 @@ export default function LeadsPage() {
                           </span>
                         )}
                       </td>
+                      */}
 
-                      {/* Mobile */}
-                      <td style={S.td}>
+                      {/* Mobile — frozen col 3 (last frozen, has right shadow) */}
+                      <td style={{ ...S.td, position: "sticky", left: 318, zIndex: 1, width: 142, background: isExpanded ? "#EEF4FF" : isHovered ? "#F7F9FF" : "#fff", boxShadow: "3px 0 6px rgba(0,0,0,.06)" }}>
                         <span style={{ display: "flex", alignItems: "center", gap: 6, whiteSpace: "nowrap" }}>
                           {fmtPhone(l.phone)}
                           <a href={waUrl(l.phone, l.name, l.destination)} target="_blank" rel="noreferrer" title="WhatsApp" style={{ textDecoration: "none", fontSize: 15, lineHeight: 1 }}>💬</a>
@@ -356,7 +418,7 @@ export default function LeadsPage() {
                       </td>
 
                       {/* Email */}
-                      <td style={{ ...S.td, fontSize: 12, color: "#36415A" }}>{l.email}</td>
+                      <td style={{ ...S.td, color: "#36415A", maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis" }} title={l.email}>{l.email || <span style={S.dash}>—</span>}</td>
 
                       {/* Destination */}
                       <td style={S.td}>{l.destination || <span style={S.dash}>—</span>}</td>
@@ -367,46 +429,22 @@ export default function LeadsPage() {
                       {/* Pax */}
                       <td style={S.td}>{l.pax || <span style={S.dash}>—</span>}</td>
 
-                      {/* Message */}
-                      <td style={{ ...S.td, maxWidth: 190, whiteSpace: "normal", fontSize: 12, color: "#36415A" }}>{l.message || <span style={S.dash}>—</span>}</td>
-
-                      {/* Form Type */}
-                      <td style={S.td}>
-                        <span style={{ display: "inline-block", padding: "3px 9px", borderRadius: 99, fontSize: 11, fontWeight: 800, letterSpacing: ".02em", background: ftBadge.bg, color: ftBadge.color }}>
-                          {l.formType || "—"}
-                        </span>
-                      </td>
-
-                      {/* Date · Time */}
-                      <td style={{ ...S.td, whiteSpace: "nowrap" }}>
-                        <span style={{ display: "block", fontWeight: 600, color: "#36415A" }}>{fmtDate(l.createdAt)}</span>
-                        <span style={{ display: "block", fontSize: 11, color: "#94A3B8" }}>{fmtTime(l.createdAt)}</span>
-                      </td>
+                      {/* Message — click to see full text */}
+                      <td
+                        style={{ ...S.td, maxWidth: 160, overflow: "hidden", textOverflow: "ellipsis", cursor: l.message ? "pointer" : "default" }}
+                        title={l.message ? "Click to read full message" : undefined}
+                        onClick={() => l.message && setMsgModal({ name: l.name, message: l.message })}
+                      >{l.message || <span style={S.dash}>—</span>}</td>
 
                       {/* Source */}
                       <td style={S.td}>{l.source || <span style={S.dash}>—</span>}</td>
-
-                      {/* Medium */}
-                      <td style={S.td}>{l.medium || <span style={S.dash}>—</span>}</td>
-
-                      {/* Campaign */}
-                      <td style={{ ...S.td, maxWidth: 160, overflow: "hidden", textOverflow: "ellipsis" }} title={l.campaign}>{l.campaign || <span style={S.dash}>—</span>}</td>
-
-                      {/* Campaign ID */}
-                      <td style={{ ...S.td, fontFamily: "monospace", fontSize: 12 }}>{l.campaignId || <span style={S.dash}>—</span>}</td>
-
-                      {/* Adset */}
-                      <td style={{ ...S.td, maxWidth: 140, overflow: "hidden", textOverflow: "ellipsis" }} title={l.adset}>{l.adset || <span style={S.dash}>—</span>}</td>
-
-                      {/* Ad Content */}
-                      <td style={{ ...S.td, maxWidth: 150, overflow: "hidden", textOverflow: "ellipsis" }} title={l.adContent}>{l.adContent || <span style={S.dash}>—</span>}</td>
 
                       {/* Connects */}
                       <td style={S.td}>
                         <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
                           <button onClick={() => logConnect(l._id, true)} disabled={disabled || !l.connects} title="Decrease"
                             style={{ ...S.iconBtn26, color: "#E8364A", borderColor: "#FECACA", opacity: !l.connects ? 0.35 : 1 }}>−</button>
-                          <span style={{ fontWeight: 700, color: "#0F1B33", minWidth: 22, textAlign: "center" }}>{l.connects || 0}</span>
+                          <span style={{ fontWeight: 500, color: "#0F1B33", minWidth: 16, textAlign: "center" }}>{l.connects || 0}</span>
                           <button onClick={() => logConnect(l._id)} disabled={disabled} title="Increase"
                             style={{ ...S.iconBtn26, color: "#15803D", borderColor: "#BBF7D0" }}>+</button>
                         </div>
@@ -416,7 +454,7 @@ export default function LeadsPage() {
                       <td style={S.td}>
                         <select className="mini-sel" value={l.status || "New"} disabled={disabled}
                           onChange={e => { const v = e.target.value; setLeads(p => p.map(x => x._id === l._id ? { ...x, status: v } : x)); patchLead(l._id, { status: v }); }}
-                          style={{ background: ss.bg, color: ss.color, border: `1px solid ${ss.color}40`, minWidth: 118 }}>
+                          style={{ background: ss.bg, color: ss.color, border: `1.5px solid ${ss.color}50`, minWidth: 120, fontSize: 11, fontWeight: 600, borderRadius: 7, padding: "3px 6px", cursor: "pointer", outline: "none", fontFamily: "inherit" }}>
                           {STATUS_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
                         </select>
                       </td>
@@ -427,19 +465,32 @@ export default function LeadsPage() {
                           ? hasBrr
                             ? <button style={S.brrGreen} onClick={() => openBrr(l._id)}>View BRR</button>
                             : <button style={S.brrBlue}  onClick={() => openBrr(l._id)}>Collect BRR</button>
-                          : <span style={{ fontSize: 11, color: "#CBD5E1", fontWeight: 700 }}>N/A</span>}
+                          : <span style={S.dash}>—</span>}
                       </td>
 
                       {/* Lead Score */}
                       <td style={S.td}>
                         {sc ? (
                           <button onClick={() => openScoreQuiz(l._id)}
-                            style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", minWidth: 34, height: 26, borderRadius: 8, fontWeight: 800, fontSize: 13, cursor: "pointer", border: "none", background: sc.bg, color: sc.color }}>
+                            style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", minWidth: 30, height: 22, borderRadius: 6, fontWeight: 800, fontSize: 11, cursor: "pointer", border: "none", background: sc.bg, color: sc.color }}>
                             {l.score.val}/10
                           </button>
                         ) : (
                           <button onClick={() => openScoreQuiz(l._id)} style={S.scoreLead}>Score Lead</button>
                         )}
+                      </td>
+
+                      {/* UTM expand arrow */}
+                      <td style={{ ...S.td, textAlign: "center", width: 32 }}>
+                        <button
+                          title="Show UTM details"
+                          onClick={() => setExpandedRow(prev => prev === l._id ? null : l._id)}
+                          style={{ background: "none", border: "none", cursor: "pointer", padding: 2, color: isExpanded ? "#2563EB" : "#94A3B8", display: "inline-flex", alignItems: "center", transition: "color .15s" }}
+                        >
+                          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={{ transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)", transition: "transform .2s" }}>
+                            <path d="M3 6l5 5 5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        </button>
                       </td>
 
                       {/* Delete — admin only */}
@@ -451,6 +502,49 @@ export default function LeadsPage() {
                         </td>
                       )}
                     </tr>
+                    {/* ── Expanded UTM detail row ── */}
+                    {isExpanded && (
+                      <tr>
+                        <td colSpan={isAdminUser ? 17 : 16} style={{ padding: 0, borderBottom: "2px solid #BFDBFE", background: "#F5F8FF" }}>
+                          <div style={{ borderLeft: "3px solid #3B82F6", margin: "0 16px 0 88px", padding: "10px 16px 12px" }}>
+                            <div style={{ fontSize: 10, fontWeight: 700, color: "#94A3B8", textTransform: "uppercase", letterSpacing: ".1em", marginBottom: 8 }}>UTM / Tracking Details</div>
+                            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                              {/* Form Type */}
+                              <div style={{ background: "#fff", border: "1px solid #E8EDF5", borderRadius: 8, padding: "6px 11px", minWidth: 90 }}>
+                                <div style={{ fontSize: 10, fontWeight: 700, color: "#94A3B8", textTransform: "uppercase", letterSpacing: ".07em", marginBottom: 4 }}>Form Type</div>
+                                <span style={{ display: "inline-block", padding: "2px 8px", borderRadius: 99, fontSize: 11, fontWeight: 700, background: ftBadge.bg, color: ftBadge.color }}>{l.formType || "—"}</span>
+                              </div>
+                              {/* Medium */}
+                              <div style={{ background: "#fff", border: "1px solid #E8EDF5", borderRadius: 8, padding: "6px 11px", minWidth: 90 }}>
+                                <div style={{ fontSize: 10, fontWeight: 700, color: "#94A3B8", textTransform: "uppercase", letterSpacing: ".07em", marginBottom: 4 }}>Medium</div>
+                                <span style={{ fontSize: 12, color: "#36415A", fontWeight: 500 }}>{l.medium || <span style={{ color: "#CBD5E1" }}>—</span>}</span>
+                              </div>
+                              {/* Campaign */}
+                              <div style={{ background: "#fff", border: "1px solid #E8EDF5", borderRadius: 8, padding: "6px 11px", maxWidth: 220 }}>
+                                <div style={{ fontSize: 10, fontWeight: 700, color: "#94A3B8", textTransform: "uppercase", letterSpacing: ".07em", marginBottom: 4 }}>Campaign</div>
+                                <span style={{ fontSize: 12, color: "#36415A", fontWeight: 500, whiteSpace: "normal", wordBreak: "break-word" }}>{l.campaign || <span style={{ color: "#CBD5E1" }}>—</span>}</span>
+                              </div>
+                              {/* Campaign ID */}
+                              <div style={{ background: "#fff", border: "1px solid #E8EDF5", borderRadius: 8, padding: "6px 11px", minWidth: 130 }}>
+                                <div style={{ fontSize: 10, fontWeight: 700, color: "#94A3B8", textTransform: "uppercase", letterSpacing: ".07em", marginBottom: 4 }}>Campaign ID</div>
+                                <span style={{ fontSize: 11, color: "#36415A", fontFamily: "monospace", letterSpacing: ".02em" }} title={l.campaignId}>{l.campaignId ? (l.campaignId.length > 18 ? l.campaignId.slice(0, 18) + "…" : l.campaignId) : <span style={{ color: "#CBD5E1" }}>—</span>}</span>
+                              </div>
+                              {/* Adset */}
+                              <div style={{ background: "#fff", border: "1px solid #E8EDF5", borderRadius: 8, padding: "6px 11px", minWidth: 120 }}>
+                                <div style={{ fontSize: 10, fontWeight: 700, color: "#94A3B8", textTransform: "uppercase", letterSpacing: ".07em", marginBottom: 4 }}>Adset</div>
+                                <span style={{ fontSize: 11, color: "#36415A", fontFamily: "monospace", letterSpacing: ".02em" }} title={l.adset}>{l.adset ? (l.adset.length > 18 ? l.adset.slice(0, 18) + "…" : l.adset) : <span style={{ color: "#CBD5E1" }}>—</span>}</span>
+                              </div>
+                              {/* Ad Content */}
+                              <div style={{ background: "#fff", border: "1px solid #E8EDF5", borderRadius: 8, padding: "6px 11px", maxWidth: 200 }}>
+                                <div style={{ fontSize: 10, fontWeight: 700, color: "#94A3B8", textTransform: "uppercase", letterSpacing: ".07em", marginBottom: 4 }}>Ad Content</div>
+                                <span style={{ fontSize: 12, color: "#36415A", fontWeight: 500, whiteSpace: "normal", wordBreak: "break-word" }}>{l.adContent || <span style={{ color: "#CBD5E1" }}>—</span>}</span>
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                    </React.Fragment>
                   );
                 })}
               </tbody>
@@ -648,6 +742,24 @@ export default function LeadsPage() {
         </div>
       )}
 
+      {/* ══ Full Message Popup ══ */}
+      {msgModal && (
+        <div style={S.overlay} onClick={e => { if (e.target === e.currentTarget) setMsgModal(null); }}>
+          <div style={{ background: "#fff", borderRadius: 14, boxShadow: "0 10px 40px rgba(15,27,51,.18)", width: "100%", maxWidth: 480, padding: "22px 24px 20px" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 800, color: "#0F1B33" }}>{msgModal.name}</div>
+                <div style={{ fontSize: 11, color: "#94A3B8", marginTop: 2 }}>Lead Message</div>
+              </div>
+              <button onClick={() => setMsgModal(null)} style={{ background: "#F3F5FA", border: "none", borderRadius: 8, width: 28, height: 28, cursor: "pointer", fontSize: 16, color: "#6B7A99", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700 }}>✕</button>
+            </div>
+            <div style={{ fontSize: 13, color: "#36415A", lineHeight: 1.75, whiteSpace: "pre-wrap", background: "#F8FAFD", border: "1px solid #E4E9F2", borderRadius: 9, padding: "12px 14px" }}>
+              {msgModal.message}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ══ Delete Confirm ══ */}
       {confirmId && (
         <div style={S.overlay} onClick={e => { if (e.target === e.currentTarget && !deleting) setConfirmId(null); }}>
@@ -678,27 +790,27 @@ function PgBtn({ children, onClick, disabled, active }) {
 
 /* ── Styles ── */
 const S = {
-  page:       { padding: "22px 26px 60px", background: "#F3F5FA", minHeight: "100vh" },
-  topbar:     { display: "flex", alignItems: "center", gap: 12, marginBottom: 18, flexWrap: "wrap" },
-  title:      { fontSize: "1.15rem", fontWeight: 800, color: "#0F1B33", margin: "0 0 2px", letterSpacing: "-.01em" },
-  iconBtn:    { background: "#fff", border: "1px solid #E4E9F2", borderRadius: 9, width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "#6B7A99" },
-  iconBtn26:  { width: 26, height: 26, display: "inline-flex", alignItems: "center", justifyContent: "center", border: "1px solid #E4E9F2", background: "#fff", borderRadius: 7, color: "#6B7A99", fontWeight: 800, cursor: "pointer" },
-  addBtn:     { display: "inline-flex", alignItems: "center", gap: 6, background: "#2563EB", color: "#fff", border: "none", borderRadius: 9, padding: "0 16px", height: 36, fontWeight: 700, fontSize: 14, cursor: "pointer" },
-  banner:     { background: "#EFF4FF", border: "1px solid #BFD3FE", borderRadius: 12, padding: "10px 14px", fontSize: 13, color: "#1D4ED8", marginBottom: 14, lineHeight: 1.55 },
-  panel:      { background: "#fff", border: "1px solid #E4E9F2", borderRadius: 14, boxShadow: "0 1px 2px rgba(15,27,51,.05),0 4px 14px rgba(15,27,51,.06)", overflow: "hidden" },
-  toolbar:    { display: "flex", flexWrap: "wrap", gap: 9, alignItems: "center", padding: "12px 16px", borderBottom: "1px solid #E4E9F2", background: "#FBFCFE" },
-  searchWrap: { flex: 1, minWidth: 220, display: "flex", alignItems: "center", gap: 7, background: "#fff", border: "1px solid #E4E9F2", borderRadius: 9, padding: "0 11px", height: 36 },
+  page:       { padding: "24px 28px 60px", background: "#F1F4FA", minHeight: "100vh" },
+  topbar:     { display: "flex", alignItems: "center", gap: 12, marginBottom: 16, flexWrap: "wrap" },
+  title:      { fontSize: "1.18rem", fontWeight: 800, color: "#0F1B33", margin: "0 0 2px", letterSpacing: "-.02em" },
+  iconBtn:    { background: "#fff", border: "1px solid #E8EDF5", borderRadius: 9, width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "#6B7A99", boxShadow: "0 1px 3px rgba(15,27,51,.06)" },
+  iconBtn26:  { width: 20, height: 20, display: "inline-flex", alignItems: "center", justifyContent: "center", border: "1px solid #E8EDF5", background: "#fff", borderRadius: 4, color: "#94A3B8", fontWeight: 800, cursor: "pointer", fontSize: 12 },
+  addBtn:     { display: "inline-flex", alignItems: "center", gap: 6, background: "#2563EB", color: "#fff", border: "none", borderRadius: 9, padding: "0 18px", height: 36, fontWeight: 700, fontSize: 13, cursor: "pointer", boxShadow: "0 2px 6px rgba(37,99,235,.28)" },
+  banner:     { background: "#fff", border: "1px solid #E8EDF5", borderRadius: 10, padding: "9px 14px", fontSize: 12, color: "#4B5563", marginBottom: 14, lineHeight: 1.55, boxShadow: "0 1px 3px rgba(15,27,51,.04)" },
+  panel:      { background: "#fff", border: "none", borderRadius: 16, boxShadow: "0 2px 8px rgba(15,27,51,.05), 0 8px 32px rgba(15,27,51,.09)", overflow: "hidden" },
+  toolbar:    { display: "flex", flexWrap: "wrap", gap: 9, alignItems: "center", padding: "13px 18px", borderBottom: "1px solid #F1F5F9", background: "#fff" },
+  searchWrap: { flex: 1, minWidth: 220, display: "flex", alignItems: "center", gap: 7, background: "#F8FAFD", border: "1.5px solid #E8EDF5", borderRadius: 9, padding: "0 11px", height: 36, transition: "border .15s" },
   searchInput:{ flex: 1, border: "none", outline: "none", fontSize: 13, background: "transparent", color: "#0F1B33" },
-  filterSel:  { border: "1px solid #E4E9F2", borderRadius: 9, padding: "7px 10px", fontSize: 13, background: "#fff", color: "#36415A", cursor: "pointer", outline: "none", fontFamily: "inherit" },
-  tbl:        { width: "100%", borderCollapse: "collapse", fontSize: ".84rem", minWidth: 1600 },
-  th:         { position: "sticky", top: 0, background: "#F6F8FC", color: "#6B7A99", fontSize: ".69rem", fontWeight: 800, textTransform: "uppercase", letterSpacing: ".06em", textAlign: "left", padding: "10px 12px", borderBottom: "1px solid #E4E9F2", whiteSpace: "nowrap", zIndex: 2, minWidth: 80 },
-  td:         { padding: "10px 12px", borderBottom: "1px solid #E4E9F2", verticalAlign: "middle", color: "#36415A", whiteSpace: "nowrap" },
-  dash:       { color: "#CBD5E1" },
-  emptyCell:  { padding: "44px 0", textAlign: "center", color: "#94A3B8", fontSize: 13, fontWeight: 600 },
-  brrGreen:   { background: "#EAF7EF", color: "#15803D", border: "1px solid #BBF7D0", borderRadius: 7, padding: "4px 10px", fontSize: 12, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" },
-  brrBlue:    { background: "#EFF4FF", color: "#1D4ED8", border: "1px solid #BFD3FE", borderRadius: 7, padding: "4px 10px", fontSize: 12, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" },
-  scoreLead:  { background: "#EFF4FF", color: "#1D4ED8", border: "1px solid #BFD3FE", borderRadius: 7, padding: "4px 9px", fontSize: 12, fontWeight: 700, cursor: "pointer" },
-  delBtn:     { background: "#FDECEE", border: "1px solid #FECACA", borderRadius: 7, width: 28, height: 28, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "#E8364A" },
+  filterSel:  { border: "1.5px solid #E8EDF5", borderRadius: 8, padding: "7px 10px", fontSize: 12, background: "#F8FAFD", color: "#36415A", cursor: "pointer", outline: "none", fontFamily: "inherit" },
+  tbl:        { width: "100%", borderCollapse: "collapse", fontSize: ".8rem", minWidth: 980 },
+  th:         { position: "sticky", top: 0, background: "#fff", color: "#94A3B8", fontSize: ".63rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: ".09em", textAlign: "left", padding: "11px 10px", borderBottom: "2px solid #F1F5F9", whiteSpace: "nowrap", zIndex: 2, minWidth: 60 },
+  td:         { padding: "9px 10px", borderBottom: "1px solid #F8FAFC", verticalAlign: "middle", color: "#374151", whiteSpace: "nowrap", fontWeight: 400 },
+  dash:       { color: "#D1D5DB" },
+  emptyCell:  { padding: "52px 0", textAlign: "center", color: "#94A3B8", fontSize: 13, fontWeight: 600 },
+  brrGreen:   { background: "#ECFDF5", color: "#059669", border: "1px solid #6EE7B7", borderRadius: 6, padding: "3px 9px", fontSize: 11, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" },
+  brrBlue:    { background: "#EFF6FF", color: "#2563EB", border: "1px solid #93C5FD", borderRadius: 6, padding: "3px 9px", fontSize: 11, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" },
+  scoreLead:  { background: "#F8FAFD", color: "#6B7A99", border: "1px solid #E8EDF5", borderRadius: 6, padding: "3px 9px", fontSize: 11, fontWeight: 600, cursor: "pointer" },
+  delBtn:     { background: "#FEF2F2", border: "1px solid #FECACA", borderRadius: 6, width: 24, height: 24, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "#EF4444" },
   pgBar:      { display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", borderTop: "1px solid #E4E9F2", flexWrap: "wrap", gap: 10 },
   perPageSel: { border: "1px solid #E4E9F2", borderRadius: 6, padding: "2px 6px", fontSize: 13, background: "#fff", cursor: "pointer" },
   overlay:    { position: "fixed", inset: 0, background: "rgba(10,18,38,.55)", backdropFilter: "blur(3px)", zIndex: 90, display: "flex", alignItems: "flex-start", justifyContent: "center", overflowY: "auto", padding: "34px 18px" },

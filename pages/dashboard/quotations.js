@@ -8,6 +8,7 @@ import InvoiceBuilder from "../../components/backend/InvoiceBuilder";
 const QuotationPreview = dynamic(() => import("../../components/voucher/QuotationPreview"), { ssr: false });
 
 /* ── helpers ── */
+const PER_PAGE_OPTS = [10, 20, 50];
 const CUR_YEAR = new Date().getFullYear();
 const MONTH_CHIPS = Array.from({ length: 12 }, (_, i) => ({
   key: `${CUR_YEAR}-${String(i + 1).padStart(2, "0")}`,
@@ -52,6 +53,8 @@ export default function QuotationsPage() {
   const [search, setSearch]           = useState("");
   const [filterStatus, setFilterStatus] = useState("");
   const [filterMonth,  setFilterMonth]   = useState("");
+  const [perPage, setPerPage] = useState(10);
+  const [page,    setPage]    = useState(1);
 
   const [newStep, setNewStep]         = useState(null); // {leadId, type, pkgMode}
   const [openBuilder, setOpenBuilder] = useState(null); // {quote|null, isNew, lead}
@@ -72,7 +75,9 @@ export default function QuotationsPage() {
   const [verModal, setVerModal]   = useState(null);
   const [pdfPreviewData, setPdfPreviewData] = useState(null);
   const [pdfLoading,     setPdfLoading]     = useState(false);
+  const [hoveredRow,  setHoveredRow]  = useState(null);
   const [lostInput, setLostInput] = useState({});
+  const [lostReasonModal, setLostReasonModal] = useState(null); // { quote, reason, saving }
   const [confirmDel, setConfirmDel] = useState(null);
   const [deleting,   setDeleting]   = useState(null);
   const [newSP, setNewSP]         = useState({});
@@ -203,8 +208,13 @@ export default function QuotationsPage() {
 
   async function saveNewSP(q) {
     const raw = newSP[q._id];
+    // User cleared the field — wipe it from DB so it doesn't reappear on refresh
+    if (raw === "" || raw === undefined || raw === null) {
+      await patchQuote(q._id, { newSellingPrice: null });
+      return;
+    }
     const v = +raw;
-    if (!raw || isNaN(v) || v <= 0) return;
+    if (isNaN(v) || v <= 0) return;
     await patchQuote(q._id, { newSellingPrice: v });
   }
 
@@ -244,16 +254,18 @@ export default function QuotationsPage() {
 
   function openPdfPreview(q, v) {
     const lead = q.leadId || {};
-    const selling = (v?.cost || 0) + (v?.margin || 0);
+    const formForCalc = { ...q, cost: v?.cost ?? q.cost, margin: v?.margin ?? q.margin };
+    const selling = calcQ(formForCalc).selling || ((v?.cost || 0) + (v?.margin || 0));
     setPdfPreviewData({
       quoteId:   qDispId(q),
       lead,
-      form:      { ...q, cost: v?.cost ?? q.cost, margin: v?.margin ?? q.margin },
+      form:      formForCalc,
+      pkgTiers:  q.pkgTiers || {},
       hotels:    q.hotels    || [],
       flights:   q.flights   || [],
       transfers: q.transfers || [],
       itin:      q.itinerary || [],
-      selling:   selling || calcQ(q).selling,
+      selling,
     });
   }
 
@@ -301,6 +313,13 @@ export default function QuotationsPage() {
     setLostInput(p => { const n = { ...p }; delete n[q._id]; return n; });
   }
 
+  async function saveLostReasonModal() {
+    if (!lostReasonModal) return;
+    setLostReasonModal(p => ({ ...p, saving: true }));
+    await patchQuote(lostReasonModal.quote._id, { lostReason: lostReasonModal.reason });
+    setLostReasonModal(null);
+  }
+
   const remsByQuote = useMemo(() => {
     const m = {};
     allReminders.forEach(r => {
@@ -326,6 +345,10 @@ export default function QuotationsPage() {
     });
   }, [quotes, search, filterStatus, filterMonth, leadIdMap]);
 
+  const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
+  const pg         = Math.min(page, totalPages);
+  const slice      = filtered.slice((pg - 1) * perPage, pg * perPage);
+
   async function startNewQuote() {
     if (!newStep?.leadId) return;
     const lead = leads.find(l => l._id === newStep.leadId);
@@ -343,16 +366,23 @@ export default function QuotationsPage() {
   return (
     <DashboardLayout active="Quotation">
       <Head><title>Quotations — Tourwatchout</title></Head>
-      <div style={{ padding: "22px 26px 60px", background: "#F3F5FA", minHeight: "100vh" }}>
+      <div style={{ padding: "24px 28px 60px", background: "#F1F4FA", minHeight: "100vh" }}>
+      <style>{`
+        .qtbl-wrap::-webkit-scrollbar{height:5px}
+        .qtbl-wrap::-webkit-scrollbar-track{background:#F3F5FA}
+        .qtbl-wrap::-webkit-scrollbar-thumb{background:#CBD5E1;border-radius:99px}
+        .qtbl tr:hover td{background:#F7F9FF!important}
+      `}</style>
       {/* Banner */}
-      <div style={{ background: "#EFF4FF", border: "1px solid #BFD3FE", borderRadius: 10, padding: "9px 16px", marginBottom: 18, display: "flex", alignItems: "center", gap: 10, fontSize: 13, color: "#1D4ED8", fontWeight: 600 }}>
-        ⚡ Quotation Manager — Build, price, and send packages. Company-side costs are never shown on customer PDFs.
+      <div style={{ background: "#fff", border: "1px solid #E8EDF5", borderRadius: 10, padding: "9px 14px", marginBottom: 14, fontSize: 12, color: "#4B5563", lineHeight: 1.55, boxShadow: "0 1px 3px rgba(15,27,51,.04)" }}>
+        <span style={{ color: "#F59E0B", marginRight: 6 }}>⚡</span>
+        <span><strong style={{ color: "#374151" }}>Quotation Manager</strong> — Build, price, and send packages. Company-side costs are never shown on customer PDFs.</span>
       </div>
 
       {/* Toolbar */}
       {/* Toolbar row */}
       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
-        <input style={S.searchInp} placeholder="Search by name, destination, quote ID…" value={search} onChange={e => setSearch(e.target.value)} />
+        <input style={S.searchInp} placeholder="Search by name, destination, quote ID…" value={search} onChange={e => { setSearch(e.target.value); setPage(1); }} />
         <button style={{ ...S.newBtn, marginLeft: "auto", whiteSpace: "nowrap" }} onClick={() => {
           const firstLead = qualifiedLeads[0];
           setNewStep({ leadId: firstLead?._id || "", type: firstLead?.tripType || "Domestic", pkgMode: "Complete Package" });
@@ -362,16 +392,16 @@ export default function QuotationsPage() {
       </div>
 
       {/* Filter bar */}
-      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16, background: "#fff", border: "1px solid #E4E9F2", borderRadius: 10, padding: "10px 14px", overflowX: "auto" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14, background: "#fff", border: "1px solid #E8EDF5", borderRadius: 10, padding: "10px 14px", overflowX: "auto", boxShadow: "0 1px 3px rgba(15,27,51,.04)" }}>
         <span style={{ fontSize: 11, fontWeight: 800, color: "#6B7A99", textTransform: "uppercase", letterSpacing: ".05em", flexShrink: 0 }}>Filters:</span>
         {MONTH_CHIPS.map(m => (
-          <button key={m.key} onClick={() => setFilterMonth(filterMonth === m.key ? "" : m.key)}
-            style={{ padding: "4px 10px", borderRadius: 20, fontSize: 11, fontWeight: 700, cursor: "pointer", border: `1.5px solid ${filterMonth === m.key ? "#2563EB" : "#E4E9F2"}`, background: filterMonth === m.key ? "#2563EB" : "#fff", color: filterMonth === m.key ? "#fff" : "#6B7A99", whiteSpace: "nowrap", flexShrink: 0 }}>
+          <button key={m.key} onClick={() => { setFilterMonth(filterMonth === m.key ? "" : m.key); setPage(1); }}
+            style={{ padding: "4px 11px", borderRadius: 20, fontSize: 11, fontWeight: 700, cursor: "pointer", border: `1.5px solid ${filterMonth === m.key ? "#2563EB" : "#E8EDF5"}`, background: filterMonth === m.key ? "#2563EB" : "#fff", color: filterMonth === m.key ? "#fff" : "#6B7A99", whiteSpace: "nowrap", flexShrink: 0, transition: "all .12s" }}>
             {m.label}
           </button>
         ))}
         <div style={{ width: 1, background: "#E4E9F2", alignSelf: "stretch", flexShrink: 0 }} />
-        <select style={{ ...S.filterSel, width: 140, flexShrink: 0 }} value={filterStatus} onChange={e => setFilterStatus(e.target.value)}>
+        <select style={{ ...S.filterSel, width: 140, flexShrink: 0 }} value={filterStatus} onChange={e => { setFilterStatus(e.target.value); setPage(1); }}>
           <option value="">All Status</option>
           <option value="Open">Open</option>
           <option value="Won">Won</option>
@@ -405,12 +435,18 @@ export default function QuotationsPage() {
 
       {/* Table */}
       <div style={S.card}>
-        <div style={{ overflowX: "auto" }}>
-          <table style={S.table}>
+        <div style={{ overflowX: "auto" }} className="qtbl-wrap">
+          <table style={S.table} className="qtbl">
             <thead>
-              <tr style={{ background: "#F3F5FA" }}>
-                {["S.No","Quote ID","Name","Mobile","Destination","Days","Date of Travel","Quoted Price","Margin %","New Selling Price","Live Margin %","Edits","Follow-ups","Status","Lost Reason","Reminders","Trip Expense","Invoice",""].map(h => (
-                  <th key={h} style={S.th}>{h}</th>
+              <tr style={{ background: "#fff" }}>
+                {["S.No","Quote ID","Name","Mobile","Destination","Days","Date of Travel","Quoted Price","Margin %","New Selling Price","Live Margin %","Edits","Follow-ups","Status","Lost Reason","Reminders","Invoice",""].map(h => (
+                  <th key={h} style={{
+                    ...S.th,
+                    ...(h === "S.No"     ? { position: "sticky", left: 0,   width: 44,  minWidth: 44,  zIndex: 3, background: "#fff" } : {}),
+                    ...(h === "Quote ID" ? { position: "sticky", left: 44,  width: 145, minWidth: 145, zIndex: 3, background: "#fff" } : {}),
+                    ...(h === "Name"     ? { position: "sticky", left: 189, width: 130, minWidth: 130, zIndex: 3, background: "#fff" } : {}),
+                    ...(h === "Mobile"   ? { position: "sticky", left: 319, width: 115, minWidth: 115, zIndex: 3, background: "#fff", boxShadow: "3px 0 6px rgba(0,0,0,.06)" } : {}),
+                  }}>{h}</th>
                 ))}
               </tr>
             </thead>
@@ -420,7 +456,7 @@ export default function QuotationsPage() {
                   {search || filterStatus ? "No matching quotations" : "No quotations yet — click '+ New Quotation' to start"}
                 </td></tr>
               )}
-              {filtered.map((q, idx) => {
+              {slice.map((q, idx) => {
                 const lead   = q.leadId || {};
                 const qid    = qDispId(q);
                 // For B2B quotes saved before per-tier cost fix, q.cost may be 0.
@@ -440,27 +476,39 @@ export default function QuotationsPage() {
                 const oGrd   = mpctBadge(cr.mpct);
                 const isExp  = q._id in expEdit;
 
+                const isHovered = hoveredRow === q._id;
+                const rowBg    = isHovered ? "#F7F9FF" : "#fff";
                 return (
-                  <tr key={q._id} style={{ borderBottom: "1px solid #F1F5F9" }}>
-                    <td style={S.td}><span style={{ color: "#94A3B8", fontSize: 12 }}>{idx + 1}</span></td>
+                  <tr key={q._id}
+                    onMouseEnter={() => setHoveredRow(q._id)}
+                    onMouseLeave={() => setHoveredRow(null)}
+                    style={{ borderBottom: "1px solid #F8FAFC", transition: "background .12s", background: rowBg }}>
 
-                    <td style={S.td}>
+                    {/* S.No — frozen col 1 */}
+                    <td style={{ ...S.td, position: "sticky", left: 0, zIndex: 1, width: 44, background: rowBg }}>
+                      <span style={{ color: "#94A3B8" }}>{idx + 1}</span>
+                    </td>
+
+                    {/* Quote ID — frozen col 2 */}
+                    <td style={{ ...S.td, position: "sticky", left: 44, zIndex: 1, width: 145, background: rowBg }}>
                       <button style={S.qidBtn} onClick={() => setOpenBuilder({ quote: q, isNew: false, lead: q.leadId || {} })}>{qid}</button>
                       <div style={{ fontSize: 10, color: "#94A3B8", marginTop: 2 }}>{q.type} · {(q.pkgMode || "").split(" ")[0]}</div>
                     </td>
 
-                    <td style={S.td}>
-                      <div style={{ fontWeight: 700, fontSize: 13, color: "#0F1B33" }}>{lead.name || "—"}</div>
+                    {/* Name — frozen col 3 */}
+                    <td style={{ ...S.td, position: "sticky", left: 189, zIndex: 1, width: 130, background: rowBg }}>
+                      <div style={{ fontWeight: 600, color: "#0F1B33" }}>{lead.name || "—"}</div>
                       <div style={{ fontSize: 11, color: "#94A3B8" }}>{leadIdMap[lead._id] || "—"}</div>
                     </td>
 
-                    <td style={S.td}>
-                      <a href={`tel:${lead.phone || ""}`} style={{ color: "#2563EB", fontSize: 12, fontWeight: 600, textDecoration: "none" }}>{lead.phone || "—"}</a>
+                    {/* Mobile — frozen col 4 (last frozen, shadow) */}
+                    <td style={{ ...S.td, position: "sticky", left: 319, zIndex: 1, width: 115, background: rowBg, boxShadow: "3px 0 6px rgba(0,0,0,.06)" }}>
+                      <a href={`tel:${lead.phone || ""}`} style={{ color: "#2563EB", textDecoration: "none" }}>{lead.phone || "—"}</a>
                     </td>
 
                     <td style={S.td}>
                       <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-                        <span style={{ fontWeight: 600, fontSize: 13 }}>{lead.destination || "—"}</span>
+                        <span style={{ fontWeight: 500 }}>{lead.destination || "—"}</span>
                         <button title="Edit / History"
                           onClick={() => setDestModal({ lead, val: lead.destination || "", saving: false })}
                           style={{ background: "none", border: "none", cursor: "pointer", padding: "2px 3px", borderRadius: 5, display: "flex", alignItems: "center", color: "#26828D" }}>
@@ -471,10 +519,10 @@ export default function QuotationsPage() {
                         </button>
                       </div>
                     </td>
-                    <td style={S.td}><span style={{ fontSize: 12 }}>{q.days || "—"}</span></td>
-                    <td style={S.td}><span style={{ fontSize: 12 }}>{fmtDate(q.travelDate)}</span></td>
+                    <td style={S.td}>{q.days || "—"}</td>
+                    <td style={{ ...S.td, whiteSpace: "nowrap" }}>{fmtDate(q.travelDate)}</td>
 
-                    <td style={S.td}><b style={{ color: "#2563EB", fontSize: 13 }}>{inrFmt(cr.selling)}</b></td>
+                    <td style={S.td}><span style={{ color: "#2563EB", fontWeight: 600 }}>{inrFmt(cr.selling)}</span></td>
 
                     <td style={S.td}>
                       {oGrd && <span style={{ background: oGrd.bg, color: oGrd.c, borderRadius: 8, padding: "3px 9px", fontSize: 12, fontWeight: 700 }}>{cr.mpct.toFixed(1)}% {oGrd.g}</span>}
@@ -502,35 +550,11 @@ export default function QuotationsPage() {
                       <button style={S.linkBtn} onClick={() => setVerModal(q)}>{q.versions?.length || 0} ver{(q.versions?.length || 0) !== 1 ? "s" : ""}</button>
                     </td>
 
-                    {/* Follow-ups dropdown */}
-                    <td style={{ ...S.td, position: "relative" }}>
-                      <div style={{ position: "relative", display: "inline-block" }}>
-                        <button style={{ ...S.linkBtn, display: "inline-flex", alignItems: "center", gap: 4 }}
-                          onClick={() => setFuOpen(fuOpen === q._id ? null : q._id)}>
-                          {q.followups?.length || 0} follow-up{(q.followups?.length || 0) !== 1 ? "s" : ""} ▾
-                        </button>
-                        {fuOpen === q._id && (
-                          <div style={{ position: "absolute", top: "calc(100% + 4px)", left: 0, zIndex: 50, background: "#fff", border: "1px solid #E4E9F2", borderRadius: 12, boxShadow: "0 6px 24px rgba(0,0,0,.13)", minWidth: 280, overflow: "hidden" }}>
-                            <div style={{ padding: "10px 14px 0" }}>
-                              {(q.followups || []).length === 0 && (
-                                <p style={{ fontSize: 12, color: "#94A3B8", margin: "4px 0 10px" }}>No follow-ups yet</p>
-                              )}
-                              {(q.followups || []).map((f, i) => (
-                                <div key={i} style={{ marginBottom: 10 }}>
-                                  <div style={{ fontSize: 10, fontWeight: 800, color: "#94A3B8", textTransform: "uppercase", letterSpacing: ".06em", marginBottom: 2 }}>
-                                    #{i + 1} · {fmtDate(f.date).toUpperCase()}
-                                  </div>
-                                  <div style={{ fontSize: 13, color: "#0F1B33", fontWeight: 500 }}>{f.note}</div>
-                                </div>
-                              ))}
-                            </div>
-                            <button style={{ display: "block", width: "100%", padding: "10px 14px", background: "#F8FAFD", border: "none", borderTop: "1px solid #E4E9F2", fontSize: 13, fontWeight: 700, color: "#2563EB", cursor: "pointer", textAlign: "left" }}
-                              onClick={() => { setFuModal(q); setFuOpen(null); }}>
-                              + Add follow-up
-                            </button>
-                          </div>
-                        )}
-                      </div>
+                    {/* Follow-ups — opens modal */}
+                    <td style={S.td}>
+                      <button style={S.linkBtn} onClick={() => { setFuModal(q); setFuNote(""); setFuDate(todayISO()); }}>
+                        {q.followups?.length || 0} follow-up{(q.followups?.length || 0) !== 1 ? "s" : ""}
+                      </button>
                     </td>
 
                     <td style={S.td}>
@@ -541,19 +565,16 @@ export default function QuotationsPage() {
                       </select>
                     </td>
 
-                    <td style={S.td}>
+                    <td style={{ ...S.td, maxWidth: 120 }}>
                       {q.status === "Lost" ? (
-                        q._id in lostInput ? (
-                          <div style={{ display: "flex", gap: 4 }}>
-                            <input style={{ ...S.inlineInp, width: 120 }} value={lostInput[q._id]} onChange={e => setLostInput(p => ({ ...p, [q._id]: e.target.value }))} placeholder="Reason…" />
-                            <button style={S.saveBtn} onClick={() => saveLostReason(q)}>✓</button>
-                          </div>
-                        ) : (
-                          <span style={{ fontSize: 11, color: "#BE123C", cursor: "pointer" }} onClick={() => setLostInput(p => ({ ...p, [q._id]: q.lostReason || "" }))}>
-                            {q.lostReason || <span style={{ color: "#CBD5E1" }}>Add…</span>}
-                          </span>
-                        )
-                      ) : <span style={{ color: "#CBD5E1", fontSize: 11 }}>N/A</span>}
+                        <span
+                          onClick={() => setLostReasonModal({ quote: q, reason: q.lostReason || "", saving: false })}
+                          title={q.lostReason || "Click to add reason"}
+                          style={{ fontSize: 11, color: q.lostReason ? "#BE123C" : "#CBD5E1", cursor: "pointer", display: "block", maxWidth: 110, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
+                        >
+                          {q.lostReason || "Add…"}
+                        </span>
+                      ) : <span style={{ color: "#D1D5DB" }}>—</span>}
                     </td>
 
                     <td style={S.td}>
@@ -562,18 +583,7 @@ export default function QuotationsPage() {
                       </button>
                     </td>
 
-                    <td style={S.td}>
-                      {isExp ? (
-                        <div style={{ display: "flex", gap: 4 }}>
-                          <input type="number" style={{ ...S.inlineInp, width: 100 }} value={expEdit[q._id]} onChange={e => setExpEdit(p => ({ ...p, [q._id]: e.target.value }))} />
-                          <button style={S.saveBtn} onClick={() => saveExpense(q)}>✓</button>
-                        </div>
-                      ) : (
-                        <span style={{ fontSize: 12, cursor: "pointer", color: q.tripExpense ? "#0F1B33" : "#CBD5E1" }} onClick={() => setExpEdit(p => ({ ...p, [q._id]: q.tripExpense || 0 }))}>
-                          {q.tripExpense ? inrFmt(q.tripExpense) : "Add…"}
-                        </span>
-                      )}
-                    </td>
+                    {/* Trip Expense — hidden, re-enable when needed */}
 
                     <td style={S.td}>
                       <div style={{ display: "flex", flexDirection: "column", gap: 4, alignItems: "flex-start" }}>
@@ -616,6 +626,28 @@ export default function QuotationsPage() {
               })}
             </tbody>
           </table>
+        </div>
+
+        {/* Pagination */}
+        <div style={S.pgBar}>
+          <div style={{ fontSize: 13, color: "#6B7A99" }}>
+            Showing&nbsp;
+            <select style={S.perPageSel} value={perPage} onChange={e => { setPerPage(Number(e.target.value)); setPage(1); }}>
+              {PER_PAGE_OPTS.map(n => <option key={n}>{n}</option>)}
+            </select>
+            &nbsp;of {filtered.length} quotations
+          </div>
+          <div style={{ display: "flex", gap: 4 }}>
+            <PgBtn onClick={() => setPage(p => Math.max(1, p - 1))} disabled={pg === 1}>Prev</PgBtn>
+            {Array.from({ length: totalPages }, (_, i) => i + 1)
+              .filter(n => n === 1 || n === totalPages || Math.abs(n - pg) <= 1)
+              .reduce((acc, n, idx, arr) => { if (idx > 0 && n - arr[idx - 1] > 1) acc.push("…"); acc.push(n); return acc; }, [])
+              .map((n, idx) => n === "…"
+                ? <span key={`e${idx}`} style={{ padding: "0 4px", color: "#94A3B8", display: "flex", alignItems: "center" }}>…</span>
+                : <PgBtn key={n} active={n === pg} onClick={() => setPage(n)}>{n}</PgBtn>
+              )}
+            <PgBtn onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={pg === totalPages}>Next</PgBtn>
+          </div>
         </div>
       </div>
 
@@ -681,31 +713,75 @@ export default function QuotationsPage() {
         />
       )}
 
-      {/* ── Follow-up Modal ── */}
-      {fuModal && (
-        <Ov>
-          <div style={{ ...S.modal, maxWidth: 480 }}>
-            <div style={{ ...S.mHead, flexDirection: "column", alignItems: "flex-start", gap: 3 }}>
-              <div style={{ display: "flex", width: "100%", alignItems: "center" }}>
-                <span style={{ color: "#fff", fontWeight: 800, fontSize: 15 }}>Add Follow-up · {qDispId(fuModal)}</span>
-                <button style={{ ...S.mx, marginLeft: "auto" }} onClick={() => setFuModal(null)}>✕</button>
+      {/* ── Follow-up Modal (list + add) ── */}
+      {fuModal && (() => {
+        const fus      = fuModal.followups || [];
+        const leadName = fuModal.leadId?.name || "—";
+        return (
+          <Ov>
+            <div style={{ ...S.modal, maxWidth: 680 }}>
+              {/* Header */}
+              <div style={{ ...S.mHead, flexDirection: "column", alignItems: "flex-start", gap: 3 }}>
+                <div style={{ display: "flex", width: "100%", alignItems: "center" }}>
+                  <span style={{ color: "#fff", fontWeight: 800, fontSize: 15 }}>Follow-ups · {qDispId(fuModal)}</span>
+                  <button style={{ ...S.mx, marginLeft: "auto" }} onClick={() => setFuModal(null)}>✕</button>
+                </div>
+                <div style={{ fontSize: 12, color: "#BFD3FE" }}>{leadName} — every follow-up is stored chronologically</div>
               </div>
-              <div style={{ fontSize: 12, color: "#BFD3FE" }}>Keep it short, 10 to 12 words</div>
+
+              {/* Follow-up list */}
+              <div style={{ padding: "20px 24px 0" }}>
+                {fus.length === 0 ? (
+                  <p style={{ color: "#94A3B8", fontSize: 13, textAlign: "center", padding: "16px 0" }}>No follow-ups yet</p>
+                ) : (
+                  <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+                    <thead>
+                      <tr style={{ background: "#F6F8FC" }}>
+                        {["#", "Date", "Summary"].map(h => (
+                          <th key={h} style={{ ...S.th, textAlign: "left", background: "#F6F8FC" }}>{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {fus.map((f, i) => (
+                        <tr key={i} style={{ borderBottom: "1px solid #F1F5F9", background: "#fff" }}>
+                          <td style={{ ...S.td, fontWeight: 700, color: "#2563EB", width: 32 }}>#{i + 1}</td>
+                          <td style={{ ...S.td, whiteSpace: "nowrap", color: "#6B7A99", width: 120 }}>{fmtDate(f.date)}</td>
+                          <td style={{ ...S.td, color: "#0F1B33", fontWeight: 500, whiteSpace: "normal" }}>{f.note}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+
+              {/* Add new follow-up form */}
+              <div style={{ margin: "16px 24px 0", borderRadius: 10, overflow: "hidden", border: "1px solid #E4E9F2" }}>
+                <div style={{ background: "#2563EB", color: "#fff", fontWeight: 700, fontSize: 13, padding: "10px 16px" }}>+ Add Follow-up</div>
+                <div style={{ background: "#F8FAFD", padding: "16px" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "160px 1fr", gap: 12 }}>
+                    <div>
+                      <label style={S.lbl}>Date</label>
+                      <input type="date" style={{ ...S.inp, colorScheme: "light" }} value={fuDate} onChange={e => setFuDate(e.target.value)} />
+                    </div>
+                    <div>
+                      <label style={S.lbl}>Summary</label>
+                      <input style={S.inp} value={fuNote} onChange={e => setFuNote(e.target.value)}
+                        placeholder="Negotiated, asked for better hotel near Dal Lake" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div style={{ ...S.mFoot, justifyContent: "flex-end", gap: 10, marginTop: 16 }}>
+                <button style={S.fb} onClick={() => setFuModal(null)}>Close</button>
+                <button style={{ ...S.sb, padding: "9px 22px" }} onClick={() => addFollowup(fuModal)}>Add Follow-up</button>
+              </div>
             </div>
-            <div style={{ padding: "20px 24px" }}>
-              <label style={S.lbl}>Date</label>
-              <input type="date" style={{ ...S.inp, marginBottom: 16 }} value={fuDate} onChange={e => setFuDate(e.target.value)} />
-              <label style={S.lbl}>Summary</label>
-              <input style={S.inp} value={fuNote} onChange={e => setFuNote(e.target.value)}
-                placeholder="Negotiated, asked for better hotel near Dal Lake" />
-            </div>
-            <div style={{ ...S.mFoot, justifyContent: "flex-end", gap: 10 }}>
-              <button style={S.fb} onClick={() => setFuModal(null)}>Cancel</button>
-              <button style={{ ...S.sb, padding: "9px 22px" }} onClick={() => addFollowup(fuModal)}>Save Follow-up</button>
-            </div>
-          </div>
-        </Ov>
-      )}
+          </Ov>
+        );
+      })()}
 
       {/* ── Reminder Modal ── */}
       {remModal && (() => {
@@ -867,7 +943,6 @@ export default function QuotationsPage() {
         );
       })()}
 
-      {fuOpen && <div style={{ position: "fixed", inset: 0, zIndex: 30 }} onClick={() => setFuOpen(null)} />}
       </div>{/* end page wrapper */}
 
       {/* ── Destination Edit + History Modal ── */}
@@ -979,6 +1054,41 @@ export default function QuotationsPage() {
         </Ov>
       )}
 
+      {/* ── Lost Reason Modal ── */}
+      {lostReasonModal && (
+        <Ov>
+          <div style={{ ...S.modal, maxWidth: 440 }}>
+            <div style={{ ...S.mHead, background: "#BE123C" }}>
+              <div>
+                <div style={{ color: "#fff", fontWeight: 800, fontSize: 15 }}>Lost Reason · {qDispId(lostReasonModal.quote)}</div>
+                <div style={{ fontSize: 12, color: "rgba(255,255,255,.65)", marginTop: 2 }}>{lostReasonModal.quote.leadId?.name || "—"}</div>
+              </div>
+              <button style={{ ...S.mx, marginLeft: "auto" }} onClick={() => setLostReasonModal(null)}>✕</button>
+            </div>
+            <div style={{ padding: "20px 22px" }}>
+              <label style={S.lbl}>Why was this lead lost?</label>
+              <textarea
+                autoFocus
+                style={{ ...S.inp, minHeight: 90, resize: "vertical", fontFamily: "inherit" }}
+                placeholder="e.g. Budget too high, went with another agency…"
+                value={lostReasonModal.reason}
+                onChange={e => setLostReasonModal(p => ({ ...p, reason: e.target.value }))}
+              />
+            </div>
+            <div style={{ ...S.mFoot, justifyContent: "flex-end", gap: 10 }}>
+              <button style={S.fb} onClick={() => setLostReasonModal(null)}>Cancel</button>
+              <button
+                style={{ ...S.sb, padding: "9px 22px", background: "#BE123C", opacity: lostReasonModal.saving ? 0.7 : 1 }}
+                disabled={lostReasonModal.saving}
+                onClick={saveLostReasonModal}
+              >
+                {lostReasonModal.saving ? "Saving…" : "Save Reason"}
+              </button>
+            </div>
+          </div>
+        </Ov>
+      )}
+
       {/* ── Invoice Builder Modal ── */}
       {invBuilder && (
         <InvoiceBuilder
@@ -1000,6 +1110,10 @@ export default function QuotationsPage() {
   );
 }
 
+function PgBtn({ children, onClick, disabled, active }) {
+  return <button onClick={onClick} disabled={disabled} style={{ minWidth: 32, height: 32, padding: "0 10px", border: "1px solid", borderColor: active ? "#2563EB" : "#E4E9F2", borderRadius: 6, background: active ? "#2563EB" : "#fff", color: active ? "#fff" : disabled ? "#CBD5E1" : "#36415A", cursor: disabled ? "default" : "pointer", fontSize: 12, fontWeight: active ? 700 : 400, whiteSpace: "nowrap" }}>{children}</button>;
+}
+
 function Ov({ children, onClick }) {
   return (
     <div style={{ position: "fixed", inset: 0, background: "rgba(10,18,38,.55)", backdropFilter: "blur(3px)", zIndex: 90, display: "flex", alignItems: "flex-start", justifyContent: "center", overflowY: "auto", padding: "24px 18px" }} onClick={onClick}>
@@ -1009,13 +1123,13 @@ function Ov({ children, onClick }) {
 }
 
 const S = {
-  card:      { background: "#fff", borderRadius: 16, boxShadow: "0 2px 12px rgba(15,27,51,.07)", overflow: "hidden" },
-  table:     { width: "100%", borderCollapse: "collapse", fontSize: 13 },
-  th:        { padding: "10px 12px", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".05em", color: "#6B7A99", whiteSpace: "nowrap", textAlign: "left" },
-  td:        { padding: "10px 12px", verticalAlign: "middle", whiteSpace: "nowrap" },
-  searchInp: { padding: "9px 14px", border: "1px solid #E4E9F2", borderRadius: 10, fontSize: 13, outline: "none", color: "#0F1B33", width: 280, fontFamily: "inherit" },
-  filterSel: { padding: "9px 12px", border: "1px solid #E4E9F2", borderRadius: 10, fontSize: 13, color: "#36415A", fontFamily: "inherit", outline: "none" },
-  newBtn:    { padding: "9px 18px", background: "#2563EB", color: "#fff", border: "none", borderRadius: 10, fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: "inherit" },
+  card:      { background: "#fff", border: "none", borderRadius: 16, boxShadow: "0 2px 8px rgba(15,27,51,.05), 0 8px 32px rgba(15,27,51,.09)", overflow: "hidden" },
+  table:     { width: "100%", borderCollapse: "collapse", fontSize: ".8rem" },
+  th:        { position: "sticky", top: 0, background: "#fff", padding: "11px 10px", fontSize: ".63rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: ".09em", color: "#94A3B8", whiteSpace: "nowrap", textAlign: "left", borderBottom: "2px solid #F1F5F9", zIndex: 2 },
+  td:        { padding: "9px 10px", borderBottom: "1px solid #F8FAFC", verticalAlign: "middle", whiteSpace: "nowrap", color: "#374151", fontWeight: 400 },
+  searchInp: { padding: "8px 14px", border: "1.5px solid #E8EDF5", borderRadius: 9, fontSize: 13, outline: "none", color: "#0F1B33", width: 280, fontFamily: "inherit", background: "#F8FAFD" },
+  filterSel: { padding: "7px 10px", border: "1.5px solid #E8EDF5", borderRadius: 8, fontSize: 12, color: "#36415A", fontFamily: "inherit", outline: "none", background: "#F8FAFD" },
+  newBtn:    { display: "inline-flex", alignItems: "center", gap: 6, padding: "0 18px", height: 36, background: "#2563EB", color: "#fff", border: "none", borderRadius: 9, fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: "inherit", boxShadow: "0 2px 6px rgba(37,99,235,.28)" },
   qidBtn:    { background: "#EFF4FF", color: "#2563EB", border: "none", borderRadius: 8, padding: "3px 9px", fontWeight: 800, fontSize: 12, cursor: "pointer", fontFamily: "inherit" },
   linkBtn:   { background: "none", border: "none", color: "#2563EB", fontSize: 12, fontWeight: 600, cursor: "pointer", padding: 0, fontFamily: "inherit" },
   saveBtn:   { background: "#2563EB", color: "#fff", border: "none", borderRadius: 7, padding: "5px 10px", fontWeight: 700, cursor: "pointer", fontSize: 12 },
@@ -1028,6 +1142,8 @@ const S = {
   sb:        { padding: "8px 18px", border: "none", borderRadius: 9, background: "#2563EB", color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" },
   inp:       { border: "1px solid #E4E9F2", borderRadius: 9, padding: "8px 11px", fontSize: ".88rem", color: "#0F1B33", outline: "none", width: "100%", boxSizing: "border-box", background: "#F8FAFD", fontFamily: "inherit" },
   lbl:       { display: "block", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".05em", color: "#6B7A99", marginBottom: 5 },
+  pgBar:     { display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", borderTop: "1px solid #E4E9F2", flexWrap: "wrap", gap: 10 },
+  perPageSel:{ border: "1px solid #E4E9F2", borderRadius: 6, padding: "2px 6px", fontSize: 13, background: "#fff", cursor: "pointer" },
   delBtn:    { background: "#FEE2E2", color: "#BE123C", border: "none", borderRadius: 6, padding: "3px 9px", fontSize: 11, fontWeight: 700, cursor: "pointer" },
   delYes:    { background: "#BE123C", color: "#fff", border: "none", borderRadius: 6, padding: "3px 8px", fontSize: 11, fontWeight: 700, cursor: "pointer" },
   delNo:     { background: "#F1F5F9", color: "#36415A", border: "none", borderRadius: 6, padding: "3px 8px", fontSize: 11, fontWeight: 700, cursor: "pointer" },

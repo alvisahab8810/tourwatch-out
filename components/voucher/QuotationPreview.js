@@ -6,6 +6,12 @@ const RED         = "#E84949";
 const DARK        = "#1a1a2e";
 
 const TIER_LABELS = ["Economy", "Deluxe", "Premium"];
+const MEAL_PLAN_LABEL = {
+  EPAI:  "EPAI — Room Only",
+  CPAI:  "CPAI — Room + Breakfast",
+  MAPAI: "MAPAI — Breakfast & Dinner",
+  APAI:  "APAI — Breakfast, Lunch & Dinner",
+};
 const TIER_ICONS  = {};
 const TIER_CLR    = { Economy: "#15803D", Deluxe: "#2563EB", Premium: "#7C3AED" };
 const TIER_BG     = { Economy: "#F0FDF4", Deluxe: "#EFF4FF", Premium: "#FAF5FF" };
@@ -927,6 +933,7 @@ export default function QuotationPreview({ data, id }) {
                           <tr>
                             <Th>Location</Th>
                             <Th>Hotel Name</Th>
+                            <Th>Meals</Th>
                             <Th>Room Category</Th>
                             <Th style={{ textAlign: "center" }}>Occupancy</Th>
                             <Th style={{ textAlign: "center" }}>Nights</Th>
@@ -943,6 +950,7 @@ export default function QuotationPreview({ data, id }) {
                               <tr key={`${hi}-${ri}`} {...(hi > 0 || ri > 0 ? { "data-pdf-break": "true" } : {})} style={{ background: "#fff" }}>
                                 <Td style={{ fontWeight: 600 }}>{ri === 0 ? (h.location || "—") : ""}</Td>
                                 <Td style={{ fontWeight: ri === 0 ? 700 : 400 }}>{ri === 0 ? h.name : ""}</Td>
+                                <Td style={{ fontSize: 11, color: "#374151" }}>{ri === 0 ? (MEAL_PLAN_LABEL[h.mealPlan] || h.mealPlan || "CPAI — Room + Breakfast") : ""}</Td>
                                 <Td>{r.roomCat || "Deluxe Room"}</Td>
                                 <Td style={{ textAlign: "center" }}>{r.occupancy || "Double"}</Td>
                                 <Td style={{ textAlign: "center" }}>{r.nights || "—"}</Td>
@@ -1009,8 +1017,8 @@ export default function QuotationPreview({ data, id }) {
                     </div>
                   )}
 
-                  {/* Financials — shown for all modes; mirrors cover page pricing flag */}
-                  {tierSell > 0 && (() => {
+                  {/* Financials — shown for Standard & B2B only; Package shows price after Inclusions/Exclusions */}
+                  {tierSell > 0 && !isPackage && (() => {
                     const effPax = leadPax > 0 ? leadPax : tierPax;
                     // Tier name prefix: matches cover page
                     // tierName used only for section heading (ECONOMY / DELUXE / PREMIUM divider), not in the price label
@@ -1043,8 +1051,8 @@ export default function QuotationPreview({ data, id }) {
                             </div>
                           </div>
                         </div>
-                        {/* Note box — shown after every tier's price stripe in B2B mode */}
-                        {isB2B && (
+                        {/* Note box — shown after every tier's price stripe in Standard & B2B mode */}
+                        {!isPackage && (
                           <div style={{ border: "1px solid #ddd", borderRadius: 10, padding: "14px 18px", background: "#F3FDFF", marginBottom: 14 }}>
                             <div style={{ fontSize: 13, color: DARK, lineHeight: 1.75 }}>
                               <strong>Note:</strong>{" "}
@@ -1084,6 +1092,7 @@ export default function QuotationPreview({ data, id }) {
                     <tr>
                       <Th>Location</Th>
                       <Th>Hotel Name</Th>
+                      <Th>Meals</Th>
                       <Th>Room Category</Th>
                       <Th style={{ textAlign: "center" }}>Occupancy</Th>
                       <Th style={{ textAlign: "center" }}>Nights</Th>
@@ -1097,6 +1106,7 @@ export default function QuotationPreview({ data, id }) {
                         <tr key={`${hi}-${ri}`} {...(hi > 0 || ri > 0 ? { "data-pdf-break": "true" } : {})} style={{ background: "#fff" }}>
                           <Td style={{ fontWeight: 600 }}>{ri === 0 ? (h.location || "—") : ""}</Td>
                           <Td style={{ fontWeight: ri === 0 ? 700 : 400 }}>{ri === 0 ? h.name : ""}</Td>
+                          <Td style={{ fontSize: 11, color: "#374151" }}>{ri === 0 ? (h.mealPlan || "CPAI") : ""}</Td>
                           <Td>{r.roomCat || "—"}</Td>
                           <Td style={{ textAlign: "center" }}>{r.occupancy || "Double"}</Td>
                           <Td style={{ textAlign: "center" }}>{r.nights || "—"}</Td>
@@ -1182,11 +1192,12 @@ export default function QuotationPreview({ data, id }) {
       )}
 
       {/* ══════════════════════════════
-          PRICE + NOTE — ALL MODES
+          PRICE + NOTE — PACKAGE MODE ONLY
+          (Standard & B2B show price in detail section, before Inclusions/Exclusions)
       ══════════════════════════════ */}
-      {selling > 0 && !isB2B && (() => {
+      {selling > 0 && isPackage && (() => {
         // Determine pp* flags by mode
-        const tierForPP   = !isPackage ? (pkgTiers["Economy"] || {}) : form;
+        const tierForPP   = !isPackage ? ((pkgTiers && pkgTiers["Economy"]) || {}) : form;
         const ppSellF     = tierForPP.ppSellEnabled     || false;
         const ppSubF      = tierForPP.ppSubEnabled      || false;
         const ppSubTotalF = tierForPP.ppSubTotalEnabled || false;

@@ -1,4 +1,6 @@
 import nodemailer from "nodemailer";
+import fs from "fs";
+import path from "path";
 
 export async function sendLeadConfirmationEmail({ name, email, phone, destination, travelDate, pax, message }) {
   const transporter = nodemailer.createTransport({
@@ -126,6 +128,123 @@ const transporter = nodemailer.createTransport({
     pass: process.env.SMTP_PASS,
   },
 });
+
+/* ─────────────────────────────────────────────────────────────
+   Send a personalised quotation email with optional PDF attach
+   ───────────────────────────────────────────────────────────── */
+export async function sendQuotationEmail({
+  to, cc, bcc, subject, message,
+  pdfBase64, pdfBuffer, pdfName,
+  quotationData = {},
+}) {
+  const t = nodemailer.createTransport({
+    host:   process.env.SMTP_HOST,
+    port:   Number(process.env.SMTP_PORT) || 587,
+    secure: false,
+    auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
+  });
+
+  const { name = "", destination = "", days = "", travelDate = "", selling = "", quoteId = "", phone = "" } = quotationData;
+
+  const yr = new Date().getFullYear();
+  const fmtDate = v => { try { return new Date(v + "T00:00:00").toLocaleDateString("en-IN", { day: "2-digit", month: "long", year: "numeric" }); } catch { return v; } };
+  const inr = n => "₹ " + Math.round(n || 0).toLocaleString("en-IN") + "/-";
+
+  /* message comes from RTE → already HTML */
+  const msgHtml = message || "";
+
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f0f4f8;font-family:'Segoe UI',Arial,sans-serif">
+<div style="max-width:580px;margin:32px auto;background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,.10)">
+
+  <!-- Header -->
+  <div style="background:#ee4c49;padding:36px 32px 28px;text-align:center">
+    <img src="https://tourwatchout.com/assets/images/icons/home/footer-logo.svg" alt="Tourwatchout" style="height:44px;object-fit:contain;margin-bottom:18px;display:block;margin-left:auto;margin-right:auto" />
+    <h1 style="margin:0 0 6px;color:#fff;font-size:24px;font-weight:800;letter-spacing:-0.4px">Your Quotation is Ready!</h1>
+    <p style="margin:0;color:rgba(255,255,255,.85);font-size:13px">Quote ID: <strong style="color:#fff">${quoteId}</strong></p>
+  </div>
+
+  <!-- Body -->
+  <div style="padding:32px 32px 8px">
+    <p style="margin:0 0 24px;font-size:14px;color:#374151;line-height:1.75">${msgHtml}</p>
+
+    <!-- Quotation Details Card -->
+    <div style="border:1px solid #fecaca;border-radius:12px;overflow:hidden;margin-bottom:24px">
+      <div style="background:#fff5f5;padding:11px 18px;border-bottom:1px solid #fecaca">
+        <p style="margin:0;font-size:11px;font-weight:700;color:#ee4c49;text-transform:uppercase;letter-spacing:.09em">Your Package Details</p>
+      </div>
+      <table style="width:100%;border-collapse:collapse">
+        ${destination ? `<tr>
+          <td style="padding:12px 18px;width:130px;font-size:12px;color:#94a3b8;font-weight:600;border-bottom:1px solid #f1f5f9">Destination</td>
+          <td style="padding:12px 18px;font-size:13px;font-weight:700;color:#0f172a;border-bottom:1px solid #f1f5f9">${destination}</td>
+        </tr>` : ""}
+        ${days ? `<tr>
+          <td style="padding:12px 18px;width:130px;font-size:12px;color:#94a3b8;font-weight:600;border-bottom:1px solid #f1f5f9">Duration</td>
+          <td style="padding:12px 18px;font-size:13px;font-weight:700;color:#0f172a;border-bottom:1px solid #f1f5f9">${days}</td>
+        </tr>` : ""}
+        ${travelDate ? `<tr>
+          <td style="padding:12px 18px;width:130px;font-size:12px;color:#94a3b8;font-weight:600">Travel Date</td>
+          <td style="padding:12px 18px;font-size:13px;font-weight:700;color:#0f172a">${fmtDate(travelDate)}</td>
+        </tr>` : ""}
+      </table>
+    </div>
+
+    <!-- PDF Attachment notice -->
+    <div style="margin-bottom:28px;background:#fff5f5;border:1.5px solid #fecaca;border-radius:12px;padding:14px 18px">
+      <div style="font-size:13px;font-weight:700;color:#ee4c49;margin-bottom:4px">Quotation PDF Attached</div>
+      <div style="font-size:12px;color:#64748b">Your personalized quotation is attached to this email. Open the attachment to view and save it.</div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div style="background:#f8fafc;padding:24px 32px;text-align:center;border-top:1px solid #f1f5f9">
+    <img src="cid:footer-signature" alt="Tourwatchout" style="max-width:100%;height:auto;display:block;margin:0 auto 12px" />
+    <p style="margin:0;font-size:11px;color:#cbd5e1">© ${yr} Tourwatchout. All rights reserved.</p>
+  </div>
+
+</div>
+</body>
+</html>`;
+
+  const mail = {
+    from:    `Tourwatchout <${process.env.SMTP_FROM}>`,
+    to,
+    subject: subject || `Your ${destination} Quotation · ${quoteId}`,
+    html,
+  };
+  if (cc)  mail.cc  = cc;
+  if (bcc) mail.bcc = bcc;
+
+  /* ── Attachments ── */
+  const attachments = [];
+
+  /* Footer signature image — embedded via CID so it shows inline in email */
+  try {
+    const sigPath = path.join(process.cwd(), "public", "assets", "images", "footer-signature.jpeg");
+    attachments.push({
+      filename:    "footer-signature.jpeg",
+      path:        sigPath,
+      cid:         "footer-signature",
+      contentType: "image/jpeg",
+    });
+  } catch { /* signature image missing — skip silently */ }
+
+  /* PDF attachment */
+  const attachBuf = pdfBuffer || (pdfBase64 ? Buffer.from(pdfBase64, "base64") : null);
+  if (attachBuf) {
+    attachments.push({
+      filename:    pdfName || `quotation-${quoteId}.pdf`,
+      content:     attachBuf,
+      contentType: "application/pdf",
+    });
+  }
+
+  if (attachments.length) mail.attachments = attachments;
+
+  await t.sendMail(mail);
+}
 
 export async function sendSalesPersonInviteEmail({ name, email, username, password }) {
   const transporter = nodemailer.createTransport({

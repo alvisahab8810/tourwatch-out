@@ -11,9 +11,11 @@ const QuotationSchema = new mongoose.Schema({
 
   // Hotels (array — supports multiple properties)
   hotels: [{
-    _id:     false,
-    name:    { type: String, default: "" },
-    roomCat: { type: String, default: "Deluxe" },
+    _id:      false,
+    name:     { type: String, default: "" },
+    location: { type: String, default: "" },
+    mealPlan: { type: String, default: "CPAI" },
+    roomCat:  { type: String, default: "Deluxe" },
     // legacy flat fields kept for backward-compat reads
     occupancy: { type: String, default: "" },
     nights:    { type: Number, default: 0 },
@@ -161,8 +163,9 @@ const QuotationSchema = new mongoose.Schema({
   highlights: [{ _id: false, key: { type: String }, label: { type: String } }],
 
   // Workflow
-  status:     { type: String, enum: ["Open", "Won", "Lost"], default: "Open" },
-  lostReason: { type: String, default: "" },
+  status:              { type: String, enum: ["Open", "Won", "Lost"], default: "Open" },
+  lostReason:          { type: String, default: "" },
+  leadFollowupStatus:  { type: String, default: "" },   // NA-NR | Followup | Confirmed | Cancelled | Carry Forward
   versions:   [{ _id: false, v: Number, date: String, cost: Number, margin: Number, note: String }],
   followups:  [{ _id: false, date: String, note: String }],
   reminders:  [{ _id: false, date: String, type: { type: String, default: "" }, note: String }],
