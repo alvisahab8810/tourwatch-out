@@ -2114,6 +2114,7 @@ export default function QuotationBuilder({
               <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 12 }}>
                 <Fl l="Inclusions">
                   <RTE
+                    key={`inc-${tmplApplied?.quotationNo || "base"}`}
                     value={toRichText(form.inclusions || "")}
                     onChange={v => upd("inclusions", v)}
                     placeholder="List what's included in the package…"
@@ -2122,6 +2123,7 @@ export default function QuotationBuilder({
                 </Fl>
                 <Fl l="Exclusions">
                   <RTE
+                    key={`exc-${tmplApplied?.quotationNo || "base"}`}
                     value={toRichText(form.exclusions || "")}
                     onChange={v => upd("exclusions", v)}
                     placeholder="List what's not included…"
@@ -2131,6 +2133,7 @@ export default function QuotationBuilder({
               </div>
               <Fl l="Special Notes (shown on quote PDF)">
                 <RTE
+                  key={`notes-${tmplApplied?.quotationNo || "base"}`}
                   value={toRichText(form.notes || "")}
                   onChange={v => upd("notes", v)}
                   placeholder="Add any special notes for the customer…"
