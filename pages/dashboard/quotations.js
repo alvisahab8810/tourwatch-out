@@ -439,7 +439,7 @@ export default function QuotationsPage() {
           <table style={S.table} className="qtbl">
             <thead>
               <tr style={{ background: "#fff" }}>
-                {["S.No","Quote ID","Name","Mobile","Destination","Days","Date of Travel","Quoted Price","Margin %","New Selling Price","Live Margin %","Edits","Follow-ups","Status","Lost Reason","Reminders","Invoice",""].map(h => (
+                {["S.No","Quote ID","Name","Mobile","Destination","Days","Date of Travel","Quoted Price","Margin %","Margin ₹","Edits","Follow-ups","Status","Lost Reason","Reminders","Invoice",""].map(h => (
                   <th key={h} style={{
                     ...S.th,
                     ...(h === "S.No"     ? { position: "sticky", left: 0,   width: 44,  minWidth: 44,  zIndex: 3, background: "#fff" } : {}),
@@ -452,7 +452,7 @@ export default function QuotationsPage() {
             </thead>
             <tbody>
               {filtered.length === 0 && (
-                <tr><td colSpan={18} style={{ textAlign: "center", padding: "48px 0", color: "#94A3B8", fontSize: 14 }}>
+                <tr><td colSpan={17} style={{ textAlign: "center", padding: "48px 0", color: "#94A3B8", fontSize: 14 }}>
                   {search || filterStatus ? "No matching quotations" : "No quotations yet — click '+ New Quotation' to start"}
                 </td></tr>
               )}
@@ -529,20 +529,8 @@ export default function QuotationsPage() {
                     </td>
 
                     <td style={S.td}>
-                      <input
-                        type="number"
-                        style={{ ...S.inlineInp, width: 110 }}
-                        placeholder="Enter price…"
-                        value={spVal ?? ""}
-                        onChange={e => setNewSP(p => ({ ...p, [q._id]: e.target.value }))}
-                        onBlur={() => saveNewSP(q)}
-                        onKeyDown={e => { if (e.key === "Enter") { e.target.blur(); } }}
-                      />
-                    </td>
-
-                    <td style={S.td}>
-                      {lGrd
-                        ? <span style={{ background: lGrd.bg, color: lGrd.c, borderRadius: 8, padding: "3px 9px", fontSize: 12, fontWeight: 700 }}>{liveMp.toFixed(1)}% {lGrd.g}</span>
+                      {cr.margin > 0
+                        ? <span style={{ background: oGrd?.bg, color: oGrd?.c, borderRadius: 8, padding: "3px 9px", fontSize: 12, fontWeight: 700 }}>{inrFmt(cr.margin)}</span>
                         : <span style={{ color: "#CBD5E1", fontSize: 11 }}>—</span>}
                     </td>
 

@@ -1651,25 +1651,21 @@ export default function QuotationBuilder({
                       <button
                         key={lbl}
                         onClick={() => { activePkgRef.current = lbl; setActivePkg(lbl); }}
-                        disabled={isB2B}
-                        title={isB2B ? "Tier switching is disabled in B2B mode" : undefined}
                         style={{
                           flex: 1, padding: "9px 0", border: "none",
-                          cursor: isB2B ? "not-allowed" : "pointer",
+                          cursor: "pointer",
                           fontWeight: 700, fontSize: 13,
-                          background: isB2B ? (lbl === "Economy" ? tierColor : "#F1F5F9") : (isActive ? tierColor : tierBg),
-                          color: isB2B ? (lbl === "Economy" ? "#fff" : "#CBD5E1") : (isActive ? "#fff" : tierColor),
+                          background: isActive ? tierColor : tierBg,
+                          color: isActive ? "#fff" : tierColor,
                           borderRight: idx < 2 ? "1.5px solid #E4E9F2" : "none",
                           transition: "all .15s",
-                          opacity: isB2B && lbl !== "Economy" ? 0.45 : 1,
                         }}
                       >
-                        {TIER_ICONS[lbl]} {lbl}{isB2B && lbl !== "Economy" ? " 🔒" : ""}
+                        {TIER_ICONS[lbl]} {lbl}
                       </button>
                     );
                   })}
                 </div>
-                {isB2B && <div style={{ marginTop: 6, fontSize: 11, color: "#64748B", fontStyle: "italic" }}>B2B mode uses a single pricing segment. Tier switching is disabled.</div>}
               </div>
             )}
 

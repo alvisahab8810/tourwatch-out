@@ -11,7 +11,7 @@ export async function sendLeadConfirmationEmail({ name, email, phone, destinatio
   });
 
   await transporter.sendMail({
-    from:    `Tourwatchout <${process.env.SMTP_FROM}>`,
+    from:    process.env.SMTP_FROM,
     to:      email,
     subject: `We've received your travel request, ${name}`,
     html: `
@@ -209,7 +209,7 @@ export async function sendQuotationEmail({
 </html>`;
 
   const mail = {
-    from:    `Tourwatchout <${process.env.SMTP_FROM}>`,
+    from:    process.env.SMTP_FROM,
     to,
     subject: subject || `Your ${destination} Quotation · ${quoteId}`,
     html,
@@ -255,7 +255,7 @@ export async function sendSalesPersonInviteEmail({ name, email, username, passwo
   });
 
   await transporter.sendMail({
-    from:    `Tourwatchout <${process.env.SMTP_FROM}>`,
+    from:    process.env.SMTP_FROM,
     to:      email,
     subject: `You've been invited to Tourwatchout Sales Dashboard`,
     html: `

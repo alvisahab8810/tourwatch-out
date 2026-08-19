@@ -19,27 +19,107 @@ function fmtDate(v) {
 function todayISO() { return new Date().toISOString().slice(0, 10); }
 function inr(n)     { return n > 0 ? "₹" + Math.round(n).toLocaleString("en-IN") : "—"; }
 
-/* ── Compact follow-up cell — inline edit on click ── */
-function FuCell({ fu, onSave }) {
+/* ── Lead Status custom dropdown — colored bullet per option ── */
+const LEAD_STATUS_OPTIONS = [
+  { value: "",             label: "Pending",    dot: "#CBD5E1", bg: "#F8FAFD", c: "#94A3B8" },
+  { value: "Followup",    label: "Follow-up",  dot: "#2563EB", bg: "#EFF4FF", c: "#2563EB" },
+  { value: "Confirmed",   label: "Confirmed",  dot: "#15803D", bg: "#DCFCE7", c: "#15803D" },
+  { value: "Cancelled",   label: "Cancelled",  dot: "#BE123C", bg: "#FEE2E2", c: "#BE123C" },
+  { value: "Carry Forward", label: "Carry Fwd", dot: "#D97706", bg: "#FEF3C7", c: "#D97706" },
+  { value: "NA-NR",       label: "NA-NR",      dot: "#64748B", bg: "#F1F5F9", c: "#64748B" },
+];
+
+function LeadStatusSelect({ value, onChange }) {
+  const [open, setOpen] = useState(false);
+  const [pos,  setPos]  = useState({ top: 0, left: 0 });
+  const trigRef = useRef(null);
+  const listRef = useRef(null);
+  const cur = LEAD_STATUS_OPTIONS.find(o => o.value === (value || "")) || LEAD_STATUS_OPTIONS[0];
+
+  function toggle() {
+    const rect = trigRef.current?.getBoundingClientRect();
+    if (rect) setPos({ top: rect.bottom + 4, left: rect.left });
+    setOpen(p => !p);
+  }
+
+  useEffect(() => {
+    if (!open) return;
+    function h(e) {
+      if (listRef.current && !listRef.current.contains(e.target) &&
+          trigRef.current  && !trigRef.current.contains(e.target)) setOpen(false);
+    }
+    document.addEventListener("mousedown", h);
+    return () => document.removeEventListener("mousedown", h);
+  }, [open]);
+
+  return (
+    <div style={{ display: "inline-block" }}>
+      {/* trigger pill */}
+      <div ref={trigRef} onClick={toggle} style={{
+        display: "inline-flex", alignItems: "center", gap: 6,
+        padding: "4px 10px",
+        borderRadius: 20,
+        border: `1.5px solid ${cur.dot}44`,
+        background: cur.bg,
+        color: cur.c,
+        fontSize: 11, fontWeight: 700,
+        cursor: "pointer", userSelect: "none", whiteSpace: "nowrap",
+      }}>
+        <span style={{ width: 7, height: 7, borderRadius: "50%", background: cur.dot, flexShrink: 0 }} />
+        {cur.label}
+        <span style={{ fontSize: 7, opacity: .6, marginLeft: 1 }}>▼</span>
+      </div>
+
+      {/* custom list — fixed so it's never clipped by table overflow */}
+      {open && (
+        <div ref={listRef} style={{
+          position: "fixed", top: pos.top, left: pos.left, zIndex: 9999,
+          background: "#fff", border: "1.5px solid #E8EDF5",
+          borderRadius: 10, padding: "4px 0",
+          boxShadow: "0 8px 24px rgba(0,0,0,.14)",
+          minWidth: 148,
+        }}>
+          {LEAD_STATUS_OPTIONS.map(opt => (
+            <div key={opt.value} onClick={() => { onChange(opt.value); setOpen(false); }}
+              style={{
+                display: "flex", alignItems: "center", gap: 8,
+                padding: "7px 14px", cursor: "pointer",
+                background: (value || "") === opt.value ? opt.bg : "transparent",
+                transition: "background .1s",
+              }}
+              onMouseEnter={e => e.currentTarget.style.background = opt.bg}
+              onMouseLeave={e => e.currentTarget.style.background = (value || "") === opt.value ? opt.bg : "transparent"}
+            >
+              <span style={{ width: 8, height: 8, borderRadius: "50%", background: opt.dot, flexShrink: 0 }} />
+              <span style={{ fontSize: 12, fontWeight: (value || "") === opt.value ? 700 : 500, color: opt.c }}>
+                {opt.label}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── Compact follow-up cell — color-coded by lead status ── */
+function FuCell({ fu, onSave, status }) {
   const [open, setOpen] = useState(false);
   const [pos,  setPos]  = useState({ top: 0, left: 0 });
   const [date, setDate] = useState("");
   const [note, setNote] = useState("");
-  const anchorRef = useRef(null); // chip trigger
-  const popRef    = useRef(null); // popup (click-outside)
-  const hasFu = !!fu?.note;
+  const anchorRef = useRef(null);
+  const popRef    = useRef(null);
+  const hasFu   = !!fu?.note;
+  const canEdit = status === "Followup";
+  const cfg     = LEAD_FU_CFG[status] || null; // box colour config
 
   function startEdit() {
+    if (!canEdit) return;
     setDate(fu?.date || todayISO());
     setNote(fu?.note || "");
-    // calculate fixed position from anchor
     const rect = anchorRef.current?.getBoundingClientRect();
-    if (rect) {
-      setPos({
-        top:  rect.bottom + 4,
-        left: Math.min(rect.left, window.innerWidth - 270),
-      });
-    }
+    if (rect) setPos({ top: rect.bottom + 4, left: Math.min(rect.left, window.innerWidth - 270) });
     setOpen(true);
   }
 
@@ -47,8 +127,7 @@ function FuCell({ fu, onSave }) {
     if (!open) return;
     function h(e) {
       if (popRef.current && !popRef.current.contains(e.target) &&
-          anchorRef.current && !anchorRef.current.contains(e.target))
-        setOpen(false);
+          anchorRef.current && !anchorRef.current.contains(e.target)) setOpen(false);
     }
     document.addEventListener("mousedown", h);
     return () => document.removeEventListener("mousedown", h);
@@ -60,50 +139,59 @@ function FuCell({ fu, onSave }) {
     setOpen(false);
   }
 
+  /* derive box colours from status */
+  const boxBorder = cfg ? `1.5px solid ${cfg.boxBorder}` : "1px dashed #D0D7E8";
+  const boxBg     = cfg ? cfg.boxBg    : "transparent";
+  const textC     = cfg ? cfg.boxC     : "#CBD5E1";
+  const dateC     = cfg ? cfg.boxC     : "#64748B";
+
   return (
     <div>
-      {/* chip trigger */}
       <div
         ref={anchorRef}
         onClick={startEdit}
-        title={hasFu ? `${fmtDate(fu.date)} — ${fu.note}` : "Add follow-up"}
+        title={
+          !canEdit && status
+            ? `Set Lead Status to "Follow-up" to edit`
+            : hasFu ? `${fmtDate(fu?.date)} — ${fu?.note}` : "Add follow-up"
+        }
         style={{
-          minWidth: 130, maxWidth: 200, cursor: "pointer",
-          padding: "3px 7px", borderRadius: 5,
-          background: hasFu ? "#F0FDF4" : "transparent",
-          border: hasFu ? "1px solid #BBF7D0" : "1px dashed #D0D7E8",
-          fontSize: 11.5, lineHeight: 1.4, color: hasFu ? "#166534" : "#CBD5E1",
+          minWidth: 130, maxWidth: 200,
+          cursor: canEdit ? "pointer" : "default",
+          padding: "4px 8px", borderRadius: 6,
+          background: boxBg,
+          border: boxBorder,
+          fontSize: 11.5, lineHeight: 1.45,
+          color: textC,
           whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
-          transition: "border .1s",
+          transition: "border .12s, background .12s",
         }}
       >
         {hasFu ? (
           <span>
-            <span style={{ fontWeight: 700, color: "#64748B", marginRight: 4 }}>
+            <span style={{ fontWeight: 700, color: dateC, marginRight: 4, opacity: .75 }}>
               {new Date(fu.date + "T00:00:00").toLocaleDateString("en-IN", { day: "2-digit", month: "short" })}:
             </span>
-            {fu.note}
+            <span style={{ color: textC }}>{fu.note}</span>
           </span>
         ) : (
-          <span style={{ display: "flex", alignItems: "center", justifyContent: "center", height: 20, fontSize: 14, color: "#D0D7E8" }}>+</span>
+          <span style={{ display: "flex", alignItems: "center", justifyContent: "center", height: 18, fontSize: 15, color: cfg ? cfg.boxBorder : "#D0D7E8" }}>+</span>
         )}
       </div>
 
-      {/* popup — fixed so it's never clipped by overflow/table containers */}
+      {/* popup */}
       {open && (
         <div ref={popRef} style={{
           position: "fixed", top: pos.top, left: pos.left, zIndex: 9999,
           background: "#fff", border: "1.5px solid #2563EB",
           borderRadius: 10, padding: 12, width: 260,
-          boxShadow: "0 8px 32px rgba(0,0,0,.18)",
-          whiteSpace: "normal",
+          boxShadow: "0 8px 32px rgba(0,0,0,.18)", whiteSpace: "normal",
         }}>
           <div style={{ fontSize: 10, fontWeight: 700, color: "#2563EB", marginBottom: 6, textTransform: "uppercase", letterSpacing: ".06em" }}>
             {hasFu ? "Edit Follow-up" : "Add Follow-up"}
           </div>
-          {/* Note first, date below — more natural UX */}
           <textarea value={note} onChange={e => setNote(e.target.value)} rows={3} placeholder="Note..."
-            style={{ display: "block", width: "100%", boxSizing: "border-box", marginBottom: 6, padding: "5px 8px", border: "1px solid #E4E9F2", borderRadius: 6, fontSize: 12, resize: "vertical", fontFamily: "inherit", outline: "none", whiteSpace: "pre-wrap", wordBreak: "break-word" }} />
+            style={{ display: "block", width: "100%", boxSizing: "border-box", marginBottom: 6, padding: "5px 8px", border: "1px solid #E4E9F2", borderRadius: 6, fontSize: 12, resize: "vertical", fontFamily: "inherit", outline: "none" }} />
           <input type="date" value={date} onChange={e => setDate(e.target.value)}
             style={{ display: "block", width: "100%", boxSizing: "border-box", marginBottom: 8, padding: "5px 8px", border: "1px solid #E4E9F2", borderRadius: 6, fontSize: 12, outline: "none" }} />
           <div style={{ display: "flex", gap: 6, justifyContent: "flex-end" }}>
@@ -136,13 +224,23 @@ const STATUS_STYLE = {
   Open: { background: "#EFF4FF", color: "#2563EB" },
 };
 
+/* lead follow-up status config — badge + follow-up box colours */
+const LEAD_FU_CFG = {
+  "Followup":      { bg: "#EFF4FF", c: "#2563EB", label: "Follow-up",  dot: "#2563EB", boxBg: "#EFF6FF", boxBorder: "#93C5FD", boxC: "#1D4ED8" },
+  "Confirmed":     { bg: "#DCFCE7", c: "#15803D", label: "Confirmed",  dot: "#15803D", boxBg: "#F0FDF4", boxBorder: "#86EFAC", boxC: "#166534" },
+  "Cancelled":     { bg: "#FEE2E2", c: "#BE123C", label: "Cancelled",  dot: "#BE123C", boxBg: "#FEF2F2", boxBorder: "#FCA5A5", boxC: "#991B1B" },
+  "Carry Forward": { bg: "#FEF3C7", c: "#D97706", label: "Carry Fwd",  dot: "#D97706", boxBg: "#FFFBEB", boxBorder: "#FCD34D", boxC: "#92400E" },
+  "NA-NR":         { bg: "#F1F5F9", c: "#64748B", label: "NA-NR",      dot: "#64748B", boxBg: "#F8FAFC", boxBorder: "#CBD5E1", boxC: "#94A3B8" },
+};
+
 export default function FollowUpsPage() {
   const [quotes,  setQuotes]  = useState([]);
   const [leads,   setLeads]   = useState([]);
   const [loading, setLoading] = useState(true);
   const [search,  setSearch]  = useState("");
-  const [filterStatus, setFilterStatus] = useState("");
-  const [filterMonth,  setFilterMonth]  = useState("");
+  const [filterStatus,   setFilterStatus]   = useState("");
+  const [filterLeadSt,   setFilterLeadSt]   = useState("");
+  const [filterMonth,    setFilterMonth]    = useState("");
   const [page, setPage] = useState(1);
 
   useEffect(() => {
@@ -198,14 +296,15 @@ export default function FollowUpsPage() {
         const mob  = String(lead.phone || "").replace(/\D/g, "");
         if (!name.includes(s) && !dest.includes(s) && !qid.includes(s) && !mob.includes(search.replace(/\D/g, ""))) return false;
       }
-      if (filterStatus && q.status !== filterStatus) return false;
+      if (filterStatus  && q.status              !== filterStatus)  return false;
+      if (filterLeadSt  && (q.leadFollowupStatus || "") !== filterLeadSt)  return false;
       if (filterMonth) {
         const d = new Date(q.createdAt);
         if (`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}` !== filterMonth) return false;
       }
       return true;
     });
-  }, [quotes, leads, search, filterStatus, filterMonth, quoteDispMap]);
+  }, [quotes, leads, search, filterStatus, filterLeadSt, filterMonth, quoteDispMap]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
   const slice = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
@@ -269,8 +368,14 @@ export default function FollowUpsPage() {
             <option value="Won">Won</option>
             <option value="Lost">Lost</option>
           </select>
-          {(filterMonth || filterStatus || search) && (
-            <button onClick={() => { setFilterMonth(""); setFilterStatus(""); setSearch(""); resetPage(); }}
+          <select style={{ ...S.filterSel, width: 145, flexShrink: 0 }} value={filterLeadSt} onChange={e => { setFilterLeadSt(e.target.value); resetPage(); }}>
+            <option value="">All Lead Status</option>
+            {Object.entries(LEAD_FU_CFG).map(([k, v]) => (
+              <option key={k} value={k}>{v.label}</option>
+            ))}
+          </select>
+          {(filterMonth || filterStatus || filterLeadSt || search) && (
+            <button onClick={() => { setFilterMonth(""); setFilterStatus(""); setFilterLeadSt(""); setSearch(""); resetPage(); }}
               style={{ background: "#FEE2E2", color: "#BE123C", border: "none", borderRadius: 7, padding: "4px 12px", fontSize: 12, fontWeight: 700, cursor: "pointer", flexShrink: 0 }}>
               ✕ Clear
             </button>
@@ -283,16 +388,30 @@ export default function FollowUpsPage() {
         {/* Count chips */}
         <div style={{ display: "flex", gap: 12, marginBottom: 16, flexWrap: "wrap" }}>
           {[
-            { l: "Total", n: quotes.length,                                  c: "#2563EB", bg: "#EFF4FF" },
-            { l: "Open",  n: quotes.filter(q => q.status === "Open").length,  c: "#2563EB", bg: "#EFF4FF" },
-            { l: "Won",   n: quotes.filter(q => q.status === "Won").length,   c: "#15803D", bg: "#DCFCE7" },
-            { l: "Lost",  n: quotes.filter(q => q.status === "Lost").length,  c: "#BE123C", bg: "#FEE2E2" },
+            { l: "Total",       n: quotes.length,                                                            c: "#2563EB", bg: "#EFF4FF" },
+            { l: "Open",        n: quotes.filter(q => q.status === "Open").length,                           c: "#2563EB", bg: "#EFF4FF" },
+            { l: "Won",         n: quotes.filter(q => q.status === "Won").length,                            c: "#15803D", bg: "#DCFCE7" },
+            { l: "Lost",        n: quotes.filter(q => q.status === "Lost").length,                           c: "#BE123C", bg: "#FEE2E2" },
           ].map(({ l, n, c, bg }) => (
             <div key={l} style={{ background: bg, borderRadius: 10, padding: "8px 18px", display: "flex", alignItems: "center", gap: 10, border: `1.5px solid ${c}22` }}>
               <span style={{ fontSize: 22, fontWeight: 800, color: c }}>{n}</span>
               <span style={{ fontSize: 12, fontWeight: 700, color: c }}>{l}</span>
             </div>
           ))}
+          <div style={{ width: 1, background: "#E4E9F2", alignSelf: "stretch" }} />
+          {Object.entries(LEAD_FU_CFG).map(([k, v]) => {
+            const count = quotes.filter(q => (q.leadFollowupStatus || "") === k).length;
+            if (!count) return null;
+            return (
+              <div key={k} style={{ background: v.bg, borderRadius: 10, padding: "8px 18px", display: "flex", alignItems: "center", gap: 8, border: `1.5px solid ${v.c}22`, cursor: "pointer" }}
+                onClick={() => { setFilterLeadSt(p => p === k ? "" : k); resetPage(); }}>
+                <span style={{ fontSize: 22, fontWeight: 800, color: v.c }}>{count}</span>
+                <span style={{ fontSize: 12, fontWeight: 700, color: v.c }}>
+                  <span style={{ color: v.dot, marginRight: 4 }}>●</span>{v.label}
+                </span>
+              </div>
+            );
+          })}
         </div>
 
         {/* Table */}
@@ -310,6 +429,7 @@ export default function FollowUpsPage() {
                     <th style={thSticky(SN_W+QID_W+NAME_W, MOB_W)}>Mobile</th>
                     <th style={S.th}>Destination</th>
                     <th style={S.th}>Status</th>
+                    <th style={{ ...S.th, minWidth: 110 }}>Lead Status</th>
                     <th style={S.th}>Duration</th>
                     <th style={S.th}>Start Date</th>
                     <th style={S.th}>End Date</th>
@@ -324,7 +444,7 @@ export default function FollowUpsPage() {
                 </thead>
                 <tbody>
                   {slice.length === 0 && (
-                    <tr><td colSpan={21} style={{ textAlign: "center", padding: "48px 0", color: "#94A3B8", fontSize: 14 }}>
+                    <tr><td colSpan={22} style={{ textAlign: "center", padding: "48px 0", color: "#94A3B8", fontSize: 14 }}>
                       No quotations found
                     </td></tr>
                   )}
@@ -377,6 +497,14 @@ export default function FollowUpsPage() {
                           </span>
                         </td>
 
+                        {/* Lead Follow-up Status — custom colour-dot dropdown */}
+                        <td style={{ ...S.td, minWidth: 140 }}>
+                          <LeadStatusSelect
+                            value={q.leadFollowupStatus || ""}
+                            onChange={v => patchQuote(q._id, { leadFollowupStatus: v })}
+                          />
+                        </td>
+
                         <td style={S.td}>{q.form?.days || q.days || "—"}</td>
                         <td style={{ ...S.td, whiteSpace: "nowrap" }}>{fmtDate(q.form?.travelDate || q.travelDate)}</td>
                         <td style={{ ...S.td, whiteSpace: "nowrap", color: "#94A3B8" }}>{endDate}</td>
@@ -393,7 +521,7 @@ export default function FollowUpsPage() {
 
                         {[0,1,2,3,4,5].map(fi => (
                           <td key={fi} style={{ ...S.td, padding: "6px 8px" }}>
-                            <FuCell fu={fus[fi]} onSave={makeFuSaver(q, fi)} />
+                            <FuCell fu={fus[fi]} onSave={makeFuSaver(q, fi)} status={q.leadFollowupStatus} />
                           </td>
                         ))}
                       </tr>
