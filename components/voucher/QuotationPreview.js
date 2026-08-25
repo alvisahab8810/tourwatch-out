@@ -590,9 +590,9 @@ export default function QuotationPreview({ data, id }) {
         {/* Hero: name + destination + logo */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 4 }}>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: 40, color: DARK, marginBottom: 4, lineHeight: 1.3 }}>
+            <div style={{ fontSize: 28, color: DARK, marginBottom: 4, lineHeight: 1.3 }}>
               {lead.name
-                ? <><strong>{lead.name.split(" ")[0]}'s</strong> trip to</>
+                ? <><strong>{lead.name.trim().endsWith("s") ? `${lead.name.trim()}'` : `${lead.name.trim()}'s`}</strong> trip to</>
                 : "Your trip to"}
             </div>
             <div style={{ fontSize: 50, fontWeight: 900, color: RED, lineHeight: 1.2, marginBottom: 18, wordBreak: "break-word" }}>

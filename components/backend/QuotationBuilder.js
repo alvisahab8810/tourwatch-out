@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect, useMemo } from "react";
+import React, { useState, useRef, useEffect, useMemo, useCallback } from "react";
+import { useRouter } from "next/router";
 import QuotationPreview from "../voucher/QuotationPreview";
 
 /* ── helpers ── */
@@ -390,6 +391,11 @@ export default function QuotationBuilder({
   const [savedId,   setSavedId]   = useState(initialData?._id || null);
   const savedIdRef    = useRef(initialData?._id || null);   // always current — avoids stale-closure duplicates
 
+  /* ── unsaved-changes guard ── */
+  const [isDirty,   setIsDirty]   = useState(false);
+  const [warnClose, setWarnClose] = useState(false);   // show confirmation dialog
+  const mountedRef  = useRef(false);                   // skip first render's effect fire
+
   /* ── original price fingerprint — used to detect price changes for smart save ── */
   const origPriceKey = useMemo(() => {
     if (!initialData) return null;
@@ -398,6 +404,46 @@ export default function QuotationBuilder({
     return `${initialData.cost||0}:${initialData.margin||0}:${tierKey}`;
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  /* ── mark dirty whenever form / tiers / itinerary change after mount ── */
+  useEffect(() => {
+    if (!mountedRef.current) { mountedRef.current = true; return; }
+    setIsDirty(true);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form, pkgTiers, itin]);
+
+  /* ── browser refresh / tab close guard ── */
+  useEffect(() => {
+    function handleBeforeUnload(e) {
+      if (!isDirty) return;
+      e.preventDefault();
+      e.returnValue = "You have unsaved changes. Are you sure you want to leave?";
+    }
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [isDirty]);
+
+  /* ── Next.js route-change guard ── */
+  const router = useRouter();
+  useEffect(() => {
+    function handleRouteChange() {
+      if (isDirty) {
+        setWarnClose(true);
+        router.events.emit("routeChangeError");
+        // eslint-disable-next-line no-throw-literal
+        throw "routeChange aborted — unsaved quotation changes";
+      }
+    }
+    router.events.on("routeChangeStart", handleRouteChange);
+    return () => router.events.off("routeChangeStart", handleRouteChange);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isDirty]);
+
+  /* ── guarded close — shows warning when dirty ── */
+  const guardedClose = useCallback(() => {
+    if (isDirty) { setWarnClose(true); return; }
+    onClose();
+  }, [isDirty, onClose]);
 
   /* ── shared cab/transfer detail: Day 1 itinerary's "Transfer Type" is the source for ──
      (a) every other itinerary day (unless that day was customised), and
@@ -721,6 +767,7 @@ export default function QuotationBuilder({
         const data = await res.json();
         savedIdRef.current = data._id;
         setSavedId(data._id);
+        setIsDirty(false);
         onSaved?.(data); onClose();
       }
     } finally { setSaving(false); }
@@ -743,6 +790,7 @@ export default function QuotationBuilder({
         const data = await res.json();
         savedIdRef.current = data._id;
         setSavedId(data._id);
+        setIsDirty(false);
         onSaved?.(data); onClose();
       }
     } finally { setSaving(false); }
@@ -1219,7 +1267,7 @@ export default function QuotationBuilder({
                 Linked to Lead {leadDisplayId} · {lead?.name} · {lead?.phone} · {lead?.destination}
               </div>
             </div>
-            <button style={{ ...QS.x, marginLeft: "auto" }} onClick={onClose}>✕</button>
+            <button style={{ ...QS.x, marginLeft: "auto" }} onClick={guardedClose}>✕</button>
           </div>
 
           {/* Body — two columns: sticky price panel left + scrollable form right */}
@@ -2370,7 +2418,7 @@ export default function QuotationBuilder({
 
           {/* Footer */}
           <div style={QS.foot}>
-            <button style={QS.fb} onClick={onClose}>Close</button>
+            <button style={QS.fb} onClick={guardedClose}>Close</button>
             <button style={QS.fb} onClick={() => setPreview(true)}>👁 Preview PDF</button>
             <button style={QS.fb} onClick={openEmailModal}>✉️ Email Quote</button>
             {/* WhatsApp Quote button — hidden for now */}
@@ -2394,6 +2442,54 @@ export default function QuotationBuilder({
           </div>
         </div>
       </Ov>
+
+      {/* ── Unsaved Changes Warning ── */}
+      {warnClose && (
+        <div style={{
+          position: "fixed", inset: 0, zIndex: 200,
+          background: "rgba(0,0,0,.55)", display: "flex", alignItems: "center", justifyContent: "center",
+        }}>
+          <div style={{
+            background: "#fff", borderRadius: 16, padding: "28px 28px 22px",
+            width: 380, boxShadow: "0 24px 64px rgba(0,0,0,.25)",
+            textAlign: "center",
+          }}>
+            {/* Icon */}
+            <div style={{ fontSize: 38, marginBottom: 10 }}>⚠️</div>
+            <div style={{ fontWeight: 800, fontSize: 17, color: "#0F1B33", marginBottom: 8 }}>
+              Unsaved Changes
+            </div>
+            <div style={{ fontSize: 13, color: "#4B5563", lineHeight: 1.6, marginBottom: 22 }}>
+              You have <strong>unsaved changes</strong> in this quotation.<br />
+              If you close now, all your edits will be <strong style={{ color: "#BE123C" }}>permanently lost</strong>.
+            </div>
+            <div style={{ display: "flex", gap: 10 }}>
+              {/* Continue editing — primary action */}
+              <button
+                onClick={() => setWarnClose(false)}
+                style={{
+                  flex: 1, padding: "10px 0", borderRadius: 9,
+                  border: "none", background: "#2563EB", color: "#fff",
+                  fontWeight: 700, fontSize: 13, cursor: "pointer",
+                }}
+              >
+                ✏️ Continue Editing
+              </button>
+              {/* Discard — destructive */}
+              <button
+                onClick={() => { setIsDirty(false); setWarnClose(false); onClose(); }}
+                style={{
+                  flex: 1, padding: "10px 0", borderRadius: 9,
+                  border: "1.5px solid #FCA5A5", background: "#FEF2F2", color: "#BE123C",
+                  fontWeight: 700, fontSize: 13, cursor: "pointer",
+                }}
+              >
+                🗑 Discard & Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── Quotation Email Modal ── */}
       {emailModal && (
