@@ -148,6 +148,7 @@ const QuotationSchema = new mongoose.Schema({
   margin:          { type: Number, default: 0 },
   gstPct:          { type: Number, default: 5 },
   tcsPct:          { type: Number, default: 0 },
+  tcsInPrice:      { type: Boolean, default: true },  // include TCS in displayed selling price
   tripExpense:     { type: Number, default: 0 },
   newSellingPrice: { type: Number, default: 0 },
   ppSubEnabled:      { type: Boolean, default: false },
