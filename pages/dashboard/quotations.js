@@ -345,6 +345,12 @@ export default function QuotationsPage() {
     });
   }, [quotes, search, filterStatus, filterMonth, leadIdMap]);
 
+  /* month-only filtered — for chip counts so they reflect selected month */
+  const monthFiltered = useMemo(() => {
+    if (!filterMonth) return quotes;
+    return quotes.filter(q => qMonthKey(q) === filterMonth);
+  }, [quotes, filterMonth]);
+
   const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
   const pg         = Math.min(page, totalPages);
   const slice      = filtered.slice((pg - 1) * perPage, pg * perPage);
@@ -421,10 +427,10 @@ export default function QuotationsPage() {
       {/* Count chips */}
       <div style={{ display: "flex", gap: 12, marginBottom: 16, flexWrap: "wrap" }}>
         {[
-          { l: "Total", n: quotes.length,                                  c: "#2563EB", bg: "#EFF4FF" },
-          { l: "Open",  n: quotes.filter(q => q.status === "Open").length,  c: "#2563EB", bg: "#EFF4FF" },
-          { l: "Won",   n: quotes.filter(q => q.status === "Won").length,   c: "#15803D", bg: "#DCFCE7" },
-          { l: "Lost",  n: quotes.filter(q => q.status === "Lost").length,  c: "#BE123C", bg: "#FEE2E2" },
+          { l: "Total", n: monthFiltered.length,                                         c: "#2563EB", bg: "#EFF4FF" },
+          { l: "Open",  n: monthFiltered.filter(q => q.status === "Open").length,  c: "#2563EB", bg: "#EFF4FF" },
+          { l: "Won",   n: monthFiltered.filter(q => q.status === "Won").length,   c: "#15803D", bg: "#DCFCE7" },
+          { l: "Lost",  n: monthFiltered.filter(q => q.status === "Lost").length,  c: "#BE123C", bg: "#FEE2E2" },
         ].map(({ l, n, c, bg }) => (
           <div key={l} style={{ background: bg, borderRadius: 10, padding: "8px 18px", display: "flex", alignItems: "center", gap: 10, border: `1.5px solid ${c}22` }}>
             <span style={{ fontSize: 22, fontWeight: 800, color: c }}>{n}</span>

@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect, useMemo, useCallback } from "react";
-import { useRouter } from "next/router";
 import QuotationPreview from "../voucher/QuotationPreview";
 
 /* ── helpers ── */
@@ -421,22 +420,6 @@ export default function QuotationBuilder({
     }
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, [isDirty]);
-
-  /* ── Next.js route-change guard ── */
-  const router = useRouter();
-  useEffect(() => {
-    function handleRouteChange() {
-      if (isDirty) {
-        setWarnClose(true);
-        router.events.emit("routeChangeError");
-        // eslint-disable-next-line no-throw-literal
-        throw "routeChange aborted — unsaved quotation changes";
-      }
-    }
-    router.events.on("routeChangeStart", handleRouteChange);
-    return () => router.events.off("routeChangeStart", handleRouteChange);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isDirty]);
 
   /* ── guarded close — shows warning when dirty ── */

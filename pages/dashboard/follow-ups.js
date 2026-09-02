@@ -306,6 +306,15 @@ export default function FollowUpsPage() {
     });
   }, [quotes, leads, search, filterStatus, filterLeadSt, filterMonth, quoteDispMap]);
 
+  /* month-only filtered — for chip counts so they reflect selected month */
+  const monthFiltered = useMemo(() => {
+    if (!filterMonth) return quotes;
+    return quotes.filter(q => {
+      const d = new Date(q.createdAt);
+      return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}` === filterMonth;
+    });
+  }, [quotes, filterMonth]);
+
   const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
   const slice = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
 
@@ -388,10 +397,10 @@ export default function FollowUpsPage() {
         {/* Count chips */}
         <div style={{ display: "flex", gap: 12, marginBottom: 16, flexWrap: "wrap" }}>
           {[
-            { l: "Total",       n: quotes.length,                                                            c: "#2563EB", bg: "#EFF4FF" },
-            { l: "Open",        n: quotes.filter(q => q.status === "Open").length,                           c: "#2563EB", bg: "#EFF4FF" },
-            { l: "Won",         n: quotes.filter(q => q.status === "Won").length,                            c: "#15803D", bg: "#DCFCE7" },
-            { l: "Lost",        n: quotes.filter(q => q.status === "Lost").length,                           c: "#BE123C", bg: "#FEE2E2" },
+            { l: "Total",       n: monthFiltered.length,                                                            c: "#2563EB", bg: "#EFF4FF" },
+            { l: "Open",        n: monthFiltered.filter(q => q.status === "Open").length,                           c: "#2563EB", bg: "#EFF4FF" },
+            { l: "Won",         n: monthFiltered.filter(q => q.status === "Won").length,                            c: "#15803D", bg: "#DCFCE7" },
+            { l: "Lost",        n: monthFiltered.filter(q => q.status === "Lost").length,                           c: "#BE123C", bg: "#FEE2E2" },
           ].map(({ l, n, c, bg }) => (
             <div key={l} style={{ background: bg, borderRadius: 10, padding: "8px 18px", display: "flex", alignItems: "center", gap: 10, border: `1.5px solid ${c}22` }}>
               <span style={{ fontSize: 22, fontWeight: 800, color: c }}>{n}</span>
@@ -400,7 +409,7 @@ export default function FollowUpsPage() {
           ))}
           <div style={{ width: 1, background: "#E4E9F2", alignSelf: "stretch" }} />
           {Object.entries(LEAD_FU_CFG).map(([k, v]) => {
-            const count = quotes.filter(q => (q.leadFollowupStatus || "") === k).length;
+            const count = monthFiltered.filter(q => (q.leadFollowupStatus || "") === k).length;
             if (!count) return null;
             return (
               <div key={k} style={{ background: v.bg, borderRadius: 10, padding: "8px 18px", display: "flex", alignItems: "center", gap: 8, border: `1.5px solid ${v.c}22`, cursor: "pointer" }}
@@ -449,7 +458,7 @@ export default function FollowUpsPage() {
                     </td></tr>
                   )}
                   {slice.map((q, idx) => {
-                    const lead  = typeof q.leadId === "object" ? q.leadId : leads.find(l => l._id === q.leadId) || {};
+                    const lead  = (q.leadId && typeof q.leadId === "object") ? q.leadId : leads.find(l => l._id === q.leadId) || {};
                     const calc  = calcQ(q);
                     const mpct  = q.cost > 0 ? ((q.margin || 0) / q.cost) * 100 : null;
                     const ss    = STATUS_STYLE[q.status] || STATUS_STYLE.Open;
