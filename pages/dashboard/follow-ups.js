@@ -287,14 +287,17 @@ export default function FollowUpsPage() {
 
   const filtered = useMemo(() => {
     return quotes.filter(q => {
-      const lead = typeof q.leadId === "object" ? q.leadId : leads.find(l => l._id === q.leadId) || {};
-      const s = search.toLowerCase();
+      const lead = (q.leadId && typeof q.leadId === "object") ? q.leadId : leads.find(l => String(l._id) === String(q.leadId)) || {};
+      const s = search.trim().toLowerCase();
       if (s) {
         const name = (lead.name || "").toLowerCase();
         const dest = (lead.destination || "").toLowerCase();
         const qid  = (quoteDispMap[q._id] || "").toLowerCase();
         const mob  = String(lead.phone || "").replace(/\D/g, "");
-        if (!name.includes(s) && !dest.includes(s) && !qid.includes(s) && !mob.includes(search.replace(/\D/g, ""))) return false;
+        const haystack = `${name} ${dest} ${qid} ${mob}`;
+        // every word in search must appear somewhere in the haystack
+        const words = s.split(/\s+/).filter(Boolean);
+        if (!words.every(w => haystack.includes(w))) return false;
       }
       if (filterStatus  && q.status              !== filterStatus)  return false;
       if (filterLeadSt  && (q.leadFollowupStatus || "") !== filterLeadSt)  return false;
@@ -458,7 +461,7 @@ export default function FollowUpsPage() {
                     </td></tr>
                   )}
                   {slice.map((q, idx) => {
-                    const lead  = (q.leadId && typeof q.leadId === "object") ? q.leadId : leads.find(l => l._id === q.leadId) || {};
+                    const lead  = (q.leadId && typeof q.leadId === "object") ? q.leadId : leads.find(l => String(l._id) === String(q.leadId)) || {};
                     const calc  = calcQ(q);
                     const mpct  = q.cost > 0 ? ((q.margin || 0) / q.cost) * 100 : null;
                     const ss    = STATUS_STYLE[q.status] || STATUS_STYLE.Open;

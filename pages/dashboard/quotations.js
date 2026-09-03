@@ -337,9 +337,10 @@ export default function QuotationsPage() {
       if (filterStatus && q.status !== filterStatus) return false;
       const mk = qMonthKey(q);
       if (filterMonth && mk !== filterMonth) return false;
-      if (search) {
-        const s = search.toLowerCase();
-        if (![lead.name || "", lead.destination || "", qDispId(q)].join(" ").toLowerCase().includes(s)) return false;
+      if (search.trim()) {
+        const haystack = [lead.name || "", lead.destination || "", qDispId(q), lead.phone || ""].join(" ").toLowerCase();
+        const words = search.trim().toLowerCase().split(/\s+/).filter(Boolean);
+        if (!words.every(w => haystack.includes(w))) return false;
       }
       return true;
     });
