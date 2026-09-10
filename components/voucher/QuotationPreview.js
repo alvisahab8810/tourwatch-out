@@ -838,7 +838,7 @@ export default function QuotationPreview({ data, id }) {
                     <div key={gi} data-pdf-break="true" style={{ display:"grid",gridTemplateColumns:"160px 1fr",borderTop:gi>0?"1px solid #e8e8e8":"none",padding:"14px 4px" }}>
                       <div style={{ paddingRight:12 }}>
                         {item.date && <div style={{ fontSize:13,fontWeight:700,color:DARK,marginBottom:3 }}>{fmtDate(item.date)}</div>}
-                        <div style={{ fontSize:11,color:TEAL,fontWeight:600 }}>Day {dayNum}</div>
+                        <div style={{ fontSize:11,color:TEAL,fontWeight:600 }}>{item.dayLabel || `Day ${dayNum}`}</div>
                         {item.title && <div style={{ fontSize:12,color:"#555",marginTop:5,lineHeight:1.4 }}>{item.title}</div>}
                       </div>
                       <div><LegacyActs item={item} /></div>
@@ -861,8 +861,8 @@ export default function QuotationPreview({ data, id }) {
                         <div style={{ paddingRight:12 }}>
                           <div style={{ fontSize:13,fontWeight:700,color:DARK }}>
                             {item.date ? fmtDateWeekday(item.date) : ""}
-                            {item.date && <span style={{ color:DARK,fontWeight:700 }}>, Day {dayNum}</span>}
-                            {!item.date && <span style={{ color:DARK,fontWeight:700 }}>Day {dayNum}</span>}
+                            {item.date && <span style={{ color:DARK,fontWeight:700 }}>, {item.dayLabel || `Day ${dayNum}`}</span>}
+                            {!item.date && <span style={{ color:DARK,fontWeight:700 }}>{item.dayLabel || `Day ${dayNum}`}</span>}
                           </div>
                         </div>
                         {/* Activities */}

@@ -42,7 +42,7 @@ function isBlankRichText(html) {
 }
 
 const uid = () => Math.random().toString(36).slice(2);
-const DEF_ITIN = () => ({ _k: uid(), date: "", title: "", tour: "", transfer: "", pickup_time: "", itinerary: "", activities: [] });
+const DEF_ITIN = () => ({ _k: uid(), date: "", title: "", dayLabel: "", tour: "", transfer: "", pickup_time: "", itinerary: "", activities: [] });
 const DEF_ACT  = () => ({ type: "transfer", text: "" });
 
 function initItin(initialData) {
@@ -51,6 +51,7 @@ function initItin(initialData) {
     _k:          d._k           || uid(),
     date:        d.date         || "",
     title:       d.title        || "",
+    dayLabel:    d.dayLabel     || "",
     activities:  d.activities   || [],
     tour:        d.tour         || "",
     transfer:    d.transfer     || "",
@@ -355,6 +356,8 @@ export default function QuotationBuilder({
   const setTransfers = fn => setPkgTiers(p => { const t = p[activePkg]; return { ...p, [activePkg]: { ...t, transfers: typeof fn === "function" ? fn(t.transfers) : fn } }; });
   const setMiscs     = fn => setPkgTiers(p => { const t = p[activePkg]; return { ...p, [activePkg]: { ...t, miscs:     typeof fn === "function" ? fn(t.miscs)     : fn } }; });
   const [itin,       setItin]       = useState(() => initItin(initialData));
+  const itinDragIdx  = useRef(null);   // index being dragged
+  const [itinDragOver, setItinDragOver] = useState(null); // index being hovered over
   const [saving,     setSaving]     = useState(false);
   const [pdfLoading, setPdfLoading] = useState(false);
   const [extraRoomCats, setExtraRoomCats] = useState([]);
@@ -552,6 +555,7 @@ export default function QuotationBuilder({
         _k:         uid(),
         date:       day.date       || "",
         title:      day.title      || "",
+        dayLabel:   day.dayLabel   || "",
         transfer:   day.transfer   || "",
         tour:       day.tour       || "",
         pickup_time:day.pickup_time|| "",
@@ -1238,10 +1242,10 @@ export default function QuotationBuilder({
         />
       </div>
 
-      <Ov>
-        <div style={{ ...QS.modal, maxWidth: 960 }}>
+      <div style={{ position: "fixed", inset: 0, zIndex: 210, background: "#F1F4FA", overflow: "hidden", display: "flex", flexDirection: "column" }}>
+        <div style={{ ...QS.modal, borderRadius: 0, flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
           {/* Header */}
-          <div style={QS.head}>
+          <div style={{ ...QS.head, borderRadius: 0, padding: "14px 24px" }}>
             <div>
               <div style={{ color: "#fff", fontWeight: 800, fontSize: 15 }}>
                 Quotation {quoteDisplayId} · {form.type} · {form.pkgMode}
@@ -1254,10 +1258,10 @@ export default function QuotationBuilder({
           </div>
 
           {/* Body — two columns: sticky price panel left + scrollable form right */}
-          <div style={{ display: "flex", maxHeight: "70vh", overflow: "hidden" }}>
+          <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
 
           {/* ── LEFT: live price preview ── */}
-          <div style={{ width: 215, flexShrink: 0, overflowY: "auto", background: "#fff", borderRight: "1px solid #E4E9F2", padding: "14px 12px", display: "flex", flexDirection: "column", gap: 10 }}>
+          <div style={{ width: 260, flexShrink: 0, overflowY: "auto", background: "#fff", borderRight: "1px solid #E4E9F2", padding: "18px 16px", display: "flex", flexDirection: "column", gap: 10 }}>
             <div style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: ".06em", color: "#6B7A99", marginBottom: 2 }}>💰 Package Preview</div>
 
             {/* Package: single tier preview */}
@@ -1361,7 +1365,7 @@ export default function QuotationBuilder({
           </div>
 
           {/* ── RIGHT: scrollable form ── */}
-          <div style={{ flex: 1, overflowY: "auto", padding: "18px 20px" }}>
+          <div style={{ flex: 1, overflowY: "auto", padding: "24px 32px" }}>
 
             {/* ── Copy from existing quotation (new only) ── */}
             {isNew && (
@@ -1578,10 +1582,61 @@ export default function QuotationBuilder({
             {/* ── Itinerary ── */}
             <Sec label="📅  Day-wise Itinerary">
               {itin.map((d, i) => (
-                <div key={d._k} style={{ marginBottom: 8 }}>
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 15, position: "relative" }}>
-                    <div style={{ fontSize: 16, fontWeight: 800, color: "#2563EB", textTransform: "uppercase", letterSpacing: "0.05em", textAlign: "center" }}>📅 Day {i + 1}</div>
-                    {itin.length > 1 && <button style={{ ...QS.remBtn, position: "absolute", right: 0 }} onClick={() => setItin(p => p.filter((_, j) => j !== i))}>✕</button>}
+                <div
+                  key={d._k}
+                  style={{
+                    marginBottom: 8,
+                    borderRadius: 12,
+                    outline: itinDragOver === i && itinDragIdx.current !== i ? "2.5px dashed #2563EB" : "none",
+                    transition: "outline 0.08s",
+                    opacity: itinDragIdx.current === i ? 0.45 : 1,
+                  }}
+                  onDragOver={e => { e.preventDefault(); if (itinDragIdx.current !== i) setItinDragOver(i); }}
+                  onDrop={e => {
+                    e.preventDefault();
+                    const from = itinDragIdx.current;
+                    if (from === null || from === i) { setItinDragOver(null); return; }
+                    setItin(p => {
+                      const arr = [...p];
+                      const [moved] = arr.splice(from, 1);
+                      arr.splice(i, 0, moved);
+                      return arr;
+                    });
+                    itinDragIdx.current = null;
+                    setItinDragOver(null);
+                  }}
+                  onDragLeave={() => setItinDragOver(null)}
+                  onDragEnd={() => { itinDragIdx.current = null; setItinDragOver(null); }}
+                >
+                  {/* Day header: drag handle + editable label + delete */}
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 15, position: "relative" }}>
+                    {/* Drag handle */}
+                    <div
+                      draggable
+                      onDragStart={() => { itinDragIdx.current = i; }}
+                      title="Drag to reorder"
+                      style={{ cursor: "grab", color: "#94A3B8", fontSize: 20, lineHeight: 1, userSelect: "none", padding: "2px 4px", borderRadius: 6, flexShrink: 0 }}
+                    >⠿</div>
+                    {/* Day icon */}
+                    <span style={{ fontSize: 15, flexShrink: 0 }}>📅</span>
+                    {/* Editable label — placeholder shows "DAY N", typing overrides */}
+                    <input
+                      style={{
+                        flex: 1, fontSize: 14, fontWeight: 800, color: "#2563EB",
+                        background: "transparent", border: "none",
+                        borderBottom: "2px dashed #BFDBFE", outline: "none",
+                        textAlign: "center", textTransform: "uppercase",
+                        letterSpacing: "0.05em", padding: "2px 4px",
+                        fontFamily: "inherit",
+                      }}
+                      placeholder={`DAY ${i + 1}`}
+                      value={d.dayLabel || ""}
+                      onChange={e => setItin(p => p.map((x, j) => j === i ? { ...x, dayLabel: e.target.value } : x))}
+                    />
+                    {/* Delete button */}
+                    {itin.length > 1 && (
+                      <button style={{ ...QS.remBtn, flexShrink: 0 }} onClick={() => setItin(p => p.filter((_, j) => j !== i))}>✕</button>
+                    )}
                   </div>
                   <div style={{ ...QS.rowBox, marginBottom: 15 }}>
                     <div style={{ ...G2, marginBottom: 10 }}>
@@ -2400,7 +2455,7 @@ export default function QuotationBuilder({
           </div>{/* end two-column body */}
 
           {/* Footer */}
-          <div style={QS.foot}>
+          <div style={{ ...QS.foot, borderRadius: 0, padding: "14px 28px" }}>
             <button style={QS.fb} onClick={guardedClose}>Close</button>
             <button style={QS.fb} onClick={() => setPreview(true)}>👁 Preview PDF</button>
             <button style={QS.fb} onClick={openEmailModal}>✉️ Email Quote</button>
@@ -2424,12 +2479,12 @@ export default function QuotationBuilder({
             )}
           </div>
         </div>
-      </Ov>
+      </div>
 
       {/* ── Unsaved Changes Warning ── */}
       {warnClose && (
         <div style={{
-          position: "fixed", inset: 0, zIndex: 200,
+          position: "fixed", inset: 0, zIndex: 240,
           background: "rgba(0,0,0,.55)", display: "flex", alignItems: "center", justifyContent: "center",
         }}>
           <div style={{
@@ -2476,7 +2531,7 @@ export default function QuotationBuilder({
 
       {/* ── Quotation Email Modal ── */}
       {emailModal && (
-        <Ov style={{ zIndex: 103 }} onClick={() => setEmailModal(false)}>
+        <Ov style={{ zIndex: 230 }} onClick={() => setEmailModal(false)}>
           <div style={{ ...QS.modal, maxWidth: 600 }} onClick={e => e.stopPropagation()}>
 
             {/* Header */}
@@ -2586,7 +2641,7 @@ export default function QuotationBuilder({
 
       {/* ── Template PDF Preview ── */}
       {tmplPreview && (
-        <Ov style={{ zIndex: 102 }} onClick={() => setTmplPreview(null)}>
+        <Ov style={{ zIndex: 225 }} onClick={() => setTmplPreview(null)}>
           <div style={{ ...QS.modal, maxWidth: 840 }} onClick={e => e.stopPropagation()}>
             <div style={QS.head}>
               <div>
@@ -2638,7 +2693,7 @@ export default function QuotationBuilder({
 
       {/* ── Preview PDF ── */}
       {preview && (
-        <Ov style={{ zIndex: 101 }}>
+        <Ov style={{ zIndex: 220 }}>
           <div style={{ ...QS.modal, maxWidth: 840 }}>
             <div style={QS.head}>
               <div style={{ color: "#fff", fontWeight: 800, fontSize: 15 }}>Quote Preview · {quoteDisplayId}</div>

@@ -114,6 +114,7 @@ const QuotationSchema = new mongoose.Schema({
     _id: false,
     date:        { type: String, default: "" },
     title:       { type: String, default: "" },
+    dayLabel:    { type: String, default: "" },  // custom day label e.g. "Day of Arrival"; falls back to "Day N"
     tour:        { type: String, default: "" },
     transfer:    { type: String, default: "" },
     pickup_time: { type: String, default: "" },
