@@ -5,7 +5,7 @@ import { sendMetaEvent } from "../../../../utils/metaCapi";
 const ALLOWED_PATCH = [
   "assignedTo", "contacted", "contactedAt",
   "verificationStatus", "status", "budgetBracket", "notes",
-  "score", "brr", "destination",
+  "score", "brr", "destination", "name",
 ];
 
 export default async function handler(req, res) {
@@ -60,8 +60,29 @@ export default async function handler(req, res) {
       }
     }
 
+    /* Rename — allowed only for manually added leads; Meta / web leads keep the name they came in with */
+    let nameHistEntry = null;
+    if ("name" in update) {
+      const current = await Lead.findById(id).select("name isManual formType").lean();
+      if (!current) return res.status(404).json({ error: "Lead not found" });
+      const isManual = !!current.isManual || current.formType === "Manual";
+      if (!isManual) {
+        return res.status(403).json({ error: "not_manual", message: "Only manually added leads can be renamed." });
+      }
+      const newName = String(update.name || "").trim();
+      if (!newName) return res.status(400).json({ error: "validation", message: "Name cannot be empty." });
+      update.name = newName;
+      const oldName = current.name || "";
+      if (oldName !== newName) {
+        nameHistEntry = { from: oldName, to: newName, changedAt: new Date() };
+      }
+    }
+
     const mongoUpdate = { $set: update };
-    if (destHistEntry) mongoUpdate.$push = { destinationHistory: destHistEntry };
+    const push = {};
+    if (destHistEntry) push.destinationHistory = destHistEntry;
+    if (nameHistEntry) push.nameHistory = nameHistEntry;
+    if (Object.keys(push).length) mongoUpdate.$push = push;
 
     const lead = await Lead.findByIdAndUpdate(id, mongoUpdate, { new: true, strict: false })
       .populate("assignedTo", "name email username")

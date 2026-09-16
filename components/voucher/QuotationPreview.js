@@ -542,7 +542,8 @@ export default function QuotationPreview({ data, id }) {
   })();
 
   /* derived */
-  const destination = lead.destination || "";
+  // the quotation carries its own destination (one lead can be quoted for several places)
+  const destination = form.destination || lead.destination || "";
   const paxLabel    = getPaxLabel(lead);
   const sp          = typeof form.assignedTo === "object" && form.assignedTo?.name ? form.assignedTo : null;
   const createdAt   = fmtCreated(form.createdAt);

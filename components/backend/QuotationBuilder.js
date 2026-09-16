@@ -230,7 +230,7 @@ function normHL(hl) {
 const DEF_FORM = {
   type: "Domestic", pkgMode: "Complete Package", quoteType: "standard",
   highlights: DEF_HIGHLIGHTS,
-  days: "", travelDate: "", assignedTo: "",
+  days: "", destination: "", travelDate: "", assignedTo: "",
   inclusions: "", exclusions: "",
   notes: "This is an initial quote based on our most popular holiday package to your chosen destination.",
   termsConditions: DEFAULT_TERMS,
@@ -316,6 +316,8 @@ export default function QuotationBuilder({
     ? {
         ...DEF_FORM, ...initialData,
         assignedTo: initialData.assignedTo?._id || initialData.assignedTo || "",
+        // quotations saved before per-quotation destinations fall back to the lead's destination
+        destination: initialData.destination || lead?.destination || "",
         // older/existing quotations saved before these policy fields existed have them
         // missing, "" or just leftover empty markup (e.g. "<p><br></p>" from a cleared
         // editor) — in all of those cases fall back to the standard prefilled text
@@ -334,6 +336,7 @@ export default function QuotationBuilder({
         travelDate: brr.tripDate || lead?.travelDate || "",
         assignedTo: lead?.assignedTo?._id || lead?.assignedTo || "",
         days: brr.duration || "",
+        destination: brr.destination || lead?.destination || "",
       };
 
   const arrInit = initArrays(initialData, lead);
@@ -784,7 +787,9 @@ export default function QuotationBuilder({
       ? (TIER_LABELS.map(l => pkgTiers[l]).find(t => +t?.cost > 0) || pkgTiers.Economy)
       : null;
     const topLevelCost   = isB2B ? toN(b2bRepTier?.cost)   : toN(form.cost);
-    const topLevelMargin = isB2B ? toN(b2bRepTier?.margin) : toN(pkgTiers.Economy.margin);
+    // margin follows the tier being edited (a Deluxe-only quote used to save margin 0)
+    const topLevelMargin = isB2B ? toN(b2bRepTier?.margin)
+      : (toN(pkgTiers[activePkg]?.margin) || toN(pkgTiers.Economy.margin));
     return {
       ...form,
       assignedTo: form.assignedTo || null,
@@ -801,11 +806,11 @@ export default function QuotationBuilder({
   async function save() {
     setSaving(true);
     try {
-      // For B2B: version cost/margin should reflect the first non-zero tier (same logic as buildBody)
+      // the version's figures come from the tier that is being edited, not always Economy
       const _verRepTier = isB2B
-        ? (TIER_LABELS.map(l => pkgTiers[l]).find(t => +t?.cost > 0) || pkgTiers.Economy)
-        : null;
-      const newVer = { v: (initialData?.versions?.length || 0) + 1, date: todayISO(), cost: isB2B ? toN(_verRepTier?.cost) : toN(form.cost), margin: isB2B ? toN(_verRepTier?.margin) : toN(pkgTiers.Economy.margin), note: (initialData?.versions?.length || 0) === 0 ? "First quote created" : "Quote revised", quoteType: form.quoteType };
+        ? (pkgTiers[activePkg] && +pkgTiers[activePkg].cost > 0 ? pkgTiers[activePkg] : (TIER_LABELS.map(l => pkgTiers[l]).find(t => +t?.cost > 0) || pkgTiers.Economy))
+        : (pkgTiers[activePkg] || pkgTiers.Economy);
+      const newVer = { v: (initialData?.versions?.length || 0) + 1, date: todayISO(), cost: isB2B ? toN(_verRepTier?.cost) : toN(form.cost), margin: toN(_verRepTier?.margin), note: (initialData?.versions?.length || 0) === 0 ? "First quote created" : "Quote revised", quoteType: form.quoteType, destination: form.destination || lead?.destination || "", tier: activePkg };
       // snapshot the full quotation into the version so Edit/PDF can reopen this exact revision later
       const snapBody = buildBody();
       newVer.snapshot = snapBody;
@@ -824,7 +829,14 @@ export default function QuotationBuilder({
         setSavedId(data._id);
         setIsDirty(false);
         onSaved?.(data); onClose();
+      } else {
+        // never fail silently — the change stays on screen and the user knows it was not stored
+        const err = await res.text().catch(() => "");
+        window.alert("Could not save this quotation (" + res.status + "). Nothing was stored — please try again. " + err.slice(0, 200));
       }
+    } catch (e) {
+      // an exception here used to leave the builder looking saved while nothing was stored
+      window.alert("Could not save this quotation — " + (e?.message || e));
     } finally { setSaving(false); }
   }
 
@@ -835,8 +847,14 @@ export default function QuotationBuilder({
       // current version is overwritten in place — keep its type and snapshot in sync
       const snapBody = buildBody();
       const curVers = initialData?.versions || [];
+      const _curRepTier = isB2B
+        ? (pkgTiers[activePkg] && +pkgTiers[activePkg].cost > 0 ? pkgTiers[activePkg] : (TIER_LABELS.map(l => pkgTiers[l]).find(t => +t?.cost > 0) || pkgTiers.Economy))
+        : (pkgTiers[activePkg] || pkgTiers.Economy);
       const versions = curVers.length
-        ? curVers.map((v, i) => i === curVers.length - 1 ? { ...v, quoteType: form.quoteType, snapshot: snapBody } : v)
+        ? curVers.map((v, i) => i === curVers.length - 1
+            ? { ...v, quoteType: form.quoteType, destination: form.destination || v.destination || "", tier: activePkg,
+                cost: isB2B ? toN(_curRepTier?.cost) : toN(form.cost), margin: toN(_curRepTier?.margin), snapshot: snapBody }
+            : v)
         : curVers;
       const body = { ...snapBody, versions };
       const currentId = savedIdRef.current;
@@ -853,7 +871,14 @@ export default function QuotationBuilder({
         setSavedId(data._id);
         setIsDirty(false);
         onSaved?.(data); onClose();
+      } else {
+        // never fail silently — the change stays on screen and the user knows it was not stored
+        const err = await res.text().catch(() => "");
+        window.alert("Could not save this quotation (" + res.status + "). Nothing was stored — please try again. " + err.slice(0, 200));
       }
+    } catch (e) {
+      // an exception here used to leave the builder looking saved while nothing was stored
+      window.alert("Could not save this quotation — " + (e?.message || e));
     } finally { setSaving(false); }
   }
 
@@ -1325,7 +1350,7 @@ export default function QuotationBuilder({
                 Quotation {quoteDisplayId} · {form.type} · {form.pkgMode}
               </div>
               <div style={{ fontSize: 12, color: "#BFD3FE", marginTop: 3, fontWeight: 600 }}>
-                Linked to Lead {leadDisplayId} · {lead?.name} · {lead?.phone} · {lead?.destination}
+                Linked to Lead {leadDisplayId} · {lead?.name} · {lead?.phone} · {form.destination || lead?.destination}
               </div>
             </div>
             <button style={{ ...QS.x, marginLeft: "auto" }} onClick={guardedClose}>✕</button>
@@ -1596,6 +1621,7 @@ export default function QuotationBuilder({
             <Sec label="Trip Basics" slate>
               <div style={G4}>
                 <Fl l="Guest Name"><input style={{ ...QS.inp, color: "#94A3B8" }} value={lead?.name || ""} disabled /></Fl>
+                <Fl l="Destination"><input style={QS.inp} placeholder="e.g. Goa" value={form.destination || ""} onChange={e => upd("destination", e.target.value)} /></Fl>
                 <Fl l="Days"><input style={QS.inp} placeholder="4N 5D" value={form.days} onChange={e => upd("days", e.target.value)} /></Fl>
                 <Fl l="Date of Travel"><input type="date" style={QS.inp} value={form.travelDate} onChange={e => upd("travelDate", e.target.value)} /></Fl>
                 <Fl l="Salesperson">

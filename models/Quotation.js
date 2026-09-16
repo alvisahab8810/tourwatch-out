@@ -6,6 +6,8 @@ const QuotationSchema = new mongoose.Schema({
   type:        { type: String, enum: ["Domestic", "International"], default: "Domestic" },
   pkgMode:     { type: String, enum: ["Complete Package", "Individual Service"], default: "Complete Package" },
   days:        { type: String, default: "" },
+  // per-quotation destination — one lead can be quoted for several places; falls back to the lead's own destination
+  destination: { type: String, default: "" },
   travelDate:  { type: String, default: "" },
   assignedTo:  { type: mongoose.Schema.Types.ObjectId, ref: "SalesPerson", default: null },
 
@@ -169,7 +171,7 @@ const QuotationSchema = new mongoose.Schema({
   status:              { type: String, enum: ["Open", "Won", "Lost"], default: "Open" },
   lostReason:          { type: String, default: "" },
   leadFollowupStatus:  { type: String, default: "" },   // NA-NR | Followup | Confirmed | Cancelled | Carry Forward
-  versions:   [{ _id: false, v: Number, date: String, cost: Number, margin: Number, note: String, quoteType: { type: String, default: "" },
+  versions:   [{ _id: false, v: Number, date: String, cost: Number, margin: Number, note: String, quoteType: { type: String, default: "" }, destination: { type: String, default: "" }, tier: { type: String, default: "" },
                 // full copy of the quotation as it was at this version — lets Edit/PDF reopen that exact revision
                 snapshot: { type: mongoose.Schema.Types.Mixed, default: null } }],
   followups:  [{ _id: false, date: String, note: String }],

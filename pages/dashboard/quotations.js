@@ -351,7 +351,7 @@ export default function QuotationsPage() {
       const mk = qMonthKey(q);
       if (filterMonth && mk !== filterMonth) return false;
       if (search.trim()) {
-        const haystack = [lead.name || "", lead.destination || "", qDispId(q), lead.phone || ""].join(" ").toLowerCase();
+        const haystack = [lead.name || "", q.destination || "", lead.destination || "", qDispId(q), lead.phone || ""].join(" ").toLowerCase();
         const words = search.trim().toLowerCase().split(/\s+/).filter(Boolean);
         if (!words.every(w => haystack.includes(w))) return false;
       }
@@ -528,7 +528,8 @@ export default function QuotationsPage() {
 
                     <td style={S.td}>
                       <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-                        <span style={{ fontWeight: 500 }}>{lead.destination || "—"}</span>
+                        {/* the quotation's own destination wins — set in the builder, kept per version */}
+                        <span style={{ fontWeight: 500 }} title={q.destination ? "Destination of the latest version" : undefined}>{q.destination || lead.destination || "—"}</span>
                         <button title="Edit / History"
                           onClick={() => setDestModal({ lead, val: lead.destination || "", saving: false })}
                           style={{ background: "none", border: "none", cursor: "pointer", padding: "2px 3px", borderRadius: 5, display: "flex", alignItems: "center", color: "#26828D" }}>
@@ -873,6 +874,26 @@ export default function QuotationsPage() {
       {verModal && (() => {
         const vers = verModal.versions || [];
         const leadName = verModal.leadId?.name || "—";
+        /* which package tiers a version holds — from its own snapshot, else the current quotation */
+        const TIER_COLORS = { Economy: ["#15803D", "#DCFCE7"], Deluxe: ["#2563EB", "#EFF4FF"], Premium: ["#7C3AED", "#F3E8FF"] };
+        const tiersOf = (v, isFinal) => {
+          // an older version without a snapshot has no tier data of its own — never borrow the
+          // current quotation's tiers, that made every row look identical
+          const src = v.snapshot || (isFinal ? verModal : null);
+          if (!src) return { filled: [], active: "", unknown: true };
+          const tiers = src.pkgTiers || {};
+          const filled = ["Economy", "Deluxe", "Premium"].filter(lbl => {
+            const t = tiers[lbl];
+            return !!t && (
+              (t.hotels    || []).some(h => h.name) ||
+              (t.flights   || []).some(f => f.from || f.to || f.depCity || f.arrCity || f.pnr || f.flightNo) ||
+              (t.transfers || []).some(x => x.cab && (+x.perDay > 0 || +x.days > 0)) ||
+              (t.miscs     || []).some(m => m.name) ||
+              +t.cost > 0
+            );
+          });
+          return { filled, active: v.tier || src.activeTier || "" };
+        };
         return (
           <Ov>
             <div style={{ ...S.modal, maxWidth: 1180 }}>
@@ -893,7 +914,7 @@ export default function QuotationsPage() {
                   <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
                     <thead>
                       <tr style={{ background: "#F6F8FC" }}>
-                        {["Version","Type","Date","Cost","Margin","Margin %","Selling (incl. GST)","Note",""].map(h => (
+                        {["Version","Destination","Type","Tiers","Date","Cost","Margin","Margin %","Selling (incl. GST)","Note",""].map(h => (
                           <th key={h} style={{ ...S.th, textAlign: h === "" ? "right" : "left" }}>{h}</th>
                         ))}
                       </tr>
@@ -902,7 +923,7 @@ export default function QuotationsPage() {
                       {vers.map((v, i) => {
                         const isFinal = i === vers.length - 1;
                         // B2B old versions were saved with cost=0 (pre-fix). Show "—" for those.
-                        const isB2BZero = (v.quoteType || verModal.quoteType) === "b2b" && !v.cost && !v.margin;
+                        const isB2BZero = (v.quoteType || v.snapshot?.quoteType || (isFinal ? verModal.quoteType : "")) === "b2b" && !v.cost && !v.margin;
                         const base    = (v.cost || 0) + (v.margin || 0);
                         const gst     = base * ((verModal.gstPct || 5) / 100);
                         const tcs     = verModal.type === "International" ? (base + gst) * ((verModal.tcsPct || 0) / 100) : 0;
@@ -914,11 +935,46 @@ export default function QuotationsPage() {
                               <span style={{ color: "#2563EB" }}>v{v.v}</span>
                               {isFinal && <span style={{ marginLeft: 8, fontSize: 10, fontWeight: 800, background: "#15803D", color: "#fff", borderRadius: 99, padding: "2px 7px" }}>Final</span>}
                             </td>
+                            <td style={{ ...S.td, fontWeight: 600, color: "#0F1B33" }}>{(() => {
+                              const own = v.destination || v.snapshot?.destination || "";
+                              if (own) return own;
+                              // the final version is the live quotation, so its destination is the current one
+                              if (isFinal) return verModal.destination || verModal.leadId?.destination || "—";
+                              // older versions saved before per-version destinations: show the lead's, greyed
+                              const guess = verModal.leadId?.destination || "";
+                              return guess
+                                ? <span style={{ color: "#94A3B8", fontWeight: 500 }} title="Saved before destinations were tracked per version — showing the lead's destination">{guess}</span>
+                                : "—";
+                            })()}</td>
                             <td style={S.td}>{(() => {
-                              // versions saved before type was recorded: type was locked then, so it equals the quotation's type
-                              const qt = v.quoteType || verModal.quoteType || "standard";
+                              // only the final version can fall back to the quotation itself — it IS the live data
+                              const own = v.quoteType || v.snapshot?.quoteType || "";
+                              const qt = own || (isFinal ? (verModal.quoteType || "standard") : "");
+                              if (!qt) return <span style={{ fontSize: 11, color: "#94A3B8" }} title="Type was not recorded for this version">—</span>;
                               const T = { standard: ["Package Category", "#2563EB", "#EFF4FF"], b2b: ["B2B", "#7C3AED", "#F3E8FF"], package: ["Package", "#15803D", "#DCFCE7"] }[qt] || [qt, "#475569", "#F1F5F9"];
                               return <span style={{ fontSize: 11, fontWeight: 700, color: T[1], background: T[2], borderRadius: 99, padding: "3px 9px", whiteSpace: "nowrap" }}>{T[0]}</span>;
+                            })()}</td>
+                            <td style={{ ...S.td, whiteSpace: "nowrap" }}>{(() => {
+                              const { filled, active, unknown } = tiersOf(v, isFinal);
+                              const vType = v.quoteType || v.snapshot?.quoteType || (isFinal ? verModal.quoteType : "");
+                              if (vType === "package") return <span style={{ fontSize: 11, color: "#6B7A99" }}>Single package</span>;
+                              if (unknown) return <span style={{ fontSize: 11, color: "#94A3B8" }} title="Saved before version snapshots existed — tiers not recorded">—</span>;
+                              if (!filled.length) return <span style={{ fontSize: 11, color: "#94A3B8" }}>—</span>;
+                              return (
+                                <span style={{ display: "inline-flex", gap: 4 }}>
+                                  {filled.map(lbl => {
+                                    const [fg, bg] = TIER_COLORS[lbl];
+                                    const isActive = lbl === active;
+                                    return (
+                                      <span key={lbl}
+                                        title={isActive ? `${lbl} — saved on this tier` : lbl}
+                                        style={{ fontSize: 11, fontWeight: 700, borderRadius: 99, padding: "3px 9px", whiteSpace: "nowrap", color: isActive ? "#fff" : fg, background: isActive ? fg : bg, border: `1px solid ${isActive ? fg : "transparent"}` }}>
+                                        {lbl}
+                                      </span>
+                                    );
+                                  })}
+                                </span>
+                              );
                             })()}</td>
                             <td style={S.td}>{fmtDate(v.date)}</td>
                             <td style={{ ...S.td, fontWeight: 600 }}>{isB2BZero ? <span style={{ color: "#94A3B8", fontSize: 11 }}>—</span> : inrFmt(v.cost)}</td>
@@ -1132,7 +1188,8 @@ function PgBtn({ children, onClick, disabled, active }) {
 
 function Ov({ children, onClick }) {
   return (
-    <div style={{ position: "fixed", inset: 0, background: "rgba(10,18,38,.55)", backdropFilter: "blur(3px)", zIndex: 90, display: "flex", alignItems: "flex-start", justifyContent: "center", overflowY: "auto", padding: "24px 18px" }} onClick={onClick}>
+    /* z-index must stay above the fixed sidebar (z-index 200) or the modal's left side is hidden behind it */
+    <div style={{ position: "fixed", inset: 0, background: "rgba(10,18,38,.55)", backdropFilter: "blur(3px)", zIndex: 260, display: "flex", alignItems: "flex-start", justifyContent: "center", overflowY: "auto", padding: "24px 18px" }} onClick={onClick}>
       {children}
     </div>
   );

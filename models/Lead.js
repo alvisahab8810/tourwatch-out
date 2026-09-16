@@ -66,6 +66,13 @@ const LeadSchema = new mongoose.Schema(
     connects: { type: Number, default: 0 },
     score:    { type: ScoreSchema, default: null },
     brr:      { type: BRRSchema,   default: null },
+    // Name change log — only manually added leads can be renamed
+    nameHistory: [{
+      _id:       false,
+      from:      { type: String, default: "" },
+      to:        { type: String, default: "" },
+      changedAt: { type: Date, default: Date.now },
+    }],
     // Destination change log
     destinationHistory: [{
       _id:       false,

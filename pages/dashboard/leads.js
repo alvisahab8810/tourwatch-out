@@ -119,6 +119,7 @@ export default function LeadsPage() {
   const [deleting,  setDeleting]  = useState(false);
   const [expandedRow, setExpandedRow] = useState(null); // clicked row id to show UTM details
   const [msgModal,    setMsgModal]    = useState(null); // { name, message } — full message popup
+  const [nameModal,   setNameModal]   = useState(null); // { lead, val, saving, error } — rename + history (manual leads only)
   const [hoveredRow,  setHoveredRow]  = useState(null); // row hover for premium feel
 
   /* inline edits */
@@ -170,6 +171,33 @@ export default function LeadsPage() {
       const r = await fetch(`/api/dashboard/leads/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
       if (r.ok) { const u = await r.json(); setLeads(p => p.map(l => l._id === id ? { ...l, connects: u.connects } : l)); }
     } finally { setUpdatingId(null); }
+  }
+
+  /* rename a manually added lead (Meta / web leads are blocked server-side too) */
+  async function saveNameModal() {
+    if (!nameModal) return;
+    const leadId = nameModal.lead._id;
+    const trimmed = (nameModal.val || "").trim();
+    if (!trimmed || trimmed === (nameModal.lead.name || "")) return;
+    setNameModal(p => p ? { ...p, saving: true, error: "" } : null);
+    try {
+      const r = await fetch(`/api/dashboard/leads/${leadId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: trimmed }),
+      });
+      const data = await r.json().catch(() => ({}));
+      if (!r.ok) {
+        setNameModal(p => p ? { ...p, saving: false, error: data.message || "Could not rename this lead." } : null);
+        return;
+      }
+      const nm   = data.name ?? trimmed;
+      const hist = data.nameHistory ?? [];
+      setLeads(prev => prev.map(l => l._id === leadId ? { ...l, name: nm, nameHistory: hist } : l));
+      setNameModal(p => p ? { ...p, lead: { ...p.lead, name: nm, nameHistory: hist }, val: nm, saving: false, error: "" } : null);
+    } catch (e) {
+      setNameModal(p => p ? { ...p, saving: false, error: e?.message || "Could not rename this lead." } : null);
+    }
   }
 
   async function confirmDelete() {
@@ -388,7 +416,27 @@ export default function LeadsPage() {
 
                       {/* Name — frozen col 2 */}
                       <td style={{ ...S.td, position: "sticky", left: 208, zIndex: 1, width: 110, background: isExpanded ? "#EEF4FF" : isHovered ? "#F7F9FF" : "#fff" }}>
-                        <span style={{ fontWeight: 600, color: "#0F1B33" }}>{l.name}</span>
+                        <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                          <span style={{ fontWeight: 600, color: "#0F1B33" }}>{l.name}</span>
+                          {/* only manually added leads can be renamed — Meta / web leads keep their original name */}
+                          {(l.isManual || l.formType === "Manual") && (
+                            <button
+                              title="Edit name or view change history"
+                              onClick={e => { e.stopPropagation(); setNameModal({ lead: l, val: l.name || "", saving: false, error: "" }); }}
+                              style={{ background: "none", border: "none", padding: 0, cursor: "pointer", color: "#2563EB", lineHeight: 0, flexShrink: 0 }}>
+                              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                              </svg>
+                            </button>
+                          )}
+                          {(l.nameHistory || []).length > 0 && (
+                            <span title={`Renamed ${l.nameHistory.length} time(s)`}
+                              style={{ fontSize: 9.5, fontWeight: 700, color: "#6B7A99", background: "#F1F5F9", border: "1px solid #E4E9F2", borderRadius: 4, padding: "1px 4px" }}>
+                              {l.nameHistory.length} edit{l.nameHistory.length > 1 ? "s" : ""}
+                            </span>
+                          )}
+                        </span>
                       </td>
 
                       {/* Assigned To — hidden for now, re-enable when needed
@@ -742,6 +790,83 @@ export default function LeadsPage() {
         </div>
       )}
 
+      {/* ══ Rename Lead + Change History (manual leads only) ══ */}
+      {nameModal && (() => {
+        const lead = nameModal.lead;
+        const hist = [...(lead.nameHistory || [])].reverse();
+        const fmtDT = d => { try { return new Date(d).toLocaleString("en-IN", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }); } catch { return "—"; } };
+        const trimmed = (nameModal.val || "").trim();
+        const changed = !!trimmed && trimmed !== (lead.name || "");
+        return (
+          <div style={S.overlay} onClick={e => { if (e.target === e.currentTarget && !nameModal.saving) setNameModal(null); }}>
+            <div style={{ ...S.modal, maxWidth: 500 }}>
+              <div style={S.modalHead}>
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                </svg>
+                <div>
+                  <div style={{ color: "#fff", fontWeight: 800, fontSize: 15 }}>Lead Name · {leadIdMap[lead._id] || ""}</div>
+                  <div style={{ color: "rgba(255,255,255,.65)", fontSize: 11, marginTop: 1 }}>Edit name or view change history</div>
+                </div>
+                <button style={S.modalX} onClick={() => setNameModal(null)}>✕</button>
+              </div>
+
+              <div style={{ padding: "18px 22px 0", background: "#fff" }}>
+                <div style={{ display: "flex", gap: 8, marginBottom: nameModal.error ? 10 : 20 }}>
+                  <input
+                    autoFocus
+                    style={{ ...S.inp, flex: 1, fontSize: 13 }}
+                    placeholder="Enter lead name…"
+                    value={nameModal.val}
+                    disabled={nameModal.saving}
+                    onChange={e => setNameModal(p => ({ ...p, val: e.target.value }))}
+                    onKeyDown={e => { if (e.key === "Enter" && changed) saveNameModal(); }}
+                  />
+                  <button
+                    disabled={!changed || nameModal.saving}
+                    onClick={saveNameModal}
+                    style={{ background: "#2563EB", color: "#fff", border: "none", borderRadius: 9, padding: "0 18px", fontSize: 13, fontWeight: 700, opacity: (!changed || nameModal.saving) ? 0.45 : 1, cursor: (!changed || nameModal.saving) ? "not-allowed" : "pointer" }}>
+                    {nameModal.saving ? "Saving…" : "Save"}
+                  </button>
+                </div>
+                {nameModal.error && <div style={{ ...S.errorBox, marginTop: 0, marginBottom: 16 }}>{nameModal.error}</div>}
+
+                <div style={{ borderTop: "1px solid #E4E9F2", paddingTop: 14, marginBottom: 4 }}>
+                  <div style={{ fontSize: 11, fontWeight: 800, color: "#6B7A99", letterSpacing: ".06em", textTransform: "uppercase", marginBottom: 10 }}>Change History</div>
+                  {hist.length === 0 ? (
+                    <div style={{ textAlign: "center", color: "#CBD5E1", fontSize: 13, padding: "18px 0 10px" }}>No changes recorded yet</div>
+                  ) : (
+                    <div style={{ display: "flex", flexDirection: "column", gap: 6, maxHeight: 260, overflowY: "auto" }}>
+                      {hist.map((h, i) => (
+                        <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "9px 12px", borderRadius: 9, background: i === 0 ? "#EFF4FF" : "#F8FAFD", border: `1px solid ${i === 0 ? "#BFDBFE" : "#E4E9F2"}` }}>
+                          <div style={{ width: 24, height: 24, borderRadius: "50%", background: i === 0 ? "#2563EB" : "#E4E9F2", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                            <span style={{ fontSize: 10, fontWeight: 800, color: i === 0 ? "#fff" : "#6B7A99" }}>v{hist.length - i}</span>
+                          </div>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+                              <span style={{ fontSize: 12, color: "#94A3B8", textDecoration: "line-through" }}>{h.from || "—"}</span>
+                              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#26828D" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                              <span style={{ fontSize: 12.5, fontWeight: 700, color: "#0F1B33" }}>{h.to || "—"}</span>
+                              {i === 0 && <span style={{ fontSize: 10, background: "#2563EB", color: "#fff", borderRadius: 4, padding: "1px 5px", fontWeight: 700 }}>Latest</span>}
+                            </div>
+                            <div style={{ fontSize: 11, color: "#94A3B8", marginTop: 2 }}>{fmtDT(h.changedAt)}</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div style={{ ...S.modalFoot, justifyContent: "flex-end", marginTop: 16 }}>
+                <button style={{ ...S.cancelBtn, flex: "none", padding: "9px 22px" }} onClick={() => setNameModal(null)}>Close</button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
       {/* ══ Full Message Popup ══ */}
       {msgModal && (
         <div style={S.overlay} onClick={e => { if (e.target === e.currentTarget) setMsgModal(null); }}>
@@ -813,7 +938,7 @@ const S = {
   delBtn:     { background: "#FEF2F2", border: "1px solid #FECACA", borderRadius: 6, width: 24, height: 24, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "#EF4444" },
   pgBar:      { display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", borderTop: "1px solid #E4E9F2", flexWrap: "wrap", gap: 10 },
   perPageSel: { border: "1px solid #E4E9F2", borderRadius: 6, padding: "2px 6px", fontSize: 13, background: "#fff", cursor: "pointer" },
-  overlay:    { position: "fixed", inset: 0, background: "rgba(10,18,38,.55)", backdropFilter: "blur(3px)", zIndex: 90, display: "flex", alignItems: "flex-start", justifyContent: "center", overflowY: "auto", padding: "34px 18px" },
+  overlay:    { position: "fixed", inset: 0, background: "rgba(10,18,38,.55)", backdropFilter: "blur(3px)", zIndex: 260, display: "flex", alignItems: "flex-start", justifyContent: "center", overflowY: "auto", padding: "34px 18px" },
   modal:      { background: "#F3F5FA", borderRadius: 18, boxShadow: "0 10px 40px rgba(15,27,51,.18)", width: "100%", animation: "none" },
   modalHead:  { display: "flex", alignItems: "center", gap: 10, padding: "15px 20px", background: "#2563EB", borderRadius: "18px 18px 0 0" },
   modalTitle: { fontSize: "1rem", fontWeight: 800, color: "#0F1B33", margin: 0 },
