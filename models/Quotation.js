@@ -159,6 +159,7 @@ const QuotationSchema = new mongoose.Schema({
 
   // Package tiers (Economy / Deluxe / Premium — each has its own hotels/flights/transfers/miscs)
   pkgTiers: { type: mongoose.Schema.Types.Mixed, default: {} },
+  activeTier: { type: String, default: "" },   // tier the builder was last edited on; reopens on it
 
   // Quotation type
   quoteType:  { type: String, enum: ["standard", "b2b", "package"], default: "standard" },
@@ -168,7 +169,9 @@ const QuotationSchema = new mongoose.Schema({
   status:              { type: String, enum: ["Open", "Won", "Lost"], default: "Open" },
   lostReason:          { type: String, default: "" },
   leadFollowupStatus:  { type: String, default: "" },   // NA-NR | Followup | Confirmed | Cancelled | Carry Forward
-  versions:   [{ _id: false, v: Number, date: String, cost: Number, margin: Number, note: String }],
+  versions:   [{ _id: false, v: Number, date: String, cost: Number, margin: Number, note: String, quoteType: { type: String, default: "" },
+                // full copy of the quotation as it was at this version — lets Edit/PDF reopen that exact revision
+                snapshot: { type: mongoose.Schema.Types.Mixed, default: null } }],
   followups:  [{ _id: false, date: String, note: String }],
   reminders:  [{ _id: false, date: String, type: { type: String, default: "" }, note: String }],
 }, { timestamps: true });

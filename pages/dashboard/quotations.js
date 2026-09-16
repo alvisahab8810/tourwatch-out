@@ -252,19 +252,32 @@ export default function QuotationsPage() {
     } catch { setDestModal(p => p ? { ...p, saving: false } : null); }
   }
 
+  /* ── version history — the list API strips snapshots, so pull the full quotation ── */
+  async function openVerModal(q) {
+    setVerModal(q);                       // show immediately with what the list already has
+    try {
+      const res = await fetch(`/api/dashboard/quotations/${q._id}`);
+      if (!res.ok) return;
+      const full = await res.json();
+      setVerModal(prev => (prev && prev._id === q._id ? { ...full, leadId: q.leadId || full.leadId } : prev));
+    } catch {}
+  }
+
   function openPdfPreview(q, v) {
     const lead = q.leadId || {};
-    const formForCalc = { ...q, cost: v?.cost ?? q.cost, margin: v?.margin ?? q.margin };
+    // versions saved with a snapshot reopen exactly as they were; older ones fall back to the current data
+    const src = v?.snapshot ? { ...q, ...v.snapshot } : q;
+    const formForCalc = { ...src, cost: v?.cost ?? src.cost, margin: v?.margin ?? src.margin };
     const selling = calcQ(formForCalc).selling || ((v?.cost || 0) + (v?.margin || 0));
     setPdfPreviewData({
       quoteId:   qDispId(q),
       lead,
       form:      formForCalc,
-      pkgTiers:  q.pkgTiers || {},
-      hotels:    q.hotels    || [],
-      flights:   q.flights   || [],
-      transfers: q.transfers || [],
-      itin:      q.itinerary || [],
+      pkgTiers:  src.pkgTiers || {},
+      hotels:    src.hotels    || [],
+      flights:   src.flights   || [],
+      transfers: src.transfers || [],
+      itin:      src.itinerary || [],
       selling,
     });
   }
@@ -542,7 +555,7 @@ export default function QuotationsPage() {
                     </td>
 
                     <td style={S.td}>
-                      <button style={S.linkBtn} onClick={() => setVerModal(q)}>{q.versions?.length || 0} ver{(q.versions?.length || 0) !== 1 ? "s" : ""}</button>
+                      <button style={S.linkBtn} onClick={() => openVerModal(q)}>{q.versions?.length || 0} ver{(q.versions?.length || 0) !== 1 ? "s" : ""}</button>
                     </td>
 
                     {/* Follow-ups — opens modal */}
@@ -862,7 +875,7 @@ export default function QuotationsPage() {
         const leadName = verModal.leadId?.name || "—";
         return (
           <Ov>
-            <div style={{ ...S.modal, maxWidth: 860 }}>
+            <div style={{ ...S.modal, maxWidth: 1180 }}>
               {/* Header */}
               <div style={{ ...S.mHead, flexDirection: "column", alignItems: "flex-start", gap: 4 }}>
                 <div style={{ display: "flex", width: "100%", alignItems: "center" }}>
@@ -873,14 +886,14 @@ export default function QuotationsPage() {
               </div>
 
               {/* Table */}
-              <div style={{ padding: "20px 24px" }}>
+              <div style={{ padding: "20px 24px", overflowX: "auto" }}>
                 {vers.length === 0 ? (
                   <p style={{ color: "#94A3B8", fontSize: 13, textAlign: "center", padding: "28px 0" }}>No versions saved yet</p>
                 ) : (
                   <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
                     <thead>
                       <tr style={{ background: "#F6F8FC" }}>
-                        {["Version","Date","Cost","Margin","Margin %","Selling (incl. GST)","Note",""].map(h => (
+                        {["Version","Type","Date","Cost","Margin","Margin %","Selling (incl. GST)","Note",""].map(h => (
                           <th key={h} style={{ ...S.th, textAlign: h === "" ? "right" : "left" }}>{h}</th>
                         ))}
                       </tr>
@@ -889,7 +902,7 @@ export default function QuotationsPage() {
                       {vers.map((v, i) => {
                         const isFinal = i === vers.length - 1;
                         // B2B old versions were saved with cost=0 (pre-fix). Show "—" for those.
-                        const isB2BZero = verModal.quoteType === "b2b" && !v.cost && !v.margin;
+                        const isB2BZero = (v.quoteType || verModal.quoteType) === "b2b" && !v.cost && !v.margin;
                         const base    = (v.cost || 0) + (v.margin || 0);
                         const gst     = base * ((verModal.gstPct || 5) / 100);
                         const tcs     = verModal.type === "International" ? (base + gst) * ((verModal.tcsPct || 0) / 100) : 0;
@@ -901,6 +914,12 @@ export default function QuotationsPage() {
                               <span style={{ color: "#2563EB" }}>v{v.v}</span>
                               {isFinal && <span style={{ marginLeft: 8, fontSize: 10, fontWeight: 800, background: "#15803D", color: "#fff", borderRadius: 99, padding: "2px 7px" }}>Final</span>}
                             </td>
+                            <td style={S.td}>{(() => {
+                              // versions saved before type was recorded: type was locked then, so it equals the quotation's type
+                              const qt = v.quoteType || verModal.quoteType || "standard";
+                              const T = { standard: ["Package Category", "#2563EB", "#EFF4FF"], b2b: ["B2B", "#7C3AED", "#F3E8FF"], package: ["Package", "#15803D", "#DCFCE7"] }[qt] || [qt, "#475569", "#F1F5F9"];
+                              return <span style={{ fontSize: 11, fontWeight: 700, color: T[1], background: T[2], borderRadius: 99, padding: "3px 9px", whiteSpace: "nowrap" }}>{T[0]}</span>;
+                            })()}</td>
                             <td style={S.td}>{fmtDate(v.date)}</td>
                             <td style={{ ...S.td, fontWeight: 600 }}>{isB2BZero ? <span style={{ color: "#94A3B8", fontSize: 11 }}>—</span> : inrFmt(v.cost)}</td>
                             <td style={{ ...S.td, fontWeight: 600 }}>{isB2BZero ? <span style={{ color: "#94A3B8", fontSize: 11 }}>—</span> : inrFmt(v.margin)}</td>
@@ -909,10 +928,12 @@ export default function QuotationsPage() {
                             <td style={{ ...S.td, color: "#6B7A99", maxWidth: 180, whiteSpace: "normal" }}>{v.note || "—"}</td>
                             <td style={{ ...S.td, textAlign: "right", whiteSpace: "nowrap" }}>
                               <button onClick={() => { setOpenBuilder({ quote: { ...verModal, ...v.snapshot }, isNew: false, lead: verModal.leadId }); setVerModal(null); }}
+                                title={v.snapshot ? `Open v${v.v} exactly as it was saved` : "Saved before version snapshots existed — opens the current data"}
                                 style={{ background: "#EFF4FF", color: "#2563EB", border: "1px solid #BFD3FE", borderRadius: 6, padding: "3px 10px", fontSize: 12, fontWeight: 700, cursor: "pointer", marginRight: 6 }}>
                                 ✎ Edit
                               </button>
                               <button onClick={() => openPdfPreview(verModal, v)}
+                                title={v.snapshot ? `PDF of v${v.v} as it was saved` : "Saved before version snapshots existed — uses the current data"}
                                 style={{ background: "#fff", color: "#36415A", border: "1px solid #E4E9F2", borderRadius: 6, padding: "3px 10px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
                                 PDF
                               </button>

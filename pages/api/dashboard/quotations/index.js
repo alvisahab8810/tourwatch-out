@@ -1,6 +1,9 @@
 import connectDB from "../../../../utils/mongodb";
 import Quotation from "../../../../models/Quotation";
 
+// quotations carry per-version snapshots, so the payload outgrows the 1mb default
+export const config = { api: { bodyParser: { sizeLimit: "20mb" } } };
+
 function getFY() {
   const d = new Date(), y = d.getFullYear(), m = d.getMonth() + 1;
   return m >= 4
@@ -12,7 +15,8 @@ export default async function handler(req, res) {
   await connectDB();
 
   if (req.method === "GET") {
-    const quotes = await Quotation.find({})
+    // version snapshots are large and only needed when a single quotation is opened — keep the list light
+    const quotes = await Quotation.find({}, { "versions.snapshot": 0 })
       .sort({ createdAt: -1 })
       .populate("leadId", "name phone email destination travelDate pax brr destinationHistory")
       .populate("assignedTo", "name email")

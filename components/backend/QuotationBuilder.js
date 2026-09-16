@@ -338,12 +338,31 @@ export default function QuotationBuilder({
 
   const arrInit = initArrays(initialData, lead);
 
-  /* ── original quote type — locked when editing an existing quotation ── */
+  /* ── original quote type — used to warn when an existing quotation's type is changed ── */
   const origQuoteType = initialData?.quoteType || null;
 
   const [form,      setForm]      = useState(baseForm);
-  const [activePkg, setActivePkg] = useState("Economy");
-  const activePkgRef = useRef("Economy");           // always-current ref avoids stale closures
+  /* ── tier to open on: the one this quotation was last saved on, else the first one holding data ── */
+  const initialTier = (() => {
+    if (TIER_LABELS.includes(initialData?.activeTier)) return initialData.activeTier;
+    const tiers = initialData?.pkgTiers;
+    if (tiers) {
+      const withData = TIER_LABELS.find(lbl => {
+        const t = tiers[lbl];
+        return !!t && (
+          (t.hotels    || []).some(h => h.name) ||
+          (t.flights   || []).some(f => f.from || f.to || f.depCity || f.arrCity || f.pnr || f.flightNo) ||
+          (t.transfers || []).some(x => x.cab && (+x.perDay > 0 || +x.days > 0)) ||
+          (t.miscs     || []).some(m => m.name) ||
+          +t.cost > 0
+        );
+      });
+      if (withData) return withData;
+    }
+    return "Economy";
+  })();
+  const [activePkg, setActivePkg] = useState(initialTier);
+  const activePkgRef = useRef(initialTier);         // always-current ref avoids stale closures
   const [pkgTiers,  setPkgTiers]  = useState(arrInit.pkgTiers);
 
   // Proxy access — always read/write the active tier
@@ -664,6 +683,51 @@ export default function QuotationBuilder({
   };
   const tierSuffix = isPackage ? "" : ` — ${activePkg}`;
 
+  /* ── quote type switch — carries data across so the PDF stays the same ── */
+  const tierHasData = tier => !!tier && (
+    (tier.hotels    || []).some(h => h.name) ||
+    (tier.flights   || []).some(f => f.from || f.to || f.depCity || f.arrCity || f.pnr || f.flightNo) ||
+    (tier.transfers || []).some(t => t.cab && (+t.perDay > 0 || +t.days > 0)) ||
+    (tier.miscs     || []).some(m => m.name)
+  );
+  function switchQuoteType(next) {
+    const prev = form.quoteType;
+    if (next === prev) return;
+
+    // Package = single package. Deluxe/Premium data would still print in the PDF, so ask first.
+    let clearExtraTiers = false;
+    if (next === "package" && (tierHasData(pkgTiers.Deluxe) || tierHasData(pkgTiers.Premium))) {
+      if (!window.confirm("Package mode has a single package only.\n\nDeluxe / Premium data will be removed, otherwise it will still show in the PDF.\n\nContinue?")) return;
+      clearExtraTiers = true;
+    }
+
+    const PP_KEYS = ["ppSubEnabled", "ppSubTotalEnabled", "ppSellEnabled"];
+    setPkgTiers(p => {
+      const out = { ...p };
+      // Category/Package price comes from components; B2B reads tier.cost — copy the component total across
+      if (next === "b2b") {
+        TIER_LABELS.forEach(lbl => {
+          const total = calcTierTotal(out[lbl]).total;
+          if (total > 0) out[lbl] = { ...out[lbl], cost: total };
+        });
+      }
+      // Package keeps per-person flags on the form; Category/B2B keep them per tier
+      if (prev === "package") {
+        out.Economy = { ...out.Economy, ...Object.fromEntries(PP_KEYS.map(k => [k, !!form[k]])) };
+      }
+      if (clearExtraTiers) {
+        out.Deluxe  = DEF_PKG();
+        out.Premium = DEF_PKG();
+      }
+      return out;
+    });
+    setForm(f => {
+      const nf = { ...f, quoteType: next };
+      if (next === "package") PP_KEYS.forEach(k => { nf[k] = !!pkgTiers.Economy?.[k]; });
+      return nf;
+    });
+  }
+
   /* ── array helpers ── */
   function updArr(setter, idx, field, value) {
     setter(prev => prev.map((x, i) => i === idx ? { ...x, [field]: value } : x));
@@ -726,6 +790,7 @@ export default function QuotationBuilder({
       assignedTo: form.assignedTo || null,
       cost: topLevelCost, margin: topLevelMargin, gstPct: toN(form.gstPct, 5), tcsPct: toN(form.tcsPct),
       pkgTiers: Object.fromEntries(TIER_LABELS.map(lbl => [lbl, normTier(pkgTiers[lbl])])),
+      activeTier: activePkg,   // reopen the builder on the tier that was last edited
       // backward-compat flat fields = Economy tier (used by PDF preview)
       hotels: ecoNorm.hotels, flights: ecoNorm.flights, transfers: ecoNorm.transfers, miscs: ecoNorm.miscs,
       itinerary: itin.map(({ _k, ...rest }) => rest),
@@ -740,8 +805,11 @@ export default function QuotationBuilder({
       const _verRepTier = isB2B
         ? (TIER_LABELS.map(l => pkgTiers[l]).find(t => +t?.cost > 0) || pkgTiers.Economy)
         : null;
-      const newVer = { v: (initialData?.versions?.length || 0) + 1, date: todayISO(), cost: isB2B ? toN(_verRepTier?.cost) : toN(form.cost), margin: isB2B ? toN(_verRepTier?.margin) : toN(pkgTiers.Economy.margin), note: (initialData?.versions?.length || 0) === 0 ? "First quote created" : "Quote revised" };
-      const body = { ...buildBody(), versions: [...(initialData?.versions || []), newVer] };
+      const newVer = { v: (initialData?.versions?.length || 0) + 1, date: todayISO(), cost: isB2B ? toN(_verRepTier?.cost) : toN(form.cost), margin: isB2B ? toN(_verRepTier?.margin) : toN(pkgTiers.Economy.margin), note: (initialData?.versions?.length || 0) === 0 ? "First quote created" : "Quote revised", quoteType: form.quoteType };
+      // snapshot the full quotation into the version so Edit/PDF can reopen this exact revision later
+      const snapBody = buildBody();
+      newVer.snapshot = snapBody;
+      const body = { ...snapBody, versions: [...(initialData?.versions || []), newVer] };
       let res;
       const currentId = savedIdRef.current;
       if (!currentId) {
@@ -764,7 +832,13 @@ export default function QuotationBuilder({
   async function saveCurrentVersion() {
     setSaving(true);
     try {
-      const body = { ...buildBody(), versions: initialData?.versions || [] };
+      // current version is overwritten in place — keep its type and snapshot in sync
+      const snapBody = buildBody();
+      const curVers = initialData?.versions || [];
+      const versions = curVers.length
+        ? curVers.map((v, i) => i === curVers.length - 1 ? { ...v, quoteType: form.quoteType, snapshot: snapBody } : v)
+        : curVers;
+      const body = { ...snapBody, versions };
       const currentId = savedIdRef.current;
       let res;
       if (!currentId) {
@@ -1490,28 +1564,30 @@ export default function QuotationBuilder({
                   { key: "package",  label: "Package" },
                 ].map((t, idx) => {
                   const isActive = form.quoteType === t.key;
-                  const isLocked = !isNew && origQuoteType !== null && t.key !== origQuoteType;
                   return (
                     <button
                       key={t.key}
-                      onClick={() => { if (!isLocked) upd("quoteType", t.key); }}
-                      disabled={isLocked}
-                      title={isLocked ? "Quote type cannot be changed after creation" : undefined}
+                      onClick={() => switchQuoteType(t.key)}
                       style={{
                         flex: 1, padding: "9px 0", border: "none",
-                        cursor: isLocked ? "not-allowed" : "pointer",
+                        cursor: "pointer",
                         fontWeight: 700, fontSize: 13,
-                        background: isActive ? "#2563EB" : isLocked ? "#F1F5F9" : "#F8FAFF",
-                        color: isActive ? "#fff" : isLocked ? "#CBD5E1" : "#6B7A99",
+                        background: isActive ? "#2563EB" : "#F8FAFF",
+                        color: isActive ? "#fff" : "#6B7A99",
                         borderRight: idx < 2 ? "1.5px solid #E4E9F2" : "none",
                         transition: "all .15s",
                       }}
                     >
-                      {t.label}{isLocked ? " 🔒" : ""}
+                      {t.label}
                     </button>
                   );
                 })}
               </div>
+              {!isNew && origQuoteType && form.quoteType !== origQuoteType && (
+                <div style={{ marginTop: 8, fontSize: 11, color: "#B45309", fontWeight: 700, background: "#FFFBEB", border: "1px solid #FDE68A", borderRadius: 8, padding: "6px 10px" }}>
+                  ⚠️ Quotation type changed — please check the prices and Preview PDF before saving.
+                </div>
+              )}
               {isB2B && <div style={{ marginTop: 6, fontSize: 11, color: "#2563EB", fontWeight: 600 }}>B2B mode: pricing fields are hidden. Itinerary & service details only.</div>}
               {isPackage && <div style={{ marginTop: 6, fontSize: 11, color: "#15803D", fontWeight: 600 }}>Package mode: single flat package — no Economy/Deluxe/Premium tiers.</div>}
             </div>
