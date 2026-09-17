@@ -756,7 +756,13 @@ export default function QuotationBuilder({
   const grandComponentTotal = tierTotals[activePkg].total;
 
   /* ── auto-sync Cost Price from component grand total (Standard/Package only) ── */
+  // Only when the components (or the quote type) actually change. Opening a saved quotation must keep
+  // its saved cost — it may have been typed in by hand — instead of overwriting it on mount.
+  const lastCostSyncRef = useRef(+initialData?.cost > 0 ? `${form.quoteType}:${grandComponentTotal}` : null);
   useEffect(() => {
+    const key = `${form.quoteType}:${grandComponentTotal}`;
+    if (lastCostSyncRef.current === key) return;
+    lastCostSyncRef.current = key;
     if (form.quoteType !== "b2b" && grandComponentTotal > 0) upd("cost", grandComponentTotal);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [grandComponentTotal, form.quoteType]);
