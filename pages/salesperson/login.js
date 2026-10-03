@@ -43,7 +43,10 @@ export default function SalesPersonLogin() {
 
   return (
     <>
-      <Head><title>Sales Login — Tourwatchout</title></Head>
+      <Head>
+        <title>Sales Login — Tourwatchout</title>
+        <meta key="robots" name="robots" content="noindex, nofollow, noarchive, nosnippet" />
+      </Head>
       <div style={S.page}>
         <div style={S.card}>
           <div style={S.logo}>

@@ -29,6 +29,7 @@ export default function DashboardLogin() {
     <>
       <Head>
         <title>Admin Login — Tourwatchout</title>
+        <meta key="robots" name="robots" content="noindex, nofollow, noarchive, nosnippet" />
       </Head>
       <div style={styles.page}>
         <div style={styles.card}>

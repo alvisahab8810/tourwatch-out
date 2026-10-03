@@ -35,6 +35,8 @@ export default function DashboardLayout({ children, active }) {
   return (
     <SidebarCtx.Provider value={() => setIsOpen(true)}>
       <Head>
+        {/* backend pages must never be indexed — overrides the site-wide robots meta in _app */}
+        <meta key="robots" name="robots" content="noindex, nofollow, noarchive, nosnippet" />
         <link
           href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
           rel="stylesheet"

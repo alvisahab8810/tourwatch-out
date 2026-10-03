@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+
+# Backend / admin area — must never be crawled or indexed
+Disallow: /dashboard
+Disallow: /dashboard/
+Disallow: /salesperson
+Disallow: /salesperson/
+Disallow: /api/
+
+Sitemap: https://tourwatchout.com/sitemap.xml

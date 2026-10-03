@@ -93,8 +93,9 @@ function MyApp({ Component, pageProps }) {
           href="/assets/images/favicon.png"
         />
 
-        {/* IMPORTANT: allow indexing */}
+        {/* IMPORTANT: allow indexing — backend layouts override this via key="robots" */}
         <meta
+          key="robots"
           name="robots"
           content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
         />

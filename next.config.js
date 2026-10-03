@@ -13,7 +13,17 @@ const nextConfig = {
 
   // Aggressive HTTP caching for static assets
   async headers() {
+    const noIndex = [
+      { key: "X-Robots-Tag", value: "noindex, nofollow, noarchive, nosnippet" },
+    ];
     return [
+      // Backend / admin area — never index. Sent as a header so it also covers
+      // responses that never render the meta tag (API JSON, redirects, errors).
+      { source: "/dashboard",            headers: noIndex },
+      { source: "/dashboard/:path*",     headers: noIndex },
+      { source: "/salesperson",          headers: noIndex },
+      { source: "/salesperson/:path*",   headers: noIndex },
+      { source: "/api/:path*",           headers: noIndex },
       {
         source: "/assets/:path*",
         headers: [
