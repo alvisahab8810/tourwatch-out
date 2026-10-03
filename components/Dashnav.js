@@ -87,9 +87,9 @@ export default function Dashnav() {
                 </a>
               </li>
               <li>
-                <a href="/login" className="mega-menu" data-close="true">
+                <Link href="/login" className="mega-menu" data-close="true">
                   <i className="zmdi zmdi-power"></i>
-                </a>
+                </Link>
               </li>
               <li>
                 <a href="#" className="js-right-sidebar" data-close="true">
