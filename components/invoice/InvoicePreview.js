@@ -2,7 +2,7 @@ import { numberToWords } from "../../utils/numberToWords";
 
 const RED  = "#F74C4D";
 const DARK = "#1a1a2e";
-const GREY = "#6B7280";
+const GREY = "#000";
 
 // Registered details printed on every invoice.
 const COMPANY = {
@@ -116,7 +116,7 @@ export default function InvoicePreview({ data }) {
           <tbody>
             {items.length > 0 ? items.map((item, i) => (
               <tr key={i} data-inv-section>
-                <td style={{ ...iv.td, textAlign: "left", fontWeight: 700, color: DARK, fontSize: 12 }}>{item.particulars || "—"}</td>
+                <td style={{ ...iv.td, textAlign: "left", fontWeight: 700, color: DARK, fontSize: 11 }}>{item.particulars || "—"}</td>
                 <td style={{ ...iv.td, color: GREY }}>{item.hsn || ""}</td>
                 <td style={{ ...iv.td, color: GREY }}>{item.qty || ""}</td>
                 <td style={{ ...iv.td, textAlign: "right", color: GREY }}>{item.rate ? fmt(item.rate) : "—"}</td>
@@ -138,22 +138,22 @@ export default function InvoicePreview({ data }) {
             {totals.map(([k, v]) => (
               <div key={k} style={iv.sumRow}>
                 <span style={{ color: GREY }}>{k}</span>
-                <span style={{ fontWeight: 700, color: DARK }}>{v}</span>
+                <span style={{ color: DARK, textShadow: "0 0 0.5px currentColor" }}>{v}</span>
               </div>
             ))}
-            <div style={iv.grand}>
-              <span>Grand Total</span>
-              <span>{rupee(grandTotal)}</span>
+            <div style={iv.sumRow}>
+              <span style={{ color: GREY }}>Grand Total</span>
+              <span style={{ color: DARK, textShadow: "0 0 0.5px currentColor" }}>{rupee(grandTotal)}</span>
             </div>
             {received > 0 && (
               <>
-                <div style={{ ...iv.sumRow, marginTop: 6 }}>
-                  <span style={{ color: GREY }}>Received so far</span>
-                  <span style={{ fontWeight: 700, color: "#15803D" }}>{rupee(received)}</span>
+                <div style={iv.sumRow}>
+                  <span style={{ color: GREY }}>Advance Received</span>
+                  <span style={{ color: "#15803D", textShadow: "0 0 0.5px currentColor" }}>{rupee(received)}</span>
                 </div>
-                <div style={iv.due}>
-                  <span>{balance > 0 ? "Balance Due" : "Paid in Full"}</span>
-                  <span>{rupee(balance)}</span>
+                <div style={iv.sumRow}>
+                  <span style={{ color: RED }}>{balance > 0 ? "Balance Due" : "Paid in Full"}</span>
+                  <span style={{ color: RED, textShadow: "0 0 0.5px currentColor" }}>{rupee(balance)}</span>
                 </div>
               </>
             )}
@@ -161,7 +161,8 @@ export default function InvoicePreview({ data }) {
         </div>
 
         {/* ═══════ PAYMENTS RECEIVED ═══════ */}
-        {payments.length > 0 && (
+        {/* Hidden for now — totals box already shows received/balance. */}
+        {false && payments.length > 0 && (
           <div style={iv.payBox} data-inv-section>
             <div style={iv.payTitle}>Payments Received</div>
             {payments.map((p, i) => (
@@ -226,18 +227,18 @@ export default function InvoicePreview({ data }) {
 
 function Row({ label, value, bold, bank }) {
   return (
-    <div style={{ display: "flex", gap: 4, fontSize: 10.5, lineHeight: bank ? 1.4 : 1.9, padding: bank ? "3px 0" : 0 }}>
+    <div style={{ display: "flex", gap: 4, fontSize: 11, lineHeight: bank ? 1.4 : 1.9, padding: bank ? "3px 0" : 0 }}>
       <span style={{ color: GREY, flex: `0 0 ${bank ? 108 : 118}px` }}>{label}</span>
       <span style={{ color: GREY }}>:</span>
-      <span style={{ color: "#000", flex: 1, fontWeight: bold ? 700 : 400 }}>{value}</span>
+      <span style={{ color: DARK, flex: 1, fontWeight: 700 }}>{value}</span>
     </div>
   );
 }
 
 function MetaRow({ label, value }) {
   return (
-    <div style={{ display: "flex", justifyContent: "space-between", gap: 14, fontSize: 11, padding: "2px 0" }}>
-      <span style={{ color: GREY }}>{label}</span>
+    <div style={{ display: "flex", gap: 14, fontSize: 11, padding: "2px 0" }}>
+      <span style={{ color: GREY, flex: "0 0 78px" }}>{label}</span>
       <span style={{ color: DARK, fontWeight: 700 }}>{value}</span>
     </div>
   );
@@ -275,8 +276,8 @@ const iv = {
   },
   pHead: { display: "flex", alignItems: "baseline", gap: 10 },
   pLabel: { color: RED, fontSize: 9.5, fontWeight: 800, letterSpacing: "0.08em", textTransform: "uppercase" },
-  pName: { color: DARK, fontSize: 12.5, fontWeight: 800, lineHeight: 1.3, letterSpacing: "normal" },
-  pAddr: { color: "#000", fontSize: 10.5, lineHeight: 1.55, margin: "6px 0 10px" },
+  pName: { color: DARK, fontSize: 13, fontWeight: 800, lineHeight: 1.3, letterSpacing: "normal" },
+  pAddr: { color: "#000", fontSize: 11, lineHeight: 1.55, margin: "6px 0 10px" },
 
   // Table
   table: { width: "100%", borderCollapse: "separate", borderSpacing: 0, marginTop: 24 },
@@ -287,14 +288,14 @@ const iv = {
   thFirst: { borderRadius: "6px 0 0 6px" },
   thLast:  { borderRadius: "0 6px 6px 0" },
   td: {
-    padding: "12px 12px", fontSize: 11.5, color: "#333",
+    padding: "12px 12px", fontSize: 11, color: "#333",
     borderBottom: "1px solid #E7E7E7", textAlign: "center", verticalAlign: "top",
   },
 
   // Totals
   sumWrap: { display: "flex", justifyContent: "flex-end", marginTop: 14 },
-  sum: { width: 290 },
-  sumRow: { display: "flex", justifyContent: "space-between", fontSize: 11.5, padding: "6px 0" },
+  sum: { width: 290, background: "#F9F9F9", border: "1px solid #DFDFDF", borderRadius: 8, padding: "6px 12px" },
+  sumRow: { display: "flex", justifyContent: "space-between", fontSize: 12, padding: "5px 0" },
   grand: {
     display: "flex", justifyContent: "space-between", marginTop: 8,
     background: "#F3F4F8", borderRadius: 6, padding: "10px 12px",
@@ -310,7 +311,7 @@ const iv = {
   payBox: { marginTop: 18, border: "1px solid #E7E7E7", borderRadius: 8, padding: "10px 14px" },
   payTitle: { color: RED, fontSize: 9.5, fontWeight: 800, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 4 },
   payRow: { display: "flex", alignItems: "center", gap: 10, fontSize: 11, padding: "6px 0" },
-  words: { display: "flex", gap: 6, flexWrap: "wrap", fontSize: 11.5, marginTop: 20, lineHeight: 1.5 },
+  words: { display: "flex", gap: 6, flexWrap: "wrap", fontSize: 11, marginTop: 20, lineHeight: 1.5 },
 
   // Bank + signature
   foot: { display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16, marginTop: 34 },
@@ -318,7 +319,7 @@ const iv = {
     flex: "0 0 400px", background: "#F9F9F9", border: "1px solid #DFDFDF",
     borderRadius: 8, padding: "12px 14px 13px",
   },
-  bankTitle: { color: DARK, fontSize: 11, fontWeight: 800, marginBottom: 6 },
+  bankTitle: { color: DARK, fontSize: 12, fontWeight: 800, marginBottom: 6 },
   bankCols: { display: "flex", alignItems: "center", gap: 12 },
   qrWrap: { flex: "0 0 auto", textAlign: "center" },
   scan: { color: RED, fontSize: 9.5, fontWeight: 800, marginBottom: 5 },
