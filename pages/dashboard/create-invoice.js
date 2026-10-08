@@ -204,15 +204,16 @@ export default function CreateInvoice() {
       const sectionCvs = sectionBounds.map((s) => ({ top: s.top * domToCvs, bottom: s.bottom * domToCvs }));
 
       // Compute smart cuts
+      const TOP_MM = 12; // breathing room at the top of every page after the first
       const cuts = [0];
       while (true) {
         const last = cuts[cuts.length - 1];
-        let next = last + pagePx;
+        let next = last + (cuts.length === 1 ? pagePx : pagePx - TOP_MM * pxPerMm);
         if (next >= totalPx) break;
+        // Pull the cut up to the start of any block it would slice through.
         for (const s of sectionCvs) {
-          if (next > s.top && next < s.top + 60) { next = s.top; break; }
+          if (s.top < next && s.bottom > next && s.top > last) next = Math.min(next, s.top);
         }
-        if (next <= last) next = last + pagePx;
         cuts.push(next);
       }
       cuts.push(totalPx);
@@ -227,20 +228,20 @@ export default function CreateInvoice() {
         const sc = document.createElement("canvas");
         sc.width = mainCanvas.width; sc.height = sliceTallPx;
         sc.getContext("2d").drawImage(mainCanvas, 0, sliceTopPx, mainCanvas.width, sliceTallPx, 0, 0, mainCanvas.width, sliceTallPx);
-        pdf.addImage(sc.toDataURL("image/png"), "PNG", 0, 0, pageW, sliceTallPx / pxPerMm);
+        pdf.addImage(sc.toDataURL("image/png"), "PNG", 0, i > 0 ? TOP_MM : 0, pageW, sliceTallPx / pxPerMm);
       }
 
       // Place footer right after last content (not pinned to absolute page bottom)
       if (footerCanvas) {
         const lastSlicePx = cuts[cuts.length - 1] - cuts[cuts.length - 2];
-        const contentEndMm = lastSlicePx / pxPerMm;
+        const contentEndMm = lastSlicePx / pxPerMm + (cuts.length > 2 ? TOP_MM : 0);
         const remainMm = pageH - contentEndMm;
         const GAP_MM = 5;
         if (remainMm >= footerImgH + GAP_MM) {
           pdf.addImage(footerCanvas.toDataURL("image/png"), "PNG", 0, contentEndMm + GAP_MM, pageW, footerImgH);
         } else {
           pdf.addPage();
-          pdf.addImage(footerCanvas.toDataURL("image/png"), "PNG", 0, GAP_MM, pageW, footerImgH);
+          pdf.addImage(footerCanvas.toDataURL("image/png"), "PNG", 0, TOP_MM, pageW, footerImgH);
         }
       }
       return pdf;

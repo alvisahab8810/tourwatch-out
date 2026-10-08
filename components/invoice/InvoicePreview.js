@@ -58,7 +58,7 @@ export default function InvoicePreview({ data }) {
       <div style={iv.page}>
 
         {/* ═══════ HEADER: logo + title ═══════ */}
-        <div style={iv.head}>
+        <div style={iv.head} data-inv-section>
           <img src="/assets/voucher/logo.png" alt="tourwatchout" style={iv.logoImg} crossOrigin="anonymous" />
           <div style={iv.titleBlock}>
             <div style={iv.title}>Tax Invoice</div>
@@ -69,7 +69,7 @@ export default function InvoicePreview({ data }) {
         </div>
 
         {/* ═══════ PARTIES ═══════ */}
-        <div style={iv.parties}>
+        <div style={iv.parties} data-inv-section>
           <div style={iv.party}>
             <div style={iv.pName}>{COMPANY.legalName}</div>
             <div style={iv.pAddr}>{COMPANY.address}</div>
@@ -108,7 +108,7 @@ export default function InvoicePreview({ data }) {
           </thead>
           <tbody>
             {items.length > 0 ? items.map((item, i) => (
-              <tr key={i}>
+              <tr key={i} data-inv-section>
                 <td style={{ ...iv.td, textAlign: "left", fontWeight: 700, color: DARK, fontSize: 12 }}>{item.particulars || "—"}</td>
                 <td style={{ ...iv.td, color: GREY }}>{item.hsn || ""}</td>
                 <td style={{ ...iv.td, color: GREY }}>{item.qty || ""}</td>
@@ -126,7 +126,7 @@ export default function InvoicePreview({ data }) {
         </table>
 
         {/* ═══════ TOTALS ═══════ */}
-        <div style={iv.sumWrap}>
+        <div style={iv.sumWrap} data-inv-section>
           <div style={iv.sum}>
             {totals.map(([k, v]) => (
               <div key={k} style={iv.sumRow}>
@@ -142,13 +142,13 @@ export default function InvoicePreview({ data }) {
         </div>
 
         {/* ═══════ AMOUNT IN WORDS ═══════ */}
-        <div style={iv.words}>
+        <div style={iv.words} data-inv-section>
           <span style={{ color: GREY }}>Amount Chargeable (in words)</span>
           <span style={{ fontWeight: 700, color: DARK }}>: {amtWords || "—"}</span>
         </div>
 
         {/* ═══════ BANK + SIGNATURE ═══════ */}
-        <div style={iv.foot}>
+        <div style={iv.foot} data-inv-section>
           <div style={iv.bankCard}>
             <div style={iv.bankTitle}>Bank Account Details</div>
             <div style={iv.bankCols}>
@@ -174,7 +174,7 @@ export default function InvoicePreview({ data }) {
       </div>
 
       {/* ═══════ FOOTER ═══════ */}
-      <div id="invoice-pdf-footer" style={iv.footer}>
+      <div id="invoice-pdf-footer" style={iv.footer} data-inv-section>
         <div style={iv.footerInner}>
           <span style={iv.footerQuote}>
             “Think <span style={{ color: RED }}>Travel,</span> Think{" "}

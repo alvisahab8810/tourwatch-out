@@ -204,14 +204,27 @@ export default function InvoiceBuilder({ prefill, invoiceData, isNew, onClose, o
         st.textContent = "* { font-family: Arial, Helvetica, sans-serif !important; }";
         doc.head.appendChild(st);
       };
+      // Blocks marked data-inv-section (rows, totals, bank box…) are never split.
+      const wrapRect = wrapEl.getBoundingClientRect();
+      const sectionBounds = Array.from(wrapEl.querySelectorAll("[data-inv-section]")).map((el) => {
+        const r = el.getBoundingClientRect();
+        return { top: r.top - wrapRect.top, bottom: r.bottom - wrapRect.top };
+      });
       const canvas = await html2canvas(wrapEl, { scale: SCALE, useCORS: true, backgroundColor: "#fff", logging: false, height: wrapEl.scrollHeight, windowHeight: wrapEl.scrollHeight, onclone: patchClone });
       const pxPerMm = canvas.width / pageW;
-      const pagePx = pageH * pxPerMm;
+      const TOP_MM = 12; // breathing room at the top of every page after the first
+      const domToCvs = canvas.width / wrapEl.offsetWidth;
+      const sections = sectionBounds.map((s) => ({ top: s.top * domToCvs, bottom: s.bottom * domToCvs }));
       const cuts = [0];
       while (true) {
         const last = cuts[cuts.length - 1];
-        const next = last + pagePx;
+        const room = (cuts.length === 1 ? pageH : pageH - TOP_MM) * pxPerMm;
+        let next = last + room;
         if (next >= canvas.height) break;
+        // Pull the cut up to the start of any block it would slice through.
+        for (const s of sections) {
+          if (s.top < next && s.bottom > next && s.top > last) next = Math.min(next, s.top);
+        }
         cuts.push(next);
       }
       cuts.push(canvas.height);
@@ -221,7 +234,7 @@ export default function InvoiceBuilder({ prefill, invoiceData, isNew, onClose, o
         const sc = document.createElement("canvas");
         sc.width = canvas.width; sc.height = sliceH;
         sc.getContext("2d").drawImage(canvas, 0, cuts[i], canvas.width, sliceH, 0, 0, canvas.width, sliceH);
-        pdf.addImage(sc.toDataURL("image/png"), "PNG", 0, 0, pageW, sliceH / pxPerMm);
+        pdf.addImage(sc.toDataURL("image/png"), "PNG", 0, i > 0 ? TOP_MM : 0, pageW, sliceH / pxPerMm);
       }
       return pdf;
     } finally { setPdfLoading(false); }
