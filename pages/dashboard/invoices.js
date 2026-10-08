@@ -1,9 +1,12 @@
 import { useState, useEffect, useMemo } from "react";
+import { MdVisibility, MdEdit, MdDelete } from "react-icons/md";
 import Head from "next/head";
 import DashboardLayout from "../../components/backend/DashboardLayout";
 import InvoiceBuilder from "../../components/backend/InvoiceBuilder";
 import QuotationBuilder from "../../components/backend/QuotationBuilder";
 import VoucherBuilder from "../../components/backend/VoucherBuilder";
+import InvoicePreview from "../../components/invoice/InvoicePreview";
+import { invoicePdf } from "../../utils/invoicePdf";
 
 /* ─── helpers ─────────────────────────────────────────────────────────────── */
 function calcGrand(inv) {
@@ -72,16 +75,64 @@ const MONTH_CHIPS = Array.from({ length: 12 }, (_, i) => ({
   label: new Date(CUR_YEAR, i, 1).toLocaleDateString("en-IN", { month: "short" }),
 }));
 
+/* ─── Payment receipt mail ─────────────────────────────────────────────────── */
+function receiptMail({ inv, amount, total, received }) {
+  const RED = "#F74C4D";
+  const balance = Math.max(0, total - received);
+  const origin = typeof window !== "undefined" ? window.location.origin : "https://tourwatchout.com";
+  const row = (k, v) =>
+    `<tr><td style="padding:12px 0;border-bottom:1px solid #EEE;color:#6B7280;font-size:14px;">${k}</td><td align="right" style="padding:12px 0;border-bottom:1px solid #EEE;color:#1a1a2e;font-size:14px;font-weight:700;">${v}</td></tr>`;
+  const list = (inv.payments || []).map(p =>
+    `<tr><td style="padding:8px 0;border-bottom:1px solid #F2F2F2;font-size:13px;color:#1a1a2e;">${fmtDate(p.date)}</td><td style="padding:8px 0;border-bottom:1px solid #F2F2F2;font-size:13px;color:#6B7280;">${p.mode || ""}</td><td align="right" style="padding:8px 0;border-bottom:1px solid #F2F2F2;font-size:13px;color:#15803D;font-weight:700;">${inr(p.amount)}</td></tr>`
+  ).join("");
+  const first = String(inv.clientName || "there").trim().split(/\s+/)[0] || "there";
+  return `
+<div style="margin:0;padding:26px 12px 30px;background:#F2F2F5;font-family:Arial,Helvetica,sans-serif;">
+  <table role="presentation" cellpadding="0" cellspacing="0" align="center" width="580" style="width:100%;max-width:580px;margin:0 auto;background:#fff;border-radius:16px;border-collapse:separate;overflow:hidden;">
+    <tr><td align="center" style="padding:22px 24px 16px;"><img src="${origin}/assets/voucher/logo.png" width="120" alt="Tourwatchout" style="display:block;margin:0 auto;border:0;max-width:120px;height:auto;" /></td></tr>
+    <tr><td align="center" style="padding:24px;background:${RED};text-align:center;">
+      <div style="color:#FFE3E3;font-size:13px;">${balance > 0 ? "Payment received" : "Paid in full"}</div>
+      <div style="color:#fff;font-size:34px;line-height:44px;font-weight:700;">${inr(amount)}</div>
+      <div style="color:#FFE3E3;font-size:12px;">Received against invoice ${inv.invoiceNo || ""}</div>
+    </td></tr>
+    <tr><td style="padding:26px 30px 8px;color:#3F3D4A;font-size:15px;line-height:24px;">
+      <p style="margin:0 0 12px;color:#1a1a2e;font-size:20px;font-weight:700;">Hi ${first},</p>
+      <p style="margin:0 0 16px;">Thank you — we have received ${inr(amount)} against your booking${inv.destination ? ` for <strong>${inv.destination}</strong>` : ""}. The updated invoice is attached.</p>
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
+        ${row("Invoice total", inr(total))}
+        ${row("Received so far", inr(received))}
+      </table>
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:separate;margin:14px 0 0;background:#FFF1F1;border-radius:10px;">
+        <tr><td style="padding:14px 16px;color:${RED};font-size:14px;font-weight:700;">${balance > 0 ? "Balance due" : "Balance"}</td>
+        <td align="right" style="padding:14px 16px;color:${RED};font-size:20px;font-weight:700;">${inr(balance)}</td></tr>
+      </table>
+      ${list ? `<div style="margin:22px 0 4px;color:#8A8A94;font-size:11px;letter-spacing:.6px;text-transform:uppercase;font-weight:700;">Payments on this invoice</div>
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">${list}</table>` : ""}
+    </td></tr>
+    <tr><td align="center" style="padding:18px 30px 22px;color:#8A8A94;font-size:12px;line-height:18px;">
+      Questions? Reply to this mail or write to <a href="mailto:sales@tourwatchout.com" style="color:#1a1a2e;font-weight:600;text-decoration:none;">sales@tourwatchout.com</a>
+      <div style="margin-top:10px;color:#1a1a2e;font-weight:700;font-size:14px;">“Think <span style="color:${RED};">Travel,</span> Think <span style="color:${RED};">Tourwatchout</span>”</div>
+    </td></tr>
+    <tr><td style="height:6px;background:${RED};font-size:0;line-height:0;">&nbsp;</td></tr>
+  </table>
+</div>`;
+}
+
 /* ─── Payment Modal ────────────────────────────────────────────────────────── */
 /* `siblings` = every invoice raised for the same quotation (one per billing
    month, including `invoice` itself) — used to total up the real package due
    across the whole booking, not just this one month's invoice. */
-function PaymentModal({ invoice, siblings, onClose, onUpdated, onCreated }) {
+function PaymentModal({ invoice, siblings, email, onClose, onUpdated, onCreated }) {
   const [date,   setDate]   = useState(todayISO());
   const [amount, setAmount] = useState("");
   const [mode,   setMode]   = useState("Online");
   const [note,   setNote]   = useState("");
   const [saving, setSaving] = useState(false);
+  // Optional receipt to the client, with the updated invoice attached.
+  const [sendMail, setSendMail] = useState(!!email);
+  const [mailTo,   setMailTo]   = useState(email || "");
+  const [mailInv,  setMailInv]  = useState(null);   // rendered off-screen for the PDF
+  const [mailErr,  setMailErr]  = useState("");
 
   const payments     = invoice.payments || [];
   const total        = calcGrand(invoice);                                  // package price (same across siblings)
@@ -95,8 +146,35 @@ function PaymentModal({ invoice, siblings, onClose, onUpdated, onCreated }) {
   // the very first payment always lands on the invoice as-is.
   const isNewMonth       = !!lastPaymentMonth && !!payMonth && payMonth !== lastPaymentMonth;
 
+  // Paid on the booking's other monthly invoices, i.e. everything but `inv`.
+  const otherPaidFor = inv => siblings
+    .filter(s => (s.id || s._id) !== (inv.id || inv._id))
+    .reduce((n, s) => n + calcPaid(s), 0);
+
+  async function mailReceipt(inv, paidNow) {
+    const otherPaid = otherPaidFor(inv);
+    setMailInv({ ...inv, otherPaid });
+    await new Promise(r => setTimeout(r, 600)); // let the off-screen invoice render and its images load
+    const el = document.getElementById("pay-mail-pdf-target");
+    if (!el) throw new Error("Could not render the invoice");
+    const pdf = await invoicePdf(el);
+    setMailInv(null);
+    const res = await fetch("/api/dashboard/send-invoice", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        to: mailTo.trim(),
+        subject: `Payment received — Invoice ${inv.invoiceNo || ""} — Tourwatchout`,
+        html: receiptMail({ inv, amount: paidNow, total: calcGrand(inv), received: otherPaid + calcPaid(inv) }),
+        pdfBase64: pdf.output("datauristring").split(",")[1],
+        fileName: `invoice-${(inv.invoiceNo || "tw").replace(/\//g, "_")}.pdf`,
+      }),
+    });
+    if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.message || "Mail could not be sent"); }
+  }
+
   async function addPayment() {
     if (!amount || +amount <= 0) return;
+    if (sendMail && !mailTo.trim()) { setMailErr("Enter the client's email, or untick the mail option"); return; }
     setSaving(true);
     try {
       if (isNewMonth) {
@@ -116,7 +194,12 @@ function PaymentModal({ invoice, siblings, onClose, onUpdated, onCreated }) {
           body: JSON.stringify(body),
         });
         if (res.ok) {
-          onCreated(await res.json());
+          const created = await res.json();
+          if (sendMail) {
+            try { await mailReceipt(created, +amount); }
+            catch (e) { setMailInv(null); alert(`Payment saved, but the mail failed: ${e.message}`); }
+          }
+          onCreated(created);
           setAmount(""); setNote("");
         }
       } else {
@@ -126,7 +209,14 @@ function PaymentModal({ invoice, siblings, onClose, onUpdated, onCreated }) {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ payments: newPayments }),
         });
-        if (res.ok) { onUpdated(await res.json()); onClose(); }
+        if (res.ok) {
+          const updated = await res.json();
+          if (sendMail) {
+            try { await mailReceipt({ ...invoice, ...updated }, +amount); }
+            catch (e) { setMailInv(null); alert(`Payment saved, but the mail failed: ${e.message}`); }
+          }
+          onUpdated(updated); onClose();
+        }
       }
     } finally { setSaving(false); }
   }
@@ -194,6 +284,16 @@ function PaymentModal({ invoice, siblings, onClose, onUpdated, onCreated }) {
                   <input style={P.inp} value={note} onChange={e => setNote(e.target.value)} placeholder="NEFT ref, cheque no…" />
                 </Fl>
 
+                <label style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 12, fontSize: 13, color: "#36415A", cursor: "pointer" }}>
+                  <input type="checkbox" checked={sendMail} onChange={e => { setSendMail(e.target.checked); setMailErr(""); }} />
+                  Email payment receipt to client (updated invoice attached)
+                </label>
+                {sendMail && (
+                  <input type="email" style={{ ...P.inp, marginTop: 8 }} value={mailTo}
+                    onChange={e => { setMailTo(e.target.value); setMailErr(""); }} placeholder="client@example.com" />
+                )}
+                {mailErr && <div style={{ marginTop: 6, fontSize: 12, color: "#BE123C" }}>{mailErr}</div>}
+
                 {isNewMonth && (
                   <div style={{ marginTop: 12, background: "#FFFBEB", border: "1px solid #FDE68A", borderRadius: 9, padding: "9px 11px", fontSize: 12, color: "#92400E", lineHeight: 1.5 }}>
                     📅 This date falls in <b>{monthLabel(payMonth)}</b> — a separate invoice with a <b>new invoice number</b> will be raised for this month's payment(s), since {invoice.invoiceNo} already covers {monthLabel(lastPaymentMonth)}.
@@ -207,6 +307,12 @@ function PaymentModal({ invoice, siblings, onClose, onUpdated, onCreated }) {
           )}
         </div>
 
+        {mailInv && (
+          <div style={{ position: "fixed", left: -10000, top: 0, width: 720 }} aria-hidden="true">
+            <div id="pay-mail-pdf-target"><InvoicePreview data={mailInv} /></div>
+          </div>
+        )}
+
         <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", padding: "14px 20px", borderTop: "1px solid #E4E9F2", background: "#fff", borderRadius: "0 0 16px 16px" }}>
           <button style={P.cancelBtn} onClick={onClose}>Close</button>
           {due > 0 && (
@@ -215,7 +321,7 @@ function PaymentModal({ invoice, siblings, onClose, onUpdated, onCreated }) {
               onClick={addPayment}
               disabled={saving || !amount || +amount <= 0}
             >
-              {saving ? "Saving…" : isNewMonth ? `🆕 Create ${monthLabel(payMonth)} Invoice & Save` : "Save Payment"}
+              {saving ? (sendMail ? "Saving & mailing…" : "Saving…") : isNewMonth ? `🆕 Create ${monthLabel(payMonth)} Invoice & Save` : "Save Payment"}
             </button>
           )}
         </div>
@@ -523,7 +629,7 @@ export default function InvoicesPage() {
                         })()}
                       </td>
 
-                      {/* Delete */}
+                      {/* Actions — view, edit, delete */}
                       <td style={S.td}>
                         {confirmDel === (inv.id || inv._id) ? (
                           <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
@@ -534,7 +640,20 @@ export default function InvoicesPage() {
                             <button style={S.delNo} onClick={() => setConfirmDel(null)}>No</button>
                           </span>
                         ) : (
-                          <button style={S.delBtn} onClick={() => setConfirmDel(inv.id || inv._id)}>Delete</button>
+                          <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                            <button style={S.viewIcon} title="View invoice"
+                              onClick={() => setBuilder({ invoice: inv, isNew: false, openPreview: true })}>
+                              <MdVisibility size={16} />
+                            </button>
+                            <button style={S.editIcon} title="Edit invoice"
+                              onClick={() => setBuilder({ invoice: inv, isNew: false })}>
+                              <MdEdit size={16} />
+                            </button>
+                            <button style={S.delIcon} title="Delete invoice"
+                              onClick={() => setConfirmDel(inv.id || inv._id)}>
+                              <MdDelete size={16} />
+                            </button>
+                          </span>
                         )}
                       </td>
                     </tr>
@@ -551,6 +670,11 @@ export default function InvoicesPage() {
         <InvoiceBuilder
           invoiceData={builder.invoice}
           isNew={builder.isNew}
+          openPreview={!!builder.openPreview}
+          defaultEmail={leads.find(l => l._id === builder.invoice?.leadId)?.email || ""}
+          otherPaid={builder.invoice ? (siblingsByKey[groupKey(builder.invoice)] || [])
+            .filter(s => (s.id || s._id) !== (builder.invoice.id || builder.invoice._id))
+            .reduce((n, s) => n + calcPaid(s), 0) : 0}
           onClose={() => setBuilder(null)}
           onSaved={saved => { handleSaved(saved); }}
         />
@@ -561,6 +685,7 @@ export default function InvoicesPage() {
         <PaymentModal
           invoice={payModal}
           siblings={siblingsByKey[groupKey(payModal)] || [payModal]}
+          email={leads.find(l => l._id === payModal.leadId)?.email || ""}
           onClose={() => setPayModal(null)}
           onUpdated={updated => {
             setInvoices(prev => prev.map(i => (i.id === updated.id || i._id === updated._id) ? { ...i, ...updated } : i));
@@ -641,6 +766,9 @@ const S = {
   payBtn:    { background: "#2563EB", color: "#fff", border: "none", borderRadius: 7, padding: "5px 11px", fontSize: 12, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" },
   finalBtn:  { background: "#15803D", color: "#fff", border: "none", borderRadius: 7, padding: "5px 11px", fontSize: 12, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" },
   voucherBtn:{ background: "#EFF4FF", color: "#2563EB", border: "1px solid #BFD3FE", borderRadius: 7, padding: "5px 11px", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" },
+  viewIcon:  { width: 28, height: 28, display: "inline-flex", alignItems: "center", justifyContent: "center", border: "none", borderRadius: 7, cursor: "pointer", padding: 0, lineHeight: 0, background: "#EFF4FF", color: "#2563EB" },
+  editIcon:  { width: 28, height: 28, display: "inline-flex", alignItems: "center", justifyContent: "center", border: "none", borderRadius: 7, cursor: "pointer", padding: 0, lineHeight: 0, background: "#F1F5F9", color: "#36415A" },
+  delIcon:   { width: 28, height: 28, display: "inline-flex", alignItems: "center", justifyContent: "center", border: "none", borderRadius: 7, cursor: "pointer", padding: 0, lineHeight: 0, background: "#FEECEC", color: "#F74C4D" },
   delBtn:    { background: "#FEE2E2", color: "#BE123C", border: "none", borderRadius: 6, padding: "3px 9px", fontSize: 11, fontWeight: 700, cursor: "pointer" },
   delYes:    { background: "#BE123C", color: "#fff", border: "none", borderRadius: 6, padding: "3px 8px", fontSize: 11, fontWeight: 700, cursor: "pointer" },
   delNo:     { background: "#F1F5F9", color: "#36415A", border: "none", borderRadius: 6, padding: "3px 8px", fontSize: 11, fontWeight: 700, cursor: "pointer" },

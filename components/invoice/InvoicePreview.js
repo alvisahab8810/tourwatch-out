@@ -40,6 +40,13 @@ export default function InvoicePreview({ data }) {
   const grandTotal = afterGst + tcsAmt;
   const amtWords  = numberToWords(grandTotal);
 
+  // Part payments: this invoice's own, plus whatever the booking's earlier
+  // monthly invoices already took (otherPaid, passed in by the caller).
+  const payments  = d.payments || [];
+  const paidHere  = payments.reduce((s, p) => s + (+p.amount || 0), 0);
+  const received  = paidHere + (+d.otherPaid || 0);
+  const balance   = Math.max(0, grandTotal - received);
+
   const fmt = (n) =>
     Number(n || 0).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const rupee = (n) => `₹ ${fmt(n)}`;
@@ -138,8 +145,35 @@ export default function InvoicePreview({ data }) {
               <span>Grand Total</span>
               <span>{rupee(grandTotal)}</span>
             </div>
+            {received > 0 && (
+              <>
+                <div style={{ ...iv.sumRow, marginTop: 6 }}>
+                  <span style={{ color: GREY }}>Received so far</span>
+                  <span style={{ fontWeight: 700, color: "#15803D" }}>{rupee(received)}</span>
+                </div>
+                <div style={iv.due}>
+                  <span>{balance > 0 ? "Balance Due" : "Paid in Full"}</span>
+                  <span>{rupee(balance)}</span>
+                </div>
+              </>
+            )}
           </div>
         </div>
+
+        {/* ═══════ PAYMENTS RECEIVED ═══════ */}
+        {payments.length > 0 && (
+          <div style={iv.payBox} data-inv-section>
+            <div style={iv.payTitle}>Payments Received</div>
+            {payments.map((p, i) => (
+              <div key={i} style={{ ...iv.payRow, borderBottom: i === payments.length - 1 ? "none" : "1px solid #EEE" }}>
+                <span style={{ flex: "0 0 60px", color: GREY }}>Part {i + 1}</span>
+                <span style={{ flex: "0 0 110px", color: DARK }}>{p.date || "—"}</span>
+                <span style={{ flex: 1, color: GREY }}>{[p.mode, p.note].filter(Boolean).join(" · ")}</span>
+                <span style={{ fontWeight: 700, color: "#15803D" }}>{rupee(p.amount)}</span>
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* ═══════ AMOUNT IN WORDS ═══════ */}
         <div style={iv.words} data-inv-section>
@@ -268,6 +302,14 @@ const iv = {
   },
 
   // Amount in words
+  due: {
+    display: "flex", justifyContent: "space-between", marginTop: 6,
+    background: "#FFF1F1", borderRadius: 6, padding: "9px 12px",
+    fontSize: 13, fontWeight: 800, color: RED,
+  },
+  payBox: { marginTop: 18, border: "1px solid #E7E7E7", borderRadius: 8, padding: "10px 14px" },
+  payTitle: { color: RED, fontSize: 9.5, fontWeight: 800, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 4 },
+  payRow: { display: "flex", alignItems: "center", gap: 10, fontSize: 11, padding: "6px 0" },
   words: { display: "flex", gap: 6, flexWrap: "wrap", fontSize: 11.5, marginTop: 20, lineHeight: 1.5 },
 
   // Bank + signature

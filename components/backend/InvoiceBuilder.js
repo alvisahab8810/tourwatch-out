@@ -103,14 +103,15 @@ function buildDefault(prefill) {
   };
 }
 
-export default function InvoiceBuilder({ prefill, invoiceData, isNew, onClose, onSaved }) {
+export default function InvoiceBuilder({ prefill, invoiceData, isNew, onClose, onSaved, openPreview, otherPaid = 0, defaultEmail = "" }) {
   const [form,           setForm]           = useState(() => invoiceData ? { ...invoiceData } : buildDefault(prefill));
-  const [showPreview,    setShowPreview]    = useState(false);
+  // the eye icon on the invoice list opens the builder straight into its preview
+  const [showPreview,    setShowPreview]    = useState(!!openPreview);
   const [saving,         setSaving]        = useState(false);
   const [saved,          setSaved]         = useState(false);
   const [pdfLoading,     setPdfLoading]    = useState(false);
   const [showEmailModal, setShowEmailModal] = useState(false);
-  const [emailTo,        setEmailTo]       = useState(prefill?.lead?.email || "");
+  const [emailTo,        setEmailTo]       = useState(prefill?.lead?.email || defaultEmail || "");
   const [emailSending,   setEmailSending]  = useState(false);
   const [emailDone,      setEmailDone]     = useState(false);
   const [emailError,     setEmailError]    = useState("");
@@ -471,7 +472,7 @@ export default function InvoiceBuilder({ prefill, invoiceData, isNew, onClose, o
               </div>
             </div>
             <div style={{ padding: 24, overflowY: "auto", maxHeight: "78vh" }}>
-              <div id="inv-modal-pdf-target"><InvoicePreview data={form} /></div>
+              <div id="inv-modal-pdf-target"><InvoicePreview data={{ ...form, otherPaid }} /></div>
             </div>
           </div>
         </div>
