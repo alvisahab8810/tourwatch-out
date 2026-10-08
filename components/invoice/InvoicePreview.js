@@ -1,8 +1,27 @@
 import { numberToWords } from "../../utils/numberToWords";
 
-const RED  = "#e84949";
+const RED  = "#F74C4D";
 const DARK = "#1a1a2e";
-const BLUE = "#2563eb";
+const GREY = "#6B7280";
+
+// Registered details printed on every invoice.
+const COMPANY = {
+  legalName: "Realization Customer Services Private Limited",
+  address:   "GF, Unit no.-1, Tower 2, Parsvnath Planet, Gomti Nagar, Lucknow-226010",
+  tradeName: "Tourwatchout",
+  email:     "sales1@tourwatchout.com",
+  contact:   "88827 01800",
+  gstin:     "09AAICR4934P2ZK",
+  pan:       "AAICR4934P",
+  state:     "Uttar Pradesh, Code : 09",
+};
+
+const BANK = {
+  bankName:    "ICICI",
+  accountName: "REALIZATION CUSTOMER SERVICES PVT LTD",
+  accountNo:   "098505500836",
+  ifsc:        "ICIC0008351",
+};
 
 export default function InvoicePreview({ data }) {
   const d = data || {};
@@ -23,193 +42,146 @@ export default function InvoicePreview({ data }) {
 
   const fmt = (n) =>
     Number(n || 0).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const rupee = (n) => `₹ ${fmt(n)}`;
+
+  const totals = [
+    ["Sub Total", rupee(subTotal)],
+    ...(convFee > 0 ? [["Convenience Fee", rupee(convFee)]] : []),
+    ...(cgstAmt > 0 ? [[`CGST (${is18 ? "9" : d.cgstPct}%)`, rupee(cgstAmt)]] : []),
+    ...(sgstAmt > 0 ? [[`SGST (${is18 ? "9" : d.sgstPct}%)`, rupee(sgstAmt)]] : []),
+    ...(igstAmt > 0 ? [[`IGST (${d.igstPct}%)`, rupee(igstAmt)]] : []),
+    ...((d.tcsPct && tcsAmt > 0) ? [[`TCS u/s 206C(1G) (${d.tcsPct}%)`, rupee(tcsAmt)]] : []),
+  ];
 
   return (
     <div style={iv.wrap}>
+      <div style={iv.page}>
 
-      {/* ═══════ TOP RED STRIP ═══════ */}
-      <div style={iv.topStrip} />
-
-      {/* ═══════ TITLE ═══════ */}
-      <div style={iv.titleRow}>
-        <h1 style={iv.title}>Tax Invoice</h1>
-      </div>
-
-      {/* ═══════ COMPANY HEADER ═══════ */}
-      <div style={iv.companyHeader}>
-        {/* Left: company info */}
-        <div style={iv.companyLeft}>
-          <div style={iv.companyName}>Realization Customer Services Private Limited</div>
-          <table style={iv.infoTable}>
-            <tbody>
-              <CRow label="Trade Name"    value="Tourwatchout" />
-              <CRow label="Email"         value="sales1@tourwatchout.com" />
-              <CRow label="GSTIN"         value="09AANA63481P2ZK" />
-              <CRow label="Company's PAN" value="AACR4934P" />
-              <CRow label="State Name"    value="Uttar Pradesh, Code: 09" />
-              <CRow label="Address"       value="Ground Floor, Unit no. -01, Tower 2, Parsvnath Planet, Gomti Nagar, Lucknow-226010" />
-            </tbody>
-          </table>
-        </div>
-
-        {/* Right: logo */}
-        <div style={iv.companyRight}>
-          <img
-            src="/assets/voucher/logo.png"
-            alt="tourwatchout"
-            style={iv.logoImg}
-            crossOrigin="anonymous"
-          />
-        </div>
-      </div>
-
-      <div style={iv.divider} />
-
-      {/* ═══════ INVOICE META ═══════ */}
-      <div style={iv.metaRow}>
-        <div style={iv.metaCell}>
-          <span style={iv.metaLabel}>Invoice number</span>
-          <span style={iv.metaVal}>{d.invoiceNo || "—"}</span>
-        </div>
-        <div style={{ ...iv.metaCell, textAlign: "center" }}>
-          <span style={iv.metaLabel}>Invoice date</span>
-          <span style={iv.metaVal}>{d.invoiceDate || "—"}</span>
-        </div>
-        <div style={{ ...iv.metaCell, textAlign: "right" }}>
-          <span style={iv.metaLabel}>Mode/Terms of Payment</span>
-          <span style={iv.metaVal}>{d.paymentMode || "Online"}</span>
-        </div>
-      </div>
-
-      <div style={iv.divider} />
-
-      {/* ═══════ BILL TO ═══════ */}
-      <div style={iv.billToSection}>
-        <div style={iv.billToHead}>
-          <span style={iv.billToIcon}>👤</span>
-          <span style={iv.billToLabel}>Bill To:</span>
-        </div>
-        <div style={iv.billToGrid}>
-          <div style={iv.billToLeft}>
-            <BillRow label="Name"       value={d.clientName} />
-            <BillRow label="Address"    value={d.clientAddress} />
-            <BillRow label="State Name" value={d.clientState} />
-          </div>
-          <div style={iv.billToRight}>
-            <BillRow label="GSTIN"       value={d.clientGstin} />
-            <BillRow label="Destination" value={d.destination} />
+        {/* ═══════ HEADER: logo + title ═══════ */}
+        <div style={iv.head}>
+          <img src="/assets/voucher/logo.png" alt="tourwatchout" style={iv.logoImg} crossOrigin="anonymous" />
+          <div style={iv.titleBlock}>
+            <div style={iv.title}>Tax Invoice</div>
+            <div style={iv.titleRule} />
+            <MetaRow label="Invoice No."   value={d.invoiceNo || "—"} />
+            <MetaRow label="Invoice Date"  value={d.invoiceDate || "—"} />
           </div>
         </div>
-      </div>
 
-      <div style={iv.divider} />
+        {/* ═══════ PARTIES ═══════ */}
+        <div style={iv.parties}>
+          <div style={iv.party}>
+            <div style={iv.pName}>{COMPANY.legalName}</div>
+            <div style={iv.pAddr}>{COMPANY.address}</div>
+            <Row label="Trade Name"    value={COMPANY.tradeName} />
+            <Row label="Email"         value={COMPANY.email} />
+            <Row label="Contact"       value={COMPANY.contact} />
+            <Row label="GSTIN"         value={COMPANY.gstin} />
+            <Row label="Company's PAN" value={COMPANY.pan} />
+            <Row label="State Name"    value={COMPANY.state} />
+          </div>
 
-      {/* ═══════ ITEMS TABLE ═══════ */}
-      <table style={iv.table}>
-        <thead>
-          <tr style={iv.tableHead}>
-            <th style={{ ...iv.th, width: "40%", textAlign: "left" }}>Particulars</th>
-            <th style={{ ...iv.th, width: "12%" }}>HSN/SAC</th>
-            <th style={{ ...iv.th, width: "10%" }}>Quantity</th>
-            <th style={{ ...iv.th, width: "15%", textAlign: "right" }}>Rate</th>
-            <th style={{ ...iv.th, width: "18%", textAlign: "right" }}>Amount</th>
-          </tr>
-        </thead>
-        <tbody>
-          {items.length > 0 ? items.map((item, i) => (
-            <tr key={i} style={{ background: i % 2 === 0 ? "#fff" : "#fafafa" }}>
-              <td style={{ ...iv.td, textAlign: "left", fontWeight: 600 }}>{item.particulars || "—"}</td>
-              <td style={{ ...iv.td, textAlign: "center" }}>{item.hsn || ""}</td>
-              <td style={{ ...iv.td, textAlign: "center" }}>{item.qty || ""}</td>
-              <td style={{ ...iv.td, textAlign: "right" }}>{item.rate ? fmt(item.rate) : "—"}</td>
-              <td style={{ ...iv.td, textAlign: "right", fontWeight: 600 }}>
-                {item.amount ? fmt(item.amount) : ""}
-              </td>
-            </tr>
-          )) : (
+          <div style={iv.party}>
+            <div style={iv.pHead}>
+              <span style={iv.pLabel}>Bill To</span>
+              <span style={iv.pName}>{d.clientName || "—"}</span>
+            </div>
+            {d.clientAddress ? <div style={iv.pAddr}>{d.clientAddress}</div> : <div style={{ height: 10 }} />}
+            {d.contact     ? <Row label="Contact"     value={d.contact} /> : null}
+            <Row label="GSTIN"       value={d.clientGstin || "—"} />
+            <Row label="Destination" value={d.destination || "—"} />
+            <Row label="State Name"  value={d.clientState || "—"} />
+            <Row label="Mode/Terms of Payment" value={d.paymentMode || "Online"} />
+          </div>
+        </div>
+
+        {/* ═══════ ITEMS TABLE ═══════ */}
+        <table style={iv.table}>
+          <thead>
             <tr>
-              <td colSpan={5} style={{ ...iv.td, textAlign: "center", color: "#aaa" }}>No items added</td>
+              <th style={{ ...iv.th, ...iv.thFirst, textAlign: "left" }}>Description</th>
+              <th style={{ ...iv.th, width: 90 }}>HSN/SAC</th>
+              <th style={{ ...iv.th, width: 80 }}>Quantity</th>
+              <th style={{ ...iv.th, width: 110, textAlign: "right" }}>Unit Price</th>
+              <th style={{ ...iv.th, ...iv.thLast, width: 120, textAlign: "right" }}>Taxable Value</th>
             </tr>
-          )}
+          </thead>
+          <tbody>
+            {items.length > 0 ? items.map((item, i) => (
+              <tr key={i}>
+                <td style={{ ...iv.td, textAlign: "left", fontWeight: 700, color: DARK, fontSize: 12 }}>{item.particulars || "—"}</td>
+                <td style={{ ...iv.td, color: GREY }}>{item.hsn || ""}</td>
+                <td style={{ ...iv.td, color: GREY }}>{item.qty || ""}</td>
+                <td style={{ ...iv.td, textAlign: "right", color: GREY }}>{item.rate ? fmt(item.rate) : "—"}</td>
+                <td style={{ ...iv.td, textAlign: "right", fontWeight: 700, color: DARK }}>
+                  {item.amount ? fmt(item.amount) : ""}
+                </td>
+              </tr>
+            )) : (
+              <tr>
+                <td colSpan={5} style={{ ...iv.td, textAlign: "center", color: "#aaa" }}>No items added</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
 
-          {/* Sub-total row */}
-          <tr style={iv.subTotalRow}>
-            <td style={{ ...iv.td, ...iv.subTotalCell, textAlign: "left" }} colSpan={4}>Sub-Total</td>
-            <td style={{ ...iv.td, ...iv.subTotalCell, textAlign: "right" }}>{fmt(subTotal)}</td>
-          </tr>
-
-          {/* GST rows */}
-          {cgstAmt > 0 && (
-            <tr style={iv.taxRow}>
-              <td style={{ ...iv.td, textAlign: "left" }} colSpan={3}>CGST</td>
-              <td style={{ ...iv.td, textAlign: "right" }}>{is18 ? "9" : d.cgstPct}%</td>
-              <td style={{ ...iv.td, textAlign: "right" }}>{fmt(cgstAmt)}</td>
-            </tr>
-          )}
-          {sgstAmt > 0 && (
-            <tr style={iv.taxRow}>
-              <td style={{ ...iv.td, textAlign: "left" }} colSpan={3}>SGST</td>
-              <td style={{ ...iv.td, textAlign: "right" }}>{is18 ? "9" : d.sgstPct}%</td>
-              <td style={{ ...iv.td, textAlign: "right" }}>{fmt(sgstAmt)}</td>
-            </tr>
-          )}
-          {igstAmt > 0 && (
-            <tr style={iv.taxRow}>
-              <td style={{ ...iv.td, textAlign: "left" }} colSpan={3}>IGST</td>
-              <td style={{ ...iv.td, textAlign: "right" }}>{d.igstPct}%</td>
-              <td style={{ ...iv.td, textAlign: "right" }}>{fmt(igstAmt)}</td>
-            </tr>
-          )}
-
-          {/* TCS row */}
-          {(d.tcsPct && tcsAmt > 0) && (
-            <tr style={iv.tcsRow}>
-              <td style={{ ...iv.td, textAlign: "left", color: "#92400e" }} colSpan={3}>
-                TCS u/s 206C(1G) (International Tour)
-              </td>
-              <td style={{ ...iv.td, textAlign: "right", color: "#92400e" }}>{d.tcsPct}%</td>
-              <td style={{ ...iv.td, textAlign: "right", color: "#92400e" }}>{fmt(tcsAmt)}</td>
-            </tr>
-          )}
-
-          {/* Grand Total */}
-          <tr style={iv.totalRow}>
-            <td style={{ ...iv.td, ...iv.totalCell, textAlign: "left" }} colSpan={4}>Total</td>
-            <td style={{ ...iv.td, ...iv.totalCell, textAlign: "right" }}>{fmt(grandTotal)}</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <div style={iv.divider} />
-
-      {/* ═══════ AMOUNT IN WORDS + SIGNATURE ═══════ */}
-      <div style={iv.bottomSection}>
-        <div style={iv.amtWordsBox}>
-          <div style={iv.amtWordsLabel}>Amount Chargeable (in words)</div>
-          <div style={iv.amtWords}>{amtWords || "—"}</div>
+        {/* ═══════ TOTALS ═══════ */}
+        <div style={iv.sumWrap}>
+          <div style={iv.sum}>
+            {totals.map(([k, v]) => (
+              <div key={k} style={iv.sumRow}>
+                <span style={{ color: GREY }}>{k}</span>
+                <span style={{ fontWeight: 700, color: DARK }}>{v}</span>
+              </div>
+            ))}
+            <div style={iv.grand}>
+              <span>Grand Total</span>
+              <span>{rupee(grandTotal)}</span>
+            </div>
+          </div>
         </div>
 
-        <div style={iv.signatureBox}>
-          <div style={iv.signImgWrap}>
-            <img
-              src="/assets/voucher/signature.svg"
-              alt="Signature"
-              style={iv.signImg}
-              crossOrigin="anonymous"
-            />
+        {/* ═══════ AMOUNT IN WORDS ═══════ */}
+        <div style={iv.words}>
+          <span style={{ color: GREY }}>Amount Chargeable (in words)</span>
+          <span style={{ fontWeight: 700, color: DARK }}>: {amtWords || "—"}</span>
+        </div>
+
+        {/* ═══════ BANK + SIGNATURE ═══════ */}
+        <div style={iv.foot}>
+          <div style={iv.bankCard}>
+            <div style={iv.bankTitle}>Bank Account Details</div>
+            <div style={iv.bankCols}>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <Row label="Bank Name"           value={BANK.bankName}    bold bank />
+                <Row label="Account Holder Name" value={BANK.accountName} bold bank />
+                <Row label="Account Number"      value={BANK.accountNo}   bold bank />
+                <Row label="IFSC"                value={BANK.ifsc}        bold bank />
+              </div>
+              <div style={iv.qrWrap}>
+                <div style={iv.scan}>Scan to pay</div>
+                <img src="/assets/voucher/qr.svg" alt="QR" style={iv.qrImg} crossOrigin="anonymous" />
+              </div>
+            </div>
+          </div>
+
+          <div style={iv.signBox}>
+            <img src="/assets/voucher/signature.svg" alt="Signature" style={iv.signImg} crossOrigin="anonymous" />
+            <div style={iv.signCap}>( DIRECTOR )</div>
+            <div style={iv.signFor}>Realization Customer Services Pvt. Ltd.</div>
           </div>
         </div>
       </div>
 
-      {/* ═══════ FOOTER GRADIENT STRIP ═══════ */}
+      {/* ═══════ FOOTER ═══════ */}
       <div id="invoice-pdf-footer" style={iv.footer}>
         <div style={iv.footerInner}>
           <span style={iv.footerQuote}>
-            "Think <span style={{ color: RED }}>Travel</span>, Think{" "}
-            <span style={{ color: RED }}>Tourwatchout</span>"
+            “Think <span style={{ color: RED }}>Travel,</span> Think{" "}
+            <span style={{ color: RED }}>Tourwatchout</span>”
           </span>
         </div>
-        <div style={iv.footerGrad} />
+        <div style={iv.footerBar} />
       </div>
 
     </div>
@@ -218,24 +190,21 @@ export default function InvoicePreview({ data }) {
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
-function CRow({ label, value }) {
+function Row({ label, value, bold, bank }) {
   return (
-    <tr>
-      <td style={{ fontSize: 10.5, fontWeight: 700, color: "#555", paddingRight: 8, paddingBottom: 3, whiteSpace: "nowrap", verticalAlign: "top" }}>
-        {label}
-      </td>
-      <td style={{ fontSize: 10.5, color: "#333", paddingBottom: 3, lineHeight: 1.5 }}>
-        : &nbsp;{value}
-      </td>
-    </tr>
+    <div style={{ display: "flex", gap: 4, fontSize: 10.5, lineHeight: bank ? 1.4 : 1.9, padding: bank ? "3px 0" : 0 }}>
+      <span style={{ color: GREY, flex: `0 0 ${bank ? 108 : 118}px` }}>{label}</span>
+      <span style={{ color: GREY }}>:</span>
+      <span style={{ color: "#000", flex: 1, fontWeight: bold ? 700 : 400 }}>{value}</span>
+    </div>
   );
 }
 
-function BillRow({ label, value }) {
+function MetaRow({ label, value }) {
   return (
-    <div style={{ display: "flex", gap: 5, marginBottom: 4, fontSize: 12 }}>
-      <span style={{ fontWeight: 700, color: "#555", minWidth: 80, flexShrink: 0 }}>{label}</span>
-      <span style={{ color: "#222" }}>: &nbsp;{value || "—"}</span>
+    <div style={{ display: "flex", justifyContent: "space-between", gap: 14, fontSize: 11, padding: "2px 0" }}>
+      <span style={{ color: GREY }}>{label}</span>
+      <span style={{ color: DARK, fontWeight: 700 }}>{value}</span>
     </div>
   );
 }
@@ -247,6 +216,7 @@ const iv = {
     letterSpacing: "0.01px",
     wordSpacing: "0.1px",
     background: "#fff",
+    color: DARK,
     maxWidth: 720,
     margin: "0 auto",
     border: "1px solid #ddd",
@@ -254,89 +224,71 @@ const iv = {
     overflow: "hidden",
     boxSizing: "border-box",
   },
-  topStrip: { height: 5, background: `linear-gradient(90deg, ${RED} 0%, #ff7676 100%)` },
+  page: { padding: "32px 32px 18px" },
 
-  // Title
-  titleRow: { padding: "16px 24px 6px", textAlign: "center" },
-  title: { fontSize: 22, fontWeight: 700, color: DARK, margin: 0, letterSpacing: "normal" },
+  // Header
+  head: { display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 24 },
+  logoImg: { maxWidth: 150, maxHeight: 90, width: "auto", height: "auto", display: "block" },
+  titleBlock: { minWidth: 190 },
+  title: { fontSize: 24, fontWeight: 900, color: RED, lineHeight: "30px", letterSpacing: "normal" },
+  titleRule: { height: 2, background: RED, margin: "8px 0 10px" },
 
-  // Company header
-  companyHeader: {
-    display: "flex", justifyContent: "space-between", alignItems: "flex-start",
-    padding: "12px 24px 14px", gap: 16,
+  // Parties
+  parties: { display: "flex", gap: 14, marginTop: 24 },
+  party: {
+    flex: "1 1 0", minWidth: 0, background: "#F9F9F9", border: "1px solid #DFDFDF",
+    borderRadius: 10, padding: "16px 16px 14px",
   },
-  companyLeft: { flex: 1, minWidth: 0 },
-  companyName: { fontSize: 12.5, fontWeight: 700, color: DARK, marginBottom: 8, lineHeight: 1.4, letterSpacing: "normal" },
-  infoTable: { borderCollapse: "collapse", width: "100%" },
-  companyRight: { flexShrink: 0, display: "flex", alignItems: "flex-start", justifyContent: "flex-end" },
-  logoImg: { maxWidth: 130, maxHeight: 120, width: "auto", height: "auto", display: "block" },
-
-  divider: { height: 1, background: "#e0e0e0", margin: "0 24px" },
-
-  // Invoice meta
-  metaRow: { display: "flex", padding: "12px 24px", gap: 0 },
-  metaCell: { flex: 1, display: "flex", flexDirection: "column", gap: 2 },
-  metaLabel: { fontSize: 10.5, color: "#888", fontWeight: 600 },
-  metaVal: { fontSize: 12.5, fontWeight: 700, color: DARK },
-
-  // Bill To
-  billToSection: { padding: "12px 24px" },
-  billToHead: { display: "flex", alignItems: "center", gap: 6, marginBottom: 10 },
-  billToIcon: { fontSize: 14 },
-  billToLabel: { fontSize: 13, fontWeight: 700, color: DARK, letterSpacing: "normal" },
-  billToGrid: { display: "flex", gap: 24 },
-  billToLeft: { flex: 1 },
-  billToRight: { flex: 1 },
+  pHead: { display: "flex", alignItems: "baseline", gap: 10 },
+  pLabel: { color: RED, fontSize: 9.5, fontWeight: 800, letterSpacing: "0.08em", textTransform: "uppercase" },
+  pName: { color: DARK, fontSize: 12.5, fontWeight: 800, lineHeight: 1.3, letterSpacing: "normal" },
+  pAddr: { color: "#000", fontSize: 10.5, lineHeight: 1.55, margin: "6px 0 10px" },
 
   // Table
-  table: { width: "100%", borderCollapse: "collapse", margin: "0" },
-  tableHead: { background: "#f5f5f5" },
+  table: { width: "100%", borderCollapse: "separate", borderSpacing: 0, marginTop: 24 },
   th: {
-    padding: "9px 12px", fontSize: 11.5, fontWeight: 700,
-    color: "#333", borderBottom: "2px solid #e0e0e0",
-    borderTop: "1px solid #e0e0e0", textAlign: "center",
+    background: "#F3F4F8", color: DARK, fontSize: 11, fontWeight: 700,
+    padding: "11px 12px", textAlign: "center",
   },
+  thFirst: { borderRadius: "6px 0 0 6px" },
+  thLast:  { borderRadius: "0 6px 6px 0" },
   td: {
-    padding: "8px 12px", fontSize: 12, color: "#333",
-    borderBottom: "1px solid #ececec", textAlign: "center",
-    verticalAlign: "top",
-  },
-  taxRow: {},
-  subTotalRow: {},
-  subTotalCell: { fontWeight: 700, fontSize: 12, color: DARK, borderTop: "1px solid #e0e0e0" },
-  tcsRow: {},
-  totalRow: {},
-  totalCell: {
-    fontWeight: 700, fontSize: 13, color: DARK,
-    borderTop: "2px solid #e0e0e0",
-    letterSpacing: "normal",
+    padding: "12px 12px", fontSize: 11.5, color: "#333",
+    borderBottom: "1px solid #E7E7E7", textAlign: "center", verticalAlign: "top",
   },
 
-  // Bottom: amount words + signature
-  bottomSection: {
-    display: "flex", padding: "14px 24px", gap: 24, alignItems: "flex-start",
+  // Totals
+  sumWrap: { display: "flex", justifyContent: "flex-end", marginTop: 14 },
+  sum: { width: 290 },
+  sumRow: { display: "flex", justifyContent: "space-between", fontSize: 11.5, padding: "6px 0" },
+  grand: {
+    display: "flex", justifyContent: "space-between", marginTop: 8,
+    background: "#F3F4F8", borderRadius: 6, padding: "10px 12px",
+    fontSize: 14, fontWeight: 800, color: DARK,
   },
-  amtWordsBox: { flex: 1 },
-  amtWordsLabel: { fontSize: 10.5, color: "#888", fontWeight: 600, marginBottom: 4 },
-  amtWords: { fontSize: 12.5, fontWeight: 700, color: DARK, lineHeight: 1.5 },
 
-  signatureBox: { minWidth: 200, textAlign: "right" },
-  signImgWrap: { display: "flex", justifyContent: "flex-end", marginBottom: 4 },
-  signImg: { maxHeight: 90, maxWidth: 220, width: "auto", height: "auto" },
-  directorLabel: { fontSize: 11, fontWeight: 700, color: "#444" },
+  // Amount in words
+  words: { display: "flex", gap: 6, flexWrap: "wrap", fontSize: 11.5, marginTop: 20, lineHeight: 1.5 },
+
+  // Bank + signature
+  foot: { display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16, marginTop: 34 },
+  bankCard: {
+    flex: "0 0 400px", background: "#F9F9F9", border: "1px solid #DFDFDF",
+    borderRadius: 8, padding: "12px 14px 13px",
+  },
+  bankTitle: { color: DARK, fontSize: 11, fontWeight: 800, marginBottom: 6 },
+  bankCols: { display: "flex", alignItems: "center", gap: 12 },
+  qrWrap: { flex: "0 0 auto", textAlign: "center" },
+  scan: { color: RED, fontSize: 9.5, fontWeight: 800, marginBottom: 5 },
+  qrImg: { display: "block", width: 64, height: 64, margin: "0 auto" },
+  signBox: { flex: "0 0 auto", width: 220, textAlign: "center" },
+  signImg: { display: "block", margin: "0 auto", maxHeight: 80, maxWidth: 180, width: "auto", height: "auto" },
+  signCap: { color: RED, fontSize: 10, fontWeight: 800, letterSpacing: "0.04em", marginTop: 4 },
+  signFor: { color: DARK, fontSize: 11, fontWeight: 700, marginTop: 3 },
 
   // Footer
   footer: { marginTop: 0 },
-  footerInner: {
-    background: "#fff",
-    padding: "14px 24px 10px",
-    borderTop: "1px solid #f0e0e0",
-    textAlign: "center",
-  },
-  footerQuote: { fontSize: 14, fontStyle: "italic", color: DARK, fontWeight: 600 },
-  footerGrad: {
-    height: 28,
-    background: "url('/assets/voucher/backgruond-gradeint.png') center/cover no-repeat",
-    backgroundSize: "cover",
-  },
+  footerInner: { background: "#fff", padding: "18px 24px 16px", textAlign: "center" },
+  footerQuote: { fontSize: 20, fontWeight: 700, color: DARK },
+  footerBar: { height: 6, background: RED },
 };
