@@ -27,9 +27,13 @@ const InvoiceSchema = new mongoose.Schema(
     clientGstin:    String,
     destination:    String,
     contact:        { type: String, default: "" },
+    // Invoice currency — only the denomination; amounts are typed in this currency and never converted
+    currency:       { type: String, default: "INR" },
     // Line items
     items:          [itemSchema],
-    // Tax
+    // Tax — gstMode and convenienceFee were never declared, so strict mode dropped them on save
+    gstMode:        { type: String, default: "5" },
+    convenienceFee: String,
     cgstPct:        String,
     sgstPct:        String,
     igstPct:        String,

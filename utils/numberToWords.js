@@ -14,21 +14,47 @@ function below1000(n) {
   return ONES[Math.floor(n / 100)] + " Hundred" + (n % 100 ? " " + below100(n % 100) : "");
 }
 
-export function numberToWords(amount) {
-  if (!amount || isNaN(amount)) return "";
-  const n = Math.round(Number(amount));
-  if (n === 0) return "Zero Only";
-
-  const crore   = Math.floor(n / 10_000_000);
-  const lakh    = Math.floor((n % 10_000_000) / 100_000);
-  const thousand= Math.floor((n % 100_000)    / 1_000);
+/* Western grouping — an AED or USD invoice reads "One Million", not "Ten Lakh". */
+function internationalWords(n) {
+  const billion = Math.floor(n / 1_000_000_000);
+  const million = Math.floor((n % 1_000_000_000) / 1_000_000);
+  const thousand= Math.floor((n % 1_000_000)     / 1_000);
   const rest    = n % 1_000;
 
-  let result = "";
-  if (crore)    result += below1000(crore)  + " Crore ";
-  if (lakh)     result += below100(lakh)    + " Lakh ";
-  if (thousand) result += below1000(thousand) + " Thousand ";
-  if (rest)     result += below1000(rest);
+  let r = "";
+  if (billion)  r += below1000(billion)  + " Billion ";
+  if (million)  r += below1000(million)  + " Million ";
+  if (thousand) r += below1000(thousand) + " Thousand ";
+  if (rest)     r += below1000(rest);
+  return r.trim();
+}
 
-  return result.trim() + " Only";
+/**
+ * @param amount  the number to spell out
+ * @param opts.system  "indian" (Lakh/Crore, the default) or "international" (Million/Billion)
+ * @param opts.unit    currency word placed in front, e.g. "Rupees" / "Dirhams" / "Dollars"
+ */
+export function numberToWords(amount, opts = {}) {
+  if (!amount || isNaN(amount)) return "";
+  const n = Math.round(Number(amount));
+  const unit = opts.unit ? opts.unit + " " : "";
+  if (n === 0) return unit + "Zero Only";
+
+  let result;
+  if (opts.system === "international") {
+    result = internationalWords(n);
+  } else {
+    const crore   = Math.floor(n / 10_000_000);
+    const lakh    = Math.floor((n % 10_000_000) / 100_000);
+    const thousand= Math.floor((n % 100_000)    / 1_000);
+    const rest    = n % 1_000;
+
+    result = "";
+    if (crore)    result += below1000(crore)  + " Crore ";
+    if (lakh)     result += below100(lakh)    + " Lakh ";
+    if (thousand) result += below1000(thousand) + " Thousand ";
+    if (rest)     result += below1000(rest);
+  }
+
+  return unit + result.trim() + " Only";
 }

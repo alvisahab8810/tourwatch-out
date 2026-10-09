@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { MdVisibility, MdEdit, MdDelete } from "react-icons/md";
+import { curOf } from "../../utils/currency";
 import Head from "next/head";
 import DashboardLayout from "../../components/backend/DashboardLayout";
 import InvoiceBuilder from "../../components/backend/InvoiceBuilder";
@@ -25,7 +26,10 @@ function getStatus(paid, due) {
   if (due < 0.01) return "Paid";
   return "Partially Paid";
 }
-const inr = n => "₹" + (+(n || 0).toFixed(2)).toLocaleString("en-IN", { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+const inr = (n, code) => {
+  const c = curOf(code);
+  return c.symbol + " " + (+(n || 0).toFixed(2)).toLocaleString(c.locale, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+};
 function parseAnyDate(v) {
   if (!v) return null;
   try {
@@ -83,7 +87,7 @@ function receiptMail({ inv, amount, total, received }) {
   const row = (k, v) =>
     `<tr><td style="padding:12px 0;border-bottom:1px solid #EEE;color:#6B7280;font-size:14px;">${k}</td><td align="right" style="padding:12px 0;border-bottom:1px solid #EEE;color:#1a1a2e;font-size:14px;font-weight:700;">${v}</td></tr>`;
   const list = (inv.payments || []).map(p =>
-    `<tr><td style="padding:8px 0;border-bottom:1px solid #F2F2F2;font-size:13px;color:#1a1a2e;">${fmtDate(p.date)}</td><td style="padding:8px 0;border-bottom:1px solid #F2F2F2;font-size:13px;color:#6B7280;">${p.mode || ""}</td><td align="right" style="padding:8px 0;border-bottom:1px solid #F2F2F2;font-size:13px;color:#15803D;font-weight:700;">${inr(p.amount)}</td></tr>`
+    `<tr><td style="padding:8px 0;border-bottom:1px solid #F2F2F2;font-size:13px;color:#1a1a2e;">${fmtDate(p.date)}</td><td style="padding:8px 0;border-bottom:1px solid #F2F2F2;font-size:13px;color:#6B7280;">${p.mode || ""}</td><td align="right" style="padding:8px 0;border-bottom:1px solid #F2F2F2;font-size:13px;color:#15803D;font-weight:700;">${inr(p.amount, inv.currency)}</td></tr>`
   ).join("");
   const first = String(inv.clientName || "there").trim().split(/\s+/)[0] || "there";
   return `
@@ -92,19 +96,19 @@ function receiptMail({ inv, amount, total, received }) {
     <tr><td align="center" style="padding:22px 24px 16px;"><img src="${origin}/assets/voucher/logo.png" width="120" alt="Tourwatchout" style="display:block;margin:0 auto;border:0;max-width:120px;height:auto;" /></td></tr>
     <tr><td align="center" style="padding:24px;background:${RED};text-align:center;">
       <div style="color:#FFE3E3;font-size:13px;">${balance > 0 ? "Payment received" : "Paid in full"}</div>
-      <div style="color:#fff;font-size:34px;line-height:44px;font-weight:700;">${inr(amount)}</div>
+      <div style="color:#fff;font-size:34px;line-height:44px;font-weight:700;">${inr(amount, inv.currency)}</div>
       <div style="color:#FFE3E3;font-size:12px;">Received against invoice ${inv.invoiceNo || ""}</div>
     </td></tr>
     <tr><td style="padding:26px 30px 8px;color:#3F3D4A;font-size:15px;line-height:24px;">
       <p style="margin:0 0 12px;color:#1a1a2e;font-size:20px;font-weight:700;">Hi ${first},</p>
-      <p style="margin:0 0 16px;">Thank you — we have received ${inr(amount)} against your booking${inv.destination ? ` for <strong>${inv.destination}</strong>` : ""}. The updated invoice is attached.</p>
+      <p style="margin:0 0 16px;">Thank you — we have received ${inr(amount, inv.currency)} against your booking${inv.destination ? ` for <strong>${inv.destination}</strong>` : ""}. The updated invoice is attached.</p>
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
-        ${row("Invoice total", inr(total))}
-        ${row("Received so far", inr(received))}
+        ${row("Invoice total", inr(total, inv.currency))}
+        ${row("Received so far", inr(received, inv.currency))}
       </table>
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:separate;margin:14px 0 0;background:#FFF1F1;border-radius:10px;">
         <tr><td style="padding:14px 16px;color:${RED};font-size:14px;font-weight:700;">${balance > 0 ? "Balance due" : "Balance"}</td>
-        <td align="right" style="padding:14px 16px;color:${RED};font-size:20px;font-weight:700;">${inr(balance)}</td></tr>
+        <td align="right" style="padding:14px 16px;color:${RED};font-size:20px;font-weight:700;">${inr(balance, inv.currency)}</td></tr>
       </table>
       ${list ? `<div style="margin:22px 0 4px;color:#8A8A94;font-size:11px;letter-spacing:.6px;text-transform:uppercase;font-weight:700;">Payments on this invoice</div>
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">${list}</table>` : ""}
@@ -231,7 +235,7 @@ function PaymentModal({ invoice, siblings, email, onClose, onUpdated, onCreated 
               Payments · {invoice.invoiceNo}
             </div>
             <div style={{ fontSize: 12, color: "#BFD3FE", marginTop: 3 }}>
-              {invoice.clientName} · Package {inr(total)} · Paid {inr(groupPaid)} · Due {inr(due)}
+              {invoice.clientName} · Package {inr(total, invoice.currency)} · Paid {inr(groupPaid, invoice.currency)} · Due {inr(due, invoice.currency)}
             </div>
           </div>
           <button style={P.x} onClick={onClose}>✕</button>
@@ -247,7 +251,7 @@ function PaymentModal({ invoice, siblings, email, onClose, onUpdated, onCreated 
               {others.map(o => (
                 <div key={o.id || o._id} style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#36415A", padding: "3px 0" }}>
                   <span>{o.invoiceNo} <span style={{ color: "#94A3B8" }}>· {monthLabel(invoiceMonth(o))}</span></span>
-                  <span style={{ fontWeight: 700 }}>{inr(calcPaid(o))} paid</span>
+                  <span style={{ fontWeight: 700 }}>{inr(calcPaid(o), invoice.currency)} paid</span>
                 </div>
               ))}
             </div>
@@ -259,7 +263,7 @@ function PaymentModal({ invoice, siblings, email, onClose, onUpdated, onCreated 
           ) : payments.map((p, i) => (
             <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 14px", background: "#F8FAFD", border: "1px solid #E4E9F2", borderRadius: 10, marginBottom: 8 }}>
               <div>
-                <div style={{ fontWeight: 700, color: "#15803D", fontSize: 15 }}>{inr(p.amount)}</div>
+                <div style={{ fontWeight: 700, color: "#15803D", fontSize: 15 }}>{inr(p.amount, invoice.currency)}</div>
                 <div style={{ fontSize: 12, color: "#6B7A99", marginTop: 2 }}>{p.mode} · {fmtDate(p.date)}{p.note ? ` · ${p.note}` : ""}</div>
               </div>
               <span style={{ fontSize: 11, fontWeight: 800, background: "#DCFCE7", color: "#15803D", padding: "3px 10px", borderRadius: 99 }}>Part {i + 1}</span>
@@ -273,7 +277,7 @@ function PaymentModal({ invoice, siblings, email, onClose, onUpdated, onCreated 
               <div style={{ padding: 14, background: "#fff" }}>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, marginBottom: 12 }}>
                   <Fl l="Date"><input type="date" style={P.inp} value={date} onChange={e => setDate(e.target.value)} /></Fl>
-                  <Fl l="Amount (₹)"><input type="number" style={P.inp} value={amount} onChange={e => setAmount(e.target.value)} placeholder={`Max ${inr(due)}`} /></Fl>
+                  <Fl l={`Amount (${curOf(invoice.currency).symbol})`}><input type="number" style={P.inp} value={amount} onChange={e => setAmount(e.target.value)} placeholder={`Max ${inr(due, invoice.currency)}`} /></Fl>
                   <Fl l="Mode">
                     <select style={P.inp} value={mode} onChange={e => setMode(e.target.value)}>
                       {PAYMENT_MODES.map(m => <option key={m}>{m}</option>)}
@@ -303,7 +307,7 @@ function PaymentModal({ invoice, siblings, email, onClose, onUpdated, onCreated 
             </div>
           )}
           {due === 0 && payments.length > 0 && (
-            <div style={{ textAlign: "center", padding: "12px 0", color: "#15803D", fontWeight: 700, fontSize: 14 }}>✓ Fully Paid — Balance is ₹0</div>
+            <div style={{ textAlign: "center", padding: "12px 0", color: "#15803D", fontWeight: 700, fontSize: 14 }}>✓ Fully Paid — Balance is {curOf(invoice.currency).symbol}0</div>
           )}
         </div>
 
@@ -573,13 +577,13 @@ export default function InvoicesPage() {
 
                       {/* Total */}
                       <td style={S.td}>
-                        <b style={{ color: "#0F1B33", fontSize: 13 }}>{inr(total)}</b>
+                        <b style={{ color: "#0F1B33", fontSize: 13 }}>{inr(total, inv.currency)}</b>
                       </td>
 
                       {/* Payments Record */}
                       <td style={S.td}>
                         <button style={S.payBtn} onClick={() => setPayModal(inv)}>
-                          Record{paid > 0 ? ` (${inr(paid)} paid)` : ""}{due >= 0.01 ? ` · ₹${(+due.toFixed(2)).toLocaleString("en-IN", { minimumFractionDigits: 0, maximumFractionDigits: 2 })} due` : ""}
+                          Record{paid > 0 ? ` (${inr(paid, inv.currency)} paid)` : ""}{due >= 0.01 ? ` · ${inr(due, inv.currency)} due` : ""}
                         </button>
                       </td>
 
@@ -604,7 +608,7 @@ export default function InvoicesPage() {
                         ) : due === 0 && total > 0 ? (
                           <span style={{ fontSize: 11, color: "#94A3B8" }}>See latest invoice</span>
                         ) : (
-                          <span style={{ fontSize: 11, color: "#CBD5E1" }}>Locked till due is ₹0</span>
+                          <span style={{ fontSize: 11, color: "#CBD5E1" }}>Locked till due is {curOf(inv.currency).symbol}0</span>
                         )}
                       </td>
 

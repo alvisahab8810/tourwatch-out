@@ -1,4 +1,5 @@
 import { numberToWords } from "../../utils/numberToWords";
+import { curOf } from "../../utils/currency";
 
 const RED  = "#F74C4D";
 const DARK = "#1a1a2e";
@@ -38,7 +39,9 @@ export default function InvoicePreview({ data }) {
   const afterGst  = subTotal + convFee + gstTotal;
   const tcsAmt    = d.tcsPct   ? (afterGst  * parseFloat(d.tcsPct))   / 100 : 0;
   const grandTotal = afterGst + tcsAmt;
-  const amtWords  = numberToWords(grandTotal);
+  // the invoice is denominated in its own currency — INR for anything saved before this existed
+  const cur       = curOf(d.currency);
+  const amtWords  = numberToWords(grandTotal, { system: cur.system, unit: cur.word });
 
   // Part payments: this invoice's own, plus whatever the booking's earlier
   // monthly invoices already took (otherPaid, passed in by the caller).
@@ -48,8 +51,8 @@ export default function InvoicePreview({ data }) {
   const balance   = Math.max(0, grandTotal - received);
 
   const fmt = (n) =>
-    Number(n || 0).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  const rupee = (n) => `₹ ${fmt(n)}`;
+    Number(n || 0).toLocaleString(cur.locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const rupee = (n) => `${cur.symbol} ${fmt(n)}`;
 
   const totals = [
     ["Sub Total", rupee(subTotal)],

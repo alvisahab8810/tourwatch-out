@@ -6,6 +6,7 @@ import {
 } from "react-icons/md";
 import { FaWhatsapp } from "react-icons/fa";
 import InvoicePreview from "../invoice/InvoicePreview";
+import { CURRENCIES, CURRENCY_CODES, curOf } from "../../utils/currency";
 import { calcQ } from "./QuotationBuilder";
 
 /* ─── helpers (identical to create-invoice.js) ─────────────────────────── */
@@ -89,6 +90,7 @@ function buildDefault(prefill) {
     destination:   lead?.destination || "",
     contact:       lead?.phone || "",
     items,
+    currency:      "INR",
     gstMode:       "5",
     convenienceFee: "",
     cgstPct: isIntl ? "" : gstHalf,
@@ -104,7 +106,7 @@ function buildDefault(prefill) {
 }
 
 export default function InvoiceBuilder({ prefill, invoiceData, isNew, onClose, onSaved, openPreview, otherPaid = 0, defaultEmail = "" }) {
-  const [form,           setForm]           = useState(() => invoiceData ? { ...invoiceData } : buildDefault(prefill));
+  const [form,           setForm]           = useState(() => invoiceData ? { currency: "INR", ...invoiceData } : buildDefault(prefill));
   // the eye icon on the invoice list opens the builder straight into its preview
   const [showPreview,    setShowPreview]    = useState(!!openPreview);
   const [saving,         setSaving]        = useState(false);
@@ -254,7 +256,7 @@ export default function InvoiceBuilder({ prefill, invoiceData, isNew, onClose, o
   }
   async function handleWhatsApp() {
     await handleDownload();
-    const msg = encodeURIComponent(`Hello ${form.clientName || ""},\n\nYour tax invoice is ready! 🧾\nInvoice No: ${form.invoiceNo}\nTotal: ₹${fmt(grandTotal)}\n\n— Team Tourwatchout`);
+    const msg = encodeURIComponent(`Hello ${form.clientName || ""},\n\nYour tax invoice is ready! 🧾\nInvoice No: ${form.invoiceNo}\nTotal: ${sym} ${fmt(grandTotal)}\n\n— Team Tourwatchout`);
     window.open(`https://web.whatsapp.com/send?text=${msg}`, "_blank");
   }
   async function handleSendEmail() {
@@ -265,7 +267,7 @@ export default function InvoiceBuilder({ prefill, invoiceData, isNew, onClose, o
       if (!pdf) throw new Error("PDF generation failed");
       const pdfBase64 = pdf.output("datauristring").split(",")[1];
       const fileName = `invoice-${form.invoiceNo?.replace(/\//g, "_") || "tw"}.pdf`;
-      const emailBody = `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto"><div style="background:#e84949;padding:20px;text-align:center"><h2 style="color:#fff;margin:0">Tax Invoice — Tourwatchout</h2></div><div style="padding:24px;background:#fff;border:1px solid #eee"><p>Dear <strong>${form.clientName || "Customer"}</strong>,</p><p>Please find your tax invoice attached.</p><table style="width:100%;border-collapse:collapse;margin:16px 0"><tr><td style="padding:8px;font-weight:bold;color:#555">Invoice No.</td><td style="padding:8px">${form.invoiceNo || "—"}</td></tr><tr style="background:#f9f9f9"><td style="padding:8px;font-weight:bold;color:#555">Date</td><td style="padding:8px">${form.invoiceDate || "—"}</td></tr><tr><td style="padding:8px;font-weight:bold;color:#555">Total</td><td style="padding:8px;font-weight:bold">₹${fmt(grandTotal)}</td></tr></table></div></div>`;
+      const emailBody = `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto"><div style="background:#e84949;padding:20px;text-align:center"><h2 style="color:#fff;margin:0">Tax Invoice — Tourwatchout</h2></div><div style="padding:24px;background:#fff;border:1px solid #eee"><p>Dear <strong>${form.clientName || "Customer"}</strong>,</p><p>Please find your tax invoice attached.</p><table style="width:100%;border-collapse:collapse;margin:16px 0"><tr><td style="padding:8px;font-weight:bold;color:#555">Invoice No.</td><td style="padding:8px">${form.invoiceNo || "—"}</td></tr><tr style="background:#f9f9f9"><td style="padding:8px;font-weight:bold;color:#555">Date</td><td style="padding:8px">${form.invoiceDate || "—"}</td></tr><tr><td style="padding:8px;font-weight:bold;color:#555">Total</td><td style="padding:8px;font-weight:bold">${sym} ${fmt(grandTotal)}</td></tr></table></div></div>`;
       const res = await fetch("/api/dashboard/send-invoice", {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ to: emailTo, subject: `Tax Invoice ${form.invoiceNo} — Tourwatchout`, html: emailBody, pdfBase64, fileName }),
@@ -287,7 +289,10 @@ export default function InvoiceBuilder({ prefill, invoiceData, isNew, onClose, o
   const afterGst   = subTotal + convFee + cgstAmt + sgstAmt + igstAmt;
   const tcsAmt     = form.tcsPct ? (afterGst * parseFloat(form.tcsPct)) / 100 : 0;
   const grandTotal = afterGst + tcsAmt;
-  const fmt = n => Number(n || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 });
+  // amounts are typed in the chosen currency — switching only changes symbol and grouping
+  const cur = curOf(form.currency);
+  const sym = cur.symbol;
+  const fmt = n => Number(n || 0).toLocaleString(cur.locale, { minimumFractionDigits: 2 });
 
   const invId   = form.invoiceNo || "RCSPL/????/???";
   const chainTxt = [prefill?.quotationDisplayId || form.quotationNo, prefill?.leadDisplayId || form.leadDisplayId].filter(Boolean).join(" and ");
@@ -321,8 +326,9 @@ export default function InvoiceBuilder({ prefill, invoiceData, isNew, onClose, o
           {/* Body */}
           <div style={s.body}>
 
-            {/* ── GST Mode Toggle ── */}
-            <div style={{ display: "flex", gap: 0, marginBottom: 16, background: "#e5e7eb", borderRadius: 10, padding: 3, width: "fit-content" }}>
+            {/* ── GST mode + invoice currency ── */}
+            <div style={{ display: "flex", alignItems: "center", gap: 18, marginBottom: 16, flexWrap: "wrap" }}>
+            <div style={{ display: "flex", gap: 0, background: "#e5e7eb", borderRadius: 10, padding: 3, width: "fit-content" }}>
               {[{ key: "5", label: "5% GST" }, { key: "18", label: "18% GST" }].map(tab => (
                 <button key={tab.key} onClick={() => set("gstMode", tab.key)}
                   style={{ padding: "8px 22px", borderRadius: 8, border: "none", fontWeight: 700, fontSize: 13, cursor: "pointer", transition: "all .18s",
@@ -333,6 +339,24 @@ export default function InvoiceBuilder({ prefill, invoiceData, isNew, onClose, o
                   {tab.label}
                 </button>
               ))}
+            </div>
+
+              {/* ── Currency ── amounts are entered in this currency, nothing is converted ── */}
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ fontSize: 12, fontWeight: 700, color: "#6b7280" }}>CURRENCY</span>
+                <div style={{ display: "flex", gap: 0, background: "#e5e7eb", borderRadius: 10, padding: 3 }}>
+                  {CURRENCY_CODES.map(code => (
+                    <button key={code} onClick={() => set("currency", code)} title={`Show all amounts in ${code}`}
+                      style={{ padding: "8px 16px", borderRadius: 8, border: "none", fontWeight: 700, fontSize: 13, cursor: "pointer", transition: "all .18s",
+                        background: form.currency === code ? "#0f766e" : "transparent",
+                        color:      form.currency === code ? "#fff"    : "#6b7280",
+                        boxShadow:  form.currency === code ? "0 2px 8px rgba(15,118,110,.25)" : "none",
+                      }}>
+                      {CURRENCIES[code].label}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
 
             {/* ── Invoice Info ── */}
@@ -374,8 +398,8 @@ export default function InvoiceBuilder({ prefill, invoiceData, isNew, onClose, o
                 <div style={{ flex: 3 }}>Particulars</div>
                 <div style={{ flex: 1, textAlign: "center" }}>HSN/SAC</div>
                 <div style={{ flex: 1, textAlign: "center" }}>Qty</div>
-                <div style={{ flex: 1.5, textAlign: "right" }}>Rate (₹)</div>
-                <div style={{ flex: 1.5, textAlign: "right" }}>Amount (₹)</div>
+                <div style={{ flex: 1.5, textAlign: "right" }}>Rate ({sym})</div>
+                <div style={{ flex: 1.5, textAlign: "right" }}>Amount ({sym})</div>
                 <div style={{ width: 32 }} />
               </div>
 
@@ -402,11 +426,11 @@ export default function InvoiceBuilder({ prefill, invoiceData, isNew, onClose, o
                 <>
                   <div style={s.subHead}>Convenience Fee + 18% GST</div>
                   <div style={s.note}>No GST on tour items. Enter convenience fee below — CGST 9% + SGST 9% will be applied on it.</div>
-                  <Fld label="Convenience Fee (₹)" value={form.convenienceFee} onChange={v => set("convenienceFee", v)} placeholder="e.g. 1000" inputMode="decimal" />
+                  <Fld label={`Convenience Fee (${sym})`} value={form.convenienceFee} onChange={v => set("convenienceFee", v)} placeholder="e.g. 1000" inputMode="decimal" />
                   {convFee > 0 && (
                     <div style={{ display: "flex", gap: 12, marginTop: 8, fontSize: 12, color: "#6b7280" }}>
-                      <span>CGST 9% = ₹{fmt(cgstAmt)}</span>
-                      <span>SGST 9% = ₹{fmt(sgstAmt)}</span>
+                      <span>CGST 9% = {sym} {fmt(cgstAmt)}</span>
+                      <span>SGST 9% = {sym} {fmt(sgstAmt)}</span>
                     </div>
                   )}
                 </>
@@ -430,14 +454,14 @@ export default function InvoiceBuilder({ prefill, invoiceData, isNew, onClose, o
               {/* Summary */}
               <div style={s.sumBox}>
                 <div style={s.sumTitle}>Invoice Summary</div>
-                <SumRow l="Sub-total (tour items)" v={`₹${fmt(subTotal)}`} />
-                {is18 && convFee > 0 && <SumRow l="Convenience Fee" v={`₹${fmt(convFee)}`} />}
-                {cgstAmt > 0 && <SumRow l={is18 ? "CGST @ 9% (on convenience)" : `CGST @ ${form.cgstPct}%`} v={`₹${fmt(cgstAmt)}`} />}
-                {sgstAmt > 0 && <SumRow l={is18 ? "SGST @ 9% (on convenience)" : `SGST @ ${form.sgstPct}%`} v={`₹${fmt(sgstAmt)}`} />}
-                {igstAmt > 0 && <SumRow l={`IGST @ ${form.igstPct}%`} v={`₹${fmt(igstAmt)}`} />}
-                {tcsAmt  > 0 && <SumRow l={`TCS @ ${form.tcsPct}% u/s 206C(1G)`} v={`₹${fmt(tcsAmt)}`} vc="#b45309" />}
+                <SumRow l="Sub-total (tour items)" v={`${sym} ${fmt(subTotal)}`} />
+                {is18 && convFee > 0 && <SumRow l="Convenience Fee" v={`${sym} ${fmt(convFee)}`} />}
+                {cgstAmt > 0 && <SumRow l={is18 ? "CGST @ 9% (on convenience)" : `CGST @ ${form.cgstPct}%`} v={`${sym} ${fmt(cgstAmt)}`} />}
+                {sgstAmt > 0 && <SumRow l={is18 ? "SGST @ 9% (on convenience)" : `SGST @ ${form.sgstPct}%`} v={`${sym} ${fmt(sgstAmt)}`} />}
+                {igstAmt > 0 && <SumRow l={`IGST @ ${form.igstPct}%`} v={`${sym} ${fmt(igstAmt)}`} />}
+                {tcsAmt  > 0 && <SumRow l={`TCS @ ${form.tcsPct}% u/s 206C(1G)`} v={`${sym} ${fmt(tcsAmt)}`} vc="#b45309" />}
                 <div style={{ display: "flex", justifyContent: "space-between", fontSize: 15, fontWeight: 800, color: "#1a1a2e", borderTop: "1.5px solid #e5e7eb", paddingTop: 10, marginTop: 6 }}>
-                  <span>Grand Total</span><span>₹{fmt(grandTotal)}</span>
+                  <span>Grand Total</span><span>{sym} {fmt(grandTotal)}</span>
                 </div>
               </div>
             </FormSec>
@@ -501,7 +525,7 @@ export default function InvoiceBuilder({ prefill, invoiceData, isNew, onClose, o
                     <div style={{ fontSize: 12, fontWeight: 700, color: "#888", marginBottom: 6 }}>Summary</div>
                     <div style={{ fontSize: 13, color: "#444", marginBottom: 3 }}><b>Invoice:</b> {form.invoiceNo}</div>
                     <div style={{ fontSize: 13, color: "#444", marginBottom: 3 }}><b>Client:</b> {form.clientName}</div>
-                    <div style={{ fontSize: 13, color: "#444" }}><b>Total:</b> ₹{fmt(grandTotal)}</div>
+                    <div style={{ fontSize: 13, color: "#444" }}><b>Total:</b> {sym} {fmt(grandTotal)}</div>
                   </div>
                   {emailError && <div style={{ background: "#fff2f2", border: "1px solid #fecaca", color: "#b91c1c", borderRadius: 7, padding: "10px 13px", fontSize: 13, marginBottom: 12 }}>{emailError}</div>}
                   <button onClick={handleSendEmail} disabled={emailSending || !emailTo.trim()} style={{ background: "#ea4335", color: "#fff", border: "none", borderRadius: 8, padding: 13, fontSize: 14, fontWeight: 700, cursor: "pointer", width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 7, opacity: (emailSending || !emailTo.trim()) ? 0.6 : 1 }}>
