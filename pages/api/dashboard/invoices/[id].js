@@ -45,7 +45,8 @@ async function firePurchaseEvent(inv) {
     eventName: "BookingConfirmed",
     eventId:   `booking_${String(inv._id)}`,
     email, phone, fbc, fbp, clientIp, userAgent,
-    value, currency: "INR",
+    // report the invoice's own currency — AED/USD invoices must not be logged as INR
+    value, currency: String(inv.currency || "INR").toUpperCase(),
   });
 }
 

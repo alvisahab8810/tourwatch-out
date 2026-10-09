@@ -41,6 +41,12 @@ function fmtDate(v) {
   const d = parseAnyDate(v);
   return d ? d.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" }) : (v || "—");
 }
+/* "YYYY-MM-DD" for an <input type="date"> — older rows may hold "08 Oct 2026" */
+function toISODate(v) {
+  const d = parseAnyDate(v);
+  if (!d) return "";
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
 /* "YYYY-MM" key for grouping payments/invoices by calendar month */
 function monthKey(v) {
   const d = parseAnyDate(v);
@@ -126,12 +132,22 @@ function receiptMail({ inv, amount, total, received }) {
 /* `siblings` = every invoice raised for the same quotation (one per billing
    month, including `invoice` itself) — used to total up the real package due
    across the whole booking, not just this one month's invoice. */
-function PaymentModal({ invoice, siblings, email, onClose, onUpdated, onCreated }) {
+function PaymentModal({ invoice, siblings, email, onClose, onUpdated, onCreated, onPatched }) {
   const [date,   setDate]   = useState(todayISO());
   const [amount, setAmount] = useState("");
   const [mode,   setMode]   = useState("Online");
   const [note,   setNote]   = useState("");
   const [saving, setSaving] = useState(false);
+  /* Editing an already-recorded payment. A booking saved in one currency and
+     later switched to another keeps its old figures, so recorded amounts have
+     to stay correctable — including after the invoice is fully paid. */
+  const [editIdx, setEditIdx] = useState(null);
+  const [eDate,   setEDate]   = useState("");
+  const [eAmount, setEAmount] = useState("");
+  const [eMode,   setEMode]   = useState("Online");
+  const [eNote,   setENote]   = useState("");
+  const [rowBusy, setRowBusy] = useState(false);
+  const [delIdx,  setDelIdx]  = useState(null);
   // Optional receipt to the client, with the updated invoice attached.
   const [sendMail, setSendMail] = useState(!!email);
   const [mailTo,   setMailTo]   = useState(email || "");
@@ -174,6 +190,45 @@ function PaymentModal({ invoice, siblings, email, onClose, onUpdated, onCreated 
       }),
     });
     if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.message || "Mail could not be sent"); }
+  }
+
+  /* Writes the whole payments array back; the modal stays open so the admin can
+     fix several rows in one go. */
+  async function savePayments(next) {
+    setRowBusy(true);
+    try {
+      const res = await fetch(`/api/dashboard/invoices/${invoice.id || invoice._id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ payments: next }),
+      });
+      if (!res.ok) { alert("Could not save the change"); return false; }
+      const updated = await res.json();
+      (onPatched || onUpdated)(updated);
+      return true;
+    } finally { setRowBusy(false); }
+  }
+
+  function startEdit(i) {
+    const p = payments[i] || {};
+    setDelIdx(null);
+    setEditIdx(i);
+    setEDate(toISODate(p.date));
+    setEAmount(p.amount == null ? "" : String(p.amount));
+    setEMode(p.mode || "Online");
+    setENote(p.note || "");
+  }
+
+  async function saveEdit() {
+    if (editIdx == null || !eAmount || +eAmount <= 0) return;
+    const next = payments.map((p, k) =>
+      k === editIdx ? { ...p, date: eDate, amount: +eAmount, mode: eMode, note: eNote } : p);
+    if (await savePayments(next)) setEditIdx(null);
+  }
+
+  async function deletePayment(i) {
+    const next = payments.filter((_, k) => k !== i);
+    if (await savePayments(next)) { setDelIdx(null); setEditIdx(null); }
   }
 
   async function addPayment() {
@@ -261,12 +316,62 @@ function PaymentModal({ invoice, siblings, email, onClose, onUpdated, onCreated 
           {payments.length === 0 ? (
             <p style={{ color: "#94A3B8", fontSize: 13, textAlign: "center", padding: "12px 0" }}>No payments recorded yet on this invoice</p>
           ) : payments.map((p, i) => (
-            <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 14px", background: "#F8FAFD", border: "1px solid #E4E9F2", borderRadius: 10, marginBottom: 8 }}>
-              <div>
-                <div style={{ fontWeight: 700, color: "#15803D", fontSize: 15 }}>{inr(p.amount, invoice.currency)}</div>
-                <div style={{ fontSize: 12, color: "#6B7A99", marginTop: 2 }}>{p.mode} · {fmtDate(p.date)}{p.note ? ` · ${p.note}` : ""}</div>
-              </div>
-              <span style={{ fontSize: 11, fontWeight: 800, background: "#DCFCE7", color: "#15803D", padding: "3px 10px", borderRadius: 99 }}>Part {i + 1}</span>
+            <div key={i} style={{ padding: "12px 14px", background: "#F8FAFD", border: "1px solid #E4E9F2", borderRadius: 10, marginBottom: 8 }}>
+              {editIdx === i ? (
+                /* Inline editor for this recorded payment */
+                <>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: 10 }}>
+                    <Fl l="Date"><input type="date" style={P.inp} value={eDate} onChange={e => setEDate(e.target.value)} /></Fl>
+                    <Fl l={`Amount (${curOf(invoice.currency).symbol})`}>
+                      <input type="number" style={P.inp} value={eAmount} onChange={e => setEAmount(e.target.value)} />
+                    </Fl>
+                    <Fl l="Mode">
+                      <select style={P.inp} value={eMode} onChange={e => setEMode(e.target.value)}>
+                        {PAYMENT_MODES.map(m => <option key={m}>{m}</option>)}
+                      </select>
+                    </Fl>
+                  </div>
+                  <Fl l="Note (optional)">
+                    <input style={P.inp} value={eNote} onChange={e => setENote(e.target.value)} placeholder="NEFT ref, cheque no…" />
+                  </Fl>
+                  <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", marginTop: 10 }}>
+                    <button style={P.cancelBtn} onClick={() => setEditIdx(null)} disabled={rowBusy}>Cancel</button>
+                    <button
+                      style={{ ...P.cancelBtn, background: "#2563EB", color: "#fff", border: "none", opacity: rowBusy ? 0.7 : 1 }}
+                      onClick={saveEdit}
+                      disabled={rowBusy || !eAmount || +eAmount <= 0}
+                    >
+                      {rowBusy ? "Saving…" : "Save Changes"}
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
+                  <div>
+                    <div style={{ fontWeight: 700, color: "#15803D", fontSize: 15 }}>{inr(p.amount, invoice.currency)}</div>
+                    <div style={{ fontSize: 12, color: "#6B7A99", marginTop: 2 }}>{p.mode} · {fmtDate(p.date)}{p.note ? ` · ${p.note}` : ""}</div>
+                  </div>
+                  <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                    <span style={{ fontSize: 11, fontWeight: 800, background: "#DCFCE7", color: "#15803D", padding: "3px 10px", borderRadius: 99 }}>Part {i + 1}</span>
+                    {delIdx === i ? (
+                      <>
+                        <span style={{ fontSize: 11, color: "#BE123C", fontWeight: 700 }}>Delete?</span>
+                        <button style={S.delYes} onClick={() => deletePayment(i)} disabled={rowBusy}>{rowBusy ? "…" : "Yes"}</button>
+                        <button style={S.delNo} onClick={() => setDelIdx(null)}>No</button>
+                      </>
+                    ) : (
+                      <>
+                        <button style={S.editIcon} title="Edit this payment" onClick={() => startEdit(i)}>
+                          <MdEdit size={15} />
+                        </button>
+                        <button style={S.delIcon} title="Delete this payment" onClick={() => { setEditIdx(null); setDelIdx(i); }}>
+                          <MdDelete size={15} />
+                        </button>
+                      </>
+                    )}
+                  </span>
+                </div>
+              )}
             </div>
           ))}
 
@@ -694,6 +799,10 @@ export default function InvoicesPage() {
           onUpdated={updated => {
             setInvoices(prev => prev.map(i => (i.id === updated.id || i._id === updated._id) ? { ...i, ...updated } : i));
             setPayModal(null);
+          }}
+          onPatched={updated => {
+            setInvoices(prev => prev.map(i => (i.id === updated.id || i._id === updated._id) ? { ...i, ...updated } : i));
+            setPayModal(prev => (prev ? { ...prev, ...updated } : prev)); // stay open — more rows may need fixing
           }}
           onCreated={created => {
             setInvoices(prev => [created, ...prev]);

@@ -357,6 +357,14 @@ export default function InvoiceBuilder({ prefill, invoiceData, isNew, onClose, o
                   ))}
                 </div>
               </div>
+
+              {/* Payments already on file keep the figures they were recorded with —
+                  switching currency only relabels them, so flag it. */}
+              {form.currency !== "INR" && (form.payments || []).length > 0 && (
+                <div style={{ flexBasis: "100%", background: "#FFFBEB", border: "1px solid #FDE68A", borderRadius: 9, padding: "9px 11px", fontSize: 12, color: "#92400E", lineHeight: 1.5 }}>
+                  ⚠ This invoice has {(form.payments || []).length} recorded payment(s). Amounts are never converted — they now read as {form.currency}. Correct them from the Payments screen if needed.
+                </div>
+              )}
             </div>
 
             {/* ── Invoice Info ── */}
