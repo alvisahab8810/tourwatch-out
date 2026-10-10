@@ -113,6 +113,10 @@ export default function InvoiceBuilder({ prefill, invoiceData, isNew, onClose, o
   const [saved,          setSaved]         = useState(false);
   const [pdfLoading,     setPdfLoading]    = useState(false);
   const [showEmailModal, setShowEmailModal] = useState(false);
+  /* Off-screen copy of the invoice, mounted only while a mail PDF is being built —
+     the Email button also sits in the footer, where the preview modal (and its PDF
+     target) is not on screen, and without this the mail went out with no attachment. */
+  const [mailPdf,        setMailPdf]        = useState(false);
   const [emailTo,        setEmailTo]       = useState(prefill?.lead?.email || defaultEmail || "");
   const [emailSending,   setEmailSending]  = useState(false);
   const [emailDone,      setEmailDone]     = useState(false);
@@ -196,7 +200,7 @@ export default function InvoiceBuilder({ prefill, invoiceData, isNew, onClose, o
     try {
       const { default: html2canvas } = await import("html2canvas");
       const { jsPDF } = await import("jspdf");
-      const wrapEl = document.getElementById("inv-modal-pdf-target");
+      const wrapEl = document.getElementById("inv-modal-pdf-target") || document.getElementById("inv-mail-pdf-target");
       if (!wrapEl) return null;
       const SCALE = 2;
       const pdf = new jsPDF("p", "mm", "a4");
@@ -278,19 +282,27 @@ export default function InvoiceBuilder({ prefill, invoiceData, isNew, onClose, o
     setEmailDone(true);
     setTimeout(() => { setShowEmailModal(false); setEmailDone(false); setEmailTo(""); }, 2000);
 
+    setMailPdf(true);
+
     (async () => {
       try {
+        /* give the off-screen copy a moment to render and load its images */
+        await new Promise(r => setTimeout(r, 600));
         const pdf = await generatePDF();
+        if (!pdf) throw new Error("Could not render the invoice PDF");
         /* multipart, not base64 JSON — no size cap and a much smaller upload */
         const fd = new FormData();
         fd.append("to",       snap.to);
         fd.append("subject",  snap.subject);
         fd.append("html",     snap.html);
         fd.append("fileName", snap.fileName);
-        if (pdf) fd.append("pdf", pdf.output("blob"), snap.fileName);
+        fd.append("pdf", pdf.output("blob"), snap.fileName);
         await fetch("/api/dashboard/send-invoice", { method: "POST", body: fd });
       } catch (e) {
         console.error("Background invoice email failed:", e);
+        alert("The invoice email could not be sent. Please try again.");
+      } finally {
+        setMailPdf(false);
       }
     })();
   }
@@ -523,6 +535,13 @@ export default function InvoiceBuilder({ prefill, invoiceData, isNew, onClose, o
               <div id="inv-modal-pdf-target"><InvoicePreview data={{ ...form, otherPaid }} /></div>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Hidden render target for the mail PDF — see mailPdf above. */}
+      {mailPdf && (
+        <div style={{ position: "fixed", left: -10000, top: 0, width: 720 }} aria-hidden="true">
+          <div id="inv-mail-pdf-target"><InvoicePreview data={{ ...form, otherPaid }} /></div>
         </div>
       )}
 
