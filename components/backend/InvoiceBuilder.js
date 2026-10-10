@@ -259,24 +259,40 @@ export default function InvoiceBuilder({ prefill, invoiceData, isNew, onClose, o
     const msg = encodeURIComponent(`Hello ${form.clientName || ""},\n\nYour tax invoice is ready! 🧾\nInvoice No: ${form.invoiceNo}\nTotal: ${sym} ${fmt(grandTotal)}\n\n— Team Tourwatchout`);
     window.open(`https://web.whatsapp.com/send?text=${msg}`, "_blank");
   }
-  async function handleSendEmail() {
+  /* Mirrors the quotation flow: confirm straight away, then build the PDF and
+     send it in the background. Rendering the PDF plus the SMTP hop took long
+     enough that the inline wait looked like a hang, and a proxy timeout on the
+     way back showed "Failed" even though the mail had already gone out. */
+  function handleSendEmail() {
     if (!emailTo.trim()) return;
-    setEmailSending(true); setEmailError("");
-    try {
-      const pdf = await generatePDF();
-      if (!pdf) throw new Error("PDF generation failed");
-      const pdfBase64 = pdf.output("datauristring").split(",")[1];
-      const fileName = `invoice-${form.invoiceNo?.replace(/\//g, "_") || "tw"}.pdf`;
-      const emailBody = `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto"><div style="background:#e84949;padding:20px;text-align:center"><h2 style="color:#fff;margin:0">Tax Invoice — Tourwatchout</h2></div><div style="padding:24px;background:#fff;border:1px solid #eee"><p>Dear <strong>${form.clientName || "Customer"}</strong>,</p><p>Please find your tax invoice attached.</p><table style="width:100%;border-collapse:collapse;margin:16px 0"><tr><td style="padding:8px;font-weight:bold;color:#555">Invoice No.</td><td style="padding:8px">${form.invoiceNo || "—"}</td></tr><tr style="background:#f9f9f9"><td style="padding:8px;font-weight:bold;color:#555">Date</td><td style="padding:8px">${form.invoiceDate || "—"}</td></tr><tr><td style="padding:8px;font-weight:bold;color:#555">Total</td><td style="padding:8px;font-weight:bold">${sym} ${fmt(grandTotal)}</td></tr></table></div></div>`;
-      const res = await fetch("/api/dashboard/send-invoice", {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ to: emailTo, subject: `Tax Invoice ${form.invoiceNo} — Tourwatchout`, html: emailBody, pdfBase64, fileName }),
-      });
-      if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.message || "Failed"); }
-      setEmailDone(true);
-      setTimeout(() => { setShowEmailModal(false); setEmailDone(false); setEmailTo(""); }, 2500);
-    } catch (e) { setEmailError(e.message || "Something went wrong."); }
-    finally { setEmailSending(false); }
+    setEmailError("");
+
+    /* Snapshot everything the mail needs — the modal closes before it is sent. */
+    const snap = {
+      to:       emailTo.trim(),
+      subject:  `Tax Invoice ${form.invoiceNo} — Tourwatchout`,
+      html:     `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto"><div style="background:#e84949;padding:20px;text-align:center"><h2 style="color:#fff;margin:0">Tax Invoice — Tourwatchout</h2></div><div style="padding:24px;background:#fff;border:1px solid #eee"><p>Dear <strong>${form.clientName || "Customer"}</strong>,</p><p>Please find your tax invoice attached.</p><table style="width:100%;border-collapse:collapse;margin:16px 0"><tr><td style="padding:8px;font-weight:bold;color:#555">Invoice No.</td><td style="padding:8px">${form.invoiceNo || "—"}</td></tr><tr style="background:#f9f9f9"><td style="padding:8px;font-weight:bold;color:#555">Date</td><td style="padding:8px">${form.invoiceDate || "—"}</td></tr><tr><td style="padding:8px;font-weight:bold;color:#555">Total</td><td style="padding:8px;font-weight:bold">${sym} ${fmt(grandTotal)}</td></tr></table></div></div>`,
+      fileName: `invoice-${form.invoiceNo?.replace(/\//g, "_") || "tw"}.pdf`,
+    };
+
+    setEmailDone(true);
+    setTimeout(() => { setShowEmailModal(false); setEmailDone(false); setEmailTo(""); }, 2000);
+
+    (async () => {
+      try {
+        const pdf = await generatePDF();
+        /* multipart, not base64 JSON — no size cap and a much smaller upload */
+        const fd = new FormData();
+        fd.append("to",       snap.to);
+        fd.append("subject",  snap.subject);
+        fd.append("html",     snap.html);
+        fd.append("fileName", snap.fileName);
+        if (pdf) fd.append("pdf", pdf.output("blob"), snap.fileName);
+        await fetch("/api/dashboard/send-invoice", { method: "POST", body: fd });
+      } catch (e) {
+        console.error("Background invoice email failed:", e);
+      }
+    })();
   }
 
   /* Totals */

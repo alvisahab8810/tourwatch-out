@@ -1,13 +1,54 @@
 import nodemailer from "nodemailer";
+import formidable from "formidable";
+import fs from "fs";
 
-export const config = {
-  api: { bodyParser: { sizeLimit: "15mb" } },
-};
+/* The PDF now arrives as a multipart file — no base64 bloat and no JSON size cap,
+   which is what was making large invoices fail at the proxy. Older callers still
+   post JSON, so the body is read by hand for both shapes. */
+export const config = { api: { bodyParser: false } };
+
+function readJson(req) {
+  return new Promise((resolve, reject) => {
+    let raw = "";
+    req.on("data", c => { raw += c; });
+    req.on("end", () => {
+      try { resolve(JSON.parse(raw || "{}")); } catch (e) { reject(e); }
+    });
+    req.on("error", reject);
+  });
+}
+
+function readMultipart(req) {
+  return new Promise((resolve, reject) => {
+    formidable({ maxFileSize: 100 * 1024 * 1024 }).parse(req, (err, fields, files) => {
+      if (err) return reject(err);
+      /* formidable v3 wraps every field value in an array */
+      const f = k => (Array.isArray(fields[k]) ? fields[k][0] : fields[k]) || "";
+      const pdf = files.pdf?.[0] || files.pdf;
+      resolve({
+        to:        f("to"),
+        subject:   f("subject"),
+        html:      f("html"),
+        fileName:  f("fileName") || pdf?.originalFilename || "",
+        pdfBuffer: pdf ? fs.readFileSync(pdf.filepath) : null,
+      });
+    });
+  });
+}
 
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ message: "Method not allowed" });
 
-  const { to, subject, html, pdfBase64, fileName } = req.body;
+  let body;
+  try {
+    body = String(req.headers["content-type"] || "").includes("multipart/form-data")
+      ? await readMultipart(req)
+      : await readJson(req);
+  } catch (e) {
+    return res.status(400).json({ message: "Could not read the request: " + e.message });
+  }
+
+  const { to, subject, html, pdfBase64, fileName } = body;
 
   if (!to) {
     return res.status(400).json({ message: "Missing required field: to" });
@@ -28,6 +69,9 @@ export default async function handler(req, res) {
     });
   }
 
+  /* Multipart gives a Buffer straight away; the JSON callers still send base64. */
+  const content = body.pdfBuffer || (pdfBase64 ? Buffer.from(pdfBase64, "base64") : null);
+
   try {
     const transporter = nodemailer.createTransport({
       host,
@@ -42,10 +86,10 @@ export default async function handler(req, res) {
       to,
       subject: subject || "Your Tax Invoice — Tourwatchout",
       html,
-      attachments: pdfBase64 ? [
+      attachments: content ? [
         {
           filename: fileName || "invoice.pdf",
-          content: Buffer.from(pdfBase64, "base64"),
+          content,
           contentType: "application/pdf",
         },
       ] : [],
