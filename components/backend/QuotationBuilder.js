@@ -104,6 +104,9 @@ const DEF_PKG = () => ({
   miscs: [],
   margin: 0,
   cost: 0,
+  // Inclusions / exclusions are per tier — Economy, Deluxe and Premium can differ
+  inclusions: "",
+  exclusions: "",
 });
 
 function normHotels(arr) {
@@ -262,6 +265,10 @@ function initArrays(initialData, lead) {
           miscs:     d.miscs?.length     ? [...d.miscs]     : [],
           margin:    d.margin !== undefined ? d.margin : fallbackMargin,
           cost:      d.cost !== undefined ? d.cost : (lbl === "Economy" ? (+initialData.cost || 0) : 0),
+          // Quotations saved before inclusions went per-tier only have the flat
+          // fields — seed every tier from them, then they can diverge.
+          inclusions: d.inclusions !== undefined ? d.inclusions : (initialData.inclusions || ""),
+          exclusions: d.exclusions !== undefined ? d.exclusions : (initialData.exclusions || ""),
           ppSubEnabled:      d.ppSubEnabled      || false,
           ppSubTotalEnabled: d.ppSubTotalEnabled || false,
           ppSellEnabled:     d.ppSellEnabled     || false,
@@ -288,11 +295,14 @@ function initArrays(initialData, lead) {
   const ecoFlights   = initialData?.flights?.length   ? [...initialData.flights]   : [{ ...DEF_FLIGHT, pax: pax || 0, date: brr.tripDate || lead?.travelDate || "" }];
   const ecoTransfers = initialData?.transfers?.length ? [...initialData.transfers] : [{ ...DEF_TRANSFER }];
   const ecoMiscs     = initialData?.miscs?.length     ? [...initialData.miscs]     : [];
+  // legacy quote: the one set of inclusions it has applies to every tier until edited
+  const legacyInc = initialData?.inclusions || "";
+  const legacyExc = initialData?.exclusions || "";
   return {
     pkgTiers: {
-      Economy: { hotels: ecoHotels, flights: ecoFlights, transfers: ecoTransfers, miscs: ecoMiscs, margin: +initialData?.margin || 0, cost: +initialData?.cost || 0 },
-      Deluxe:  DEF_PKG(),
-      Premium: DEF_PKG(),
+      Economy: { hotels: ecoHotels, flights: ecoFlights, transfers: ecoTransfers, miscs: ecoMiscs, margin: +initialData?.margin || 0, cost: +initialData?.cost || 0, inclusions: legacyInc, exclusions: legacyExc },
+      Deluxe:  { ...DEF_PKG(), inclusions: legacyInc, exclusions: legacyExc },
+      Premium: { ...DEF_PKG(), inclusions: legacyInc, exclusions: legacyExc },
     },
   };
 }
@@ -598,6 +608,8 @@ export default function QuotationBuilder({
           miscs:             d.miscs?.length     ? [...d.miscs]     : [],
           margin:            d.margin            ?? 0,
           cost:              d.cost              ?? 0,
+          inclusions:        d.inclusions        ?? (q.inclusions || ""),
+          exclusions:        d.exclusions        ?? (q.exclusions || ""),
           ppSubEnabled:      d.ppSubEnabled      || false,
           ppSubTotalEnabled: d.ppSubTotalEnabled || false,
           ppSellEnabled:     d.ppSellEnabled     || false,
@@ -617,6 +629,15 @@ export default function QuotationBuilder({
           cost:      q.cost    ?? prev.Economy.cost,
         },
       }));
+    }
+
+    // Template has no per-tier lists (older quotation) — its single list seeds all three
+    if (!srcTiers && (q.inclusions || q.exclusions)) {
+      setPkgTiers(prev => Object.fromEntries(TIER_LABELS.map(lbl => [lbl, {
+        ...prev[lbl],
+        inclusions: q.inclusions || "",
+        exclusions: q.exclusions || "",
+      }])));
     }
 
     setTmplApplied(q);
@@ -685,6 +706,21 @@ export default function QuotationBuilder({
     }
   };
   const tierSuffix = isPackage ? "" : ` — ${activePkg}`;
+
+  // Per-tier inclusions / exclusions — each tier keeps its own list, so editing
+  // Economy no longer rewrites Deluxe and Premium. Package mode is a single
+  // package, so it stays on the flat form fields.
+  const incExcSrc    = !isPackage ? activeTierData : form;
+  const tierInc      = incExcSrc.inclusions ?? (form.inclusions || "");
+  const tierExc      = incExcSrc.exclusions ?? (form.exclusions || "");
+  const setTierIncExc = (key, val) => {
+    if (!isPackage) {
+      const pkg = activePkgRef.current;
+      setPkgTiers(p => ({ ...p, [pkg]: { ...p[pkg], [key]: val } }));
+    } else {
+      upd(key, val);
+    }
+  };
 
   /* ── quote type switch — carries data across so the PDF stays the same ── */
   const tierHasData = tier => !!tier && (
@@ -782,6 +818,8 @@ export default function QuotationBuilder({
       miscs:     tier.miscs.filter(m => m.name || m.amount).map(m => ({ name: m.name, amount: toN(m.amount) })),
       margin:    toN(tier.margin),
       cost:      toN(tier.cost),
+      inclusions: tier.inclusions ?? "",
+      exclusions: tier.exclusions ?? "",
       ppSubEnabled:      tier.ppSubEnabled      || false,
       ppSubTotalEnabled: tier.ppSubTotalEnabled || false,
       ppSellEnabled:     tier.ppSellEnabled     || false,
@@ -798,6 +836,10 @@ export default function QuotationBuilder({
       : (toN(pkgTiers[activePkg]?.margin) || toN(pkgTiers.Economy.margin));
     return {
       ...form,
+      // Flat inclusions/exclusions stay for anything still reading the old fields;
+      // in tier mode they mirror Economy, the tier those readers assume.
+      inclusions: isPackage ? (form.inclusions || "") : (ecoNorm.inclusions || ""),
+      exclusions: isPackage ? (form.exclusions || "") : (ecoNorm.exclusions || ""),
       assignedTo: form.assignedTo || null,
       cost: topLevelCost, margin: topLevelMargin, gstPct: toN(form.gstPct, 5), tcsPct: toN(form.tcsPct),
       pkgTiers: Object.fromEntries(TIER_LABELS.map(lbl => [lbl, normTier(pkgTiers[lbl])])),
@@ -2300,22 +2342,28 @@ export default function QuotationBuilder({
             </Sec>
 
             {/* ── Inclusions / Exclusions / Notes ── */}
-            <Sec label="📝  Inclusions, Exclusions and Notes">
+            <Sec label={`📝  Inclusions, Exclusions and Notes${tierSuffix}`}>
+              {!isPackage && (
+                <div style={{ background: "#EFF4FF", border: "1px solid #C7D7FE", borderRadius: 9, padding: "8px 11px", fontSize: 12, color: "#1E3A8A", marginBottom: 12, lineHeight: 1.5 }}>
+                  Inclusions and exclusions are saved per tier — you are editing <b>{activePkg}</b>. Switch the tier above to give Deluxe or Premium a different list.
+                </div>
+              )}
               <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 12 }}>
-                <Fl l="Inclusions">
+                <Fl l={`Inclusions${tierSuffix}`}>
                   <RTE
-                    key={`inc-${tmplApplied?.quotationNo || "base"}`}
-                    value={toRichText(form.inclusions || "")}
-                    onChange={v => upd("inclusions", v)}
+                    /* remount on tier switch so the editor loads that tier's own text */
+                    key={`inc-${activePkg}-${tmplApplied?.quotationNo || "base"}`}
+                    value={toRichText(tierInc)}
+                    onChange={v => setTierIncExc("inclusions", v)}
                     placeholder="List what's included in the package…"
                     minHeight={350}
                   />
                 </Fl>
-                <Fl l="Exclusions">
+                <Fl l={`Exclusions${tierSuffix}`}>
                   <RTE
-                    key={`exc-${tmplApplied?.quotationNo || "base"}`}
-                    value={toRichText(form.exclusions || "")}
-                    onChange={v => upd("exclusions", v)}
+                    key={`exc-${activePkg}-${tmplApplied?.quotationNo || "base"}`}
+                    value={toRichText(tierExc)}
+                    onChange={v => setTierIncExc("exclusions", v)}
                     placeholder="List what's not included…"
                     minHeight={350}
                   />

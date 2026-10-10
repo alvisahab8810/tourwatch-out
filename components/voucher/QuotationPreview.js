@@ -1174,23 +1174,67 @@ export default function QuotationPreview({ data, id }) {
       {/* ══════════════════════════════
           INCLUSIONS & EXCLUSIONS
       ══════════════════════════════ */}
-      {(form.inclusions || form.exclusions) && (
-        <div data-pdf-section="true">
-          <MiniHeader />
-          <div style={{ padding: "28px 32px" }}>
-            {form.inclusions && (
-              <Card title="INCLUSIONS:">
-                <RichContent html={form.inclusions} style={{ fontSize: 13, lineHeight: 1.8 }} />
-              </Card>
-            )}
-            {form.exclusions && (
-              <Card title="EXCLUSIONS:">
-                <RichContent html={form.exclusions} style={{ fontSize: 13, lineHeight: 1.8 }} />
-              </Card>
-            )}
+      {(() => {
+        /* Inclusions / exclusions are stored per tier. Older quotations only have
+           the flat fields, so fall back to those — and when every shown tier
+           carries the same list, print it once instead of repeating it. */
+        const incOf = lbl => (pkgTiers?.[lbl]?.inclusions ?? form.inclusions) || "";
+        const excOf = lbl => (pkgTiers?.[lbl]?.exclusions ?? form.exclusions) || "";
+        const tiersToShow = useTiers ? dataTiers : [];
+        const perTier = tiersToShow.length > 0 && tiersToShow.some(
+          l => incOf(l) !== incOf(tiersToShow[0]) || excOf(l) !== excOf(tiersToShow[0])
+        );
+
+        if (perTier) {
+          const shown = tiersToShow.filter(l => incOf(l) || excOf(l));
+          if (!shown.length) return null;
+          return (
+            <div data-pdf-section="true">
+              <MiniHeader />
+              <div style={{ padding: "28px 32px" }}>
+                {shown.map(lbl => (
+                  <div key={lbl} style={{ marginBottom: 18 }}>
+                    <div style={{ display: "inline-block", background: TIER_BG[lbl], color: TIER_CLR[lbl], border: `1px solid ${TIER_CLR[lbl]}33`, borderRadius: 999, padding: "4px 14px", fontSize: 12, fontWeight: 800, letterSpacing: ".04em", marginBottom: 10 }}>
+                      {lbl.toUpperCase()}
+                    </div>
+                    {incOf(lbl) && (
+                      <Card title="INCLUSIONS:">
+                        <RichContent html={incOf(lbl)} style={{ fontSize: 13, lineHeight: 1.8 }} />
+                      </Card>
+                    )}
+                    {excOf(lbl) && (
+                      <Card title="EXCLUSIONS:">
+                        <RichContent html={excOf(lbl)} style={{ fontSize: 13, lineHeight: 1.8 }} />
+                      </Card>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        }
+
+        const inc = tiersToShow.length ? incOf(tiersToShow[0]) : (form.inclusions || "");
+        const exc = tiersToShow.length ? excOf(tiersToShow[0]) : (form.exclusions || "");
+        if (!inc && !exc) return null;
+        return (
+          <div data-pdf-section="true">
+            <MiniHeader />
+            <div style={{ padding: "28px 32px" }}>
+              {inc && (
+                <Card title="INCLUSIONS:">
+                  <RichContent html={inc} style={{ fontSize: 13, lineHeight: 1.8 }} />
+                </Card>
+              )}
+              {exc && (
+                <Card title="EXCLUSIONS:">
+                  <RichContent html={exc} style={{ fontSize: 13, lineHeight: 1.8 }} />
+                </Card>
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* ══════════════════════════════
           PRICE + NOTE — PACKAGE MODE ONLY
