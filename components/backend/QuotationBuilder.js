@@ -264,7 +264,9 @@ function initArrays(initialData, lead) {
           transfers: d.transfers?.length ? [...d.transfers] : [{ ...DEF_TRANSFER }],
           miscs:     d.miscs?.length     ? [...d.miscs]     : [],
           margin:    d.margin !== undefined ? d.margin : fallbackMargin,
-          cost:      d.cost !== undefined ? d.cost : (lbl === "Economy" ? (+initialData.cost || 0) : 0),
+          // Non-B2B used to keep cost only on the flat field, so a saved Economy
+          // tier can hold 0 while the real figure sits on initialData.cost.
+          cost:      lbl === "Economy" ? (+d.cost || +initialData.cost || 0) : (d.cost ?? 0),
           // Quotations saved before inclusions went per-tier only have the flat
           // fields — seed every tier from them, then they can diverge.
           inclusions: d.inclusions !== undefined ? d.inclusions : (initialData.inclusions || ""),
@@ -673,18 +675,17 @@ export default function QuotationBuilder({
     setPkgTiers(p => ({ ...p, [pkg]: { ...p[pkg], margin: v } }));
   };
 
-  // Per-tier cost proxy — B2B stores cost per tier; Standard uses shared form.cost
-  const tierCost    = isB2B ? (pkgTiers[activePkg]?.cost ?? "") : form.cost;
+  // Per-tier cost proxy — every tier carries its own cost, so Economy's figure
+  // no longer shows up under Deluxe / Premium.
+  const tierCost    = pkgTiers[activePkg]?.cost ?? "";
   const setTierCost = v => {
-    if (isB2B) {
-      const pkg = activePkgRef.current;
-      setPkgTiers(p => ({ ...p, [pkg]: { ...p[pkg], cost: v } }));
-    } else {
-      upd("cost", v);
-    }
+    const pkg = activePkgRef.current;
+    setPkgTiers(p => ({ ...p, [pkg]: { ...p[pkg], cost: v } }));
+    // keep the flat field in step — the quotations table still reads q.cost
+    if (!isB2B) upd("cost", v);
   };
 
-  const c         = calcQ({ ...form, cost: isB2B ? (+tierCost || 0) : (+form.cost || 0), margin: tierMargin });
+  const c         = calcQ({ ...form, cost: +tierCost || 0, margin: tierMargin });
   const g         = gradeColor(c.mpct);
   const intl      = form.type === "International";
 
@@ -794,14 +795,20 @@ export default function QuotationBuilder({
   /* ── auto-sync Cost Price from component grand total (Standard/Package only) ── */
   // Only when the components (or the quote type) actually change. Opening a saved quotation must keep
   // its saved cost — it may have been typed in by hand — instead of overwriting it on mount.
-  const lastCostSyncRef = useRef(+initialData?.cost > 0 ? `${form.quoteType}:${grandComponentTotal}` : null);
+  // Keyed by tier as well, so each tier syncs from its own components instead of
+  // inheriting whatever the previously-open tier left behind.
+  const lastCostSyncRef = useRef(+initialData?.cost > 0 ? `${form.quoteType}:${activePkg}:${grandComponentTotal}` : null);
   useEffect(() => {
-    const key = `${form.quoteType}:${grandComponentTotal}`;
+    const key = `${form.quoteType}:${activePkg}:${grandComponentTotal}`;
     if (lastCostSyncRef.current === key) return;
     lastCostSyncRef.current = key;
-    if (form.quoteType !== "b2b" && grandComponentTotal > 0) upd("cost", grandComponentTotal);
+    if (form.quoteType !== "b2b" && grandComponentTotal > 0) {
+      const pkg = activePkgRef.current;
+      setPkgTiers(p => ({ ...p, [pkg]: { ...p[pkg], cost: grandComponentTotal } }));
+      upd("cost", grandComponentTotal);
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [grandComponentTotal, form.quoteType]);
+  }, [grandComponentTotal, form.quoteType, activePkg]);
 
   /* ── in Package mode always use Economy tier ── */
   useEffect(() => {
@@ -830,7 +837,9 @@ export default function QuotationBuilder({
     const b2bRepTier = isB2B
       ? (TIER_LABELS.map(l => pkgTiers[l]).find(t => +t?.cost > 0) || pkgTiers.Economy)
       : null;
-    const topLevelCost   = isB2B ? toN(b2bRepTier?.cost)   : toN(form.cost);
+    // cost follows the tier being edited, same as margin below
+    const topLevelCost   = isB2B ? toN(b2bRepTier?.cost)
+      : (toN(pkgTiers[activePkg]?.cost) || toN(pkgTiers.Economy.cost) || toN(form.cost));
     // margin follows the tier being edited (a Deluxe-only quote used to save margin 0)
     const topLevelMargin = isB2B ? toN(b2bRepTier?.margin)
       : (toN(pkgTiers[activePkg]?.margin) || toN(pkgTiers.Economy.margin));
@@ -858,7 +867,7 @@ export default function QuotationBuilder({
       const _verRepTier = isB2B
         ? (pkgTiers[activePkg] && +pkgTiers[activePkg].cost > 0 ? pkgTiers[activePkg] : (TIER_LABELS.map(l => pkgTiers[l]).find(t => +t?.cost > 0) || pkgTiers.Economy))
         : (pkgTiers[activePkg] || pkgTiers.Economy);
-      const newVer = { v: (initialData?.versions?.length || 0) + 1, date: todayISO(), cost: isB2B ? toN(_verRepTier?.cost) : toN(form.cost), margin: toN(_verRepTier?.margin), note: (initialData?.versions?.length || 0) === 0 ? "First quote created" : "Quote revised", quoteType: form.quoteType, destination: form.destination || lead?.destination || "", tier: activePkg };
+      const newVer = { v: (initialData?.versions?.length || 0) + 1, date: todayISO(), cost: toN(_verRepTier?.cost) || toN(form.cost), margin: toN(_verRepTier?.margin), note: (initialData?.versions?.length || 0) === 0 ? "First quote created" : "Quote revised", quoteType: form.quoteType, destination: form.destination || lead?.destination || "", tier: activePkg };
       // snapshot the full quotation into the version so Edit/PDF can reopen this exact revision later
       const snapBody = buildBody();
       newVer.snapshot = snapBody;
@@ -2523,7 +2532,7 @@ export default function QuotationBuilder({
                   ))}
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: `repeat(${intl ? 4 : 3}, 1fr)`, gap: 12, marginBottom: 14 }}>
-                  <Fl l={`Cost Price (₹)${isB2B ? ` — ${activePkg}` : " — auto from components"}`}><input type="number" style={{ ...QS.inp, background: "#F0FDF4", fontWeight: 700 }} value={tierCost} onChange={e => setTierCost(e.target.value)} /></Fl>
+                  <Fl l={`Cost Price (₹)${isPackage ? "" : ` — ${activePkg}`}${isB2B ? "" : " · auto from components"}`}><input type="number" style={{ ...QS.inp, background: "#F0FDF4", fontWeight: 700 }} value={tierCost} onChange={e => setTierCost(e.target.value)} /></Fl>
                   <Fl l={`Margin (₹)${tierSuffix}`}><input type="number" style={QS.inp} value={tierMargin} onChange={e => setTierMargin(e.target.value)} /></Fl>
                   <Fl l="GST %"><input type="number" style={QS.inp} value={form.gstPct} onChange={e => upd("gstPct", e.target.value)} /></Fl>
                   {intl && (
