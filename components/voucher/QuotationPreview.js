@@ -80,8 +80,15 @@ function calcTierCost(tier) {
   return h + f + t + m;
 }
 
+/* Cost for pricing: the components when they carry prices, otherwise the Cost
+   Price typed on the Company Side. Without the fallback a tier whose hotel rates
+   are left at 0 printed no price at all. */
+function tierCostForPrice(tier) {
+  return calcTierCost(tier) || +tier.cost || 0;
+}
+
 function calcTierSelling(tier, form) {
-  const cost = calcTierCost(tier);
+  const cost = tierCostForPrice(tier);
   if (!cost) return 0;
   const margin = tier.margin !== undefined ? +tier.margin : (+form.margin || 0);
   const base = cost + margin;
@@ -91,7 +98,7 @@ function calcTierSelling(tier, form) {
 }
 
 function calcTierBase(tier, form) {
-  const cost = calcTierCost(tier);
+  const cost = tierCostForPrice(tier);
   if (!cost) return 0;
   const margin = tier.margin !== undefined ? +tier.margin : (+form.margin || 0);
   return cost + margin;
