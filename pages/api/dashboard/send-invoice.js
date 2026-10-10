@@ -13,15 +13,18 @@ export default async function handler(req, res) {
     return res.status(400).json({ message: "Missing required field: to" });
   }
 
-  // SMTP config from environment variables
-  const host = process.env.EMAIL_HOST;
-  const port = parseInt(process.env.EMAIL_PORT || "587");
-  const user = process.env.EMAIL_USER;
-  const pass = process.env.EMAIL_PASS;
+  /* Invoice mail has its own sender (accounts@tourwatchout.com). Everything else
+     in the app keeps going out from the sales account, so this route reads its own
+     SMTP_INVOICE_* vars and only falls back to the shared ones if they are unset. */
+  const host = process.env.SMTP_INVOICE_HOST || process.env.SMTP_HOST || process.env.EMAIL_HOST;
+  const port = parseInt(process.env.SMTP_INVOICE_PORT || process.env.SMTP_PORT || process.env.EMAIL_PORT || "587");
+  const user = process.env.SMTP_INVOICE_USER || process.env.EMAIL_USER || process.env.SMTP_USER;
+  const pass = process.env.SMTP_INVOICE_PASS || process.env.EMAIL_PASS || process.env.SMTP_PASS;
+  const from = process.env.SMTP_INVOICE_FROM || (user ? `Tourwatchout <${user}>` : process.env.SMTP_FROM);
 
   if (!host || !user || !pass) {
     return res.status(500).json({
-      message: "Email not configured. Set EMAIL_HOST, EMAIL_PORT, EMAIL_USER, EMAIL_PASS in .env.local",
+      message: "Invoice email not configured. Set SMTP_INVOICE_USER and SMTP_INVOICE_PASS in .env.local",
     });
   }
 
@@ -34,7 +37,7 @@ export default async function handler(req, res) {
     });
 
     await transporter.sendMail({
-      from: `Tourwatchout <accounts@tourwatchout.com>`,
+      from,
       replyTo: "sales@tourwatchout.com",
       to,
       subject: subject || "Your Tax Invoice — Tourwatchout",

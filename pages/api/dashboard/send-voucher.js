@@ -13,15 +13,16 @@ export default async function handler(req, res) {
     return res.status(400).json({ message: "Missing required fields: to, pdfBase64" });
   }
 
-  // SMTP config from environment variables
-  const host = process.env.EMAIL_HOST;
-  const port = parseInt(process.env.EMAIL_PORT || "587");
-  const user = process.env.EMAIL_USER;
-  const pass = process.env.EMAIL_PASS;
+  // Vouchers go out from the shared sales sender, same as the rest of the app.
+  const host = process.env.SMTP_HOST || process.env.EMAIL_HOST;
+  const port = parseInt(process.env.SMTP_PORT || process.env.EMAIL_PORT || "587");
+  const user = process.env.SMTP_USER || process.env.EMAIL_USER;
+  const pass = process.env.SMTP_PASS || process.env.EMAIL_PASS;
+  const from = process.env.SMTP_FROM || `Tourwatchout <${user}>`;
 
   if (!host || !user || !pass) {
     return res.status(500).json({
-      message: "Email not configured. Set EMAIL_HOST, EMAIL_PORT, EMAIL_USER, EMAIL_PASS in .env.local",
+      message: "Email not configured. Set SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS in .env.local",
     });
   }
 
@@ -34,7 +35,7 @@ export default async function handler(req, res) {
     });
 
     await transporter.sendMail({
-      from: `Tourwatchout <accounts@tourwatchout.com>`,
+      from,
       replyTo: "sales@tourwatchout.com",
       to,
       subject: subject || "Your Travel Voucher — Tourwatchout",
